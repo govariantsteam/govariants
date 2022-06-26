@@ -1,0 +1,20 @@
+{
+  "name": "@ogfcommunity/variants-monorepo",
+  "version": "1.0.0",
+  "description": "A place to play Go variants, brought to you by the OGF community.",
+  "main": "index.js",
+  "license": "AGPL-3.0",
+  "packageManager": "yarn@3.2.1",
+  "scripts": {
+    "start": "yarn workspaces foreach -pi run start",
+    "build": "yarn workspaces foreach -pti run build",
+    "start:server": "yarn workspace @ogfcommunity/variants-server run start",
+    "start:client": "yarn workspace @ogfcommunity/variants-client run start",
+    "start:shared": "yarn workspace @ogfcommunity/variants-shared run start"
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  }
+}

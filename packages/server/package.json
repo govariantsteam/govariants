@@ -1,9 +1,13 @@
 {
-  "name": "server",
+  "name": "@ogfcommunity/variants-server",
   "packageManager": "yarn@3.2.1",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "node .",
+    "start": "nodemon ./src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.18",
+    "ts-node": "^10.8.1"
   }
 }

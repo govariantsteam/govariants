@@ -5,9 +5,15 @@
 /**
  * An abstract class that can represent any game on the server
  */
-export abstract class AbstractGame<GameState = object, GameScore = object> {
+export abstract class AbstractGame<
+  GameConfig = object,
+  GameState = object,
+  DeadStones = string
+> {
   private phase_: GamePhase = "play";
   private result_: string = "";
+
+  constructor(protected readonly config: GameConfig) {}
 
   /**
    * Play one move by the specified player.
@@ -41,7 +47,7 @@ export abstract class AbstractGame<GameState = object, GameScore = object> {
   // Scoring
 
   /** Sets the dead stones on the board */
-  setDeadStones(_dead_stones: { [player: number]: GameScore }): void {
+  setDeadStones(_dead_stones: DeadStones): void {
     // Subclasses may reimplement this function if there is a scoring phase.
   }
 
@@ -50,7 +56,7 @@ export abstract class AbstractGame<GameState = object, GameScore = object> {
    * This should likely be reimplemented if setDeadStones has been reimplemented.
    */
   finalizeScore() {
-    this.phase_;
+    this.phase_ = "gameover";
   }
 
   /** Get result.  Will only be called when phase() is "gameover" */

@@ -1,7 +1,7 @@
 import { Color, Baduk } from "./baduk";
 
 test("Play a game", () => {
-  const game = new Baduk({ width: 4, height: 2 });
+  const game = new Baduk({ width: 4, height: 2, komi: 0.5 });
   // Tiny board:
   // - W B -
   // - W B -
@@ -20,4 +20,14 @@ test("Play a game", () => {
     [Color.EMPTY, Color.WHITE, Color.BLACK, Color.EMPTY],
     [Color.EMPTY, Color.WHITE, Color.BLACK, Color.EMPTY],
   ]);
+
+  expect(game.phase).toBe("play");
+  game.playMove({ 0: "pass" });
+  expect(game.phase).toBe("play");
+  game.playMove({ 1: "pass" });
+  expect(game.phase).toBe("scoring");
+
+  game.finalizeScore();
+  expect(game.phase).toBe("gameover");
+  expect(game.result).toBe("W+0.5");
 });

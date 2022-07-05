@@ -7,8 +7,9 @@ export enum Color {
 }
 
 export interface BadukConfig {
-  width?: number;
-  height?: number;
+  width: number;
+  height: number;
+  komi: number;
 }
 
 export interface BadukState {
@@ -24,14 +25,20 @@ interface Coordinate {
 
 type BadukMovesType = { 0: string } | { 1: string };
 
-export class Baduk extends AbstractGame<BadukState> {
+export class Baduk extends AbstractGame<BadukConfig, BadukState, string> {
   private board: Color[][];
   private next_to_play: 0 | 1 = 0;
   private captures = { 0: 0, 1: 0 };
   private last_move = "";
+  private dead_stones = "";
 
-  constructor(config: BadukConfig) {
-    super();
+  constructor(config: Partial<BadukConfig>) {
+    super({
+      width: 19,
+      height: 19,
+      komi: 6.5,
+      ...config,
+    });
     this.board = makeEmptyBoard(config.width ?? 19, config.height ?? 19);
   }
 
@@ -67,7 +74,7 @@ export class Baduk extends AbstractGame<BadukState> {
     const { x, y } = decoded_move;
     if (isOutOfBounds(decoded_move, this.board)) {
       throw Error(
-        `Move out of bounds. (move: ${decoded_move}, board dimensions: ${this.board.length}x${this.board[0]?.length}`
+        `Move out of bounds. (move: ${decoded_move}, board dimensions: ${this.config.width}x${this.config.height}`
       );
     }
     if (this.board[y][x] != Color.EMPTY) {
@@ -103,6 +110,74 @@ export class Baduk extends AbstractGame<BadukState> {
   numPlayers(): number {
     return 2;
   }
+
+  setDeadStones(dead_stones: string) {
+    this.dead_stones = dead_stones;
+  }
+
+  finalizeScore(): void {
+    const board = copyBoard(this.board);
+    const visited = makeGridWithValue(
+      this.config.width || 19,
+      this.config.height || 19,
+      false
+    );
+    decodeMultipleMoves(this.dead_stones).forEach(({ x, y }) => {
+      board[y][x] = Color.EMPTY;
+    });
+
+    const determineController = (pos: Coordinate): Color => {
+      if (isOutOfBounds(pos, board)) {
+        return Color.EMPTY;
+      }
+      if (visited[pos.y][pos.x]) {
+        return Color.EMPTY;
+      }
+      visited[pos.y][pos.x] = true;
+      const neighbor_results =
+        neighboringPositions(pos).map(determineController);
+      const saw_white = neighbor_results.includes(Color.WHITE);
+      const saw_black = neighbor_results.includes(Color.BLACK);
+      if (saw_black && saw_white) {
+        return Color.EMPTY;
+      }
+      if (saw_black) {
+        return Color.BLACK;
+      }
+
+      if (saw_white) {
+        return Color.WHITE;
+      }
+      return Color.EMPTY;
+    };
+
+    for (let y = 0; y < this.config.height; y++) {
+      for (let x = 0; x < this.config.width; x++) {
+        if (visited[y][x]) {
+          continue;
+        }
+        visited[y][x] = true;
+        if (board[y][x] === Color.EMPTY) {
+          const controller = determineController({ x, y });
+          floodFill({ x, y }, controller, board);
+        }
+      }
+    }
+
+    const black_points: number = countValueIn2dArray(Color.BLACK, board);
+    const white_points: number =
+      countValueIn2dArray(Color.WHITE, board) + this.config.komi;
+    const diff = black_points - white_points;
+    if (diff < 0) {
+      this.result = `W+${-diff}`;
+    } else if (diff > 0) {
+      this.result = `B+${diff}`;
+    } else {
+      this.result = "Tie";
+    }
+
+    super.finalizeScore();
+  }
 }
 
 function makeEmptyBoard(width: number, height: number): Color[][] {
@@ -135,6 +210,14 @@ function decodeChar(char: string): number {
   }
 
   throw `Invalid character in move: ${char} (${char_code})`;
+}
+
+export function decodeMultipleMoves(move_string: string): Coordinate[] {
+  var chunks = [];
+  for (var i = 0; i < move_string.length; i += 2) {
+    chunks.push(move_string.substring(i, i + 2));
+  }
+  return chunks.map(decodeMove);
 }
 
 /** Returns true if the group containing (x, y) has at least one liberty. */
@@ -182,25 +265,7 @@ function neighboringPositions({ x, y }: Coordinate) {
  * from the board.
  */
 function removeGroup(pos: Coordinate, board: Color[][]): number {
-  const color = board[pos.y][pos.x];
-
-  function helper({ x, y }: Coordinate): number {
-    if (isOutOfBounds({ x, y }, board)) {
-      return 0;
-    }
-
-    if (color !== board[y][x]) {
-      return 0;
-    }
-
-    board[y][x] = Color.EMPTY;
-
-    return neighboringPositions({ x, y })
-      .map(helper)
-      .reduce((acc, val) => acc + val, 1);
-  }
-
-  return helper(pos);
+  return floodFill(pos, Color.EMPTY, board);
 }
 
 /** Asserts there is exaclty one move, and returns it */
@@ -218,4 +283,39 @@ function getOnlyMove(moves: MovesType): { player: number; move: string } {
 
 function isOutOfBounds({ x, y }: Coordinate, board: Color[][]): boolean {
   return board[y] === undefined || board[y][x] === undefined;
+}
+
+/** Fills area with the given color, and returns the number of spaces filled. */
+function floodFill(
+  pos: Coordinate,
+  target_color: Color,
+  board: Color[][]
+): number {
+  const starting_color = board[pos.y][pos.x];
+  if (starting_color === target_color) {
+    return 0;
+  }
+
+  function helper({ x, y }: Coordinate): number {
+    if (isOutOfBounds({ x, y }, board)) {
+      return 0;
+    }
+
+    if (starting_color !== board[y][x]) {
+      return 0;
+    }
+
+    board[y][x] = target_color;
+
+    return neighboringPositions({ x, y })
+      .map(helper)
+      .reduce((acc, val) => acc + val, 1);
+  }
+
+  return helper(pos);
+}
+
+/** Returns the number of occurrences for the given color */
+function countValueIn2dArray<T>(value: T, array: T[][]) {
+  return array.flat().filter((val) => val === value).length;
 }

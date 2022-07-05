@@ -180,6 +180,11 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState, string> {
 
     super.finalizeScore();
   }
+
+  resign(player: number) {
+    this.phase = "gameover";
+    this.result = player === 0 ? "W+R" : "B+R";
+  }
 }
 
 function makeEmptyBoard(width: number, height: number): Color[][] {

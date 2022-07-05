@@ -60,3 +60,10 @@ test("Play a game with captures", () => {
   expect(game.phase).toBe("gameover");
   expect(game.result).toBe("W+4.5");
 });
+
+test("Resign a game", () => {
+  const game = new Baduk({});
+  game.resign(0);
+  expect(game.phase).toBe("gameover");
+  expect(game.result).toBe("W+R");
+});

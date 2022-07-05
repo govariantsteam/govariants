@@ -68,12 +68,13 @@ export abstract class AbstractGame<
     this.result_ = res;
   }
 
-  canResign(player: number): boolean {
+  canResign(player_: number): boolean {
     return this.numPlayers() === 2;
   }
   resign(player: number) {
     this.phase_ = "gameover";
-    this.result_ = `Player ${player} + R`;
+    const opponent = 1 - player;
+    this.result_ = `Player ${opponent} + R`;
   }
 }
 export interface MovesType {

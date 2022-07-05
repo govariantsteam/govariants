@@ -130,6 +130,9 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState, string> {
       if (isOutOfBounds(pos, board)) {
         return Color.EMPTY;
       }
+      if (board[pos.y][pos.x] !== Color.EMPTY) {
+        return board[pos.y][pos.x];
+      }
       if (visited[pos.y][pos.x]) {
         return Color.EMPTY;
       }
@@ -156,7 +159,6 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState, string> {
         if (visited[y][x]) {
           continue;
         }
-        visited[y][x] = true;
         if (board[y][x] === Color.EMPTY) {
           const controller = determineController({ x, y });
           floodFill({ x, y }, controller, board);

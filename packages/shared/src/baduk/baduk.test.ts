@@ -31,3 +31,32 @@ test("Play a game", () => {
   expect(game.phase).toBe("gameover");
   expect(game.result).toBe("W+0.5");
 });
+
+test("Play a game with captures", () => {
+  const game = new Baduk({ width: 2, height: 2, komi: 0.5 });
+  // Tiny board
+  // B W
+  // B O
+  game.playMove({ 0: "aa" });
+  game.playMove({ 1: "ba" });
+  game.playMove({ 0: "ab" });
+  expect(game.exportState().board).toEqual([
+    [Color.BLACK, Color.WHITE],
+    [Color.BLACK, Color.EMPTY],
+  ]);
+  game.playMove({ 1: "bb" });
+  expect(game.exportState().board).toEqual([
+    [Color.EMPTY, Color.WHITE],
+    [Color.EMPTY, Color.WHITE],
+  ]);
+
+  expect(game.phase).toBe("play");
+  game.playMove({ 0: "pass" });
+  expect(game.phase).toBe("play");
+  game.playMove({ 1: "pass" });
+  expect(game.phase).toBe("scoring");
+
+  game.finalizeScore();
+  expect(game.phase).toBe("gameover");
+  expect(game.result).toBe("W+4.5");
+});

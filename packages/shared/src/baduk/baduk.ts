@@ -1,6 +1,6 @@
 import { AbstractGame, GamePhase, MovesType } from "../abstract_game";
 
-enum Color {
+export enum Color {
   EMPTY = 0,
   BLACK = 1,
   WHITE = 2,
@@ -22,9 +22,7 @@ interface Coordinate {
   readonly y: number;
 }
 
-type BadukMovesType = {
-  [player in 0 | 1]: string;
-};
+type BadukMovesType = { 0: string } | { 1: string };
 
 export class Baduk extends AbstractGame<BadukState> {
   private board: Color[][];
@@ -66,19 +64,29 @@ export class Baduk extends AbstractGame<BadukState> {
     }
 
     const decoded_move = decodeMove(move);
-    if (this.board[decoded_move.y][decoded_move.x] != Color.EMPTY) {
-      throw Error("Cannot place a stone on top of an existing stone.");
+    const { x, y } = decoded_move;
+    if (isOutOfBounds(decoded_move, this.board)) {
+      throw Error(
+        `Move out of bounds. (move: ${decoded_move}, board dimensions: ${this.board.length}x${this.board[0]?.length}`
+      );
+    }
+    if (this.board[y][x] != Color.EMPTY) {
+      throw Error(
+        `Cannot place a stone on top of an existing stone. (${this.board[y][x]} at (${x}, ${y}))`
+      );
     }
     const player_color = player === 0 ? Color.BLACK : Color.WHITE;
     const opponent_color = player === 0 ? Color.WHITE : Color.BLACK;
-    const new_board = copyBoard(this.board);
-    new_board[decoded_move.y][decoded_move.x] = player_color;
+    this.board[y][x] = player_color;
 
     // Capture any opponent groups
     neighboringPositions(decoded_move).forEach((pos) => {
+      if (isOutOfBounds(pos, this.board)) {
+        return;
+      }
       if (
-        new_board[pos.y][pos.x] === opponent_color &&
-        !groupHasLiberties(pos, new_board)
+        this.board[pos.y][pos.x] === opponent_color &&
+        !groupHasLiberties(pos, this.board)
       ) {
         this.captures[player] += removeGroup(pos, this.board);
       }
@@ -102,7 +110,7 @@ function makeEmptyBoard(width: number, height: number): Color[][] {
 }
 
 function makeGridWithValue<T>(width: number, height: number, value: T): T[][] {
-  return new Array(height).fill(new Array(width).fill(value));
+  return new Array(height).fill(null).map(() => new Array(width).fill(value));
 }
 
 function copyBoard(board: Color[][]) {
@@ -131,25 +139,29 @@ function decodeChar(char: string): number {
 
 /** Returns true if the group containing (x, y) has at least one liberty. */
 function groupHasLiberties(pos: Coordinate, board: Color[][]) {
-  const color = board[pos.x][pos.y];
+  const color = board[pos.y][pos.x];
   const width = board[0].length;
   const height = board.length;
   const visited = makeGridWithValue(width, height, false);
 
   function helper({ x, y }: Coordinate): boolean {
-    if (board[x][y] === Color.EMPTY) {
+    if (isOutOfBounds({ x, y }, board)) {
+      return false;
+    }
+
+    if (board[y][x] === Color.EMPTY) {
       // found a liberty
       return true;
     }
-    if (color !== board[x][y]) {
-      // Either opponent color or undefined (out of bounds)
+    if (color !== board[y][x]) {
+      // opponent color
       return false;
     }
-    if (visited[x][y]) {
+    if (visited[y][x]) {
       // Already seen
       return false;
     }
-    visited[x][y] = true;
+    visited[y][x] = true;
     return neighboringPositions({ x, y }).some(helper);
   }
 
@@ -170,14 +182,18 @@ function neighboringPositions({ x, y }: Coordinate) {
  * from the board.
  */
 function removeGroup(pos: Coordinate, board: Color[][]): number {
-  const color = board[pos.x][pos.y];
+  const color = board[pos.y][pos.x];
 
   function helper({ x, y }: Coordinate): number {
-    if (color !== board[x][y]) {
+    if (isOutOfBounds({ x, y }, board)) {
       return 0;
     }
 
-    board[x][y] = Color.EMPTY;
+    if (color !== board[y][x]) {
+      return 0;
+    }
+
+    board[y][x] = Color.EMPTY;
 
     return neighboringPositions({ x, y })
       .map(helper)
@@ -198,4 +214,8 @@ function getOnlyMove(moves: MovesType): { player: number; move: string } {
   }
   const player = Number(players[0]);
   return { player, move: moves[player] };
+}
+
+function isOutOfBounds({ x, y }: Coordinate, board: Color[][]): boolean {
+  return board[y] === undefined || board[y][x] === undefined;
 }

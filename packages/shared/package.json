@@ -1,5 +1,13 @@
 {
   "name": "@ogfcommunity/variants-shared",
   "version": "1.0.0",
-  "main": "dist/index.js"
+  "main": "dist/index.js",
+  "devDependencies": {
+    "@types/jest": "^28.1.4",
+    "jest": "^28.1.2",
+    "ts-jest": "^28.0.5"
+  },
+  "scripts": {
+    "test": "jest"
+  }
 }

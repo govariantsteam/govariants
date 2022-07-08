@@ -25,9 +25,7 @@ test("Play a game", () => {
   game.playMove({ 0: "pass" });
   expect(game.phase).toBe("play");
   game.playMove({ 1: "pass" });
-  expect(game.phase).toBe("scoring");
 
-  game.finalizeScore();
   expect(game.phase).toBe("gameover");
   expect(game.result).toBe("W+0.5");
 });
@@ -54,9 +52,6 @@ test("Play a game with captures", () => {
   game.playMove({ 0: "pass" });
   expect(game.phase).toBe("play");
   game.playMove({ 1: "pass" });
-  expect(game.phase).toBe("scoring");
-
-  game.finalizeScore();
   expect(game.phase).toBe("gameover");
   expect(game.result).toBe("W+4.5");
 });

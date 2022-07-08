@@ -5,11 +5,7 @@
 /**
  * An abstract class that can represent any game on the server
  */
-export abstract class AbstractGame<
-  GameConfig = object,
-  GameState = object,
-  DeadStones = string
-> {
+export abstract class AbstractGame<GameConfig = object, GameState = object> {
   private phase_: GamePhase = "play";
   private result_: string = "";
 
@@ -44,21 +40,6 @@ export abstract class AbstractGame<
     this.phase_ = p;
   }
 
-  // Scoring
-
-  /** Sets the dead stones on the board */
-  setDeadStones(_dead_stones: DeadStones): void {
-    // Subclasses may reimplement this function if there is a scoring phase.
-  }
-
-  /** Ends the scoring phase and finalizes the result.
-   *
-   * This should likely be reimplemented if setDeadStones has been reimplemented.
-   */
-  finalizeScore() {
-    this.phase_ = "gameover";
-  }
-
   /** Get result.  Will only be called when phase() is "gameover" */
   get result(): string {
     return this.result_;
@@ -68,7 +49,7 @@ export abstract class AbstractGame<
     this.result_ = res;
   }
 
-  canResign(player_: number): boolean {
+  canResign(_player: number): boolean {
     return this.numPlayers() === 2;
   }
   resign(player: number) {
@@ -81,4 +62,4 @@ export interface MovesType {
   [player: number]: string;
 }
 
-export type GamePhase = "play" | "scoring" | "gameover";
+export type GamePhase = "play" | "gameover";

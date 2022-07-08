@@ -25,12 +25,11 @@ interface Coordinate {
 
 type BadukMovesType = { 0: string } | { 1: string };
 
-export class Baduk extends AbstractGame<BadukConfig, BadukState, string> {
+export class Baduk extends AbstractGame<BadukConfig, BadukState> {
   private board: Color[][];
   private next_to_play: 0 | 1 = 0;
   private captures = { 0: 0, 1: 0 };
   private last_move = "";
-  private dead_stones = "";
 
   constructor(config: Partial<BadukConfig>) {
     super({
@@ -63,7 +62,7 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState, string> {
 
     if (move == "pass") {
       if (this.last_move === "pass") {
-        this.phase = "scoring";
+        this.finalizeScore();
       } else {
         this.last_move = move;
       }
@@ -111,20 +110,13 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState, string> {
     return 2;
   }
 
-  setDeadStones(dead_stones: string) {
-    this.dead_stones = dead_stones;
-  }
-
-  finalizeScore(): void {
+  private finalizeScore(): void {
     const board = copyBoard(this.board);
     const visited = makeGridWithValue(
-      this.config.width || 19,
-      this.config.height || 19,
+      this.config.width,
+      this.config.height,
       false
     );
-    decodeMultipleMoves(this.dead_stones).forEach(({ x, y }) => {
-      board[y][x] = Color.EMPTY;
-    });
 
     const determineController = (pos: Coordinate): Color => {
       if (isOutOfBounds(pos, board)) {
@@ -178,7 +170,7 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState, string> {
       this.result = "Tie";
     }
 
-    super.finalizeScore();
+    this.phase = "gameover";
   }
 
   resign(player: number) {
@@ -203,6 +195,7 @@ function decodeMove(move: string): Coordinate {
   return { x: decodeChar(move[0]), y: decodeChar(move[1]) };
 }
 
+// a: 0, b: 1, ... z: 25, A: 26, ... Z: 51
 function decodeChar(char: string): number {
   const a = "a".charCodeAt(0);
   const z = "z".charCodeAt(0);
@@ -217,14 +210,6 @@ function decodeChar(char: string): number {
   }
 
   throw `Invalid character in move: ${char} (${char_code})`;
-}
-
-export function decodeMultipleMoves(move_string: string): Coordinate[] {
-  var chunks = [];
-  for (var i = 0; i < move_string.length; i += 2) {
-    chunks.push(move_string.substring(i, i + 2));
-  }
-  return chunks.map(decodeMove);
 }
 
 /** Returns true if the group containing (x, y) has at least one liberty. */

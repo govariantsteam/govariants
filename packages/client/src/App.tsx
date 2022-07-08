@@ -3,6 +3,7 @@ import { Routes, Route, Link } from "react-router-dom";
 import "./App.css";
 
 import io from "socket.io-client";
+import { BadukView } from "./baduk";
 
 const socket = io(`http://${window.location.hostname}:3000`);
 
@@ -54,6 +55,16 @@ function Home() {
           <p>Connected: {"" + isConnected}</p>
           <p>{`Last pong: ${lastPong || "-"}`}</p>
           <button onClick={sendPing}>Send ping</button>
+
+          <h3> Here's a go board? </h3>
+          <BadukView
+            gamestate={{
+              board: [[], []],
+              next_to_play: 1,
+              captures: { 0: 5, 1: 7 },
+            }}
+            onMove={() => {}}
+          ></BadukView>
         </div>
       </main>
       <nav>

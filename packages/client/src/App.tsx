@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import logo from "./logo.svg";
+import { Routes, Route, Link } from "react-router-dom";
 import "./App.css";
 
 import io from "socket.io-client";
@@ -7,6 +7,17 @@ import io from "socket.io-client";
 const socket = io(`http://${window.location.hostname}:3000`);
 
 function App() {
+  return (
+    <div className="App">
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="about" element={<About />} />
+      </Routes>
+    </div>
+  );
+}
+
+function Home() {
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [lastPong, setLastPong] = useState<string | null>(null);
 
@@ -35,27 +46,37 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+    <>
+      <main>
+        <h2>Welcome to Go variants!</h2>
+        <div>
+          <h3>socket.io tests...</h3>
+          <p>Connected: {"" + isConnected}</p>
+          <p>{`Last pong: ${lastPong || "-"}`}</p>
+          <button onClick={sendPing}>Send ping</button>
+        </div>
+      </main>
+      <nav>
+        <Link to="/about">About</Link>
+      </nav>
+    </>
+  );
+}
+
+function About() {
+  return (
+    <>
+      <main>
+        <h2>Who are we?</h2>
         <p>
-          Edit <code>src/App.tsx</code> and save to reload.
+          <span>Check us out on </span>
+          <a href="https://github.com/benjaminpjones/govariants">Github</a>
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-      <div>
-        <p>Connected: {"" + isConnected}</p>
-        <p>{`Last pong: ${lastPong || "-"}`}</p>
-        <button onClick={sendPing}>Send ping</button>
-      </div>
-    </div>
+      </main>
+      <nav>
+        <Link to="/">Home</Link>
+      </nav>
+    </>
   );
 }
 

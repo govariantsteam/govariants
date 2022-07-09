@@ -16,4 +16,4 @@ To run the app, you can run
 npm start
 ```
 
-This will start two dev servers.  One is a React server listening on `localhost:3000`, and the other is an Express server listening on `localhost:3001`.
+This will start two dev servers.  One is a React server listening on `localhost:8080`, and the other is an Express server listening on `localhost:3000`.

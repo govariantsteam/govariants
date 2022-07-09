@@ -73,11 +73,12 @@ function Home() {
       <main>
         <h2>Welcome to Go variants!</h2>
         <div>
+          <hr />
           <h3>socket.io tests...</h3>
           <p>Connected: {"" + isConnected}</p>
           <p>{`Last pong: ${lastPong || "-"}`}</p>
           <button onClick={sendPing}>Send ping</button>
-
+          <hr />
           <h3> Here's a go board? </h3>
           <BadukView
             gamestate={{

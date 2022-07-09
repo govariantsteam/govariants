@@ -1,22 +1,22 @@
-import { BadukConfig, BadukState, Color } from "@ogfcommunity/variants-shared";
+import { BadukState, Color } from "@ogfcommunity/variants-shared";
 import React from "react";
 import { GameViewProps } from "../view_types";
 
 const SPACING = 5;
 const BORDER = 3;
 
-export function BadukView({
-  gamestate,
-  config,
-  onMove,
-}: GameViewProps<BadukConfig, BadukState>) {
+export function BadukView({ gamestate }: GameViewProps<BadukState>) {
+  const config = {
+    width: gamestate.board[0].length,
+    height: gamestate.board.length,
+  };
+
   const w_inner = (config.width - 1) * SPACING;
   const h_inner = (config.height - 1) * SPACING;
   const w = w_inner + BORDER * 2;
   const h = h_inner + BORDER * 2;
   const line_props = { stroke: "black", strokeWidth: ".2" };
 
-  // https://upload.wikimedia.org/wikipedia/commons/9/9b/Blank_Go_board.svg
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

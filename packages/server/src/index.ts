@@ -10,8 +10,17 @@ const io = new Server(server, {
   },
 });
 
-app.get("/", (req, res) => {
+app.get("/", (_req, res) => {
   res.send("<h1>Hello world</h1>");
+});
+
+app.get("/games/:gameId", (_req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080"); // Why do I need to do this if I set cors above?
+  res.send({
+    variant: "baduk",
+    moves: [{ 0: "aa" }, { 1: "bb" }, { 0: "cc" }],
+    config: {},
+  });
 });
 
 io.on("connection", (socket) => {

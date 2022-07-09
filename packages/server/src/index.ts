@@ -1,6 +1,7 @@
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
+import { getGame, getGames } from "./game_list";
 
 const app = express();
 const server = http.createServer(app);
@@ -14,13 +15,14 @@ app.get("/", (_req, res) => {
   res.send("<h1>Hello world</h1>");
 });
 
-app.get("/games/:gameId", (_req, res) => {
+app.get("/games/:gameId", (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080"); // Why do I need to do this if I set cors above?
-  res.send({
-    variant: "baduk",
-    moves: [{ 0: "aa" }, { 1: "bb" }, { 0: "cc" }],
-    config: { width: 19, height: 19, komi: 5.5 },
-  });
+  res.send(getGame(Number(req.params.gameId)));
+});
+
+app.get("/games", (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080"); // Why do I need to do this if I set cors above?
+  res.send(getGames(Number(req.query.page) || 0));
 });
 
 io.on("connection", (socket) => {

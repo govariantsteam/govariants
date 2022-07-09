@@ -36,6 +36,7 @@ export function BadukView({ gamestate }: GameViewProps<BadukState>) {
       {getInnerLinePositions(config.height).map((pos) => (
         // horizontal lines
         <line
+          key={`${pos}`}
           x1={`${BORDER}`}
           y1={`${pos}`}
           x2={`${BORDER + w_inner}`}
@@ -46,6 +47,7 @@ export function BadukView({ gamestate }: GameViewProps<BadukState>) {
       {getInnerLinePositions(config.width).map((pos) => (
         // vertical lines
         <line
+          key={`${pos}`}
           x1={`${pos}`}
           y1={`${BORDER}`}
           x2={`${pos}`}
@@ -56,13 +58,13 @@ export function BadukView({ gamestate }: GameViewProps<BadukState>) {
       {gamestate.board.map((row, y) =>
         row.map((color, x) => {
           if (color === Color.BLACK) {
-            return <Stone color="black" x={x} y={y} />;
+            return <Stone key={`${x}-${y}`} color="black" x={x} y={y} />;
           }
 
           if (color === Color.WHITE) {
-            return <Stone color="white" x={x} y={y} />;
+            return <Stone key={`${x}-${y}`} color="white" x={x} y={y} />;
           }
-          return <React.Fragment />;
+          return <React.Fragment key={`${x}-${y}`} />;
         })
       )}
     </svg>

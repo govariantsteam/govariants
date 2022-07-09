@@ -1,4 +1,4 @@
-import { AbstractGame, GamePhase, MovesType } from "../abstract_game";
+import { AbstractGame, MovesType } from "../abstract_game";
 
 export enum Color {
   EMPTY = 0,
@@ -31,14 +31,9 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
   private captures = { 0: 0, 1: 0 };
   private last_move = "";
 
-  constructor(config: Partial<BadukConfig>) {
-    super({
-      width: 19,
-      height: 19,
-      komi: 6.5,
-      ...config,
-    });
-    this.board = makeEmptyBoard(config.width ?? 19, config.height ?? 19);
+  constructor(config: BadukConfig) {
+    super(config);
+    this.board = makeEmptyBoard(config.width, config.height);
   }
 
   exportState(): BadukState {
@@ -100,6 +95,7 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
 
     // Detect suicide
     if (!groupHasLiberties(decoded_move, this.board)) {
+      console.log(this.board);
       throw Error("Move is suicidal!");
     }
 

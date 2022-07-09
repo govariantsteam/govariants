@@ -19,7 +19,7 @@ app.get("/games/:gameId", (_req, res) => {
   res.send({
     variant: "baduk",
     moves: [{ 0: "aa" }, { 1: "bb" }, { 0: "cc" }],
-    config: {},
+    config: { width: 19, height: 19, komi: 5.5 },
   });
 });
 

@@ -17,15 +17,11 @@ export function GamePage(): JSX.Element {
 
   const fetchData = async (game_id: string) => {
     const response = await fetch(`http://localhost:3000/games/${game_id}`);
-    console.log("parsing json");
     const data = await response.json();
-    console.log("done parsing json");
 
     if (!response.ok) {
       throw new Error(data);
     }
-
-    console.log(data);
 
     setFetchResult(data);
     setGameState(getStateFromMoves(data.variant, data.moves, data.config));
@@ -47,7 +43,6 @@ export function GamePage(): JSX.Element {
 
   const GameViewComponent =
     view_map[fetch_result.variant as keyof typeof view_map];
-  console.log("tyoeof fetch response: ", typeof fetch_result);
 
   return (
     <>

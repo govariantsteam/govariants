@@ -1,52 +1,95 @@
-import { BadukState } from "@ogfcommunity/variants-shared";
+import { BadukConfig, BadukState, Color } from "@ogfcommunity/variants-shared";
+import React from "react";
 import { GameViewProps } from "../view_types";
 
-export function BadukView({ gamestate, onMove }: GameViewProps<BadukState>) {
+const SPACING = 5;
+const BORDER = 3;
+
+export function BadukView({
+  gamestate,
+  config,
+  onMove,
+}: GameViewProps<BadukConfig, BadukState>) {
+  const w_inner = (config.width - 1) * SPACING;
+  const h_inner = (config.height - 1) * SPACING;
+  const w = w_inner + BORDER * 2;
+  const h = h_inner + BORDER * 2;
+  const line_props = { stroke: "black", strokeWidth: ".2" };
+
   // https://upload.wikimedia.org/wikipedia/commons/9/9b/Blank_Go_board.svg
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="960"
-      height="960"
-      viewBox="0 0 96 96"
+      width="400"
+      height="400"
+      viewBox={`0 0 ${w} ${h}`}
     >
-      <rect width="96" height="96" fill="#DCB35C" />
+      <rect width={`${w}`} height={`${h}`} fill="#DCB35C" />
       <rect
-        width="90"
-        height="90"
-        x="3"
-        y="3"
-        stroke="#000"
-        stroke-width=".2"
+        width={`${w_inner}`}
+        height={`${h_inner}`}
+        x={`${BORDER}`}
+        y={`${BORDER}`}
+        {...line_props}
         fill="none"
       />
-      <path
-        stroke="#000"
-        stroke-width=".2"
-        fill="none"
-        d="m3,8h90m0,5h-90m0,5h90m0,5h-90m0,5h90m0,5h-90m0,5h90m0,5h-90m0,5h90m0,5h-90m0,5h90m0,5h-90m0,5h90m0,5h-90m0,5h90m0,5h-90m0,5h90"
-      />
-      <path
-        stroke="#000"
-        stroke-width=".2"
-        fill="none"
-        d="m8,3v90m5,0v-90m5,0v90m5,0v-90m5,0v90m5,0v-90m5,0v90m5,0v-90m5,0v90m5,0v-90m5,0v90m5,0v-90m5,0v90m5,0v-90m5,0v90m5,0v-90m5,0v90"
-      />
-      <path
-        stroke="#000"
-        stroke-width=".8"
-        stroke-linecap="round"
-        d="m18,78l0,0m30,0l0,0m30,0l0,0m0-30l0,0m-30,0l0,0m-30,0l0,0m0-30l0,0m30,0l0,0m30,0l0,0"
-      />
-      <Stone color="black" />
+      {getInnerLinePositions(config.height).map((pos) => (
+        // horizontal lines
+        <line
+          x1={`${BORDER}`}
+          y1={`${pos}`}
+          x2={`${BORDER + w_inner}`}
+          y2={`${pos}`}
+          {...line_props}
+        />
+      ))}
+      {getInnerLinePositions(config.width).map((pos) => (
+        // vertical lines
+        <line
+          x1={`${pos}`}
+          y1={`${BORDER}`}
+          x2={`${pos}`}
+          y2={`${BORDER + h_inner}`}
+          {...line_props}
+        />
+      ))}
+      {gamestate.board.map((row, y) =>
+        row.map((color, x) => {
+          if (color === Color.BLACK) {
+            return <Stone color="black" x={x} y={y} />;
+          }
+
+          if (color === Color.WHITE) {
+            return <Stone color="white" x={x} y={y} />;
+          }
+          return <React.Fragment />;
+        })
+      )}
     </svg>
   );
 }
 
 interface StoneProps {
   color: "black" | "white";
+  x: number;
+  y: number;
 }
 
-function Stone({ color }: StoneProps) {
-  return <circle fill={color} cx="20" cy="20" r="5" />;
+function Stone({ color, x, y }: StoneProps) {
+  return (
+    <circle
+      fill={color}
+      stroke="black"
+      strokeWidth="0.1"
+      cx={`${BORDER + SPACING * x}`}
+      cy={`${BORDER + SPACING * y}`}
+      r={`${SPACING / 2 - 0.1}`}
+    />
+  );
+}
+
+function getInnerLinePositions(n: number): number[] {
+  return [...Array(n - 2).keys()].map(
+    (row) => BORDER + row * SPACING + SPACING
+  );
 }

@@ -59,11 +59,12 @@ function Home() {
           <p>{`Last pong: ${lastPong || "-"}`}</p>
           <button onClick={sendPing}>Send ping</button>
           <hr />
+          <GameList />
+          <hr />
         </div>
       </main>
       <nav>
         <Link to="/about">About</Link>
-        <GameList />
       </nav>
     </>
   );

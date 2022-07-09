@@ -1,4 +1,4 @@
-import { GameResponse } from "@ogfcommunity/variants-shared";
+import { GameResponse, makeGameObject } from "@ogfcommunity/variants-shared";
 
 // TODO: Persist games in a database and remove dummy_games
 const dummy_games: GameResponse[] = [
@@ -38,4 +38,19 @@ export function getGame(id: number) {
     throw new Error(`No game with id ${id}`);
   }
   return dummy_games[id];
+}
+
+export function createGame(variant: string, config: any) {
+  const game: GameResponse = {
+    id: dummy_games.length,
+    variant: variant,
+    moves: [],
+    config: config,
+  };
+
+  // Check that the config is valid
+  makeGameObject(variant, config);
+
+  dummy_games.push(game);
+  return game;
 }

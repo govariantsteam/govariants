@@ -3,10 +3,21 @@ import { AbstractGame } from "./abstract_game";
 
 // Is there any way we can get away from `any` here?
 // I think only the infra needs to touch these functions, but still!
-export const view_map = {
+export const game_map: { [variant: string]: any } = {
   baduk: Baduk,
-} as const;
+};
 
-export function makeGameObject(variant: keyof typeof view_map, config: any) {
-  return new view_map[variant](config);
+export function makeGameObject(
+  variant: string,
+  config: any
+): AbstractGame<any, any> {
+  try {
+    return new game_map[variant](config);
+  } catch (e) {
+    throw new Error(`Error processing config: ${e}, ${variant}, ${config}`);
+  }
+}
+
+export function getVariantList(): string[] {
+  return Object.keys(game_map);
 }

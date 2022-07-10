@@ -5,6 +5,8 @@ import { getGame, getGames, createGame, playMove } from "./games";
 import bodyParser from "body-parser";
 import cors from "cors";
 
+const LOCAL_ORIGIN = "http://localhost:3000";
+
 const app = express();
 app.use(
   bodyParser.urlencoded({
@@ -12,12 +14,12 @@ app.use(
   })
 );
 app.use(bodyParser.json());
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors({ origin: LOCAL_ORIGIN, credentials: true }));
 
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:8080",
+    origin: LOCAL_ORIGIN,
   },
 });
 
@@ -26,17 +28,15 @@ app.get("/", (_req, res) => {
 });
 
 app.get("/games/:gameId", (req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080"); // Why do I need to do this if I set cors above?
   res.send(getGame(Number(req.params.gameId)));
 });
 
 app.get("/games", (req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080"); // Why do I need to do this if I set cors above?
   res.send(getGames(Number(req.query.page) || 0));
+  return;
 });
 
 app.post("/games", (req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080"); // Why do I need to do this if I set cors above?
   console.log("body", req.body);
 
   const data = req.body;
@@ -46,7 +46,6 @@ app.post("/games", (req, res) => {
 });
 
 app.post("/games/:gameId/move", (req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080"); // Why do I need to do this if I set cors above?
   console.log("body", req.body);
 
   const move = req.body;
@@ -64,7 +63,7 @@ io.on("connection", (socket) => {
   });
 });
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
   console.log(`listening on *:${PORT}`);
 });

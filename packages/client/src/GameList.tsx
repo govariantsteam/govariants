@@ -1,22 +1,13 @@
 import { useEffect, useState } from "react";
 import { GameResponse, getVariantList } from "@ogfcommunity/variants-shared";
 import { Link } from "react-router-dom";
+import * as requests from "./requests";
 
 export function GameList() {
   const [games, setGames] = useState<GameResponse[]>([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch(`http://localhost:3000/games`);
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data);
-      }
-
-      setGames(data);
-    };
-    fetchData();
+    requests.get("/games").then(setGames);
   }, []);
 
   const [config_string, setConfigString] = useState(
@@ -24,19 +15,7 @@ export function GameList() {
   );
   const [variant, setVariant] = useState("baduk");
   const createGame = async () => {
-    const headers = new Headers();
-    headers.append("Origin", "http://localhost:3000");
-    headers.append("Content-Type", "application/json");
-    const response = await fetch(`http://localhost:3000/games`, {
-      method: "post",
-      body: JSON.stringify({ variant, config: JSON.parse(config_string) }),
-      headers,
-    });
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data);
-    }
+    requests.post("/games", { variant, config: JSON.parse(config_string) });
   };
 
   return (

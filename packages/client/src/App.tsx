@@ -6,7 +6,7 @@ import "./App.css";
 import io from "socket.io-client";
 import { GamePage } from "./GamePage";
 
-const socket = io(`http://${window.location.hostname}:3000`);
+const socket = io(`http://${window.location.hostname}:3001`);
 
 function App() {
   return (

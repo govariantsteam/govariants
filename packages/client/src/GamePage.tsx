@@ -6,6 +6,7 @@ import {
   makeGameObject,
   GameResponse,
 } from "@ogfcommunity/variants-shared";
+import * as requests from "./requests";
 
 export function GamePage(): JSX.Element {
   const [fetch_result, setFetchResult] = useState<GameResponse>();
@@ -14,15 +15,10 @@ export function GamePage(): JSX.Element {
   const { game_id } = useParams<"game_id">();
 
   const fetchData = async (game_id: string) => {
-    const response = await fetch(`http://localhost:3000/games/${game_id}`);
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data);
-    }
-
-    setFetchResult(data);
-    setGameState(getStateFromMoves(data.variant, data.moves, data.config));
+    requests.get(`/games/${game_id}`).then((data) => {
+      setFetchResult(data);
+      setGameState(getStateFromMoves(data.variant, data.moves, data.config));
+    });
   };
 
   useEffect(() => {
@@ -47,24 +43,9 @@ export function GamePage(): JSX.Element {
   const onMove = async (move: MovesType) => {
     setLastMove(JSON.stringify(move));
 
-    const headers = new Headers();
-    headers.append("Origin", "http://localhost:3000");
-    headers.append("Content-Type", "application/json");
-    const response = await fetch(
-      `http://localhost:3000/games/${fetch_result.id}/move`,
-      {
-        method: "post",
-        body: JSON.stringify(move),
-        headers,
-      }
-    );
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data);
-    }
-
-    fetchData(game_id);
+    requests
+      .post(`/games/${fetch_result.id}/move`, move)
+      .then(() => fetchData(game_id));
   };
 
   return (

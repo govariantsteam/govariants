@@ -124,7 +124,7 @@ function ClickRect({ x, y, next_to_play, onMove }: ClickRectProps) {
 
   return (
     <rect
-      fill="none"
+      opacity={0.0}
       x={`${BORDER + SPACING * x - HALF_SPACE}`}
       y={`${BORDER + SPACING * y - HALF_SPACE}`}
       width={`${SPACING}`}

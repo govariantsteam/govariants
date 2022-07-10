@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { Routes, Route, Link } from "react-router-dom";
 import { GameList } from "./GameList";
+import { SERVER_URL } from "./requests";
 import "./App.css";
 
 import io from "socket.io-client";
 import { GamePage } from "./GamePage";
 
-const socket = io(`http://${window.location.hostname}:3001`);
+const socket = io(SERVER_URL);
 
 function App() {
   return (

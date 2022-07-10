@@ -79,6 +79,12 @@ function About() {
           <span>Check us out on </span>
           <a href="https://github.com/benjaminpjones/govariants">Github</a>
         </p>
+        <p>
+          <span>Or post in the </span>
+          <a href="https://forums.online-go.com/t/collective-development-of-a-server-for-variants/43682">
+            OGS Forums
+          </a>
+        </p>
       </main>
       <nav>
         <Link to="/">Home</Link>

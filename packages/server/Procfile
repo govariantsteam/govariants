@@ -1,1 +1,1 @@
-web: yarn workspace packages/server start
+web: yarn install && yarn run build && yarn workspace packages/server start

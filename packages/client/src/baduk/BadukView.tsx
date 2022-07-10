@@ -1,11 +1,11 @@
-import { BadukState, Color } from "@ogfcommunity/variants-shared";
+import { BadukState, Color, MovesType } from "@ogfcommunity/variants-shared";
 import React from "react";
 import { GameViewProps } from "../view_types";
 
 const SPACING = 5;
 const BORDER = 3;
 
-export function BadukView({ gamestate }: GameViewProps<BadukState>) {
+export function BadukView({ gamestate, onMove }: GameViewProps<BadukState>) {
   const config = {
     width: gamestate.board[0].length,
     height: gamestate.board.length,
@@ -67,6 +67,17 @@ export function BadukView({ gamestate }: GameViewProps<BadukState>) {
           return <React.Fragment key={`${x}-${y}`} />;
         })
       )}
+      {gamestate.board.map((row, y) =>
+        row.map((_color, x) => (
+          <ClickRect
+            key={`${x}-${y}`}
+            x={x}
+            y={y}
+            next_to_play={gamestate.next_to_play}
+            onMove={onMove}
+          />
+        ))
+      )}
     </svg>
   );
 }
@@ -94,4 +105,37 @@ function getInnerLinePositions(n: number): number[] {
   return [...Array(n - 2).keys()].map(
     (row) => BORDER + row * SPACING + SPACING
   );
+}
+
+interface ClickRectProps {
+  x: number;
+  y: number;
+  next_to_play: 0 | 1;
+  onMove: (move: MovesType) => void;
+}
+function ClickRect({ x, y, next_to_play, onMove }: ClickRectProps) {
+  const HALF_SPACE = SPACING / 2;
+
+  const onMove_ = () => {
+    const move: MovesType = {};
+    move[next_to_play] = coordsToLetters(x, y);
+    onMove(move);
+  };
+
+  return (
+    <rect
+      fill="pink"
+      opacity="0.5"
+      x={`${BORDER + SPACING * x - HALF_SPACE}`}
+      y={`${BORDER + SPACING * y - HALF_SPACE}`}
+      width={`${SPACING}`}
+      height={`${SPACING}`}
+      onClick={onMove_}
+    />
+  );
+}
+
+function coordsToLetters(x: number, y: number) {
+  const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  return alphabet[x] + alphabet[y];
 }

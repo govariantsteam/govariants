@@ -1,7 +1,7 @@
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
-import { getGame, getGames, createGame } from "./game_list";
+import { getGame, getGames, createGame, playMove } from "./games";
 import bodyParser from "body-parser";
 import cors from "cors";
 
@@ -41,12 +41,19 @@ app.post("/games", (req, res) => {
 
   const data = req.body;
 
-  console.log("got here ");
-
   res.send(createGame(data.variant, data.config));
   return;
 });
 
+app.post("/games/:gameId/move", (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080"); // Why do I need to do this if I set cors above?
+  console.log("body", req.body);
+
+  const move = req.body;
+
+  res.send(playMove(Number(req.params.gameId), move));
+  return;
+});
 
 io.on("connection", (socket) => {
   console.log("a user connected");

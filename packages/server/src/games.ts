@@ -1,4 +1,8 @@
-import { GameResponse, makeGameObject } from "@ogfcommunity/variants-shared";
+import {
+  GameResponse,
+  makeGameObject,
+  MovesType,
+} from "@ogfcommunity/variants-shared";
 
 // TODO: Persist games in a database and remove dummy_games
 const dummy_games: GameResponse[] = [
@@ -52,5 +56,20 @@ export function createGame(variant: string, config: any) {
   makeGameObject(variant, config);
 
   dummy_games.push(game);
+  return game;
+}
+
+export function playMove(game_id: number, move: MovesType) {
+  const game = dummy_games[game_id];
+
+  // Verify that moves are legal
+  const game_obj = makeGameObject(game.variant, game.config);
+  game.moves.forEach((move) => {
+    game_obj.playMove(move);
+  });
+  game_obj.playMove(move);
+
+  game.moves.push(move);
+
   return game;
 }

@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { view_map } from "./view_map";
-import { MovesType, makeGameObject } from "@ogfcommunity/variants-shared";
-
-interface GameResponse {
-  variant: string;
-  moves: MovesType[];
-  config: unknown;
-}
+import {
+  MovesType,
+  makeGameObject,
+  GameResponse,
+} from "@ogfcommunity/variants-shared";
 
 export function GamePage(): JSX.Element {
   const [fetch_result, setFetchResult] = useState<GameResponse>();
@@ -33,6 +31,8 @@ export function GamePage(): JSX.Element {
     }
   }, [game_id]);
 
+  const [last_move, setLastMove] = useState("null");
+
   if (!game_id) {
     return <div>No game id provided.</div>;
   }
@@ -44,16 +44,40 @@ export function GamePage(): JSX.Element {
   const GameViewComponent =
     view_map[fetch_result.variant as keyof typeof view_map];
 
+  const onMove = async (move: MovesType) => {
+    setLastMove(JSON.stringify(move));
+
+    const headers = new Headers();
+    headers.append("Origin", "http://localhost:3000");
+    headers.append("Content-Type", "application/json");
+    const response = await fetch(
+      `http://localhost:3000/games/${fetch_result.id}/move`,
+      {
+        method: "post",
+        body: JSON.stringify(move),
+        headers,
+      }
+    );
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data);
+    }
+
+    fetchData(game_id);
+  };
+
   return (
     <>
-      <GameViewComponent
-        gamestate={gamestate}
-        // TODO: implement making a move!
-        onMove={() => {}}
-      />
+      <GameViewComponent gamestate={gamestate} onMove={onMove} />
       <hr />
       <h2>Info</h2>
+      <div style={{ textAlign: "left" }}>
+        <span>Last Move from this client: </span>
+        {last_move}
+      </div>
       <pre style={{ textAlign: "left" }}>
+        <span>{`from /games/${fetch_result.id}`}</span>
         {JSON.stringify(fetch_result, null, 2)}
       </pre>
     </>

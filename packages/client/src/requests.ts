@@ -1,4 +1,7 @@
-const SERVER_URL = `http://localhost:3001`;
+const SERVER_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://govariants-server.herokuapp.com/"
+    : "http://localhost:3001";
 
 export async function get(path: string) {
   const response = await fetch(SERVER_URL + path);

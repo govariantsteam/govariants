@@ -1,1 +1,1 @@
-web: yarn workspace packages/client start
+web: yarn workspace @ogfcommunity/variants-client start

@@ -3,7 +3,7 @@ h1,h2 {
 }
 
 .game-creation-form {
-  padding: 30px;
+  padding: 10px 30px;
 }
 
 .game-creation-form div {
@@ -12,4 +12,8 @@ h1,h2 {
 
 hr {
   text-align: center;
+}
+
+.socket-test {
+  padding: 10px 30px;
 }

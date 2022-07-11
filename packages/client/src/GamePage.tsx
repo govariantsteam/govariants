@@ -50,7 +50,9 @@ export function GamePage(): JSX.Element {
 
   return (
     <>
-      <GameViewComponent gamestate={gamestate} onMove={onMove} />
+      <div className="game-container">
+        <GameViewComponent gamestate={gamestate} onMove={onMove} />
+      </div>
       <hr />
       <h2>Info</h2>
       <div style={{ textAlign: "left" }}>

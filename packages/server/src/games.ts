@@ -29,11 +29,9 @@ const dummy_games: GameResponse[] = [
 const PAGE_SIZE = 10;
 
 export function getGames(page: number) {
-  const start = page * PAGE_SIZE;
-  return dummy_games.slice(start, start + PAGE_SIZE).map((game) => ({
-    ...game,
-    moves: game.moves.length,
-  }));
+  const end = Math.max(0, dummy_games.length - page * PAGE_SIZE);
+  const start = Math.max(0, end - PAGE_SIZE);
+  return dummy_games.slice(start, end).reverse();
 }
 
 export function getGame(id: number) {

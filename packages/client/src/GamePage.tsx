@@ -68,14 +68,14 @@ export function GamePage(): JSX.Element {
   );
 }
 
-function getStateFromMoves(
-  variant: keyof typeof view_map,
+export function getStateFromMoves(
+  variant: string,
   moves: MovesType[],
   config: any
 ): any {
   const game = makeGameObject(variant, config);
   moves.forEach((move) => {
-    game.playMove(move as any);
+    game.playMove(move);
   });
   return game.exportState();
 }

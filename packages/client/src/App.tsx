@@ -6,6 +6,7 @@ import "./App.css";
 
 import io from "socket.io-client";
 import { GamePage } from "./GamePage";
+import { GameCreationForm } from "./GameCreationForm";
 
 const socket = io(SERVER_URL);
 
@@ -54,6 +55,7 @@ function Home() {
       <main>
         <h2>Welcome to Go variants!</h2>
         <div>
+          <GameCreationForm />
           <hr />
           <h3>socket.io tests...</h3>
           <p>Connected: {"" + isConnected}</p>

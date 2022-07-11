@@ -1,3 +1,15 @@
-.App {
+h1,h2 {
+  text-align: center;
+}
+
+.game-creation-form {
+  padding: 30px;
+}
+
+.game-creation-form div {
+  margin: 10px 0;
+}
+
+hr {
   text-align: center;
 }

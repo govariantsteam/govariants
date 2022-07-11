@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Routes, Route, Link } from "react-router-dom";
 import { GameList } from "./GameList";
 import "./App.css";

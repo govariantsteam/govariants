@@ -7,6 +7,7 @@ import {
   GameResponse,
 } from "@ogfcommunity/variants-shared";
 import * as requests from "./requests";
+import "./GamePage.css";
 
 export function GamePage(): JSX.Element {
   const [fetch_result, setFetchResult] = useState<GameResponse>();

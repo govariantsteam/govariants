@@ -31,8 +31,8 @@ export function GameList() {
           }
 
           return (
-            <div className="game-summary">
-              <Link key={game.id} to={`/game/${game.id}`}>
+            <Link key={game.id} to={`/game/${game.id}`}>
+              <div className="game-summary">
                 <span className="mini-game">
                   {gamestate && (
                     <GameViewComponent
@@ -48,8 +48,8 @@ export function GameList() {
                 <span>
                   <pre>{game_info}</pre>
                 </span>
-              </Link>
-            </div>
+              </div>
+            </Link>
           );
         })}
       </div>

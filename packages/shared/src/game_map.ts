@@ -1,10 +1,12 @@
 import { Baduk } from "./baduk";
 import { AbstractGame } from "./abstract_game";
+import { TicTacToe } from "./tictactoe";
 
 // Is there any way we can get away from `any` here?
 // I think only the infra needs to touch these functions, but still!
 export const game_map: { [variant: string]: any } = {
   baduk: Baduk,
+  tictactoe: TicTacToe,
 };
 
 export function makeGameObject(

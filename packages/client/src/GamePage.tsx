@@ -9,6 +9,7 @@ import {
 } from "@ogfcommunity/variants-shared";
 import * as requests from "./requests";
 import "./GamePage.css";
+import { SafeGameView } from "./SafeGameView";
 
 export function GamePage(): JSX.Element {
   const [fetch_result, setFetchResult] = useState<GameResponse>();
@@ -75,7 +76,11 @@ export function GamePage(): JSX.Element {
       <div className="game-container">
         {game ? (
           <>
-            <GameViewComponent gamestate={game.exportState()} onMove={onMove} />
+            <SafeGameView
+              gamestate={game.exportState()}
+              onMove={onMove}
+              variant={fetch_result.variant}
+            />
             <span>{game.result}</span>
             <span>Special moves:</span>
             {game &&

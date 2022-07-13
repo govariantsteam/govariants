@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { GameResponse } from "@ogfcommunity/variants-shared";
 import { Link } from "react-router-dom";
 import * as requests from "./requests";
-import { view_map } from "./view_map";
 import { makeGameObjectWithMoves } from "./GamePage";
+import { SafeGameView } from "./SafeGameView";
 
 export function GameList() {
   const [games, setGames] = useState<GameResponse[]>([]);
@@ -16,8 +16,6 @@ export function GameList() {
     <>
       <div className="game-list">
         {games.map((game) => {
-          const GameViewComponent =
-            view_map[game.variant as keyof typeof view_map];
           const game_info = `variant: ${game.variant}\nconfig: ${JSON.stringify(
             game.config,
             null,
@@ -39,7 +37,8 @@ export function GameList() {
               <div className="game-summary">
                 <span className="mini-game">
                   {gamestate && (
-                    <GameViewComponent
+                    <SafeGameView
+                      variant={game.variant}
                       gamestate={gamestate}
                       onMove={() => {}}
                     />
@@ -56,3 +55,4 @@ export function GameList() {
     </>
   );
 }
+

@@ -3,7 +3,7 @@ import { GameResponse } from "@ogfcommunity/variants-shared";
 import { Link } from "react-router-dom";
 import * as requests from "./requests";
 import { view_map } from "./view_map";
-import { getStateFromMoves } from "./GamePage";
+import { makeGameObjectWithMoves } from "./GamePage";
 
 export function GameList() {
   const [games, setGames] = useState<GameResponse[]>([]);
@@ -23,9 +23,13 @@ export function GameList() {
             null,
             2
           )}`;
-          const gamestate: any = undefined;
+          let gamestate: any;
           try {
-            getStateFromMoves(game.variant, game.moves, game.config);
+            gamestate = makeGameObjectWithMoves(
+              game.variant,
+              game.moves,
+              game.config
+            ).exportState();
           } catch {
             // do nothing
           }
@@ -36,11 +40,7 @@ export function GameList() {
                 <span className="mini-game">
                   {gamestate && (
                     <GameViewComponent
-                      gamestate={getStateFromMoves(
-                        game.variant,
-                        game.moves,
-                        game.config
-                      )}
+                      gamestate={gamestate}
                       onMove={() => {}}
                     />
                   )}

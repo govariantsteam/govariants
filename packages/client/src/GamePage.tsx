@@ -5,29 +5,35 @@ import {
   MovesType,
   makeGameObject,
   GameResponse,
+  AbstractGame,
 } from "@ogfcommunity/variants-shared";
 import * as requests from "./requests";
 import "./GamePage.css";
 
 export function GamePage(): JSX.Element {
   const [fetch_result, setFetchResult] = useState<GameResponse>();
-  const [gamestate, setGameState] = useState<any>();
+  const [game, setGame] = useState<AbstractGame>();
   const [error, setError] = useState<string>();
+  const [player, setPlayer] = useState<number>(0);
 
   const { game_id } = useParams<"game_id">();
 
   const fetchData = async (game_id: string) => {
     requests.get(`/games/${game_id}`).then((data) => {
       setFetchResult(data);
-      let gamestate: any;
       setError(undefined);
       try {
-        gamestate = getStateFromMoves(data.variant, data.moves, data.config);
+        const game = makeGameObjectWithMoves(
+          data.variant,
+          data.moves,
+          data.config
+        );
+        setGame(makeGameObjectWithMoves(data.variant, data.moves, data.config));
+        setPlayer(game.nextToPlay()[0]);
       } catch (e) {
         console.log(e);
         setError(String(e));
       }
-      setGameState(gamestate);
     });
   };
 
@@ -47,8 +53,7 @@ export function GamePage(): JSX.Element {
     return <div>Loading...</div>;
   }
 
-  const GameViewComponent =
-    view_map[fetch_result.variant as keyof typeof view_map];
+  const GameViewComponent = view_map[fetch_result.variant];
 
   const onMove = async (move: MovesType) => {
     setLastMove(JSON.stringify(move));
@@ -57,11 +62,41 @@ export function GamePage(): JSX.Element {
       .post(`/games/${fetch_result.id}/move`, move)
       .then(() => fetchData(game_id));
   };
+  const onSpecialMove = (special_move: string) => {
+    onMove({ [player]: special_move });
+  };
 
   return (
     <>
       <div className="game-container">
-        {error || <GameViewComponent gamestate={gamestate} onMove={onMove} />}
+        {game ? (
+          <>
+            <GameViewComponent gamestate={game.exportState()} onMove={onMove} />
+            <span>{game.result}</span>
+            <span>Special moves:</span>
+            {game &&
+              Object.entries(game.specialMoves()).map(([move, prettyMove]) => (
+                <button onClick={() => onSpecialMove(move)}>
+                  {prettyMove}
+                </button>
+              ))}
+            <span>Player:</span>
+            <select
+              onChange={(ev) => {
+                setPlayer(Number(ev.target.value));
+              }}
+              value={player}
+            >
+              {game.nextToPlay().map((player) => (
+                <option key={player} value={player}>
+                  {player}
+                </option>
+              ))}
+            </select>
+          </>
+        ) : (
+          error
+        )}
       </div>
       <hr />
       <h2>Info</h2>
@@ -77,14 +112,14 @@ export function GamePage(): JSX.Element {
   );
 }
 
-export function getStateFromMoves(
+export function makeGameObjectWithMoves(
   variant: string,
   moves: MovesType[],
   config: any
-): any {
+): AbstractGame<any, any> {
   const game = makeGameObject(variant, config);
   moves.forEach((move) => {
     game.playMove(move);
   });
-  return game.exportState();
+  return game;
 }

@@ -23,18 +23,27 @@ export function GameList() {
             null,
             2
           )}`;
+          const gamestate: any = undefined;
+          try {
+            getStateFromMoves(game.variant, game.moves, game.config);
+          } catch {
+            // do nothing
+          }
+
           return (
             <div className="game-summary">
               <Link key={game.id} to={`/game/${game.id}`}>
                 <span className="mini-game">
-                  <GameViewComponent
-                    gamestate={getStateFromMoves(
-                      game.variant,
-                      game.moves,
-                      game.config
-                    )}
-                    onMove={() => {}}
-                  />
+                  {gamestate && (
+                    <GameViewComponent
+                      gamestate={getStateFromMoves(
+                        game.variant,
+                        game.moves,
+                        game.config
+                      )}
+                      onMove={() => {}}
+                    />
+                  )}
                 </span>
                 <span>
                   <pre>{game_info}</pre>

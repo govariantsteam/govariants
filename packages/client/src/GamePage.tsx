@@ -12,13 +12,22 @@ import "./GamePage.css";
 export function GamePage(): JSX.Element {
   const [fetch_result, setFetchResult] = useState<GameResponse>();
   const [gamestate, setGameState] = useState<any>();
+  const [error, setError] = useState<string>();
 
   const { game_id } = useParams<"game_id">();
 
   const fetchData = async (game_id: string) => {
     requests.get(`/games/${game_id}`).then((data) => {
       setFetchResult(data);
-      setGameState(getStateFromMoves(data.variant, data.moves, data.config));
+      let gamestate: any;
+      setError(undefined);
+      try {
+        gamestate = getStateFromMoves(data.variant, data.moves, data.config);
+      } catch (e) {
+        console.log(e);
+        setError(String(e));
+      }
+      setGameState(gamestate);
     });
   };
 
@@ -52,7 +61,7 @@ export function GamePage(): JSX.Element {
   return (
     <>
       <div className="game-container">
-        <GameViewComponent gamestate={gamestate} onMove={onMove} />
+        {error || <GameViewComponent gamestate={gamestate} onMove={onMove} />}
       </div>
       <hr />
       <h2>Info</h2>

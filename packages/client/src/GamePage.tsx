@@ -56,6 +56,10 @@ export function GamePage(): JSX.Element {
   const GameViewComponent = view_map[fetch_result.variant];
 
   const onMove = async (move: MovesType) => {
+    if (!game || game.result !== "") {
+      return;
+    }
+
     setLastMove(JSON.stringify(move));
 
     requests

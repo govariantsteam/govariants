@@ -65,6 +65,11 @@ export function playMove(game_id: number, move: MovesType) {
   game.moves.forEach((move) => {
     game_obj.playMove(move);
   });
+
+  if (game_obj.result !== "") {
+    throw Error("Game is already finished.");
+  }
+
   game_obj.playMove(move);
 
   game.moves.push(move);

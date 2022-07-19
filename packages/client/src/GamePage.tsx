@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { view_map } from "./view_map";
 import {
   MovesType,
   makeGameObject,
@@ -53,8 +52,6 @@ export function GamePage(): JSX.Element {
   if (!fetch_result) {
     return <div>Loading...</div>;
   }
-
-  const GameViewComponent = view_map[fetch_result.variant];
 
   const onMove = async (move: MovesType) => {
     if (!game || game.result !== "") {

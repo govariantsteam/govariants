@@ -8,6 +8,7 @@
   "scripts": {
     "start": "yarn workspaces foreach -pi run start",
     "build": "yarn workspaces foreach -pti run build",
+    "test": "yarn workspaces foreach -pti run test",
     "start:server": "yarn workspace @ogfcommunity/variants-server run start",
     "start:client": "yarn workspace @ogfcommunity/variants-client run start",
     "start:shared": "yarn workspace @ogfcommunity/variants-shared run start"

@@ -3,62 +3,53 @@ import {
   makeGameObject,
   MovesType,
 } from "@ogfcommunity/variants-shared";
+import { ObjectId, WithId, Document } from "mongodb";
+import { getDb } from "./db";
 
-// TODO: Persist games in a database and remove dummy_games
-const dummy_games: GameResponse[] = [
-  {
-    id: 0,
-    variant: "baduk",
-    moves: [{ 0: "aa" }, { 1: "bb" }, { 0: "cc" }],
-    config: { width: 19, height: 19, komi: 5.5 },
-  },
-  {
-    id: 1,
-    variant: "baduk",
-    moves: [{ 0: "aa" }, { 1: "bb" }, { 0: "cc" }],
-    config: { width: 13, height: 13, komi: 5.5 },
-  },
-  {
-    id: 2,
-    variant: "baduk",
-    moves: [{ 0: "aa" }, { 1: "bb" }, { 0: "cc" }],
-    config: { width: 9, height: 9, komi: 5.5 },
-  },
-];
-
-const PAGE_SIZE = 10;
-
-export function getGames(page: number) {
-  const end = Math.max(0, dummy_games.length - page * PAGE_SIZE);
-  const start = Math.max(0, end - PAGE_SIZE);
-  return dummy_games.slice(start, end).reverse();
+function gamesCollection() {
+  return getDb().db().collection("games");
 }
 
-export function getGame(id: number) {
-  const game = dummy_games[id];
-  if (!game) {
-    throw new Error(`No game with id ${id}`);
-  }
-  return dummy_games[id];
+/**
+ * @param page NOT YET IMPLEMENTED
+ */
+export async function getGames(page: number): Promise<GameResponse[]> {
+  const games = gamesCollection().find().sort({ _id: -1 }).limit(10).toArray();
+  return (await games).map(outwardFacingGame);
 }
 
-export function createGame(variant: string, config: any) {
-  const game: GameResponse = {
-    id: dummy_games.length,
+export async function getGame(id: string): Promise<GameResponse> {
+  const db_game = await gamesCollection().findOne({
+    _id: new ObjectId(id),
+  });
+
+  return outwardFacingGame(db_game);
+}
+
+export async function createGame(
+  variant: string,
+  config: object
+): Promise<GameResponse> {
+  const game = {
     variant: variant,
-    moves: [],
+    moves: [] as MovesType[],
     config: config,
   };
 
-  // Check that the config is valid
-  makeGameObject(variant, config);
+  const result = await gamesCollection().insertOne(game);
 
-  dummy_games.push(game);
-  return game;
+  if (!result) {
+    throw new Error("Failed to create game.");
+  }
+
+  return {
+    id: result.insertedId.toString(),
+    ...game,
+  };
 }
 
-export function playMove(game_id: number, move: MovesType) {
-  const game = dummy_games[game_id];
+export async function playMove(game_id: string, move: MovesType) {
+  const game = await getGame(game_id);
 
   // Verify that moves are legal
   const game_obj = makeGameObject(game.variant, game.config);
@@ -72,7 +63,19 @@ export function playMove(game_id: number, move: MovesType) {
 
   game_obj.playMove(move);
 
-  game.moves.push(move);
+  gamesCollection().updateOne(
+    { _id: new ObjectId(game_id) },
+    { $push: { moves: move } }
+  );
 
   return game;
+}
+
+function outwardFacingGame(db_game: WithId<Document>): GameResponse {
+  return {
+    id: db_game._id.toString(),
+    variant: db_game.variant,
+    moves: db_game.moves,
+    config: db_game.config,
+  };
 }

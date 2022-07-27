@@ -2,6 +2,14 @@
 A place to play Go variants, brought to you by the OGF community.
 
 ## Set up
+
+### Install and run the database
+
+Follow [these instructions](https://www.mongodb.com/docs/manual/administration/install-community/)
+to install MongoDB Community Edition and start `mongod`
+
+### Install and run the app
+
 In the root of this repo, run
 
 ```
@@ -13,7 +21,8 @@ This will install dependencies in the three main subdirectories in `packages/`: 
 To run the app, you can run
 
 ```
-npm start
+yarn run build
+yarn start
 ```
 
 This will start two dev servers.  One is a React server listening on `localhost:3000`, and the other is an Express server listening on `localhost:3001`.

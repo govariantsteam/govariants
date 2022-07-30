@@ -49,13 +49,12 @@ export abstract class AbstractGame<GameConfig = object, GameState = object> {
     this.result_ = res;
   }
 
-  canResign(_player: number): boolean {
-    return this.numPlayers() === 2;
-  }
-  resign(player: number) {
-    this.phase_ = "gameover";
-    const opponent = 1 - player;
-    this.result_ = `Player ${opponent} + R`;
+  /**
+   * Returns a list of moves that don't happen on the board. (e.g. pass, resign)
+   * The mapping is from backend name ("pass") to pretty name ("Pass")
+   */
+  specialMoves(): { [key: string]: string } {
+    return {};
   }
 }
 export interface MovesType {

@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { GameResponse } from "@ogfcommunity/variants-shared";
 import { Link } from "react-router-dom";
 import * as requests from "./requests";
-import { view_map } from "./view_map";
-import { getStateFromMoves } from "./GamePage";
+import { makeGameObjectWithMoves } from "./GamePage";
+import { SafeGameView } from "./SafeGameView";
 
 export function GameList() {
   const [games, setGames] = useState<GameResponse[]>([]);
@@ -16,34 +16,43 @@ export function GameList() {
     <>
       <div className="game-list">
         {games.map((game) => {
-          const GameViewComponent =
-            view_map[game.variant as keyof typeof view_map];
           const game_info = `variant: ${game.variant}\nconfig: ${JSON.stringify(
             game.config,
             null,
             2
           )}`;
+          let gamestate: any;
+          try {
+            gamestate = makeGameObjectWithMoves(
+              game.variant,
+              game.moves,
+              game.config
+            ).exportState();
+          } catch {
+            // do nothing
+          }
+
           return (
-            <div className="game-summary">
-              <Link key={game.id} to={`/game/${game.id}`}>
+            <Link key={game.id} to={`/game/${game.id}`}>
+              <div className="game-summary">
                 <span className="mini-game">
-                  <GameViewComponent
-                    gamestate={getStateFromMoves(
-                      game.variant,
-                      game.moves,
-                      game.config
-                    )}
-                    onMove={() => {}}
-                  />
+                  {gamestate && (
+                    <SafeGameView
+                      variant={game.variant}
+                      gamestate={gamestate}
+                      onMove={() => {}}
+                    />
+                  )}
                 </span>
                 <span>
                   <pre>{game_info}</pre>
                 </span>
-              </Link>
-            </div>
+              </div>
+            </Link>
           );
         })}
       </div>
     </>
   );
 }
+

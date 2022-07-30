@@ -64,6 +64,12 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
       return;
     }
 
+    if (move === "resign") {
+      this.phase = "gameover";
+      this.result = this.next_to_play === 0 ? "B+R" : "W+R";
+      return;
+    }
+
     const decoded_move = decodeMove(move);
     const { x, y } = decoded_move;
     if (isOutOfBounds(decoded_move, this.board)) {
@@ -169,9 +175,8 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
     this.phase = "gameover";
   }
 
-  resign(player: number) {
-    this.phase = "gameover";
-    this.result = player === 0 ? "W+R" : "B+R";
+  specialMoves() {
+    return { pass: "Pass", resign: "Resign" };
   }
 }
 

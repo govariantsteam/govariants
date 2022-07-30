@@ -1,31 +1,26 @@
-import type { AbstractGame } from "@ogfcommunity/variants-shared";
+import type { GameResponse } from "@ogfcommunity/variants-shared";
 import { defineStore } from "pinia";
 import * as requests from "../requests";
 
 export type RootState = {
-  //games: AbstractGame[];
-  games: any[];
+  games: GameResponse[];
 };
 
 export const useStore = defineStore({
   id: "games",
   state: () =>
-    // ({
-    //   games: <AbstractGame[]>[],
-    // } as RootState),
     ({
-      games: [],
+      games: <GameResponse[]>[],
     } as RootState),
   getters: {
     // doubleCount: (state) => state.counter * 2,
   },
   actions: {
     async fetchGames() {
-      // TODO
+      this.games = await requests.get(`/games`);
     },
 
-    async createGame(variant: string, config: string): Promise<any> {
-      //Promise<AbstractGame> {
+    async createGame(variant: string, config: string): Promise<GameResponse> {
       const game = await requests.post("/games", {
         variant,
         config: JSON.parse(config),

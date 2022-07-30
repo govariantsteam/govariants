@@ -1,18 +1,27 @@
 <script setup lang="ts">
+  import type { GameResponse } from "@ogfcommunity/variants-shared";
+  import Baduk from "@/components/variants/Baduk.vue";
   import * as requests from "../requests";
-  import { ref } from "vue";
 
   const props = defineProps({
     gameId: String,
   });
 
-  const fetch_result = ref(await requests.get(`/games/${props.gameId}`));
+  const gameResponse = (await requests.get(
+    `/games/${props.gameId}`
+  )) as GameResponse;
+  const variantGameView = gameResponse.variant === "baduk" ? Baduk : null;
 </script>
 
 <template>
+  <component
+    v-if="variantGameView"
+    v-bind:is="variantGameView"
+    v-bind:gameResponse="gameResponse"
+  />
   <pre>
-    <span>from /games/{{fetch_result.id}}</span>
-    {{JSON.stringify(fetch_result, null, 2)}}
+    <span>from /games/{{gameResponse.id}}</span>
+    {{JSON.stringify(gameResponse, null, 2)}}
 	</pre>
 </template>
 

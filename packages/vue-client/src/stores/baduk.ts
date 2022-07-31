@@ -10,7 +10,7 @@ import { defineStore } from "pinia";
 import * as requests from "../requests";
 
 // TODO: Store for multiple variants
-export const useStore = (gameId: number) =>
+export const useStore = (gameId: string) =>
   defineStore({
     id: `game${gameId}`, // One store per game
     state: () => ({

@@ -1,6 +1,6 @@
 export const SERVER_URL =
   process.env.NODE_ENV === "production"
-    ? "https://www.govariants.com"
+    ? window.location.origin
     : "http://localhost:3001";
 
 export async function get(path: string) {

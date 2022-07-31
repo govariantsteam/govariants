@@ -1,1 +1,1 @@
-web: yarn run build && yarn workspace @ogfcommunity/variants-server launch
+web: yarn workspace @ogfcommunity/variants-server launch

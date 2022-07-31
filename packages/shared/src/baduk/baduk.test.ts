@@ -58,7 +58,7 @@ test("Play a game with captures", () => {
 
 test("Resign a game", () => {
   const game = new Baduk({ width: 19, height: 19, komi: 5.5 });
-  game.resign(0);
+  game.playMove({ 0: "resign" });
   expect(game.phase).toBe("gameover");
   expect(game.result).toBe("W+R");
 });

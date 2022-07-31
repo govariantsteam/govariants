@@ -7,6 +7,13 @@ export const game_map: { [variant: string]: any } = {
   baduk: Baduk,
 };
 
+class ConfigError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ConfigError";
+  }
+}
+
 export function makeGameObject(
   variant: string,
   config: any
@@ -14,7 +21,9 @@ export function makeGameObject(
   try {
     return new game_map[variant](config);
   } catch (e) {
-    throw new Error(`Error processing config: ${e}, ${variant}, ${config}`);
+    throw new ConfigError(
+      `${e}, (variant: ${variant}, config: ${JSON.stringify(config)})`
+    );
   }
 }
 

@@ -1,1 +1,0 @@
-web: yarn workspace @ogfcommunity/variants-client start

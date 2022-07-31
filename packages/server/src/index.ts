@@ -5,9 +5,12 @@ import { getGame, getGames, createGame, playMove } from "./games";
 import bodyParser from "body-parser";
 import cors from "cors";
 import path from "path";
+import { connectToDb } from "./db";
+import { GameResponse, MovesType } from "@ogfcommunity/variants-shared";
 
 const LOCAL_ORIGIN = "http://localhost:3000";
 
+// initialize Express
 const app = express();
 app.use(
   bodyParser.urlencoded({
@@ -17,6 +20,7 @@ app.use(
 app.use(bodyParser.json());
 app.use(cors({ origin: LOCAL_ORIGIN, credentials: true }));
 
+// initialize socket.io
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -24,30 +28,38 @@ const io = new Server(server, {
   },
 });
 
-app.get("/games/:gameId", (req, res) => {
-  res.send(getGame(Number(req.params.gameId)));
+// Initialize MongoDB
+connectToDb();
+
+// Set up express routes
+app.get("/games/:gameId", async (req, res) => {
+  const game: GameResponse = await getGame(req.params.gameId);
+  res.send(game);
 });
 
-app.get("/games", (req, res) => {
-  res.send(getGames(Number(req.query.page) || 0));
-  return;
+app.get("/games", async (req, res) => {
+  const games: GameResponse[] = await getGames(Number(req.query.page));
+  res.send(games || 0);
 });
 
-app.post("/games", (req, res) => {
-  console.log("body", req.body);
-
+app.post("/games", async (req, res) => {
   const data = req.body;
 
-  res.send(createGame(data.variant, data.config));
+  const game: GameResponse = await createGame(data.variant, data.config);
+
+  res.send(game);
+
   return;
 });
 
-app.post("/games/:gameId/move", (req, res) => {
+app.post("/games/:gameId/move", async (req, res) => {
   console.log("body", req.body);
 
-  const move = req.body;
+  const move: MovesType = req.body;
 
-  res.send(playMove(Number(req.params.gameId), move));
+  const game: GameResponse = await playMove(req.params.gameId, move);
+
+  res.send(game);
   return;
 });
 
@@ -64,7 +76,7 @@ io.on("connection", (socket) => {
 const isProd = process.env.NODE_ENV === "production";
 if (isProd) {
   // Compute the build path and index.html path
-  const build_path = path.join(__dirname, "../../../packages/client/build");
+  const build_path = path.join(__dirname, "../../../packages/vue-client/dist");
   const indexHtml = path.join(build_path, "index.html");
 
   // Setup build path as a static assets path

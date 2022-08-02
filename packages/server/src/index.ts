@@ -76,7 +76,7 @@ io.on("connection", (socket) => {
 const isProd = process.env.NODE_ENV === "production";
 if (isProd) {
   // Compute the build path and index.html path
-  const build_path = path.join(__dirname, "../../../packages/client/build");
+  const build_path = path.join(__dirname, "../../../packages/vue-client/dist");
   const indexHtml = path.join(build_path, "index.html");
 
   // Setup build path as a static assets path

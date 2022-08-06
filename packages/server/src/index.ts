@@ -82,7 +82,7 @@ app.use(
   })
 );
 app.use(bodyParser.json()); // TODO: app.use(express.json()) instead? Difference?
-app.use(cors({ origin: LOCAL_ORIGIN, credentials: true }));
+app.use(cors({ origin: LOCAL_ORIGIN, credentials: true })); // TODO: Is this still necessary with dev proxy?
 app.use(
   session({
     // TODO: Cookie banner or permission necessary?

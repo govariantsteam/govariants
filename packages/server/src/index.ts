@@ -3,25 +3,25 @@ import session from "express-session";
 import http from "http";
 import { Server } from "socket.io";
 import { getGame, getGames, createGame, playMove } from "./games";
+import {
+  createUserWithSessionId,
+  deleteUser,
+  getUser,
+  getUserBySessionId,
+} from "./users";
 import bodyParser from "body-parser";
 import cors from "cors";
 import path from "path";
-import { connectToDb, getDb } from "./db";
-import { ObjectId, WithId } from "mongodb";
+import { connectToDb } from "./db";
 import passport from "passport";
 import { Strategy as CustomStrategy } from "passport-custom";
-import { Strategy as LocalStrategy } from "passport-local";
-import { GameResponse, MovesType } from "@ogfcommunity/variants-shared";
+import {
+  GameResponse,
+  MovesType,
+  UserResponse,
+} from "@ogfcommunity/variants-shared";
 
 const LOCAL_ORIGIN = "http://localhost:3000";
-
-interface User {
-  token: string;
-}
-
-function usersCollection() {
-  return getDb().db().collection<User>("users");
-}
 
 // passport.use(
 //   new LocalStrategy(async function (username, password, callback) {
@@ -52,26 +52,30 @@ passport.use(
   "guest",
   new CustomStrategy(async function (req, callback) {
     const token = req.session.id;
-    let user = await usersCollection().findOne({ token });
+    let user = await getUserBySessionId(token);
     if (!user) {
-      const { insertedId } = await usersCollection().insertOne({ token });
-      user = { token, _id: insertedId };
+      user = await createUserWithSessionId(token);
     }
     return callback(null, user);
   })
 );
 
-passport.serializeUser<ObjectId>(function (user: WithId<User>, callback) {
-  callback(null, user._id);
+passport.serializeUser<string>(function (user: UserResponse, callback) {
+  callback(null, user.id);
 });
 
-passport.deserializeUser<ObjectId>(function (id, callback) {
-  usersCollection().findOne({ _id: new ObjectId(id) }, function (err, user) {
-    if (err) {
-      return callback(err);
-    }
-    callback(null, user);
-  });
+passport.deserializeUser<string>(function (id, callback) {
+  getUser(id)
+    .then((user) => {
+      if (user) {
+        callback(null, user);
+      } else {
+        callback(new Error(`No user with ID: ${id}`));
+      }
+    })
+    .catch((err) => {
+      callback(err);
+    });
 });
 
 // initialize Express
@@ -86,7 +90,7 @@ app.use(cors({ origin: LOCAL_ORIGIN, credentials: true })); // TODO: Is this sti
 app.use(
   session({
     // TODO: Cookie banner or permission necessary?
-    secret: "Corybas aconitiflorus",
+    secret: process.env.SESSION_SECRET || "Corybas aconitiflorus",
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -165,10 +169,10 @@ app.get("/checkLogin", function (req, res, next) {
 });
 
 app.get("/logout", async function (req, res) {
-  // Don't delete users which aren't just guests.
-  const result = await usersCollection().deleteOne({
-    _id: new ObjectId((req.user as WithId<User>)._id),
-  });
+  const user = req.user as UserResponse;
+  if (user.login_type === "guest") {
+    deleteUser(user.id);
+  }
   req.logout((err) => {
     if (err) throw new Error(err);
     req.session.destroy((err) => {

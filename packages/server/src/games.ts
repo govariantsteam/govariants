@@ -23,6 +23,10 @@ export async function getGame(id: string): Promise<GameResponse> {
     _id: new ObjectId(id),
   });
 
+  if (!db_game) {
+    return undefined;
+  }
+
   return outwardFacingGame(db_game);
 }
 

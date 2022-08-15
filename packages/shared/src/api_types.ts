@@ -6,3 +6,8 @@ export interface GameResponse {
   moves: MovesType[];
   config: unknown;
 }
+
+export interface UserResponse {
+  id?: string;
+  login_type: "guest" | "persistent";
+}

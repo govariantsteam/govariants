@@ -4,7 +4,8 @@
   "scripts": {
     "start": "nodemon ./src/index.ts",
     "launch": "tsc && node ./dist/index.js",
-    "test": "echo \"No tests in packages/server.\""
+    "test": "echo \"No tests in packages/server.\"",
+    "lint": "echo \"Linter not yet set up in packages/server.\""
   },
   "devDependencies": {
     "@types/express": "^4.17.13",

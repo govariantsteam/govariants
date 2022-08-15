@@ -1,7 +1,6 @@
 <script setup lang="ts">
-  import TheWelcome from "@/components/TheWelcome.vue";
-  import GameCreationForm from "@/components/GameCreationForm.vue";
-  import GameList from "@/components/GameList.vue";
+import GameCreationForm from "@/components/GameCreationForm.vue";
+import GameList from "@/components/GameList.vue";
 </script>
 
 <template>

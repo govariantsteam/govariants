@@ -1,16 +1,16 @@
 <script setup lang="ts">
-  import type { GameResponse } from "@ogfcommunity/variants-shared";
-  import Baduk from "@/components/variants/Baduk.vue";
-  import * as requests from "../requests";
+import type { GameResponse } from "@ogfcommunity/variants-shared";
+import Baduk from "@/components/boards/BadukBoard.vue";
+import * as requests from "../requests";
 
-  const props = defineProps({
-    gameId: String,
-  });
+const props = defineProps({
+  gameId: String,
+});
 
-  const gameResponse = (await requests.get(
-    `/games/${props.gameId}`
-  )) as GameResponse;
-  const variantGameView = gameResponse.variant === "baduk" ? Baduk : null;
+const gameResponse = (await requests.get(
+  `/games/${props.gameId}`
+)) as GameResponse;
+const variantGameView = gameResponse.variant === "baduk" ? Baduk : null;
 </script>
 
 <template>
@@ -26,7 +26,7 @@
 </template>
 
 <style scoped>
-  pre {
-    text-align: left;
-  }
+pre {
+  text-align: left;
+}
 </style>

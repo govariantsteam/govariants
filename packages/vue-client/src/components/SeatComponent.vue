@@ -1,24 +1,10 @@
-<script lang="ts">
-interface UserT {
-  username?: string;
-  id: string;
-}
-</script>
-
 <script setup lang="ts">
 import type { PropType } from "vue";
-
-function takeSeat() {
-  // TODO: hit the server with this
-}
-
-function leaveSeat() {
-  // TODO: hit the server
-}
+import type { User } from "@ogfcommunity/variants-shared";
 
 defineProps({
   user_id: { required: true, type: String },
-  occupant: Object as PropType<UserT>,
+  occupant: Object as PropType<User>,
   player_n: { required: true, type: Number },
 });
 </script>
@@ -26,12 +12,12 @@ defineProps({
 <template>
   <div class="seat">
     <p class="seat-number">{{ player_n }}</p>
-    <div v-if="occupant === undefined">
-      <button @click="takeSeat">Take Seat</button>
+    <div v-if="occupant == null">
+      <button @click="$emit('sit')">Take Seat</button>
     </div>
     <div v-else>
       <p>{{ occupant.username ?? "guest" }}</p>
-      <button v-if="occupant.id === user_id" @click="leaveSeat">
+      <button v-if="occupant.id === user_id" @click="$emit('leave')">
         Leave Seat
       </button>
     </div>

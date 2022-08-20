@@ -2,6 +2,7 @@ import {
   GameResponse,
   makeGameObject,
   MovesType,
+  User,
 } from "@ogfcommunity/variants-shared";
 import { ObjectId, WithId, Document } from "mongodb";
 import { getDb } from "./db";
@@ -23,7 +24,16 @@ export async function getGame(id: string): Promise<GameResponse> {
     _id: new ObjectId(id),
   });
 
-  return outwardFacingGame(db_game);
+  console.log(db_game);
+  const game = outwardFacingGame(db_game);
+  // Legacy games don't have a players field
+  // TODO: remove this code after doing proper db migration
+  if (!game.players) {
+    game.players = await BACKFILL_addEmptyPlayersArray(game);
+  }
+  console.log(game);
+
+  return game;
 }
 
 export async function createGame(
@@ -48,7 +58,11 @@ export async function createGame(
   };
 }
 
-export async function playMove(game_id: string, move: MovesType) {
+export async function playMove(
+  game_id: string,
+  moves: MovesType,
+  user_id: string
+) {
   const game = await getGame(game_id);
 
   // Verify that moves are legal
@@ -61,7 +75,17 @@ export async function playMove(game_id: string, move: MovesType) {
     throw Error("Game is already finished.");
   }
 
-  game_obj.playMove(move);
+  const move = getOnlyMove(moves);
+
+  if (!game.players || game.players[move.player] === undefined) {
+    throw Error(`Seat ${move.player} not occupied!`);
+  }
+
+  if (game.players[move.player].id !== user_id) {
+    throw Error(`Not the right user: {expected`);
+  }
+
+  game_obj.playMove(moves);
 
   gamesCollection().updateOne(
     { _id: new ObjectId(game_id) },
@@ -71,11 +95,87 @@ export async function playMove(game_id: string, move: MovesType) {
   return game;
 }
 
+async function updateSeat(
+  game_id: string,
+  seat: number,
+  user_id: string,
+  new_user: User | undefined
+) {
+  const game = await getGame(game_id);
+
+  // Legacy games don't have a players field
+  // TODO: remove this code after doing proper db migration
+  if (!game.players) {
+    game.players = await BACKFILL_addEmptyPlayersArray(game);
+  }
+
+  // If the seat is occupied by another player, throw an error.
+  if (game.players[seat] != null && game.players[seat].id != user_id) {
+    throw new Error("Seat taken!");
+  }
+
+  game.players[seat] = new_user;
+
+  await gamesCollection().updateOne(
+    { _id: new ObjectId(game_id) },
+    { $set: { [`players.${seat}`]: new_user } }
+  );
+
+  return game.players;
+}
+
+export function takeSeat(game_id: string, seat: number, user: User) {
+  return updateSeat(game_id, seat, user.id, user);
+}
+
+export async function leaveSeat(
+  game_id: string,
+  seat: number,
+  user_id: string
+) {
+  return updateSeat(game_id, seat, user_id, undefined);
+}
+
+// This function exists for games whose players field has not yet been defined.
+// We can probably delete this after the db has been updated or cleared.
+async function BACKFILL_addEmptyPlayersArray(game: GameResponse) {
+  const game_id = game.id;
+  const players = new Array<undefined>(
+    makeGameObject(game.variant, game.config).numPlayers()
+  ).fill(null);
+  await gamesCollection().updateOne(
+    { _id: new ObjectId(game_id) },
+    { $set: { players } }
+  );
+  return players;
+}
+
 function outwardFacingGame(db_game: WithId<Document>): GameResponse {
   return {
     id: db_game._id.toString(),
     variant: db_game.variant,
     moves: db_game.moves,
     config: db_game.config,
+    players: db_game.players,
   };
+}
+
+// This is copied and pasted from baduk.ts.  I realized that we only ever consume
+// one move at a time, making me think that maybe we should be storing it in a
+// way that TS understands that.
+//
+// Ideas: [number, string], { player: number, move: string }
+//
+// TODO: remove this function once a proper data format is decided.
+/** Asserts there is exaclty one move, and returns it */
+function getOnlyMove(moves: MovesType): { player: number; move: string } {
+  const players = Object.keys(moves);
+  if (players.length > 1) {
+    throw Error(`More than one player: ${players}`);
+  }
+  if (players.length === 0) {
+    throw Error("No players specified!");
+  }
+  const player = Number(players[0]);
+  return { player, move: moves[player] };
 }

@@ -77,7 +77,7 @@ export async function playMove(
 
   const move = getOnlyMove(moves);
 
-  if (!game.players || game.players[move.player] === undefined) {
+  if (!game.players || game.players[move.player] == null) {
     throw Error(`Seat ${move.player} not occupied!`);
   }
 
@@ -89,7 +89,7 @@ export async function playMove(
 
   gamesCollection().updateOne(
     { _id: new ObjectId(game_id) },
-    { $push: { moves: move } }
+    { $push: { moves: moves } }
   );
 
   return game;

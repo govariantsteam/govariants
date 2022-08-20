@@ -39,18 +39,22 @@ const leave = (seat: number) => {
     v-bind:is="variantGameView"
     v-bind:gameResponse="gameResponse"
   />
-  <p style="color: red">
-    WARNING: These seats don't work yet. Just testing the SeatComponent...
-  </p>
-  <div v-for="(player, idx) in gameResponse.players" :key="idx">
-    <SeatComponent
-      :user_id="DELETETHIS_getCurrentUser().id"
-      :occupant="player"
-      :player_n="idx"
-      @sit="sit(idx)"
-      @leave="leave(idx)"
-    />
+  <div className="seat-list">
+    <p style="color: gray">
+      Note: as a workaround, we only have one user (The One True User)... Proper
+      logins will be implemented soon!
+    </p>
+    <div v-for="(player, idx) in gameResponse.players" :key="idx">
+      <SeatComponent
+        :user_id="DELETETHIS_getCurrentUser().id"
+        :occupant="player"
+        :player_n="idx"
+        @sit="sit(idx)"
+        @leave="leave(idx)"
+      />
+    </div>
   </div>
+
   <pre>
     <span>from /games/{{gameResponse.id}}</span>
     {{JSON.stringify(gameResponse, null, 2)}}

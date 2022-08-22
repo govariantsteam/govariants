@@ -39,6 +39,7 @@ export const useStore = (gameId: string) =>
       async playMove(x: number, y: number) {
         const move: MovesType = {};
         move[this.next_to_play] = coordsToLetters(x, y);
+        console.log(move);
         await requests.post(`/games/${gameId}/move`, move);
         await this.update();
       },

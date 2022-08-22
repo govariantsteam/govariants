@@ -1,12 +1,24 @@
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
-import { getGame, getGames, createGame, playMove } from "./games";
+import {
+  getGame,
+  getGames,
+  createGame,
+  playMove,
+  takeSeat,
+  leaveSeat,
+} from "./games";
 import bodyParser from "body-parser";
 import cors from "cors";
 import path from "path";
 import { connectToDb } from "./db";
-import { GameResponse, MovesType } from "@ogfcommunity/variants-shared";
+import {
+  GameResponse,
+  MovesType,
+  DELETETHIS_getCurrentUser,
+  User,
+} from "@ogfcommunity/variants-shared";
 
 const LOCAL_ORIGIN = "http://localhost:3000";
 
@@ -52,15 +64,47 @@ app.post("/games", async (req, res) => {
   return;
 });
 
-app.post("/games/:gameId/move", async (req, res) => {
-  console.log("body", req.body);
-
+app.post("/games/:gameId/move", async (req, res, next) => {
   const move: MovesType = req.body;
+  // TODO: make sure this is set to a valid id once we have user auth
+  // const user_id = req.user?.id; */
+  const user: User = DELETETHIS_getCurrentUser();
 
-  const game: GameResponse = await playMove(req.params.gameId, move);
+  try {
+    res.send(await playMove(req.params.gameId, move, user.id));
+  } catch (e) {
+    next(e.message);
+  }
+});
 
-  res.send(game);
-  return;
+app.post("/games/:gameId/sit/:seat", async (req, res) => {
+  const move: MovesType = req.body;
+  // TODO: make sure this is set to a valid id once we have user auth
+  // const user_id = req.user?.id; */
+  const user: User = DELETETHIS_getCurrentUser();
+
+  const players: User[] = await takeSeat(
+    req.params.gameId,
+    Number(req.params.seat),
+    user
+  );
+
+  res.send(players);
+});
+
+app.post("/games/:gameId/leave/:seat", async (req, res) => {
+  const move: MovesType = req.body;
+  // TODO: make sure this is set to a valid id once we have user auth
+  // const user_id = req.user?.id; */
+  const user = DELETETHIS_getCurrentUser();
+
+  const players: User[] = await leaveSeat(
+    req.params.gameId,
+    Number(req.params.seat),
+    user.id
+  );
+
+  res.send(players);
 });
 
 io.on("connection", (socket) => {
@@ -89,3 +133,8 @@ const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
   console.log(`listening on *:${PORT}`);
 });
+
+function next(e: any) {
+  throw new Error("Function not implemented.");
+}
+

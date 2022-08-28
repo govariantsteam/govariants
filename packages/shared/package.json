@@ -10,7 +10,8 @@
   "scripts": {
     "build": "tsc",
     "start": "tsc --watch",
-    "test": "echo \"Error: no test specified\" && exit 0"
+    "test": "jest",
+    "lint": "echo \"Linter not yet set up in packages/shared.\""
   },
   "dependencies": {
     "typescript": "^4.7.4"

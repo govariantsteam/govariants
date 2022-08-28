@@ -2,63 +2,68 @@ import {
   GameResponse,
   makeGameObject,
   MovesType,
+  User,
 } from "@ogfcommunity/variants-shared";
+import { ObjectId, WithId, Document } from "mongodb";
+import { getDb } from "./db";
 
-// TODO: Persist games in a database and remove dummy_games
-const dummy_games: GameResponse[] = [
-  {
-    id: 0,
-    variant: "baduk",
-    moves: [{ 0: "aa" }, { 1: "bb" }, { 0: "cc" }],
-    config: { width: 19, height: 19, komi: 5.5 },
-  },
-  {
-    id: 1,
-    variant: "baduk",
-    moves: [{ 0: "aa" }, { 1: "bb" }, { 0: "cc" }],
-    config: { width: 13, height: 13, komi: 5.5 },
-  },
-  {
-    id: 2,
-    variant: "baduk",
-    moves: [{ 0: "aa" }, { 1: "bb" }, { 0: "cc" }],
-    config: { width: 9, height: 9, komi: 5.5 },
-  },
-];
-
-const PAGE_SIZE = 10;
-
-export function getGames(page: number) {
-  const end = Math.max(0, dummy_games.length - page * PAGE_SIZE);
-  const start = Math.max(0, end - PAGE_SIZE);
-  return dummy_games.slice(start, end).reverse();
+function gamesCollection() {
+  return getDb().db().collection("games");
 }
 
-export function getGame(id: number) {
-  const game = dummy_games[id];
-  if (!game) {
-    throw new Error(`No game with id ${id}`);
+/**
+ * @param page NOT YET IMPLEMENTED
+ */
+export async function getGames(page: number): Promise<GameResponse[]> {
+  const games = gamesCollection().find().sort({ _id: -1 }).limit(10).toArray();
+  return (await games).map(outwardFacingGame);
+}
+
+export async function getGame(id: string): Promise<GameResponse> {
+  const db_game = await gamesCollection().findOne({
+    _id: new ObjectId(id),
+  });
+
+  console.log(db_game);
+  const game = outwardFacingGame(db_game);
+  // Legacy games don't have a players field
+  // TODO: remove this code after doing proper db migration
+  if (!game.players) {
+    game.players = await BACKFILL_addEmptyPlayersArray(game);
   }
-  return dummy_games[id];
-}
+  console.log(game);
 
-export function createGame(variant: string, config: any) {
-  const game: GameResponse = {
-    id: dummy_games.length,
-    variant: variant,
-    moves: [],
-    config: config,
-  };
-
-  // Check that the config is valid
-  makeGameObject(variant, config);
-
-  dummy_games.push(game);
   return game;
 }
 
-export function playMove(game_id: number, move: MovesType) {
-  const game = dummy_games[game_id];
+export async function createGame(
+  variant: string,
+  config: object
+): Promise<GameResponse> {
+  const game = {
+    variant: variant,
+    moves: [] as MovesType[],
+    config: config,
+  };
+
+  const result = await gamesCollection().insertOne(game);
+
+  if (!result) {
+    throw new Error("Failed to create game.");
+  }
+
+  return {
+    id: result.insertedId.toString(),
+    ...game,
+  };
+}
+
+export async function playMove(
+  game_id: string,
+  moves: MovesType,
+  user_id: string
+) {
+  const game = await getGame(game_id);
 
   // Verify that moves are legal
   const game_obj = makeGameObject(game.variant, game.config);
@@ -70,9 +75,107 @@ export function playMove(game_id: number, move: MovesType) {
     throw Error("Game is already finished.");
   }
 
-  game_obj.playMove(move);
+  const move = getOnlyMove(moves);
 
-  game.moves.push(move);
+  if (!game.players || game.players[move.player] == null) {
+    throw Error(`Seat ${move.player} not occupied!`);
+  }
+
+  if (game.players[move.player].id !== user_id) {
+    throw Error(`Not the right user: {expected`);
+  }
+
+  game_obj.playMove(moves);
+
+  gamesCollection().updateOne(
+    { _id: new ObjectId(game_id) },
+    { $push: { moves: moves } }
+  );
 
   return game;
+}
+
+async function updateSeat(
+  game_id: string,
+  seat: number,
+  user_id: string,
+  new_user: User | undefined
+) {
+  const game = await getGame(game_id);
+
+  // Legacy games don't have a players field
+  // TODO: remove this code after doing proper db migration
+  if (!game.players) {
+    game.players = await BACKFILL_addEmptyPlayersArray(game);
+  }
+
+  // If the seat is occupied by another player, throw an error.
+  if (game.players[seat] != null && game.players[seat].id != user_id) {
+    throw new Error("Seat taken!");
+  }
+
+  game.players[seat] = new_user;
+
+  await gamesCollection().updateOne(
+    { _id: new ObjectId(game_id) },
+    { $set: { [`players.${seat}`]: new_user } }
+  );
+
+  return game.players;
+}
+
+export function takeSeat(game_id: string, seat: number, user: User) {
+  return updateSeat(game_id, seat, user.id, user);
+}
+
+export async function leaveSeat(
+  game_id: string,
+  seat: number,
+  user_id: string
+) {
+  return updateSeat(game_id, seat, user_id, undefined);
+}
+
+// This function exists for games whose players field has not yet been defined.
+// We can probably delete this after the db has been updated or cleared.
+async function BACKFILL_addEmptyPlayersArray(game: GameResponse) {
+  const game_id = game.id;
+  const players = new Array<undefined>(
+    makeGameObject(game.variant, game.config).numPlayers()
+  ).fill(null);
+  await gamesCollection().updateOne(
+    { _id: new ObjectId(game_id) },
+    { $set: { players } }
+  );
+  return players;
+}
+
+function outwardFacingGame(db_game: WithId<Document>): GameResponse {
+  return {
+    id: db_game._id.toString(),
+    variant: db_game.variant,
+    moves: db_game.moves,
+    config: db_game.config,
+    players: db_game.players,
+  };
+}
+
+// This is copied and pasted from baduk.ts.  I realized that we only ever consume
+// one move at a time, making me think that maybe we should be storing it in a
+// way that TS understands that.
+//
+// Ideas: [number, string], { player: number, move: string }
+//
+// TODO: remove this function once a proper data format is decided.
+/** Asserts there is exaclty one move, and returns it */
+function getOnlyMove(moves: MovesType): { player: number; move: string } {
+  const players = Object.keys(moves);
+  if (players.length > 1) {
+    throw Error(`More than one player: ${players}`);
+  }
+  if (players.length === 0) {
+    throw Error("No players specified!");
+  }
+  const player = Number(players[0]);
+  return { player, move: moves[player] };
 }

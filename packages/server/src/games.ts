@@ -92,6 +92,8 @@ export async function playMove(
     { $push: { moves: moves } }
   );
 
+  game.moves.push(moves);
+
   return game;
 }
 

@@ -1,20 +1,41 @@
 <script setup lang="ts">
-import type { GameResponse } from "@ogfcommunity/variants-shared";
-import Baduk from "@/components/boards/BadukBoard.vue";
+import {
+  makeGameObject,
+  type GameResponse,
+} from "@ogfcommunity/variants-shared";
 import * as requests from "../requests";
 import SeatComponent from "@/components/SeatComponent.vue";
 import { DELETETHIS_getCurrentUser } from "@ogfcommunity/variants-shared";
 import type { User } from "@ogfcommunity/variants-shared";
-import { reactive } from "vue";
+import { computed, reactive, watchEffect } from "vue";
+import { board_map } from "@/board_map";
 
 const props = defineProps({
   gameId: String,
 });
 
-const gameResponse = reactive(
-  (await requests.get(`/games/${props.gameId}`)) as GameResponse
-);
-const variantGameView = gameResponse.variant === "baduk" ? Baduk : null;
+const DEFAULT_GAME: GameResponse = {
+  id: "",
+  variant: "",
+  moves: [],
+  config: {},
+};
+const gameResponse: GameResponse = reactive(DEFAULT_GAME);
+const gamestate = computed(() => {
+  const game_obj = makeGameObject(gameResponse.variant, gameResponse.config);
+  gameResponse.moves.forEach((move) => {
+    game_obj.playMove(move);
+  });
+  // TODO: keep track of user, and export state for user
+  // Also, eventually we want to compute state server side so hidden info is
+  // really hidden.
+  return game_obj.exportState();
+});
+const variantGameView = computed(() => board_map[gameResponse.variant]);
+watchEffect(async () => {
+  // TODO: provide a cleanup function to cancel the request.
+  Object.assign(gameResponse, await requests.get(`/games/${props.gameId}`));
+});
 
 const sit = (seat: number) => {
   requests
@@ -31,13 +52,27 @@ const leave = (seat: number) => {
       gameResponse.players = players;
     });
 };
+
+function makeMove(move_str: string) {
+  const move: { [player: number]: string } = {};
+  // TODO: We need to actually track who is next to play
+  move[gamestate.value.next_to_play] = move_str;
+  requests
+    .post(`/games/${gameResponse.id}/move`, move)
+    .then((res: GameResponse) => {
+      Object.assign(gameResponse, res);
+    })
+    .catch(alert);
+}
 </script>
 
 <template>
   <component
     v-if="variantGameView"
     v-bind:is="variantGameView"
-    v-bind:gameResponse="gameResponse"
+    v-bind:gamestate="gamestate"
+    v-bind:config="gameResponse.config"
+    v-on:move="makeMove"
   />
   <div className="seat-list">
     <p style="color: gray">

@@ -1,20 +1,25 @@
 <script setup lang="ts">
-import { useStore } from "@/stores/baduk";
-import { Color, type GameResponse } from "@ogfcommunity/variants-shared";
-import { storeToRefs } from "pinia";
-import type { PropType } from "vue";
+import {
+  Color,
+  type BadukConfig,
+  type BadukState,
+} from "@ogfcommunity/variants-shared";
+import { toRefs, type PropType } from "vue";
 
 const props = defineProps({
-  gameResponse: {
-    type: Object as PropType<GameResponse>,
+  gamestate: {
+    type: Object as PropType<BadukState>,
+    required: true,
+  },
+  config: {
+    type: Object as PropType<BadukConfig>,
     required: true,
   },
 });
 
-const store = useStore(props.gameResponse.id)();
-const { width, height, board } = storeToRefs(store);
+props.config;
 
-await store.update(props.gameResponse);
+const { width, height } = toRefs(props.config);
 
 const positions = new Array(height.value * width.value)
   .fill(null)
@@ -28,10 +33,17 @@ function colorToClassString(color: Color): string {
     : "stone white";
 }
 
+const emit = defineEmits<{
+  (e: "move", pos: string): void;
+}>();
+
+function coordsToLetters(x: number, y: number) {
+  const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  return alphabet[x] + alphabet[y];
+}
+
 function positionClicked(x: number, y: number) {
-  if (board.value[y][x] === Color.EMPTY) {
-    store.playMove(x, y);
-  }
+  emit("move", coordsToLetters(x, y));
 }
 </script>
 
@@ -75,7 +87,7 @@ function positionClicked(x: number, y: number) {
       <circle
         v-for="[x, y] in positions"
         :key="`${x},${y}`"
-        v-bind:class="colorToClassString(board[y][x])"
+        v-bind:class="colorToClassString(gamestate.board[y][x])"
         v-on:click="positionClicked(x, y)"
         v-bind:cx="x"
         v-bind:cy="y"

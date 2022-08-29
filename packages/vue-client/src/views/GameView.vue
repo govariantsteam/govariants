@@ -7,7 +7,7 @@ import * as requests from "../requests";
 import SeatComponent from "@/components/SeatComponent.vue";
 import { DELETETHIS_getCurrentUser } from "@ogfcommunity/variants-shared";
 import type { User } from "@ogfcommunity/variants-shared";
-import { computed, reactive, watchEffect } from "vue";
+import { computed, reactive, ref, watchEffect } from "vue";
 import { board_map } from "@/board_map";
 
 const props = defineProps({
@@ -26,10 +26,7 @@ const gamestate = computed(() => {
   gameResponse.moves.forEach((move) => {
     game_obj.playMove(move);
   });
-  // TODO: keep track of user, and export state for user
-  // Also, eventually we want to compute state server side so hidden info is
-  // really hidden.
-  return game_obj.exportState();
+  return game_obj.exportState(playing_as.value);
 });
 const variantGameView = computed(() => board_map[gameResponse.variant]);
 watchEffect(async () => {
@@ -42,6 +39,7 @@ const sit = (seat: number) => {
     .post(`/games/${props.gameId}/sit/${seat}`, {})
     .then((players: User[]) => {
       gameResponse.players = players;
+      playing_as.value = seat;
     });
 };
 
@@ -50,13 +48,35 @@ const leave = (seat: number) => {
     .post(`/games/${props.gameId}/leave/${seat}`, {})
     .then((players: User[]) => {
       gameResponse.players = players;
+      if (playing_as.value === seat) {
+        playing_as.value = undefined;
+      }
     });
+};
+
+const playing_as = ref<undefined | number>(undefined);
+const setPlayingAs = (seat: number) => {
+  if (playing_as.value === seat) {
+    playing_as.value = undefined;
+    return;
+  }
+  if (
+    gameResponse.players &&
+    gameResponse.players[seat]?.id === DELETETHIS_getCurrentUser().id
+  ) {
+    playing_as.value = seat;
+  }
 };
 
 function makeMove(move_str: string) {
   const move: { [player: number]: string } = {};
-  // TODO: We need to actually track who is next to play
-  move[gamestate.value.next_to_play] = move_str;
+
+  if (playing_as.value === undefined) {
+    alert("No player selected. Click one of your seats to play a move.");
+    return;
+  }
+
+  move[playing_as.value] = move_str;
   requests
     .post(`/games/${gameResponse.id}/move`, move)
     .then((res: GameResponse) => {
@@ -86,6 +106,8 @@ function makeMove(move_str: string) {
         :player_n="idx"
         @sit="sit(idx)"
         @leave="leave(idx)"
+        @select="setPlayingAs(idx)"
+        :selected="playing_as"
       />
     </div>
   </div>

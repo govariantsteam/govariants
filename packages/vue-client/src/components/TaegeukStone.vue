@@ -1,10 +1,32 @@
 <script setup lang="ts">
-const colors = ["red", "blue", "yellow"];
-const sections = colors.length;
-const angle = (Math.PI * 2) / sections;
-const angle_degrees = 360 / sections;
-const rad = 300;
-const hrad = rad / 2;
+import { computed } from "vue";
+
+const props = defineProps<{
+  colors: string[];
+  r: number;
+  cx: number;
+  cy: number;
+}>();
+
+const section_path = computed(() => {
+  const sections = props.colors.length;
+  const angle = (Math.PI * 2) / sections;
+
+  const rad = props.r;
+  const hrad = rad / 2;
+
+  const back_semi = `M0 0A${hrad} ${hrad} 0 0 1 ${rad} 0`;
+  const outer_arc = `A${rad} ${rad} 0 0 0${Math.cos(angle) * rad} ${
+    -Math.sin(angle) * rad
+  }`;
+  const front_semi = `A${hrad} ${hrad} 0 0 0 0 0z`;
+  return `${back_semi}${outer_arc}${front_semi}`;
+});
+
+const angle_degrees = computed(() => {
+  const sections = props.colors.length;
+  return 360 / sections;
+});
 
 //        _..oo8"""Y8b.._
 //      .88888888o.    "Yb.
@@ -19,24 +41,17 @@ const hrad = rad / 2;
 //    "Y88888b   SEMI     oP"
 //      "Y8888o._     _.oP"
 //        `""Y888boodP""'
-
-const back_semi = `M0 0A${hrad} ${hrad} 0 0 1 ${rad} 0`;
-const outer_arc = `A${rad} ${rad} 0 0 0${Math.cos(angle) * rad} ${
-  -Math.sin(angle) * rad
-}`;
-const front_semi = `A${hrad} ${hrad} 0 0 0 0 0z`;
-const section_path = `${back_semi}${outer_arc}${front_semi}`;
 </script>
 
 <template>
   <circle
-    cx="0"
-    cy="0"
-    v-bind:r="rad"
+    v-bind:cx="props.cx"
+    v-bind:cy="props.cy"
+    v-bind:r="props.r"
     v-if="colors.length === 1"
     v-bind:fill="colors[0]"
   />
-  <g v-else>
+  <g v-else v-bind:transform="`translate(${props.cx} ${props.cy})`">
     <path
       v-for="(color, idx) in colors"
       v-bind:key="idx"

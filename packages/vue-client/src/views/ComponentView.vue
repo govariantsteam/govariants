@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 import TaegeukStone from "../components/TaegeukStone.vue";
+import MulticolorGridBoard from "../components/boards/MulticolorGridBoard.vue";
+import type { Coordinate } from "@ogfcommunity/variants-shared";
 
 // https://sashamaps.net/docs/resources/20-colors/
 const distinct_colors = [
@@ -32,11 +34,35 @@ const num_colors = ref(1);
 const r = ref(300);
 const cx = ref(0);
 const cy = ref(0);
+
+const current_color = ref("blue");
+
+const board_state = reactive([
+  [{ colors: [] }, { colors: [] }, { colors: [] }],
+  [{ colors: [] }, { colors: [] }, { colors: [] }],
+  [{ colors: [] }, { colors: [] }, { colors: [] }],
+  [{ colors: [] }, { colors: [] }, { colors: [] }],
+]);
+
+function update_board_state(pos: Coordinate) {
+  board_state[pos.y][pos.x].colors.push(current_color.value);
+}
 </script>
 
 <template>
   <main>
     <h2>Page to test unused components</h2>
+    <MulticolorGridBoard
+      :config="{ width: 3, height: 4 }"
+      :board="board_state"
+      @click="update_board_state"
+    />
+    <select name="colors" v-model="current_color">
+      <option value="blue">Blue</option>
+      <option value="red">Red</option>
+      <option value="green">Green</option>
+      <option value="yellow">Yellow</option>
+    </select>
     <svg height="600" width="600" viewBox="-300 -300 600 600">
       <TaegeukStone
         v-bind:r="r"

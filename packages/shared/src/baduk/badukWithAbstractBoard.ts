@@ -1,4 +1,4 @@
-import type { AbstractGame } from "../abstract_game";
+import { AbstractGame } from "../abstract_game";
 import type { MovesType } from "../abstract_game";
 import type { IBadukBoard } from "../Interfaces/IBadukBoard";
 import { BadukBoardAbstract } from "./board/BadukBoardAbstract";

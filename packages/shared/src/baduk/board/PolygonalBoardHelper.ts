@@ -203,7 +203,7 @@ class PolygonalTile {
             }
 
             if (this.NeighbourTiles[5]?.Completed != true) {
-                this.Intersections[11] = new Intersection(this.ReferencePoint);
+                this.Intersections[11] = new Intersection(this.ReferencePoint.Add(Shift12));
                 this.Intersections[3].ConnectTo(this.Intersections[11], true);
             }
             else {
@@ -263,7 +263,7 @@ class PolygonalTile {
                 this.Intersections[5].ConnectTo(this.Intersections[15], true);
             }
             else {
-                this.Intersections[15] = this.NeighbourTiles[1].Intersections[3];
+                this.Intersections[15] = this.NeighbourTiles[1].Intersections[12];
             }
         }
         else {
@@ -364,7 +364,7 @@ export class PolygonalBoardHelperFunctions {
                 if (tile.NeighbourTiles[2] == null) {
                     let newTile = new PolygonalTile(tile.ReferencePoint.Substract(TileShiftBottomRight));
                     Tiles.push(newTile);
-                    tile.ConnectToTopRight(newTile, true);
+                    tile.ConnectToTopLeft(newTile, true);
                     newTilesQueue.push(newTile);
 
                     if (tile.NeighbourTiles[3] != null) {
@@ -431,10 +431,23 @@ export class PolygonalBoardHelperFunctions {
         }
 
         let intersections: Intersection[] = [];
-        Tiles.forEach(tile => intersections.concat(tile.Intersections));
+        for (let i = 0; i < Tiles.length; i++) {
+            const tile = Tiles[i];
+            for (let j = 0; j < tile.Intersections.length; j++) {
+                let intersection = tile.Intersections[j];
+                if (intersections.indexOf(intersection) < 0) {
+                    intersections.push(tile.Intersections[j]);
+                }
+            }
+        }
+        
 
-        let minX: number = intersections.map(i => i.Position.X).reduce((a, b) => this.Min(a, b));
-        let minY: number = intersections.map(i => i.Position.Y).reduce((a, b) => this.Min(a, b));
+        let minX: number = intersections[0].Position.X;
+        let minY: number = intersections[0].Position.Y;
+        for (let i = 0; i < intersections.length; i++) {
+            minX = this.Min(minX, intersections[i].Position.X);
+            minY = this.Min(minY, intersections[i].Position.Y);
+        }
         let shift: Vector2D = new Vector2D(minX, minY);
 
         for (let z = 0; z < intersections.length; z++)

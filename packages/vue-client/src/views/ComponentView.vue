@@ -37,7 +37,7 @@ const cy = ref(0);
 
 const current_color = ref("blue");
 
-const board_state = reactive([
+const board_state: { colors: string[] }[][] = reactive([
   [{ colors: [] }, { colors: [] }, { colors: [] }],
   [{ colors: [] }, { colors: [] }, { colors: [] }],
   [{ colors: [] }, { colors: [] }, { colors: [] }],

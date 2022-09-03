@@ -23,6 +23,11 @@ const router = createRouter({
       component: () => import("../views/GameView.vue"),
       props: true,
     },
+    {
+      path: "/components",
+      name: "components",
+      component: () => import("../views/ComponentView.vue"),
+    },
   ],
 });
 

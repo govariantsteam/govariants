@@ -1,22 +1,6 @@
-export { }
+import { Vector2D } from "./Vector2D"
+import { Intersection } from "./intersection"
 
-class Vector2D {
-    X: number;
-    Y: number;
-
-    constructor(x: number, y: number) {
-        this.X = x;
-        this.Y = y;
-    }
-
-    Add(v: Vector2D): Vector2D {
-        return new Vector2D(this.X + v.X, this.Y + v.Y);
-    }
-
-    Substract(v: Vector2D): Vector2D {
-        return new Vector2D(this.X - v.X, this.Y - v.Y);
-    }
-}
         //-----------------------------------------------------
         //-----------------------------------------------------
         //---------------------6=========17--------------------
@@ -68,27 +52,6 @@ const Shift15 = new Vector2D(1.86602540, 1.5);
 const Shift16 = new Vector2D(1.86602540, 0.5);
 const Shift17 = new Vector2D(1.36602540, -0.36602540);
 const Shift18 = new Vector2D(0.5, -0.86602540);
-
-class Intersection {
-    Neighbours: Intersection[];
-    Position: Vector2D;
-
-    constructor(v: Vector2D) {
-        this.Position = v;
-        this.Neighbours = [];
-    }
-
-    ConnectTo(intersection: Intersection, bothSides: Boolean) {
-        this.Neighbours.push(intersection);
-        if (bothSides) {
-            intersection.ConnectTo(this, false);
-        }
-    }
-
-    IsConnectedTo(intersection: Intersection): Boolean {
-        return this.Neighbours.includes(intersection);
-    }
-}
 
 class PolygonalTile {
     ReferencePoint: Vector2D;
@@ -349,7 +312,7 @@ class PolygonalTile {
     }
 }
 
-class BoardHelperFunctions {
+export class PolygonalBoardHelperFunctions {
     Min(a: number, b: number): number {
         if (a < b) {
             return a;
@@ -357,7 +320,7 @@ class BoardHelperFunctions {
     return b;
     }
 
-    CreatePolygonalBoard(size: number) {
+    CreatePolygonalBoard(size: number) : Intersection[] {
         let StartTile: PolygonalTile = new PolygonalTile(new Vector2D(0, 0));
         let Tiles: PolygonalTile[] = [StartTile];
         let tileQueue: PolygonalTile[] = [StartTile];
@@ -473,8 +436,13 @@ class BoardHelperFunctions {
         let minX: number = intersections.map(i => i.Position.X).reduce((a, b) => this.Min(a, b));
         let minY: number = intersections.map(i => i.Position.Y).reduce((a, b) => this.Min(a, b));
         let shift: Vector2D = new Vector2D(minX, minY);
-        
-        intersections.forEach(i => i.Position = i.Position.Substract(shift))
+
+        for (let z = 0; z < intersections.length; z++)
+        {
+            let i = intersections[z];
+            i.Identifier = z;
+            i.Position = i.Position.Substract(shift);
+        }
 
         return intersections;
     }

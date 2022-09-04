@@ -1,4 +1,5 @@
 import Baduk from "@/components/boards/BadukBoard.vue";
+import BadukBoardAbstract from "@/components/boards/BadukBoardAbstract.vue";
 
 export const board_map: {
   // TODO: add types - I have no idea how this works for Vue components.
@@ -7,4 +8,5 @@ export const board_map: {
 } = {
   baduk: Baduk,
   phantom: Baduk,
+  badukWithAbstractBoard: BadukBoardAbstract,
 };

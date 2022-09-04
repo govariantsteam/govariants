@@ -871,6 +871,7 @@ __metadata:
   dependencies:
     "@ogfcommunity/variants-shared": 1.0.0
     "@types/express": ^4.17.13
+    "@types/jsdom": ^20.0.0
     body-parser: ^1.20.0
     cors: ^2.8.5
     express: ^4.18.1
@@ -1186,6 +1187,17 @@ __metadata:
     "@types/parse5": ^6.0.3
     "@types/tough-cookie": "*"
   checksum: e038335321bef42ebf220aaf597e186e2eec8de6107ce7a70de1c046a84c1fbb42d454e195a20383a6870b18c7ef6fa6b73812a626f88a4a2ef1f711d2e2e13c
+  languageName: node
+  linkType: hard
+
+"@types/jsdom@npm:^20.0.0":
+  version: 20.0.0
+  resolution: "@types/jsdom@npm:20.0.0"
+  dependencies:
+    "@types/node": "*"
+    "@types/tough-cookie": "*"
+    parse5: ^7.0.0
+  checksum: 13e67d31347e02d46ec6a23919b3ce39d86136665922a2a6cb977e216a2f46c22d2f025d0586a64ab492ebaa5f43da669b6f173a5a8cfd3e3bb7c9d19b6cfa9e
   languageName: node
   linkType: hard
 

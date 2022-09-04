@@ -16,6 +16,7 @@ export interface BadukState {
   board: Color[][];
   next_to_play: 0 | 1;
   captures: { 0: number; 1: number };
+  last_move: string;
 }
 
 interface Coordinate {
@@ -41,7 +42,15 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
       board: copyBoard(this.board),
       captures: { 0: this.captures[0], 1: this.captures[1] },
       next_to_play: this.next_to_play,
+      last_move: this.last_move,
     };
+  }
+
+  importState(state: BadukState) {
+    this.board = copyBoard(state.board);
+    this.captures = { 0: state.captures[0], 1: state.captures[1] };
+    this.next_to_play = state.next_to_play;
+    this.last_move = state.last_move;
   }
 
   nextToPlay(): number[] {

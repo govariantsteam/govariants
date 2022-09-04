@@ -1,12 +1,14 @@
 import { Baduk } from "./baduk";
 import { AbstractGame } from "./abstract_game";
 import { BadukWithAbstractBoard } from "./baduk/badukWithAbstractBoard";
+import { Phantom } from "./phantom";
 
 // Is there any way we can get away from `any` here?
 // I think only the infra needs to touch these functions, but still!
 export const game_map: { [variant: string]: any } = {
   baduk: Baduk,
   badukWithAbstractBoard: BadukWithAbstractBoard,
+  phantom: Phantom,
 };
 
 class ConfigError extends Error {

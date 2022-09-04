@@ -11,7 +11,7 @@ export enum Color {
 }
 
 export enum BoardPattern {
-    Uknown = 0,
+    Unknown = 0,
     Rectangular = 1,
     Polygonal = 2,
 }

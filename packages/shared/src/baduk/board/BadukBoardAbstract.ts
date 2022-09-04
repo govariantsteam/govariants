@@ -45,11 +45,11 @@ export class BadukBoardAbstract implements IBadukBoard
 		}
 	}
 
-	Export(): BadukBoardAbstract
+	Export()
 	{
 		return {
 			Intersections: this.Intersections.map(i => i.Export()),
 			Array2D: null,
-		} as BadukBoardAbstract;
+		};
 	}
 }

@@ -50,6 +50,10 @@ export class BadukWithAbstractBoard extends AbstractGame<BadukWithAbstractBoardC
         };
     }
 
+    importState(_state: BadukWithAbstractBoardState): void {
+        throw new Error("Method not implemented.");
+    }
+
     nextToPlay(): number[] {
         return [this.next_to_play];
     }

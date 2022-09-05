@@ -6,16 +6,10 @@ import {
 } from "@ogfcommunity/variants-shared";
 import { toRefs, type PropType } from "vue";
 
-const props = defineProps({
-  gamestate: {
-    type: Object as PropType<BadukState>,
-    required: true,
-  },
-  config: {
-    type: Object as PropType<BadukConfig>,
-    required: true,
-  },
-});
+const props = defineProps<{
+  gamestate: BadukState;
+  config: BadukConfig;
+}>();
 
 props.config;
 

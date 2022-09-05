@@ -51,7 +51,7 @@ function getStateFromResponse(response: GameResponse): BadukState {
   response.moves.forEach((move) => {
     game.playMove(move);
   });
-  return game.exportState();
+  return game.exportState() as BadukState;
 }
 
 function coordsToLetters(x: number, y: number) {

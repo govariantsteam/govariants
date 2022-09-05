@@ -18,8 +18,8 @@ class ConfigError extends Error {
 
 export function makeGameObject(
   variant: string,
-  config: any
-): AbstractGame<any, any> {
+  config: unknown
+): AbstractGame<unknown, unknown> {
   try {
     return new game_map[variant](config);
   } catch (e) {

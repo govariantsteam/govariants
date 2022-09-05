@@ -6,6 +6,12 @@ const helper = new PolygonalBoardHelperFunctions();
 const boardsize = 5;
 const intersections = helper.CreatePolygonalBoard(boardsize);
 
+// TODO: change the types for these if config or gamestate gets used
+defineProps<{
+  config: unknown;
+  gamestate: unknown;
+}>();
+
 function colorToClassString(color: Color): string {
   return color === Color.EMPTY
     ? "click-placeholder"

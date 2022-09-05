@@ -20,25 +20,27 @@ export class Grid<T> {
   at(index: Coordinate): T | undefined {
     const w = this.width;
     const h = this.height;
-    let { x, y } = index;
 
-    // Backwards indexing
-    if (x < 0) {
-      x = w + x;
-    }
-    if (y < 0) {
-      y = h + y;
-    }
+    index = handleNegativeIndices(index, w, h);
 
-    // Out of bounds
-    if (x >= w) {
-      return undefined;
-    }
-    if (y >= h) {
+    if (isOutOfBounds(index, w, h)) {
       return undefined;
     }
 
     return this.arr[coordinate_to_flat_index(index, w)];
+  }
+
+  set(index: Coordinate, value: T): void {
+    const w = this.width;
+    const h = this.height;
+
+    index = handleNegativeIndices(index, w, h);
+
+    if (isOutOfBounds(index, w, h)) {
+      return;
+    }
+
+    this.arr[coordinate_to_flat_index(index, w)] = value;
   }
 
   map<S>(
@@ -99,4 +101,30 @@ function flat_index_to_coordinate(index: number, width: number): Coordinate {
 
 function coordinate_to_flat_index({ x, y }: Coordinate, width: number): number {
   return y * width + x;
+}
+
+/** If index is negative, count from the end of the row or column. */
+function handleNegativeIndices(
+  { x, y }: Coordinate,
+  w: number,
+  h: number
+): Coordinate {
+  // Backwards indexing
+  if (x < 0) {
+    x = w + x;
+  }
+  if (y < 0) {
+    y = h + y;
+  }
+  return { x, y };
+}
+
+function isOutOfBounds({ x, y }: Coordinate, w: number, h: number): boolean {
+  if (x >= w) {
+    return true;
+  }
+  if (y >= h) {
+    return true;
+  }
+  return false;
 }

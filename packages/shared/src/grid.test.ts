@@ -52,3 +52,14 @@ test("at", () => {
   expect(g.at({ x: 1, y: 2 })).toBe(8);
   expect(g.at({ x: 2, y: 2 })).toBe(9);
 });
+
+test("set", () => {
+  const g = Grid.from2DArray([
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9],
+  ]);
+  g.set({ x: 1, y: 1 }, 10);
+
+  expect(g.at({ x: 1, y: 1 })).toBe(10);
+});

@@ -1,11 +1,13 @@
 import { Baduk } from "./baduk";
 import { AbstractGame } from "./abstract_game";
+import { BadukWithAbstractBoard } from "./baduk/badukWithAbstractBoard";
 import { Phantom } from "./phantom";
 
 export const game_map: {
   [variant: string]: new (config: any) => AbstractGame;
 } = {
   baduk: Baduk,
+  badukWithAbstractBoard: BadukWithAbstractBoard,
   phantom: Phantom,
 };
 

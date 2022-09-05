@@ -1,4 +1,5 @@
 import Baduk from "@/components/boards/BadukBoard.vue";
+import BadukBoardAbstract from "@/components/boards/BadukBoardAbstract.vue";
 import type { Component } from "vue";
 
 export const board_map: {
@@ -6,4 +7,5 @@ export const board_map: {
 } = {
   baduk: Baduk,
   phantom: Baduk,
+  badukWithAbstractBoard: BadukBoardAbstract,
 };

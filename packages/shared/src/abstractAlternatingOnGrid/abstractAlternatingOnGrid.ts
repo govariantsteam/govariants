@@ -56,6 +56,10 @@ export abstract class AbstractAlternatingOnGrid<
     }
 
     this.preValidateMove(move);
+    // TODO: preValidateMove() needs more considerations what it is meant for.
+    // Initially it was meant to ensure moves can be applied to the game state,
+    // but with decodeMove() happening later those checks currently also happen later.
+    // As it is now preValidateMove() allows to for example check whether passing is allowed.
 
     if (move === "resign") {
       this.phase = "gameover";

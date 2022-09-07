@@ -141,11 +141,6 @@ export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
 
     this.phase = "gameover";
   }
-
-  // resign(player: number) {
-  //   this.phase = "gameover";
-  //   this.result = player === 0 ? "W+R" : "B+R";
-  // }
 }
 
 /** Returns true if the group containing (x, y) has at least one liberty. */

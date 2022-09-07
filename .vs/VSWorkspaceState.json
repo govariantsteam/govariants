@@ -1,0 +1,13 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\packages",
+    "\\packages\\client",
+    "\\packages\\client\\src",
+    "\\packages\\client\\src\\baduk",
+    "\\packages\\shared",
+    "\\packages\\shared\\src"
+  ],
+  "SelectedNode": "\\packages\\client\\src\\App.tsx",
+  "PreviewInSolutionExplorer": false
+}

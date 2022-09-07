@@ -14,6 +14,7 @@ export interface AbstractAlternatingOnGridConfig {
 export interface AbstractAlternatingOnGridState {
   board: Color[][];
   next_to_play: 0 | 1;
+  last_move: string;
 }
 
 interface Coordinate {
@@ -40,6 +41,7 @@ export abstract class AbstractAlternatingOnGrid<
     return {
       board: copyBoard(this.board),
       next_to_play: this.next_to_play,
+      last_move: this.last_move,
     } as TState;
   }
 

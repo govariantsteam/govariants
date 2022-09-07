@@ -12,6 +12,9 @@ export async function get(path: string) {
   return data;
 }
 
+// There's probably a way to get types into the APIs, but for now just have to
+// silence this warning.
+// eslint-disable-next-line
 export async function post(path: string, json: any) {
   const headers = new Headers();
   headers.append("Origin", SERVER_URL); // TODO: Is this necessary?

@@ -14,6 +14,7 @@ export interface BadukConfig extends AbstractAlternatingOnGridConfig {
 
 export interface BadukState extends AbstractAlternatingOnGridState {
   captures: { 0: number; 1: number };
+  last_move: string;
 }
 
 // TODO: Redundant code in super class file
@@ -34,6 +35,13 @@ export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
       ...super.exportState(),
       captures: { 0: this.captures[0], 1: this.captures[1] },
     };
+  }
+
+  importState(state: BadukState) {
+    this.board = copyBoard(state.board);
+    this.captures = { 0: state.captures[0], 1: state.captures[1] };
+    this.next_to_play = state.next_to_play;
+    this.last_move = state.last_move;
   }
 
   protected override playMoveInternal(move: Coordinate): void {

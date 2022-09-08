@@ -24,6 +24,8 @@ export async function getGame(id: string): Promise<GameResponse> {
     _id: new ObjectId(id),
   });
 
+  // TODO: db_game might be undefined if unknown ID is provided
+
   console.log(db_game);
   const game = outwardFacingGame(db_game);
   // Legacy games don't have a players field

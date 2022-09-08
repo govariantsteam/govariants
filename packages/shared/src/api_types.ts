@@ -11,3 +11,8 @@ export interface GameResponse {
   config: unknown;
   players?: Array<User | undefined>;
 }
+
+export interface UserResponse {
+  id?: string;
+  login_type: "guest" | "persistent";
+}

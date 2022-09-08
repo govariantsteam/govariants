@@ -95,23 +95,36 @@ const board = computed(() => {
     })
     .to2DArray();
   // TODO: set target to ES2017 and use Object.entries
-  Object.keys(props.gamestate.staged).forEach((player_str) => {
-    const player = Number(player_str);
-    if (!props.gamestate.staged[player]) {
-      console.log(props.gamestate.staged, player);
-    }
-    const move = decodeMove(props.gamestate.staged[player]);
-    const stone = gboard_with_empty[move.y][move.x];
-    if (!stone) {
-      gboard_with_empty[move.y][move.x] = {
-        colors: [distinct_colors[player]],
-        annotation: "CR",
-      };
-    } else {
-      stone.colors.push(distinct_colors[player]);
-      stone.annotation = "CR";
-    }
-  });
+  if (Object.keys(props.gamestate.staged).length) {
+    Object.keys(props.gamestate.staged).forEach((player_str) => {
+      const player = Number(player_str);
+      const move = decodeMove(props.gamestate.staged[player]);
+      const stone = gboard_with_empty[move.y][move.x];
+      if (!stone) {
+        gboard_with_empty[move.y][move.x] = {
+          colors: [distinct_colors[player]],
+          annotation: "CR",
+        };
+      } else {
+        stone.colors.push(distinct_colors[player]);
+        stone.annotation = "CR";
+      }
+    });
+  } else {
+    Object.keys(props.gamestate.last_round).forEach((player_str) => {
+      const player = Number(player_str);
+      const move = decodeMove(props.gamestate.last_round[player]);
+      const stone = gboard_with_empty[move.y][move.x];
+      if (!stone) {
+        gboard_with_empty[move.y][move.x] = {
+          colors: [],
+          annotation: "CR",
+        };
+      } else {
+        stone.annotation = "CR";
+      }
+    });
+  }
   return gboard_with_empty;
 });
 </script>

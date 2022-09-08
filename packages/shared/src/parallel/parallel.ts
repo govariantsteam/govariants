@@ -18,6 +18,7 @@ export interface ParallelGoConfig {
 export interface ParallelGoState {
   board: number[][][];
   staged: MovesType;
+  last_round: MovesType;
 }
 
 interface Coordinate {
@@ -25,9 +26,13 @@ interface Coordinate {
   readonly y: number;
 }
 
-export class ParallelGo extends AbstractGame<ParallelGoConfig, ParallelGoState> {
+export class ParallelGo extends AbstractGame<
+  ParallelGoConfig,
+  ParallelGoState
+> {
   private board: Grid<number[]>;
   private staged: MovesType = {};
+  private last_round: MovesType = {};
 
   constructor(config: ParallelGoConfig) {
     super(config);
@@ -44,6 +49,7 @@ export class ParallelGo extends AbstractGame<ParallelGoConfig, ParallelGoState> 
     return {
       board: this.board.to2DArray(),
       staged,
+      last_round: { ...this.last_round },
     };
   }
 
@@ -95,7 +101,8 @@ export class ParallelGo extends AbstractGame<ParallelGoConfig, ParallelGoState> 
     if (num_passes === this.numPlayers()) {
       this.phase = "gameover";
     }
-    this.staged = [];
+    this.last_round = this.staged;
+    this.staged = {};
 
     if (this.config.collision_handling === "pass") {
       this.replaceMultiColoredStonesWith([]);

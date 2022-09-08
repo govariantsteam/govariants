@@ -1,7 +1,5 @@
 export const SERVER_URL =
-  process.env.NODE_ENV === "production"
-    ? window.location.origin
-    : "http://localhost:3001";
+  process.env.NODE_ENV === "production" ? window.location.origin : "/api";
 
 export async function get(path: string) {
   const response = await fetch(SERVER_URL + path);
@@ -19,7 +17,7 @@ export async function get(path: string) {
 // eslint-disable-next-line
 export async function post(path: string, json: any) {
   const headers = new Headers();
-  headers.append("Origin", SERVER_URL);
+  headers.append("Origin", SERVER_URL); // TODO: Is this necessary?
   headers.append("Content-Type", "application/json");
   const response = await fetch(SERVER_URL + path, {
     method: "post",

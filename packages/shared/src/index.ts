@@ -1,4 +1,5 @@
 export * from "./baduk";
+export * from "./abstractAlternatingOnGrid";
 export * from "./phantom";
 export * from "./abstract_game";
 export * from "./game_map";

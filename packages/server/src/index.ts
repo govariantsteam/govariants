@@ -1,4 +1,5 @@
 import express from "express";
+import session from "express-session";
 import http from "http";
 import { Server } from "socket.io";
 import {
@@ -9,18 +10,82 @@ import {
   takeSeat,
   leaveSeat,
 } from "./games";
+import {
+  createUserWithSessionId,
+  deleteUser,
+  getUser,
+  getUserBySessionId,
+} from "./users";
 import bodyParser from "body-parser";
 import cors from "cors";
 import path from "path";
 import { connectToDb } from "./db";
+import passport from "passport";
+import { Strategy as CustomStrategy } from "passport-custom";
 import {
   GameResponse,
   MovesType,
   DELETETHIS_getCurrentUser,
   User,
+  UserResponse,
 } from "@ogfcommunity/variants-shared";
 
 const LOCAL_ORIGIN = "http://localhost:3000";
+
+// passport.use(
+//   new LocalStrategy(async function (username, password, callback) {
+//     try {
+//       const user = await LocalUser.findOne({ name: username }).select(
+//         "+passwordHash"
+//       );
+//       // TODO: scrypt instead of bcrypt
+//       const passwordHash = user
+//         ? user.passwordHash
+//         : `$2b$${saltRounds}$TakeSomeTimeToCheckEvenIfUsernameIsWrong1234567890123`;
+
+//       if (!(await bcrypt.compare(password, passwordHash)) || !user) {
+//         return callback(null, false, {
+//           message: "Wrong username or password.",
+//         });
+//       }
+
+//       delete user._doc.passwordHash;
+//       return callback(null, user);
+//     } catch (err) {
+//       return callback(err);
+//     }
+//   })
+// );
+
+passport.use(
+  "guest",
+  new CustomStrategy(async function (req, callback) {
+    const token = req.session.id;
+    let user = await getUserBySessionId(token);
+    if (!user) {
+      user = await createUserWithSessionId(token);
+    }
+    return callback(null, user);
+  })
+);
+
+passport.serializeUser<string>(function (user: UserResponse, callback) {
+  callback(null, user.id);
+});
+
+passport.deserializeUser<string>(function (id, callback) {
+  getUser(id)
+    .then((user) => {
+      if (user) {
+        callback(null, user);
+      } else {
+        callback(new Error(`No user with ID: ${id}`));
+      }
+    })
+    .catch((err) => {
+      callback(err);
+    });
+});
 
 // initialize Express
 const app = express();
@@ -29,8 +94,22 @@ app.use(
     extended: true,
   })
 );
-app.use(bodyParser.json());
-app.use(cors({ origin: LOCAL_ORIGIN, credentials: true }));
+app.use(bodyParser.json()); // TODO: app.use(express.json()) instead? Difference?
+app.use(cors({ origin: LOCAL_ORIGIN, credentials: true })); // TODO: Is this still necessary with dev proxy?
+app.use(
+  session({
+    // TODO: Cookie banner or permission necessary?
+    secret: process.env.SESSION_SECRET || "Corybas aconitiflorus",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      sameSite: "strict",
+      secure: "auto", // TODO: See https://www.npmjs.com/package/express-session
+    },
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 
 // initialize socket.io
 const server = http.createServer(app);
@@ -107,6 +186,44 @@ app.post("/games/:gameId/leave/:seat", async (req, res) => {
   res.send(players);
 });
 
+app.get("/guestLogin", function (req, res, next) {
+  passport.authenticate("guest", (err, user, info) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return next(new Error(info.message));
+    }
+
+    req.logIn(user, function (err) {
+      if (err) {
+        return next(err);
+      }
+
+      return res.json(user);
+    });
+  })(req, res, next);
+});
+
+app.get("/checkLogin", function (req, res, next) {
+  return res.json(req.user ? req.user : null);
+});
+
+app.get("/logout", async function (req, res) {
+  const user = req.user as UserResponse;
+  if (user.login_type === "guest") {
+    deleteUser(user.id);
+  }
+  req.logout((err) => {
+    if (err) throw new Error(err);
+    req.session.destroy((err) => {
+      if (err) throw new Error(err);
+      // res.sendStatus(200); // TODO: client only expects JSON
+      res.json({});
+    });
+  });
+});
+
 io.on("connection", (socket) => {
   console.log("a user connected");
 
@@ -137,4 +254,3 @@ server.listen(PORT, () => {
 function next(e: any) {
   throw new Error("Function not implemented.");
 }
-

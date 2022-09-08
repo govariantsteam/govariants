@@ -12,4 +12,14 @@ export default defineConfig({
     },
     preserveSymlinks: true, // defaults to false, but with default imports from @ofgcommunity/variants-shared in componentes don't work
   },
+  server: {
+    proxy: {
+      "/api": {
+        secure: false,
+        target: "http://localhost:3001/",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ""),
+      },
+    },
+  },
 });

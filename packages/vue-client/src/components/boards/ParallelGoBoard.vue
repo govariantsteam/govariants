@@ -1,3 +1,26 @@
+<script lang="ts">
+function decodeMove(move: string) {
+  return { x: decodeChar(move[0]), y: decodeChar(move[1]) };
+}
+
+// a: 0, b: 1, ... z: 25, A: 26, ... Z: 51
+function decodeChar(char: string): number {
+  const a = "a".charCodeAt(0);
+  const z = "z".charCodeAt(0);
+  const A = "A".charCodeAt(0);
+  const Z = "Z".charCodeAt(0);
+  const char_code = char.charCodeAt(0);
+  if (char_code >= a && char_code <= z) {
+    return char_code - a;
+  }
+  if (char_code >= A && char_code <= Z) {
+    return char_code - A + 26;
+  }
+
+  throw `Invalid character in move: ${char} (${char_code})`;
+}
+</script>
+
 <script setup lang="ts">
 import MulticolorGridBoard from "./MulticolorGridBoard.vue";
 import type {
@@ -60,10 +83,10 @@ function positionClicked(x: number, y: number) {
 
 const board = computed(() => {
   const gboard = Grid.from2DArray(props.gamestate.board);
-  return gboard
-    .map((players) => {
+  const gboard_with_empty = gboard
+    .map((players): { colors: string[]; annotation?: "CR" } | null => {
       if (isKoStone(players)) {
-        return { colors: ["red"] };
+        return { colors: ["gray"] };
       }
       if (players.length === 0) {
         return null;
@@ -71,6 +94,25 @@ const board = computed(() => {
       return { colors: players.map((player) => distinct_colors[player]) };
     })
     .to2DArray();
+  // TODO: set target to ES2017 and use Object.entries
+  Object.keys(props.gamestate.staged).forEach((player_str) => {
+    const player = Number(player_str);
+    if (!props.gamestate.staged[player]) {
+      console.log(props.gamestate.staged, player);
+    }
+    const move = decodeMove(props.gamestate.staged[player]);
+    const stone = gboard_with_empty[move.y][move.x];
+    if (!stone) {
+      gboard_with_empty[move.y][move.x] = {
+        colors: [distinct_colors[player]],
+        annotation: "CR",
+      };
+    } else {
+      stone.colors.push(distinct_colors[player]);
+      stone.annotation = "CR";
+    }
+  });
+  return gboard_with_empty;
 });
 </script>
 

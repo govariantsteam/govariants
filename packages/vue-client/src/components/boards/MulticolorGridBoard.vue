@@ -1,12 +1,14 @@
 <script lang="ts">
 interface MulticolorStone {
   colors: string[];
+  annotation?: "CR" | "MA";
 }
 </script>
 
 <script setup lang="ts">
 import { ref, toRefs, type Ref } from "vue";
 import TaegeukStone from "../TaegeukStone.vue";
+import IntersectionAnnotation from "../IntersectionAnnotation.vue";
 import type { Coordinate } from "@ogfcommunity/variants-shared";
 
 const props = defineProps<{
@@ -82,6 +84,18 @@ function positionHovered(pos: Coordinate) {
         :cy="pos.y"
         :r="0.48"
         :colors="props.board[pos.y][pos.x]?.colors ?? []"
+      />
+    </g>
+    <g>
+      <IntersectionAnnotation
+        v-for="{ x, y } in positions.filter(
+          ({ x, y }) => props.board[y][x]?.annotation
+        )"
+        :key="`${x},${y}`"
+        :cx="x"
+        :cy="y"
+        :r="0.48"
+        :annotation="props.board[y][x]?.annotation!"
       />
     </g>
     <g>

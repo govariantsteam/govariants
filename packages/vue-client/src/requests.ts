@@ -1,8 +1,11 @@
-export const SERVER_URL =
-  process.env.NODE_ENV === "production" ? window.location.origin : "/api";
+export const SERVER_ORIGIN =
+  process.env.NODE_ENV === "production"
+    ? window.location.origin
+    : "http://localhost:3001";
+export const SERVER_PATH_PREFIX = "/api";
 
 export async function get(path: string) {
-  const response = await fetch(SERVER_URL + path);
+  const response = await fetch(SERVER_PATH_PREFIX + path);
   const data = await response.json();
 
   if (!response.ok) {
@@ -17,9 +20,9 @@ export async function get(path: string) {
 // eslint-disable-next-line
 export async function post(path: string, json: any) {
   const headers = new Headers();
-  headers.append("Origin", SERVER_URL); // TODO: Is this necessary?
+  headers.append("Origin", SERVER_ORIGIN); // TODO: Is this necessary?
   headers.append("Content-Type", "application/json");
-  const response = await fetch(SERVER_URL + path, {
+  const response = await fetch(SERVER_PATH_PREFIX + path, {
     method: "post",
     body: JSON.stringify(json),
     headers,

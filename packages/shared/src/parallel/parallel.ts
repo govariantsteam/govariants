@@ -79,6 +79,9 @@ export class ParallelGo extends AbstractGame<ParallelGoConfig, ParallelGoState> 
       return;
     }
 
+    // Remove ko stones
+    this.board = this.board.map((colors) => (colors[0] === -1 ? [] : colors));
+
     let num_passes = 0;
     Object.entries(this.staged).forEach(([player_str, move]) => {
       if (move === "pass") {

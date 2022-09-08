@@ -91,6 +91,38 @@ test("Collision places Ko Stone. (ko mode)", () => {
   ]);
 });
 
+test("Ko stone disappears after one round", () => {
+  const game = new ParallelGo({
+    width: 2,
+    height: 2,
+    num_players: 2,
+    collision_handling: "ko",
+  });
+  game.playMove({ 0: "aa" });
+  game.playMove({ 1: "aa" });
+  game.playMove({ 0: "ba" });
+  game.playMove({ 1: "ab" });
+
+  expect(game.exportState().board[0][0]).toEqual([]);
+});
+
+test("Ko stone still exists midround", () => {
+  const game = new ParallelGo({
+    width: 2,
+    height: 2,
+    num_players: 2,
+    collision_handling: "ko",
+  });
+  game.playMove({ 0: "aa" });
+  game.playMove({ 1: "aa" });
+  game.playMove({ 0: "bb" });
+
+  expect(game.exportState().board).toEqual([
+    [[-1], []],
+    [[], []],
+  ]);
+});
+
 test("Collision places merged stone. (merge mode)", () => {
   const game = new ParallelGo({
     width: 2,

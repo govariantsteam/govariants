@@ -17,6 +17,10 @@ test("Halfway through the round, moves are staged, but not placed.", () => {
     ],
     staged: { 0: "ba", 1: "ca" },
   });
+  expect(game.exportState(0).staged).toEqual({ 0: "ba" });
+  expect(game.exportState(1).staged).toEqual({ 1: "ca" });
+  expect(Object.keys(game.exportState(2).staged)).toEqual([]);
+  expect(Object.keys(game.exportState(3).staged)).toEqual([]);
 });
 
 test("After one round, stones are placed, and no stones are staged.", () => {

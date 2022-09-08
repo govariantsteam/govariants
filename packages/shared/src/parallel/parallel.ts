@@ -39,8 +39,7 @@ export class ParallelGo extends AbstractGame<ParallelGoConfig, ParallelGoState> 
   exportState(player?: number): ParallelGoState {
     let staged = { ...this.staged };
     if (player !== undefined) {
-      staged = {};
-      staged[player] = this.staged[player];
+      staged = this.staged[player] ? { [player]: this.staged[player] } : {};
     }
     return {
       board: this.board.to2DArray(),

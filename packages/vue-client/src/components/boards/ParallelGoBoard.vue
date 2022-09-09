@@ -1,4 +1,7 @@
 <script lang="ts">
+import type { MovesType } from "@ogfcommunity/variants-shared";
+
+// TODO: these functions are borrowed. We need to make a lib!
 function decodeMove(move: string) {
   return { x: decodeChar(move[0]), y: decodeChar(move[1]) };
 }
@@ -18,6 +21,23 @@ function decodeChar(char: string): number {
   }
 
   throw `Invalid character in move: ${char} (${char_code})`;
+}
+
+type Stone = { colors: string[]; annotation?: "CR" };
+
+function forEachMoveModifyStone(
+  moves: MovesType,
+  board: Grid<Stone>,
+  fn: (stone: Stone, player: number) => void
+) {
+  Object.keys(moves).forEach((player_str) => {
+    const player = Number(player_str);
+    const move = decodeMove(moves[player]);
+    const stone = board.at(move);
+    if (stone) {
+      fn(stone, player);
+    }
+  });
 }
 </script>
 
@@ -83,49 +103,31 @@ function positionClicked(x: number, y: number) {
 
 const board = computed(() => {
   const gboard = Grid.from2DArray(props.gamestate.board);
-  const gboard_with_empty = gboard
-    .map((players): { colors: string[]; annotation?: "CR" } | null => {
-      if (isKoStone(players)) {
-        return { colors: ["gray"] };
-      }
-      if (players.length === 0) {
-        return null;
-      }
-      return { colors: players.map((player) => distinct_colors[player]) };
-    })
-    .to2DArray();
-  // TODO: set target to ES2017 and use Object.entries
+  const gboard_with_ko_stones = gboard.map((players): Stone => {
+    if (isKoStone(players)) {
+      return { colors: ["gray"] };
+    }
+    return { colors: players.map((player) => distinct_colors[player]) };
+  });
   if (Object.keys(props.gamestate.staged).length) {
-    Object.keys(props.gamestate.staged).forEach((player_str) => {
-      const player = Number(player_str);
-      const move = decodeMove(props.gamestate.staged[player]);
-      const stone = gboard_with_empty[move.y][move.x];
-      if (!stone) {
-        gboard_with_empty[move.y][move.x] = {
-          colors: [distinct_colors[player]],
-          annotation: "CR",
-        };
-      } else {
+    forEachMoveModifyStone(
+      props.gamestate.staged,
+      gboard_with_ko_stones,
+      (stone, player) => {
         stone.colors.push(distinct_colors[player]);
         stone.annotation = "CR";
       }
-    });
+    );
   } else {
-    Object.keys(props.gamestate.last_round).forEach((player_str) => {
-      const player = Number(player_str);
-      const move = decodeMove(props.gamestate.last_round[player]);
-      const stone = gboard_with_empty[move.y][move.x];
-      if (!stone) {
-        gboard_with_empty[move.y][move.x] = {
-          colors: [],
-          annotation: "CR",
-        };
-      } else {
+    forEachMoveModifyStone(
+      props.gamestate.last_round,
+      gboard_with_ko_stones,
+      (stone) => {
         stone.annotation = "CR";
       }
-    });
+    );
   }
-  return gboard_with_empty;
+  return gboard_with_ko_stones.to2DArray();
 });
 </script>
 

@@ -1,4 +1,5 @@
 import { AbstractGame, MovesType } from "../abstract_game";
+import { Coordinate } from "../coordinate";
 import { Grid } from "../grid";
 
 export interface ParallelGoConfig {
@@ -19,11 +20,6 @@ export interface ParallelGoState {
   board: number[][][];
   staged: MovesType;
   last_round: MovesType;
-}
-
-interface Coordinate {
-  readonly x: number;
-  readonly y: number;
 }
 
 export class ParallelGo extends AbstractGame<
@@ -66,7 +62,7 @@ export class ParallelGo extends AbstractGame<
     const { player, move } = getOnlyMove(moves);
 
     if (!Object.keys(this.specialMoves()).includes(move)) {
-      const decoded_move = decodeMove(move);
+      const decoded_move = Coordinate.fromSgfRepr(move);
       const occupants = this.board.at(decoded_move);
       if (occupants === undefined) {
         throw Error(
@@ -94,7 +90,7 @@ export class ParallelGo extends AbstractGame<
         num_passes++;
         return;
       }
-      const decoded_move = decodeMove(move);
+      const decoded_move = Coordinate.fromSgfRepr(move);
       const player = Number(player_str);
       this.board.at(decoded_move)?.push(player);
     });
@@ -126,27 +122,6 @@ export class ParallelGo extends AbstractGame<
       intersection.length > 1 ? [...arr] : intersection
     );
   }
-}
-
-function decodeMove(move: string): Coordinate {
-  return { x: decodeChar(move[0]), y: decodeChar(move[1]) };
-}
-
-// a: 0, b: 1, ... z: 25, A: 26, ... Z: 51
-function decodeChar(char: string): number {
-  const a = "a".charCodeAt(0);
-  const z = "z".charCodeAt(0);
-  const A = "A".charCodeAt(0);
-  const Z = "Z".charCodeAt(0);
-  const char_code = char.charCodeAt(0);
-  if (char_code >= a && char_code <= z) {
-    return char_code - a;
-  }
-  if (char_code >= A && char_code <= Z) {
-    return char_code - A + 26;
-  }
-
-  throw `Invalid character in move: ${char} (${char_code})`;
 }
 
 /** Asserts there is exactly one move, and returns it */

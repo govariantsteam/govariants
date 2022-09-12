@@ -7,6 +7,7 @@ import {
   isOutOfBounds,
   Color,
 } from "../abstractAlternatingOnGrid";
+import { Coordinate, CoordinateLike } from "../coordinate";
 
 export interface BadukConfig extends AbstractAlternatingOnGridConfig {
   komi: number;
@@ -15,12 +16,6 @@ export interface BadukConfig extends AbstractAlternatingOnGridConfig {
 export interface BadukState extends AbstractAlternatingOnGridState {
   captures: { 0: number; 1: number };
   last_move: string;
-}
-
-// TODO: Redundant code in super class file
-interface Coordinate {
-  readonly x: number;
-  readonly y: number;
 }
 
 export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
@@ -87,7 +82,7 @@ export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
       false
     );
 
-    const determineController = (pos: Coordinate): Color => {
+    const determineController = (pos: CoordinateLike): Color => {
       if (isOutOfBounds(pos, board)) {
         return Color.EMPTY;
       }
@@ -144,13 +139,13 @@ export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
 }
 
 /** Returns true if the group containing (x, y) has at least one liberty. */
-function groupHasLiberties(pos: Coordinate, board: Color[][]) {
+function groupHasLiberties(pos: CoordinateLike, board: Color[][]) {
   const color = board[pos.y][pos.x];
   const width = board[0].length;
   const height = board.length;
   const visited = makeGridWithValue(width, height, false);
 
-  function helper({ x, y }: Coordinate): boolean {
+  function helper({ x, y }: CoordinateLike): boolean {
     if (isOutOfBounds({ x, y }, board)) {
       return false;
     }
@@ -174,12 +169,12 @@ function groupHasLiberties(pos: Coordinate, board: Color[][]) {
   return helper(pos);
 }
 
-function neighboringPositions({ x, y }: Coordinate) {
+function neighboringPositions({ x, y }: CoordinateLike) {
   return [
-    { x: x - 1, y },
-    { x: x + 1, y },
-    { x, y: y - 1 },
-    { x, y: y + 1 },
+    new Coordinate(x - 1, y),
+    new Coordinate(x + 1, y),
+    new Coordinate(x, y - 1),
+    new Coordinate(x, y + 1),
   ] as const;
 }
 
@@ -193,7 +188,7 @@ function removeGroup(pos: Coordinate, board: Color[][]): number {
 
 /** Fills area with the given color, and returns the number of spaces filled. */
 function floodFill(
-  pos: Coordinate,
+  pos: CoordinateLike,
   target_color: Color,
   board: Color[][]
 ): number {
@@ -202,7 +197,7 @@ function floodFill(
     return 0;
   }
 
-  function helper({ x, y }: Coordinate): number {
+  function helper({ x, y }: CoordinateLike): number {
     if (isOutOfBounds({ x, y }, board)) {
       return 0;
     }

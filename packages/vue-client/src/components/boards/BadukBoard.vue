@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import {
   Color,
+  Coordinate,
   type BadukConfig,
   type BadukState,
 } from "@ogfcommunity/variants-shared";
-import { toRefs, type PropType } from "vue";
+import { toRefs } from "vue";
 
 const props = defineProps<{
   gamestate: BadukState;
@@ -17,7 +18,10 @@ const { width, height } = toRefs(props.config);
 
 const positions = new Array(height.value * width.value)
   .fill(null)
-  .map((_, index) => [index % width.value, Math.floor(index / width.value)]);
+  .map(
+    (_, index) =>
+      new Coordinate(index % width.value, Math.floor(index / width.value))
+  );
 
 function colorToClassString(color: Color): string {
   return color === Color.EMPTY
@@ -31,13 +35,8 @@ const emit = defineEmits<{
   (e: "move", pos: string): void;
 }>();
 
-function coordsToLetters(x: number, y: number) {
-  const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  return alphabet[x] + alphabet[y];
-}
-
-function positionClicked(x: number, y: number) {
-  emit("move", coordsToLetters(x, y));
+function positionClicked(pos: Coordinate) {
+  emit("move", pos.toSgfRepr());
 }
 </script>
 
@@ -79,12 +78,12 @@ function positionClicked(x: number, y: number) {
     </g>
     <g>
       <circle
-        v-for="[x, y] in positions"
-        :key="`${x},${y}`"
-        v-bind:class="colorToClassString(gamestate.board[y][x])"
-        v-on:click="positionClicked(x, y)"
-        v-bind:cx="x"
-        v-bind:cy="y"
+        v-for="pos in positions"
+        :key="`${pos.x},${pos.y}`"
+        v-bind:class="colorToClassString(gamestate.board[pos.y][pos.x])"
+        v-on:click="positionClicked(pos)"
+        v-bind:cx="pos.x"
+        v-bind:cy="pos.y"
         r="0.4"
       />
     </g>

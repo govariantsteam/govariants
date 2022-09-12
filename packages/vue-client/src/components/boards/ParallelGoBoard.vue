@@ -1,28 +1,6 @@
 <script lang="ts">
 import type { MovesType } from "@ogfcommunity/variants-shared";
 
-// TODO: these functions are borrowed. We need to make a lib!
-function decodeMove(move: string) {
-  return { x: decodeChar(move[0]), y: decodeChar(move[1]) };
-}
-
-// a: 0, b: 1, ... z: 25, A: 26, ... Z: 51
-function decodeChar(char: string): number {
-  const a = "a".charCodeAt(0);
-  const z = "z".charCodeAt(0);
-  const A = "A".charCodeAt(0);
-  const Z = "Z".charCodeAt(0);
-  const char_code = char.charCodeAt(0);
-  if (char_code >= a && char_code <= z) {
-    return char_code - a;
-  }
-  if (char_code >= A && char_code <= Z) {
-    return char_code - A + 26;
-  }
-
-  throw `Invalid character in move: ${char} (${char_code})`;
-}
-
 type Stone = { colors: string[]; annotation?: "CR" };
 
 function forEachMoveModifyStone(
@@ -32,7 +10,7 @@ function forEachMoveModifyStone(
 ) {
   Object.keys(moves).forEach((player_str) => {
     const player = Number(player_str);
-    const move = decodeMove(moves[player]);
+    const move = Coordinate.fromSgfRepr(moves[player]);
     const stone = board.at(move);
     if (stone) {
       fn(stone, player);
@@ -43,9 +21,10 @@ function forEachMoveModifyStone(
 
 <script setup lang="ts">
 import MulticolorGridBoard from "./MulticolorGridBoard.vue";
-import type {
-  ParallelGoConfig,
-  ParallelGoState,
+import {
+  Coordinate,
+  type ParallelGoConfig,
+  type ParallelGoState,
 } from "@ogfcommunity/variants-shared";
 import { Grid } from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
@@ -88,17 +67,12 @@ const distinct_colors =
         "#000000",
       ];
 
-function coordsToLetters(x: number, y: number) {
-  const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  return alphabet[x] + alphabet[y];
-}
-
 const emit = defineEmits<{
   (e: "move", pos: string): void;
 }>();
 
-function positionClicked(x: number, y: number) {
-  emit("move", coordsToLetters(x, y));
+function positionClicked(pos: Coordinate) {
+  emit("move", pos.toSgfRepr());
 }
 
 const board = computed(() => {
@@ -135,6 +109,6 @@ const board = computed(() => {
   <MulticolorGridBoard
     :board="board"
     :config="props.config"
-    @click="({ x, y }) => positionClicked(x, y)"
+    @click="(pos) => positionClicked(pos)"
   />
 </template>

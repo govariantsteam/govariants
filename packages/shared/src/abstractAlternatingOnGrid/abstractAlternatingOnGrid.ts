@@ -1,4 +1,5 @@
 import { AbstractGame, MovesType } from "../abstract_game";
+import { Coordinate, CoordinateLike } from "../coordinate";
 
 export enum Color {
   EMPTY = 0,
@@ -15,11 +16,6 @@ export interface AbstractAlternatingOnGridState {
   board: Color[][];
   next_to_play: 0 | 1;
   last_move: string;
-}
-
-interface Coordinate {
-  readonly x: number;
-  readonly y: number;
 }
 
 type AbstractAlternatingOnGridMovesType = { 0: string } | { 1: string };
@@ -68,7 +64,7 @@ export abstract class AbstractAlternatingOnGrid<
     }
 
     if (move != "pass") {
-      const decoded_move = decodeMove(move);
+      const decoded_move = Coordinate.fromSgfRepr(move);
       const { x, y } = decoded_move;
       if (isOutOfBounds(decoded_move, this.board)) {
         throw Error(
@@ -127,27 +123,6 @@ export function copyBoard(board: Color[][]) {
   return board.map((row) => [...row]);
 }
 
-function decodeMove(move: string): Coordinate {
-  return { x: decodeChar(move[0]), y: decodeChar(move[1]) };
-}
-
-// a: 0, b: 1, ... z: 25, A: 26, ... Z: 51
-function decodeChar(char: string): number {
-  const a = "a".charCodeAt(0);
-  const z = "z".charCodeAt(0);
-  const A = "A".charCodeAt(0);
-  const Z = "Z".charCodeAt(0);
-  const char_code = char.charCodeAt(0);
-  if (char_code >= a && char_code <= z) {
-    return char_code - a;
-  }
-  if (char_code >= A && char_code <= Z) {
-    return char_code - A + 26;
-  }
-
-  throw `Invalid character in move: ${char} (${char_code})`;
-}
-
 /** Asserts there is exaclty one move, and returns it */
 function getOnlyMove(moves: MovesType): { player: number; move: string } {
   const players = Object.keys(moves);
@@ -161,6 +136,9 @@ function getOnlyMove(moves: MovesType): { player: number; move: string } {
   return { player, move: moves[player] };
 }
 
-export function isOutOfBounds({ x, y }: Coordinate, board: Color[][]): boolean {
+export function isOutOfBounds(
+  { x, y }: CoordinateLike,
+  board: Color[][]
+): boolean {
   return board[y] === undefined || board[y][x] === undefined;
 }

@@ -1,7 +1,4 @@
-export interface Coordinate {
-  x: number;
-  y: number;
-}
+import { Coordinate, CoordinateLike } from "./coordinate";
 
 /**
  * A 2D analog to the native JavaScript array.  As much as possible,
@@ -17,7 +14,7 @@ export class Grid<T> {
     this.arr = new Array(width * height);
   }
 
-  at(index: Coordinate): T | undefined {
+  at(index: CoordinateLike): T | undefined {
     const w = this.width;
     const h = this.height;
 
@@ -30,7 +27,7 @@ export class Grid<T> {
     return this.arr[coordinate_to_flat_index(index, w)];
   }
 
-  set(index: Coordinate, value: T): void {
+  set(index: CoordinateLike, value: T): void {
     const w = this.width;
     const h = this.height;
 
@@ -96,16 +93,19 @@ export class Grid<T> {
 }
 
 function flat_index_to_coordinate(index: number, width: number): Coordinate {
-  return { x: index % width, y: Math.floor(index / width) };
+  return new Coordinate(index % width, Math.floor(index / width));
 }
 
-function coordinate_to_flat_index({ x, y }: Coordinate, width: number): number {
+function coordinate_to_flat_index(
+  { x, y }: CoordinateLike,
+  width: number
+): number {
   return y * width + x;
 }
 
 /** If index is negative, count from the end of the row or column. */
 function handleNegativeIndices(
-  { x, y }: Coordinate,
+  { x, y }: CoordinateLike,
   w: number,
   h: number
 ): Coordinate {
@@ -116,10 +116,14 @@ function handleNegativeIndices(
   if (y < 0) {
     y = h + y;
   }
-  return { x, y };
+  return new Coordinate(x, y);
 }
 
-function isOutOfBounds({ x, y }: Coordinate, w: number, h: number): boolean {
+function isOutOfBounds(
+  { x, y }: CoordinateLike,
+  w: number,
+  h: number
+): boolean {
   if (x >= w) {
     return true;
   }

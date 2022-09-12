@@ -36,12 +36,11 @@ function colorToClassString(color: Color): string {
       v-bind:width="19"
       v-bind:height="19"
     />
-    <g
-      v-for="intersection in intersections"
-      :key="intersection.Identifier"
-    >
+    <g v-for="intersection in intersections" :key="intersection.Identifier">
       <line
-        v-for="neighbour in intersection.Neighbours.filter(n => n.Identifier < intersection.Identifier)"
+        v-for="neighbour in intersection.Neighbours.filter(
+          (n) => n.Identifier < intersection.Identifier
+        )"
         :key="neighbour.Identifier"
         class="grid"
         v-bind:x1="intersection.Position.X"

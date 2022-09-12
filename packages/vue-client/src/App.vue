@@ -1,6 +1,6 @@
 <script setup lang="ts">
-  import { RouterLink, RouterView } from "vue-router";
-  import UserNav from "./components/UserNav.vue";
+import { RouterLink, RouterView } from "vue-router";
+import UserNav from "./components/UserNav.vue";
 </script>
 
 <template>

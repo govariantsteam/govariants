@@ -5,7 +5,7 @@
     "start": "nodemon ./src/index.ts",
     "launch": "tsc && node ./dist/index.js",
     "test": "echo \"No tests in packages/server.\"",
-    "lint": "echo \"Linter not yet set up in packages/server.\""
+    "lint": "eslint ./src"
   },
   "dependencies": {
     "@ogfcommunity/variants-shared": "1.0.0",
@@ -28,5 +28,10 @@
     "socket.io": "^4.5.1",
     "ts-node": "^10.8.1",
     "typescript": "^4.7.4"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.36.2",
+    "@typescript-eslint/parser": "^5.36.2",
+    "eslint": "^8.23.0"
   }
 }

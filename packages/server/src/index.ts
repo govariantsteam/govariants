@@ -132,7 +132,3 @@ const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
   console.log(`listening on *:${PORT}`);
 });
-
-function next(e: any) {
-  throw new Error("Function not implemented.");
-}

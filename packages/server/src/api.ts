@@ -54,7 +54,6 @@ router.post("/games/:gameId/move", async (req, res, next) => {
 });
 
 router.post("/games/:gameId/sit/:seat", async (req, res) => {
-  const move: MovesType = req.body;
   // TODO: make sure this is set to a valid id once we have user auth
   // const user_id = req.user?.id; */
   const user: User = DELETETHIS_getCurrentUser();
@@ -69,7 +68,6 @@ router.post("/games/:gameId/sit/:seat", async (req, res) => {
 });
 
 router.post("/games/:gameId/leave/:seat", async (req, res) => {
-  const move: MovesType = req.body;
   // TODO: make sure this is set to a valid id once we have user auth
   // const user_id = req.user?.id; */
   const user = DELETETHIS_getCurrentUser();
@@ -102,7 +100,7 @@ router.get("/guestLogin", function (req, res, next) {
   })(req, res, next);
 });
 
-router.get("/checkLogin", function (req, res, next) {
+router.get("/checkLogin", function (req, res) {
   return res.json(req.user ? req.user : null);
 });
 

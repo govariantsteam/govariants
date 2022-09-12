@@ -83,8 +83,12 @@ export async function playMove(
     throw Error(`Seat ${move.player} not occupied!`);
   }
 
-  if (game.players[move.player].id !== user_id) {
-    throw Error(`Not the right user: {expected`);
+  const expected_player = game.players[move.player];
+
+  if (expected_player.id !== user_id) {
+    throw Error(
+      `Not the right user: expected ${expected_player.id}, got ${user_id}`
+    );
   }
 
   game_obj.playMove(moves);

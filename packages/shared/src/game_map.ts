@@ -1,6 +1,6 @@
 import { Baduk } from "./baduk";
 import { AbstractGame } from "./abstract_game";
-import { BadukWithAbstractBoard } from "./baduk/badukWithAbstractBoard";
+import { BadukWithAbstractBoard } from "./badukWithAbstractBoard/badukWithAbstractBoard";
 import { Phantom } from "./phantom";
 import { ParallelGo } from "./parallel";
 

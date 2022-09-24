@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { Color } from "@ogfcommunity/variants-shared";
-import type { BadukWithAbstractBoardConfig, BadukWithAbstractBoardState } from "@ogfcommunity/variants-shared/src/baduk/badukWithAbstractBoard";
-import { PolygonalBoardHelperFunctions } from "@ogfcommunity/variants-shared/src/baduk/board/PolygonalBoardHelper";
+import type {
+  BadukWithAbstractBoardConfig,
+  BadukWithAbstractBoardState,
+} from "@ogfcommunity/variants-shared/src/badukWithAbstractBoard/badukWithAbstractBoard";
+//import { CreatePolygonalBoard } from "@ogfcommunity/variants-shared/src/badukWithAbstractBoard/abstractBoard/PolygonalBoardHelper";
 import { propsToAttrMap } from "@vue/shared";
 
 //const helper = new PolygonalBoardHelperFunctions();
@@ -46,7 +49,10 @@ function intersectionClicked(identifier: number) {
       v-bind:width="19"
       v-bind:height="19"
     />
-    <g v-for="intersection in props.gamestate.board.Intersections" :key="intersection.Identifier">
+    <g
+      v-for="intersection in props.gamestate.board.Intersections"
+      :key="intersection.Identifier"
+    >
       <line
         v-for="neighbour in intersection.Neighbours.filter(
           (n) => n.Identifier < intersection.Identifier
@@ -59,7 +65,10 @@ function intersectionClicked(identifier: number) {
         v-bind:y2="neighbour.Position.Y"
       />
     </g>
-    <g v-for="intersection in props.gamestate.board.Intersections" :key="intersection.Identifier">
+    <g
+      v-for="intersection in props.gamestate.board.Intersections"
+      :key="intersection.Identifier"
+    >
       <circle
         v-bind:class="colorToClassString(intersection.StoneState.Color)"
         v-on:click="intersectionClicked(intersection.Identifier)"

@@ -1,4 +1,4 @@
-import type { Intersection } from "../baduk/board/intersection";
+import type { Intersection } from "../intersection";
 
 export interface IBadukBoard
 {

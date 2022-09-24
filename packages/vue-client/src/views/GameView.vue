@@ -26,7 +26,9 @@ const gamestate = computed(() => {
   gameResponse.moves.forEach((move) => {
     game_obj.playMove(move);
   });
-  return game_obj.exportState(playing_as.value);
+  var t = game_obj.exportState(playing_as.value);
+  console.log(t);
+  return t;
 });
 const variantGameView = computed(() => board_map[gameResponse.variant]);
 watchEffect(async () => {

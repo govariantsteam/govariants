@@ -44,7 +44,7 @@ export class BadukWithAbstractBoard extends AbstractGame<BadukWithAbstractBoardC
 
     exportState(): BadukWithAbstractBoardState {
         return {
-            board: this.board.Export(),
+            board: this.board,
             captures: { 0: this.captures[0], 1: this.captures[1] },
             next_to_play: this.next_to_play,
         };
@@ -100,10 +100,10 @@ export class BadukWithAbstractBoard extends AbstractGame<BadukWithAbstractBoardC
         // Capture any opponent groups
         intersection.Neighbours.forEach((neighbour) => {
             if (
-                neighbour.StoneState.Color === opponent_color &&
+                neighbour.StoneState.Color !== player_color &&
                 !groupHasLiberties(neighbour, this.board)
             ) {
-                this.captures[player] += removeGroup(intersection, this.board);
+                this.captures[player] += removeGroup(neighbour, this.board);
             }
         });
 

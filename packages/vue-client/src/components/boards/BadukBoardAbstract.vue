@@ -4,14 +4,8 @@ import type {
   BadukWithAbstractBoardConfig,
   BadukWithAbstractBoardState,
 } from "@ogfcommunity/variants-shared/src/badukWithAbstractBoard/badukWithAbstractBoard";
-//import { CreatePolygonalBoard } from "@ogfcommunity/variants-shared/src/badukWithAbstractBoard/abstractBoard/PolygonalBoardHelper";
 import { propsToAttrMap } from "@vue/shared";
 
-//const helper = new PolygonalBoardHelperFunctions();
-//const boardsize = 5;
-//const intersections = props.gamestate.board.Intersections;
-
-// TODO: change the types for these if config or gamestate gets used
 const props = defineProps<{
   config: BadukWithAbstractBoardConfig;
   gamestate: BadukWithAbstractBoardState;

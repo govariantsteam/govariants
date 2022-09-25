@@ -4,7 +4,6 @@ import type {
   BadukWithAbstractBoardConfig,
   BadukWithAbstractBoardState,
 } from "@ogfcommunity/variants-shared/src/badukWithAbstractBoard/badukWithAbstractBoard";
-import { propsToAttrMap } from "@vue/shared";
 
 const props = defineProps<{
   config: BadukWithAbstractBoardConfig;

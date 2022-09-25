@@ -12,7 +12,6 @@ import { deleteUser } from "./users";
 import {
   GameResponse,
   MovesType,
-  DELETETHIS_getCurrentUser,
   User,
   UserResponse,
 } from "@ogfcommunity/variants-shared";
@@ -42,21 +41,17 @@ router.post("/games", async (req, res) => {
 
 router.post("/games/:gameId/move", async (req, res, next) => {
   const move: MovesType = req.body;
-  // TODO: make sure this is set to a valid id once we have user auth
-  // const user_id = req.user?.id; */
-  const user: User = DELETETHIS_getCurrentUser();
+  const user_id = (req.user as User)?.id;
 
   try {
-    res.send(await playMove(req.params.gameId, move, user.id));
+    res.send(await playMove(req.params.gameId, move, user_id));
   } catch (e) {
     next(e.message);
   }
 });
 
 router.post("/games/:gameId/sit/:seat", async (req, res) => {
-  // TODO: make sure this is set to a valid id once we have user auth
-  // const user_id = req.user?.id; */
-  const user: User = DELETETHIS_getCurrentUser();
+  const user = req.user as User | undefined;
 
   const players: User[] = await takeSeat(
     req.params.gameId,
@@ -69,13 +64,12 @@ router.post("/games/:gameId/sit/:seat", async (req, res) => {
 
 router.post("/games/:gameId/leave/:seat", async (req, res) => {
   // TODO: make sure this is set to a valid id once we have user auth
-  // const user_id = req.user?.id; */
-  const user = DELETETHIS_getCurrentUser();
+  const user_id = (req.user as User)?.id;
 
   const players: User[] = await leaveSeat(
     req.params.gameId,
     Number(req.params.seat),
-    user.id
+    user_id
   );
 
   res.send(players);

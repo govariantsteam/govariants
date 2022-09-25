@@ -139,6 +139,9 @@ class PolygonalTile {
         }
     }
 
+    // completes the outer ring of intersections (6 - 17)
+    // if some neighbours are missing, adds new intersections
+    // otherwise adds references to intersections of neighbours
     Complete() {
         if (this.NeighbourTiles[2] == null) {
             if (this.NeighbourTiles[1]?.Completed != true) {
@@ -312,151 +315,141 @@ class PolygonalTile {
     }
 }
 
-export class PolygonalBoardHelperFunctions {
-    Min(a: number, b: number): number {
-        if (a < b) {
-            return a;
-        }
-    return b;
-    }
+export function CreatePolygonalBoard(size: number) : Intersection[] {
+    let StartTile: PolygonalTile = new PolygonalTile(new Vector2D(0, 0));
+    let Tiles: PolygonalTile[] = [StartTile];
+    let tileQueue: PolygonalTile[] = [StartTile];
 
-    CreatePolygonalBoard(size: number) : Intersection[] {
-        let StartTile: PolygonalTile = new PolygonalTile(new Vector2D(0, 0));
-        let Tiles: PolygonalTile[] = [StartTile];
-        let tileQueue: PolygonalTile[] = [StartTile];
+    for (let i = 1; i < (size + 1) / 2; i++) {
+        let newTilesQueue: PolygonalTile[] = [];
 
-        for (let i = 1; i < (size + 1) / 2; i++) {
-            let newTilesQueue: PolygonalTile[] = [];
+        while (tileQueue.length > 0) {
+            let tile = tileQueue.pop() as PolygonalTile;
 
-            while (tileQueue.length > 0) {
-                let tile = tileQueue.pop() as PolygonalTile;
+            if (tile.NeighbourTiles[0] == null) {
+                let newTile = new PolygonalTile(tile.ReferencePoint.Add(TileShiftRight));
+                Tiles.push(newTile);
+                tile.ConnectToRight(newTile, true);
+                newTilesQueue.push(newTile);
 
-                if (tile.NeighbourTiles[0] == null) {
-                    let newTile = new PolygonalTile(tile.ReferencePoint.Add(TileShiftRight));
-                    Tiles.push(newTile);
-                    tile.ConnectToRight(newTile, true);
-                    newTilesQueue.push(newTile);
-
-                    if (tile.NeighbourTiles[1] != null) {
-                        newTile.ConnectToTopLeft(tile.NeighbourTiles[1], true);
-                    }
-
-                    if (tile.NeighbourTiles[5] != null) {
-                        newTile.ConnectToBottomLeft(tile.NeighbourTiles[5], true);
-                    }
+                if (tile.NeighbourTiles[1] != null) {
+                    newTile.ConnectToTopLeft(tile.NeighbourTiles[1], true);
                 }
 
-                if (tile.NeighbourTiles[1] == null) {
-                    let newTile = new PolygonalTile(tile.ReferencePoint.Substract(TileShiftBottomLeft));
-                    Tiles.push(newTile);
-                    tile.ConnectToTopRight(newTile, true);
-                    newTilesQueue.push(newTile);
-
-                    if (tile.NeighbourTiles[2] != null) {
-                        newTile.ConnectToLeft(tile.NeighbourTiles[2], true);
-                    }
-
-                    if (tile.NeighbourTiles[0] != null) {
-                        newTile.ConnectToBottomRight(tile.NeighbourTiles[0], true);
-                    }
-                }
-
-                if (tile.NeighbourTiles[2] == null) {
-                    let newTile = new PolygonalTile(tile.ReferencePoint.Substract(TileShiftBottomRight));
-                    Tiles.push(newTile);
-                    tile.ConnectToTopLeft(newTile, true);
-                    newTilesQueue.push(newTile);
-
-                    if (tile.NeighbourTiles[3] != null) {
-                        newTile.ConnectToBottomLeft(tile.NeighbourTiles[3], true);
-                    }
-
-                    if (tile.NeighbourTiles[1] != null) {
-                        newTile.ConnectToRight(tile.NeighbourTiles[1], true);
-                    }
-                }
-
-                if (tile.NeighbourTiles[3] == null) {
-                    let newTile = new PolygonalTile(tile.ReferencePoint.Substract(TileShiftRight));
-                    Tiles.push(newTile);
-                    tile.ConnectToLeft(newTile, true);
-                    newTilesQueue.push(newTile);
-
-                    if (tile.NeighbourTiles[4] != null) {
-                        newTile.ConnectToBottomRight(tile.NeighbourTiles[4], true);
-                    }
-
-                    if (tile.NeighbourTiles[2] != null) {
-                        newTile.ConnectToTopRight(tile.NeighbourTiles[2], true);
-                    }
-                }
-
-                if (tile.NeighbourTiles[4] == null) {
-                    let newTile = new PolygonalTile(tile.ReferencePoint.Add(TileShiftBottomLeft));
-                    Tiles.push(newTile);
-                    tile.ConnectToBottomLeft(newTile, true);
-                    newTilesQueue.push(newTile);
-
-                    if (tile.NeighbourTiles[5] != null) {
-                        newTile.ConnectToRight(tile.NeighbourTiles[5], true);
-                    }
-
-                    if (tile.NeighbourTiles[3] != null) {
-                        newTile.ConnectToTopLeft(tile.NeighbourTiles[3], true);
-                    }
-                }
-
-                if (tile.NeighbourTiles[5] == null) {
-                    let newTile = new PolygonalTile(tile.ReferencePoint.Add(TileShiftBottomRight));
-                    Tiles.push(newTile);
-                    tile.ConnectToBottomRight(newTile, true);
-                    newTilesQueue.push(newTile);
-
-                    if (tile.NeighbourTiles[0] != null) {
-                        newTile.ConnectToTopRight(tile.NeighbourTiles[0], true);
-                    }
-
-                    if (tile.NeighbourTiles[4] != null) {
-                        newTile.ConnectToLeft(tile.NeighbourTiles[4], true);
-                    }
+                if (tile.NeighbourTiles[5] != null) {
+                    newTile.ConnectToBottomLeft(tile.NeighbourTiles[5], true);
                 }
             }
-            tileQueue = newTilesQueue;
-        }
 
-        let completed: Boolean = false;
-        if (size % 2 === 0) {
-            Tiles.forEach(tile => tile.Complete());
-            completed = true;
-        }
+            if (tile.NeighbourTiles[1] == null) {
+                let newTile = new PolygonalTile(tile.ReferencePoint.Substract(TileShiftBottomLeft));
+                Tiles.push(newTile);
+                tile.ConnectToTopRight(newTile, true);
+                newTilesQueue.push(newTile);
 
-        let intersections: Intersection[] = [];
-        for (let i = 0; i < Tiles.length; i++) {
-            const tile = Tiles[i];
-            for (let j = 0; j < tile.Intersections.length; j++) {
-                let intersection = tile.Intersections[j];
-                if (intersections.indexOf(intersection) < 0) {
-                    intersections.push(tile.Intersections[j]);
+                if (tile.NeighbourTiles[2] != null) {
+                    newTile.ConnectToLeft(tile.NeighbourTiles[2], true);
+                }
+
+                if (tile.NeighbourTiles[0] != null) {
+                    newTile.ConnectToBottomRight(tile.NeighbourTiles[0], true);
+                }
+            }
+
+            if (tile.NeighbourTiles[2] == null) {
+                let newTile = new PolygonalTile(tile.ReferencePoint.Substract(TileShiftBottomRight));
+                Tiles.push(newTile);
+                tile.ConnectToTopLeft(newTile, true);
+                newTilesQueue.push(newTile);
+
+                if (tile.NeighbourTiles[3] != null) {
+                    newTile.ConnectToBottomLeft(tile.NeighbourTiles[3], true);
+                }
+
+                if (tile.NeighbourTiles[1] != null) {
+                    newTile.ConnectToRight(tile.NeighbourTiles[1], true);
+                }
+            }
+
+            if (tile.NeighbourTiles[3] == null) {
+                let newTile = new PolygonalTile(tile.ReferencePoint.Substract(TileShiftRight));
+                Tiles.push(newTile);
+                tile.ConnectToLeft(newTile, true);
+                newTilesQueue.push(newTile);
+
+                if (tile.NeighbourTiles[4] != null) {
+                    newTile.ConnectToBottomRight(tile.NeighbourTiles[4], true);
+                }
+
+                if (tile.NeighbourTiles[2] != null) {
+                    newTile.ConnectToTopRight(tile.NeighbourTiles[2], true);
+                }
+            }
+
+            if (tile.NeighbourTiles[4] == null) {
+                let newTile = new PolygonalTile(tile.ReferencePoint.Add(TileShiftBottomLeft));
+                Tiles.push(newTile);
+                tile.ConnectToBottomLeft(newTile, true);
+                newTilesQueue.push(newTile);
+
+                if (tile.NeighbourTiles[5] != null) {
+                    newTile.ConnectToRight(tile.NeighbourTiles[5], true);
+                }
+
+                if (tile.NeighbourTiles[3] != null) {
+                    newTile.ConnectToTopLeft(tile.NeighbourTiles[3], true);
+                }
+            }
+
+            if (tile.NeighbourTiles[5] == null) {
+                let newTile = new PolygonalTile(tile.ReferencePoint.Add(TileShiftBottomRight));
+                Tiles.push(newTile);
+                tile.ConnectToBottomRight(newTile, true);
+                newTilesQueue.push(newTile);
+
+                if (tile.NeighbourTiles[0] != null) {
+                    newTile.ConnectToTopRight(tile.NeighbourTiles[0], true);
+                }
+
+                if (tile.NeighbourTiles[4] != null) {
+                    newTile.ConnectToLeft(tile.NeighbourTiles[4], true);
                 }
             }
         }
-        
-
-        let minX: number = intersections[0].Position.X;
-        let minY: number = intersections[0].Position.Y;
-        for (let i = 0; i < intersections.length; i++) {
-            minX = this.Min(minX, intersections[i].Position.X);
-            minY = this.Min(minY, intersections[i].Position.Y);
-        }
-        let shift: Vector2D = new Vector2D(minX, minY);
-
-        for (let z = 0; z < intersections.length; z++)
-        {
-            let i = intersections[z];
-            i.Identifier = z;
-            i.Position = i.Position.Substract(shift);
-        }
-
-        return intersections;
+        tileQueue = newTilesQueue;
     }
+
+    let completed: Boolean = false;
+    if (size % 2 === 0) {
+        Tiles.forEach(tile => tile.Complete());
+        completed = true;
+    }
+
+    let intersections: Intersection[] = [];
+    for (let i = 0; i < Tiles.length; i++) {
+        const tile = Tiles[i];
+        for (let j = 0; j < tile.Intersections.length; j++) {
+            let intersection = tile.Intersections[j];
+            if (intersections.indexOf(intersection) < 0) {
+                intersections.push(tile.Intersections[j]);
+            }
+        }
+    }
+
+    let minX: number = intersections[0].Position.X;
+    let minY: number = intersections[0].Position.Y;
+    for (let i = 0; i < intersections.length; i++) {
+        minX = Math.min(minX, intersections[i].Position.X);
+        minY = Math.min(minY, intersections[i].Position.Y);
+    }
+    let shift: Vector2D = new Vector2D(minX, minY);
+
+    for (let z = 0; z < intersections.length; z++)
+    {
+        let i = intersections[z];
+        i.Identifier = z;
+        i.Position = i.Position.Substract(shift);
+    }
+
+    return intersections;
 }

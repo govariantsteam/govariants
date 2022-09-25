@@ -1,15 +1,13 @@
 <script setup lang="ts">
 import { Color } from "@ogfcommunity/variants-shared";
-import { PolygonalBoardHelperFunctions } from "@ogfcommunity/variants-shared/src/baduk/board/PolygonalBoardHelper";
+import type {
+  BadukWithAbstractBoardConfig,
+  BadukWithAbstractBoardState,
+} from "@ogfcommunity/variants-shared/src/badukWithAbstractBoard/badukWithAbstractBoard";
 
-const helper = new PolygonalBoardHelperFunctions();
-const boardsize = 5;
-const intersections = helper.CreatePolygonalBoard(boardsize);
-
-// TODO: change the types for these if config or gamestate gets used
-defineProps<{
-  config: unknown;
-  gamestate: unknown;
+const props = defineProps<{
+  config: BadukWithAbstractBoardConfig;
+  gamestate: BadukWithAbstractBoardState;
 }>();
 
 function colorToClassString(color: Color): string {
@@ -18,6 +16,14 @@ function colorToClassString(color: Color): string {
     : color === Color.BLACK
     ? "stone black"
     : "stone white";
+}
+
+const emit = defineEmits<{
+  (e: "move", Identifier: number): void;
+}>();
+
+function intersectionClicked(identifier: number) {
+  emit("move", identifier);
 }
 </script>
 
@@ -36,7 +42,10 @@ function colorToClassString(color: Color): string {
       v-bind:width="19"
       v-bind:height="19"
     />
-    <g v-for="intersection in intersections" :key="intersection.Identifier">
+    <g
+      v-for="intersection in props.gamestate.board.Intersections"
+      :key="intersection.Identifier"
+    >
       <line
         v-for="neighbour in intersection.Neighbours.filter(
           (n) => n.Identifier < intersection.Identifier
@@ -47,6 +56,18 @@ function colorToClassString(color: Color): string {
         v-bind:x2="neighbour.Position.X"
         v-bind:y1="intersection.Position.Y"
         v-bind:y2="neighbour.Position.Y"
+      />
+    </g>
+    <g
+      v-for="intersection in props.gamestate.board.Intersections"
+      :key="intersection.Identifier"
+    >
+      <circle
+        v-bind:class="colorToClassString(intersection.StoneState.Color)"
+        v-on:click="intersectionClicked(intersection.Identifier)"
+        v-bind:cx="intersection.Position.X"
+        v-bind:cy="intersection.Position.Y"
+        r="0.4"
       />
     </g>
   </svg>

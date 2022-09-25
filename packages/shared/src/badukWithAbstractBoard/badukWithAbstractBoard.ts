@@ -1,8 +1,8 @@
 import { AbstractGame } from "../abstract_game";
 import type { MovesType } from "../abstract_game";
-import type { IBadukBoard } from "../Interfaces/IBadukBoard";
-import { BadukBoardAbstract } from "./board/BadukBoardAbstract";
-import type { Intersection } from "./board/intersection";
+import type { IBadukBoard } from "./abstractBoard/Interfaces/IBadukBoard";
+import { BadukBoardAbstract } from "./abstractBoard/BadukBoardAbstract";
+import type { Intersection } from "./abstractBoard/intersection";
 
 export enum Color {
     EMPTY = 0,
@@ -44,7 +44,7 @@ export class BadukWithAbstractBoard extends AbstractGame<BadukWithAbstractBoardC
 
     exportState(): BadukWithAbstractBoardState {
         return {
-            board: this.board.Export(),
+            board: this.board,
             captures: { 0: this.captures[0], 1: this.captures[1] },
             next_to_play: this.next_to_play,
         };
@@ -100,10 +100,10 @@ export class BadukWithAbstractBoard extends AbstractGame<BadukWithAbstractBoardC
         // Capture any opponent groups
         intersection.Neighbours.forEach((neighbour) => {
             if (
-                neighbour.StoneState.Color === opponent_color &&
+                neighbour.StoneState.Color !== player_color &&
                 !groupHasLiberties(neighbour, this.board)
             ) {
-                this.captures[player] += removeGroup(intersection, this.board);
+                this.captures[player] += removeGroup(neighbour, this.board);
             }
         });
 
@@ -120,64 +120,9 @@ export class BadukWithAbstractBoard extends AbstractGame<BadukWithAbstractBoardC
         return 2;
     }
 
-    /*private finalizeScore(): void {
-        const board = copyBoard(this.board);
-
-        const visited: { [key: string]: Boolean } = {};
-        board.Intersections.forEach((i: Intersection) => visited[i.Identifier] = false);
-
-        const determineController = (intersection: Intersection): Color => {
-            let color = intersection.StoneState.Color;
-            if (color !== Color.EMPTY) {
-                return color;
-            }
-            if (visited[intersection.Identifier]) {
-                return Color.EMPTY;
-            }
-            visited[intersection.Identifier] = true;
-            const neighbor_results =
-                intersection.Neighbours.map(determineController);
-            const saw_white = neighbor_results.includes(Color.WHITE);
-            const saw_black = neighbor_results.includes(Color.BLACK);
-            if (saw_black && saw_white) {
-                return Color.EMPTY;
-            }
-            if (saw_black) {
-                return Color.BLACK;
-            }
-
-            if (saw_white) {
-                return Color.WHITE;
-            }
-            return Color.EMPTY;
-        };
-
-        for (let y = 0; y < this.config.height; y++) {
-            for (let x = 0; x < this.config.width; x++) {
-                if (visited[y][x]) {
-                    continue;
-                }
-                if (board[y][x] === Color.EMPTY) {
-                    const controller = determineController({ x, y });
-                    floodFill({ x, y }, controller, board);
-                }
-            }
-        }
-
-        const black_points: number = countValueIn2dArray(Color.BLACK, board);
-        const white_points: number =
-            countValueIn2dArray(Color.WHITE, board) + this.config.komi;
-        const diff = black_points - white_points;
-        if (diff < 0) {
-            this.result = `W+${-diff}`;
-        } else if (diff > 0) {
-            this.result = `B+${diff}`;
-        } else {
-            this.result = "Tie";
-        }
-
-        this.phase = "gameover";
-    }*/
+    private finalizeScore(): void {
+        console.log("finalise score is not implemented yet");
+    }
 
     specialMoves() {
         return { pass: "Pass", resign: "Resign" };

@@ -1,8 +1,8 @@
-import type { IBadukBoard } from "../../Interfaces/IBadukBoard";
+import type { IBadukBoard } from "./Interfaces/IBadukBoard";
 import type { BadukWithAbstractBoardConfig } from "../badukWithAbstractBoard";
 import { BoardPattern } from "../badukWithAbstractBoard";
 import { Intersection } from "./intersection";
-import { PolygonalBoardHelperFunctions } from "./PolygonalBoardHelper";
+import { CreatePolygonalBoard } from "./PolygonalBoardHelper";
 import { Vector2D } from "./Vector2D";
 
 export class BadukBoardAbstract implements IBadukBoard 
@@ -16,9 +16,10 @@ export class BadukBoardAbstract implements IBadukBoard
 		{
 			case BoardPattern.Rectangular:
 				this.Intersections = [];
-				this.Array2D = new Array<Array<Intersection>>(conf.height);
+				this.Array2D = [];
 
 				for (let i = 0; i < conf.height; i++) {
+					this.Array2D.push(new Array<Intersection>());
 					for (let j = 0; j < conf.width; j++) {
 						let intersection = new Intersection(new Vector2D(i, j));
 						intersection.Identifier = i * conf.width + j;
@@ -37,8 +38,7 @@ export class BadukBoardAbstract implements IBadukBoard
 				return;
 			case BoardPattern.Polygonal:
 				this.Array2D = null;
-				var helper = new PolygonalBoardHelperFunctions();
-				this.Intersections = helper.CreatePolygonalBoard(helper.Min(conf.height, conf.width));
+				this.Intersections = CreatePolygonalBoard(Math.min(conf.height, conf.width));
 				return;
 			default:
 				throw new Error("unknown board pattern");

@@ -5,7 +5,7 @@ import { Phantom } from "./phantom";
 import { ParallelGo } from "./parallel";
 
 export const game_map: {
-  [variant: string]: new (config: any) => AbstractGame;
+  [variant: string]: new (config?: any) => AbstractGame;
 } = {
   baduk: Baduk,
   badukWithAbstractBoard: BadukWithAbstractBoard,
@@ -35,4 +35,9 @@ export function makeGameObject(
 
 export function getVariantList(): string[] {
   return Object.keys(game_map);
+}
+
+export function getDefaultConfig(variant: string) {
+  const game = new game_map[variant]();
+  return game.defaultConfig();
 }

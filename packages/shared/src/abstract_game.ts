@@ -8,8 +8,11 @@
 export abstract class AbstractGame<GameConfig = object, GameState = object> {
   private phase_: GamePhase = "play";
   private result_: string = "";
+  protected readonly config: GameConfig;
 
-  constructor(protected readonly config: GameConfig) {}
+  constructor(config?: GameConfig) {
+    this.config = config ?? this.defaultConfig();
+  }
 
   /**
    * Play one move by the specified player.
@@ -63,6 +66,13 @@ export abstract class AbstractGame<GameConfig = object, GameState = object> {
   specialMoves(): { [key: string]: string } {
     return {};
   }
+
+  /**
+   * Returns a valid config for the variant.
+   *
+   * This is used in the game creation form.
+   */
+  abstract defaultConfig(): GameConfig;
 }
 export interface MovesType {
   [player: number]: string;

@@ -37,9 +37,9 @@ export class BadukWithAbstractBoard extends AbstractGame<BadukWithAbstractBoardC
     private captures = { 0: 0, 1: 0 };
     private last_move = "";
 
-    constructor(config: BadukWithAbstractBoardConfig) {
+    constructor(config?: BadukWithAbstractBoardConfig) {
         super(config);
-        this.board = new BadukBoardAbstract(config);
+        this.board = new BadukBoardAbstract(this.config);
     }
 
     exportState(): BadukWithAbstractBoardState {
@@ -126,6 +126,10 @@ export class BadukWithAbstractBoard extends AbstractGame<BadukWithAbstractBoardC
 
     specialMoves() {
         return { pass: "Pass", resign: "Resign" };
+    }
+
+    defaultConfig(): BadukWithAbstractBoardConfig {
+        return { width: 4, height: 4, komi: 5.5, pattern: 2 };
     }
 }
 

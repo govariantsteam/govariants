@@ -21,7 +21,7 @@ export interface BadukState extends AbstractAlternatingOnGridState {
 export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
   private captures = { 0: 0, 1: 0 };
 
-  constructor(config: BadukConfig) {
+  constructor(config?: BadukConfig) {
     super(config);
   }
 
@@ -135,6 +135,10 @@ export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
     }
 
     this.phase = "gameover";
+  }
+
+  defaultConfig(): BadukConfig {
+    return { width: 19, height: 19, komi: 6.5 };
   }
 }
 

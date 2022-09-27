@@ -3,6 +3,7 @@ import { reactive, ref } from "vue";
 import TaegeukStone from "../components/TaegeukStone.vue";
 import MulticolorGridBoard from "../components/boards/MulticolorGridBoard.vue";
 import type { Coordinate } from "@ogfcommunity/variants-shared";
+import SocketTest from "../components/SocketTest.vue";
 
 // https://sashamaps.net/docs/resources/20-colors/
 const distinct_colors = [
@@ -52,6 +53,7 @@ function update_board_state(pos: Coordinate) {
 <template>
   <main>
     <h2>Page to test unused components</h2>
+    <SocketTest />
     <MulticolorGridBoard
       :config="{ width: 3, height: 4 }"
       :board="board_state"

@@ -1,8 +1,10 @@
-export const SERVER_ORIGIN =
+import io from "socket.io-client";
+
+const SERVER_ORIGIN =
   process.env.NODE_ENV === "production"
     ? window.location.origin
     : "http://localhost:3001";
-export const SERVER_PATH_PREFIX = "/api";
+const SERVER_PATH_PREFIX = "/api";
 
 export async function get(path: string) {
   const response = await fetch(SERVER_PATH_PREFIX + path);
@@ -35,3 +37,5 @@ export async function post(path: string, json: any) {
 
   return data;
 }
+
+export const socket = io(SERVER_ORIGIN);

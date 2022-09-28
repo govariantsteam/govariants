@@ -6,6 +6,7 @@ import {
 } from "@ogfcommunity/variants-shared";
 import { ObjectId, WithId, Document } from "mongodb";
 import { getDb } from "./db";
+import { io } from "./socket_io";
 
 function gamesCollection() {
   return getDb().db().collection("games");
@@ -99,6 +100,8 @@ export async function playMove(
   );
 
   game.moves.push(moves);
+
+  io().emit(`game/${game_id}`, game);
 
   return game;
 }

@@ -9,10 +9,9 @@ import { useCurrentUser } from "../stores/user";
 import type { User } from "@ogfcommunity/variants-shared";
 import { computed, reactive, ref, watchEffect } from "vue";
 import { board_map } from "@/board_map";
+import { socket } from "../requests";
 
-const props = defineProps({
-  gameId: String,
-});
+const props = defineProps<{ gameId: string }>();
 
 const DEFAULT_GAME: GameResponse = {
   id: "",
@@ -89,6 +88,20 @@ function makeMove(move_str: string) {
     })
     .catch(alert);
 }
+
+watchEffect((onCleanup) => {
+  if (!props.gameId) {
+    return;
+  }
+  const message = `game/${props.gameId}`;
+  socket.on(message, (data) => {
+    Object.assign(gameResponse, data);
+  });
+
+  onCleanup(() => {
+    socket.off(message);
+  });
+});
 </script>
 
 <template>

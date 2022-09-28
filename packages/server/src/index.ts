@@ -1,7 +1,6 @@
 import express from "express";
 import session from "express-session";
 import http from "http";
-import { Server } from "socket.io";
 import { createUserWithSessionId, getUser, getUserBySessionId } from "./users";
 import bodyParser from "body-parser";
 import cors from "cors";
@@ -11,6 +10,7 @@ import passport from "passport";
 import { Strategy as CustomStrategy } from "passport-custom";
 import { UserResponse } from "@ogfcommunity/variants-shared";
 import { router as apiRouter } from "./api";
+import * as socket_io from "./socket_io";
 
 const LOCAL_ORIGIN = "http://localhost:3000";
 
@@ -95,17 +95,14 @@ app.use(passport.session());
 
 // initialize socket.io
 const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: LOCAL_ORIGIN,
-  },
-});
 
 // Initialize MongoDB
 connectToDb();
 
 app.use("/api", apiRouter);
 
+socket_io.init(server, LOCAL_ORIGIN);
+const io = socket_io.io();
 io.on("connection", (socket) => {
   console.log("a user connected");
 

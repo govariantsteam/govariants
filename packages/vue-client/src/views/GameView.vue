@@ -5,7 +5,7 @@ import {
 } from "@ogfcommunity/variants-shared";
 import * as requests from "../requests";
 import SeatComponent from "@/components/SeatComponent.vue";
-import { DELETETHIS_getCurrentUser } from "@ogfcommunity/variants-shared";
+import { useCurrentUser } from "../stores/user";
 import type { User } from "@ogfcommunity/variants-shared";
 import { computed, reactive, ref, watchEffect } from "vue";
 import { board_map } from "@/board_map";
@@ -54,15 +54,20 @@ const leave = (seat: number) => {
     });
 };
 
+const user = useCurrentUser();
+
 const playing_as = ref<undefined | number>(undefined);
 const setPlayingAs = (seat: number) => {
+  if (!user.value) {
+    return;
+  }
   if (playing_as.value === seat) {
     playing_as.value = undefined;
     return;
   }
   if (
     gameResponse.players &&
-    gameResponse.players[seat]?.id === DELETETHIS_getCurrentUser().id
+    gameResponse.players[seat]?.id === user.value.id
   ) {
     playing_as.value = seat;
   }
@@ -95,13 +100,9 @@ function makeMove(move_str: string) {
     v-on:move="makeMove"
   />
   <div className="seat-list">
-    <p style="color: gray">
-      Note: as a workaround, we only have one user (The One True User)... Proper
-      logins will be implemented soon!
-    </p>
     <div v-for="(player, idx) in gameResponse.players" :key="idx">
       <SeatComponent
-        :user_id="DELETETHIS_getCurrentUser().id"
+        :user_id="user?.id"
         :occupant="player"
         :player_n="idx"
         @sit="sit(idx)"

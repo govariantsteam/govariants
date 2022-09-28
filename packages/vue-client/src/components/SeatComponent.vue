@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import type { PropType } from "vue";
 import type { User } from "@ogfcommunity/variants-shared";
 
-defineProps({
-  user_id: { required: true, type: String },
-  occupant: Object as PropType<User>,
-  player_n: { required: true, type: Number },
-  selected: Number,
-});
+defineProps<{
+  user_id?: string;
+  occupant?: User;
+  player_n: number;
+  selected?: number;
+}>();
 </script>
 
 <template>
@@ -16,11 +15,12 @@ defineProps({
     @click="$emit('select')"
   >
     <p class="seat-number">{{ player_n }}</p>
+
     <div v-if="occupant == null">
-      <button @click.stop="$emit('sit')">Take Seat</button>
+      <button v-if="user_id" @click.stop="$emit('sit')">Take Seat</button>
     </div>
     <div v-else>
-      <p>{{ occupant.username ?? "guest" }}</p>
+      <p>{{ occupant.username ?? `guest (...${occupant.id.slice(-6)})` }}</p>
       <button v-if="occupant.id === user_id" @click.stop="$emit('leave')">
         Leave Seat
       </button>

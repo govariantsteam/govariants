@@ -4,6 +4,7 @@ import type {
   BadukWithAbstractBoardConfig,
   BadukWithAbstractBoardState,
 } from "@ogfcommunity/variants-shared/src/badukWithAbstractBoard/badukWithAbstractBoard";
+import { computed } from "vue";
 
 const props = defineProps<{
   config: BadukWithAbstractBoardConfig;
@@ -25,6 +26,18 @@ const emit = defineEmits<{
 function intersectionClicked(identifier: number) {
   emit("move", identifier);
 }
+
+const viewBox = computed(() => {
+  const xPositions = props.gamestate.board.Intersections.map(
+    (i) => i.Position.X
+  );
+  const yPositions = props.gamestate.board.Intersections.map(
+    (i) => i.Position.Y
+  );
+  return `${Math.min(...xPositions) - 1} ${Math.min(...yPositions) - 1} ${
+    Math.max(...xPositions) + 2
+  } ${Math.max(...yPositions) + 2}`;
+});
 </script>
 
 <template>
@@ -33,15 +46,8 @@ function intersectionClicked(identifier: number) {
     xmlns="http://www.w3.org/2000/svg"
     width="600px"
     height="600px"
-    v-bind:viewBox="`-1 -1 20 20`"
+    v-bind:viewBox="viewBox"
   >
-    <rect
-      class="background"
-      x="-0.5"
-      y="-0.5"
-      v-bind:width="19"
-      v-bind:height="19"
-    />
     <g
       v-for="intersection in props.gamestate.board.Intersections"
       :key="intersection.Identifier"
@@ -74,8 +80,8 @@ function intersectionClicked(identifier: number) {
 </template>
 
 <style scoped>
-.board .background {
-  fill: #dcb35c;
+svg.board {
+  background-color: #dcb35c;
 }
 
 line {

@@ -22,17 +22,14 @@ export interface ParallelGoState {
   last_round: MovesType;
 }
 
-export class ParallelGo extends AbstractGame<
-  ParallelGoConfig,
-  ParallelGoState
-> {
+export class ParallelGo extends AbstractGame<ParallelGoConfig, ParallelGoState> {
   private board: Grid<number[]>;
   private staged: MovesType = {};
   private last_round: MovesType = {};
 
-  constructor(config: ParallelGoConfig) {
+  constructor(config?: ParallelGoConfig) {
     super(config);
-    this.board = new Grid(config.width, config.height)
+    this.board = new Grid(this.config.width, this.config.height)
       .fill(undefined)
       .map(() => []);
   }
@@ -121,6 +118,15 @@ export class ParallelGo extends AbstractGame<
     this.board = this.board.map((intersection) =>
       intersection.length > 1 ? [...arr] : intersection
     );
+  }
+
+  defaultConfig(): ParallelGoConfig {
+    return {
+      width: 19,
+      height: 19,
+      num_players: 2,
+      collision_handling: "merge",
+    };
   }
 }
 

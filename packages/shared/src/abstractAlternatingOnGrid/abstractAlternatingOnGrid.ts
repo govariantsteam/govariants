@@ -28,9 +28,9 @@ export abstract class AbstractAlternatingOnGrid<
   protected next_to_play: 0 | 1 = 0;
   protected last_move = "";
 
-  constructor(config: AbstractAlternatingOnGridConfig) {
+  constructor(config?: AbstractAlternatingOnGridConfig) {
     super(config as TConfig);
-    this.board = makeEmptyBoard(config.width, config.height);
+    this.board = makeEmptyBoard(this.config.width, this.config.height);
   }
 
   override exportState(): TState {

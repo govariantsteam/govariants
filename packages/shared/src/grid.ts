@@ -57,6 +57,15 @@ export class Grid<T> {
     return ret;
   }
 
+  forEach(
+    callbackfn: (value: T, index: Coordinate, grid: Grid<T>) => void,
+    thisArg?: any
+  ): void {
+    this.arr.forEach((value: T, flat_index: number) => {
+      callbackfn(value, flat_index_to_coordinate(flat_index, this.width), this);
+    }, thisArg);
+  }
+
   static from2DArray<T>(array: T[][]) {
     const height = array.length;
 

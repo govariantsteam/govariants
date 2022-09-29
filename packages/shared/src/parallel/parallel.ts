@@ -22,7 +22,10 @@ export interface ParallelGoState {
   last_round: MovesType;
 }
 
-export class ParallelGo extends AbstractGame<ParallelGoConfig, ParallelGoState> {
+export class ParallelGo extends AbstractGame<
+  ParallelGoConfig,
+  ParallelGoState
+> {
   private board: Grid<number[]>;
   private staged: MovesType = {};
   private last_round: MovesType = {};
@@ -94,8 +97,6 @@ export class ParallelGo extends AbstractGame<ParallelGoConfig, ParallelGoState> 
     if (num_passes === this.numPlayers()) {
       this.phase = "gameover";
     }
-    this.last_round = this.staged;
-    this.staged = {};
 
     if (this.config.collision_handling === "pass") {
       this.replaceMultiColoredStonesWith([]);
@@ -103,6 +104,14 @@ export class ParallelGo extends AbstractGame<ParallelGoConfig, ParallelGoState> 
     if (this.config.collision_handling === "ko") {
       this.replaceMultiColoredStonesWith([-1]);
     }
+
+    this.removeGroupsIf(
+      ({ has_liberties, contains_staged }) => !has_liberties && !contains_staged
+    );
+    this.removeGroupsIf(({ has_liberties }) => !has_liberties);
+
+    this.last_round = this.staged;
+    this.staged = {};
   }
 
   numPlayers(): number {
@@ -128,6 +137,86 @@ export class ParallelGo extends AbstractGame<ParallelGoConfig, ParallelGoState> 
       collision_handling: "merge",
     };
   }
+
+  private getGroup(
+    pos: Coordinate,
+    color: number,
+    checked: Grid<{ [color: number]: boolean }>
+  ): Group {
+    if (this.isOutOfBounds(pos)) {
+      return { stones: [], has_liberties: false, contains_staged: false };
+    }
+    const checked_at_pos = checked.at(pos)!;
+    const board_at_pos = this.board.at(pos)!;
+    let has_liberties = board_at_pos.length === 0;
+    if (checked_at_pos[color]) {
+      return { stones: [], has_liberties, contains_staged: false };
+    }
+    checked_at_pos[color] = true;
+
+    const stones: Coordinate[] = [];
+
+    let contains_staged =
+      this.staged[color] !== undefined &&
+      Coordinate.fromSgfRepr(this.staged[color]).equals(pos);
+
+    if (board_at_pos.includes(color)) {
+      stones.push(pos);
+      this.forEachNeighbor(pos, (neighbor) => {
+        const group = this.getGroup(neighbor, color, checked);
+        stones.push(...group.stones);
+        has_liberties = has_liberties || group.has_liberties;
+        contains_staged = contains_staged || group.contains_staged;
+      });
+    }
+
+    return {
+      stones,
+      has_liberties,
+      contains_staged,
+    };
+  }
+
+  private forEachNeighbor(pos: Coordinate, f: (pos: Coordinate) => void): void {
+    f(new Coordinate(pos.x - 1, pos.y));
+    f(new Coordinate(pos.x + 1, pos.y));
+    f(new Coordinate(pos.x, pos.y - 1));
+    f(new Coordinate(pos.x, pos.y + 1));
+  }
+
+  private isOutOfBounds(pos: Coordinate) {
+    return (
+      pos.x < 0 ||
+      pos.y < 0 ||
+      pos.x >= this.board.width ||
+      pos.y >= this.board.height
+    );
+  }
+
+  private removeGroupsIf(predicate: (group: Group) => boolean) {
+    let checked: Grid<{ [color: number]: boolean }> = this.board.map(() => {
+      return {};
+    });
+    let groups: Group[] = [];
+
+    this.board.forEach((colors, pos) => {
+      colors.forEach((color) => {
+        let group: Group | undefined = undefined;
+        group = this.getGroup(pos, color, checked);
+
+        if (group?.stones.length) {
+          groups.push(group);
+        }
+      });
+    });
+
+    groups.forEach((group) => {
+      if (!predicate(group)) {
+        return;
+      }
+      group.stones.forEach((pos) => this.board.set(pos, []));
+    });
+  }
 }
 
 /** Asserts there is exactly one move, and returns it */
@@ -141,4 +230,10 @@ function getOnlyMove(moves: MovesType): { player: number; move: string } {
   }
   const player = Number(players[0]);
   return { player, move: moves[player] };
+}
+
+interface Group {
+  stones: Coordinate[];
+  has_liberties: boolean;
+  contains_staged: boolean;
 }

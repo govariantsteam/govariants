@@ -13,6 +13,10 @@ export class Coordinate implements CoordinateLike {
   static fromSgfRepr(move: string) {
     return new Coordinate(decodeChar(move[0]), decodeChar(move[1]));
   }
+
+  equals(other: Coordinate) {
+    return this.x === other.x && this.y === other.y;
+  }
 }
 
 // a: 0, b: 1, ... z: 25, A: 26, ... Z: 51

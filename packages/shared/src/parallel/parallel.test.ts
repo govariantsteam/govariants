@@ -140,3 +140,95 @@ test("Collision places merged stone. (merge mode)", () => {
     [[], []],
   ]);
 });
+
+test("Double suicide", () => {
+  const game = new ParallelGo({
+    width: 2,
+    height: 2,
+    num_players: 2,
+    collision_handling: "ko",
+  });
+  game.playMove({ 0: "aa" });
+  game.playMove({ 1: "ab" });
+  game.playMove({ 0: "ba" });
+  game.playMove({ 1: "bb" });
+
+  expect(game.exportState().board).toEqual([
+    [[], []],
+    [[], []],
+  ]);
+});
+
+test("Kill already placed groups first", () => {
+  const game = new ParallelGo({
+    width: 4,
+    height: 1,
+    num_players: 2,
+    collision_handling: "ko",
+  });
+  game.playMove({ 0: "aa" });
+  game.playMove({ 1: "da" });
+  game.playMove({ 0: "ca" });
+  game.playMove({ 1: "ba" });
+
+  expect(game.exportState().board).toEqual([[[], [1], [0], []]]);
+});
+
+test("Merge kill", () => {
+  const game = new ParallelGo({
+    width: 4,
+    height: 1,
+    num_players: 2,
+    collision_handling: "merge",
+  });
+  game.playMove({ 0: "aa" });
+  game.playMove({ 1: "ca" });
+  game.playMove({ 0: "ba" });
+  game.playMove({ 1: "ba" });
+
+  expect(game.exportState().board).toEqual([[[], [], [1], []]]);
+});
+
+test("Double capture by the wall", () => {
+  const game = new ParallelGo({
+    width: 6,
+    height: 5,
+    num_players: 2,
+    collision_handling: "merge",
+  });
+  const moves: Array<{ 0: string } | { 1: string }> = [
+    {
+      "0": "cd",
+    },
+    {
+      "1": "dd",
+    },
+    {
+      "0": "dc",
+    },
+    {
+      "1": "cc",
+    },
+    {
+      "0": "ed",
+    },
+    {
+      "1": "bd",
+    },
+    {
+      "0": "de",
+    },
+    {
+      "1": "ce",
+    },
+  ];
+  moves.forEach((move) => game.playMove(move));
+
+  expect(game.exportState().board).toEqual([
+    [[], [], [], [], [], []],
+    [[], [], [], [], [], []],
+    [[], [], [1], [0], [], []],
+    [[], [1], [], [], [0], []],
+    [[], [], [1], [0], [], []],
+  ]);
+});

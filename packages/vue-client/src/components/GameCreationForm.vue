@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, type Ref, type ComputedRef } from "vue";
+import { ref, type Ref, watch } from "vue";
 import {
   getVariantList,
   getDefaultConfig,
@@ -11,9 +11,14 @@ const store = useStore();
 
 const variants: string[] = getVariantList();
 const variant: Ref<string> = ref(variants.length ? variants[0] : "");
-const config: ComputedRef<string> = computed(() => {
-  return JSON.stringify(getDefaultConfig(variant.value), null, 2);
-});
+const config: Ref<string> = ref("");
+watch(
+  variant,
+  () => {
+    config.value = JSON.stringify(getDefaultConfig(variant.value), null, 2);
+  },
+  { immediate: true }
+);
 
 const createGame = async () => {
   const game = await store.createGame(variant.value, config.value);

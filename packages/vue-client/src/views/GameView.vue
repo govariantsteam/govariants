@@ -27,6 +27,11 @@ const gamestate = computed(() => {
   });
   return game_obj.exportState(playing_as.value);
 });
+const specialMoves = computed(() =>
+  !gameResponse.variant || !gameResponse.config
+    ? {}
+    : makeGameObject(gameResponse.variant, gameResponse.config).specialMoves()
+);
 const variantGameView = computed(() => board_map[gameResponse.variant]);
 watchEffect(async () => {
   // TODO: provide a cleanup function to cancel the request.
@@ -126,10 +131,19 @@ watchEffect((onCleanup) => {
     </div>
   </div>
 
-  <pre>
-    <span>from /games/{{gameResponse.id}}</span>
-    {{JSON.stringify(gameResponse, null, 2)}}
-	</pre>
+  <div>
+    <button
+      v-for="(value, key) in specialMoves"
+      :key="key"
+      @click="makeMove(key as string)"
+    >
+      {{ value }}
+    </button>
+    <pre>
+      <span>from /games/{{gameResponse.id}}</span>
+      {{JSON.stringify(gameResponse, null, 2)}}
+    </pre>
+  </div>
 </template>
 
 <style scoped>

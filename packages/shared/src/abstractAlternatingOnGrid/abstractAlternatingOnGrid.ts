@@ -85,7 +85,9 @@ export abstract class AbstractAlternatingOnGrid<
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected preValidateMove(move: string): void {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected postValidateMove(move: Coordinate): void {}
 
   protected playMoveInternal(move: Coordinate): void {

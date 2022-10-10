@@ -7,7 +7,7 @@
  */
 export abstract class AbstractGame<GameConfig = object, GameState = object> {
   private phase_: GamePhase = "play";
-  private result_: string = "";
+  private result_ = "";
   protected readonly config: GameConfig;
 
   constructor(config?: GameConfig) {

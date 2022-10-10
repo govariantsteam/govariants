@@ -86,7 +86,7 @@ export class BadukWithAbstractBoard extends AbstractGame<BadukWithAbstractBoardC
                 `Move out of bounds. (move: ${decoded_move}, intersections: ${this.board.Intersections.length}`
             );
         }
-        let intersection = this.board.Intersections[decoded_move];
+        const intersection = this.board.Intersections[decoded_move];
 
         if (intersection.StoneState.Color != Color.EMPTY) {
             throw Error(
@@ -140,7 +140,7 @@ function decodeMove(move: string): number {
 /** Returns true if the group containing intersection has at least one liberty. */
 function groupHasLiberties(intersection: Intersection, board: BadukBoardAbstract) {
     const color = intersection.StoneState.Color;
-    const visited: { [key: string]: Boolean } = {};
+    const visited: { [key: string]: boolean } = {};
     board.Intersections.forEach(i => visited[i.Identifier] = false);
 
     function helper(intersection: Intersection): boolean {

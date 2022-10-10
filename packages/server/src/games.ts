@@ -94,10 +94,9 @@ export async function playMove(
 
   game_obj.playMove(moves);
 
-  gamesCollection().updateOne(
-    { _id: new ObjectId(game_id) },
-    { $push: { moves: moves } }
-  );
+  gamesCollection()
+    .updateOne({ _id: new ObjectId(game_id) }, { $push: { moves: moves } })
+    .catch(console.log);
 
   game.moves.push(moves);
 

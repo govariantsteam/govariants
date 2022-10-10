@@ -5,7 +5,8 @@
     "start": "nodemon ./src/index.ts",
     "launch": "tsc && node ./dist/index.js",
     "test": "echo \"No tests in packages/server.\"",
-    "lint": "eslint ./src"
+    "lint": "eslint --fix ./src",
+    "lint:check": "eslint ./src"
   },
   "dependencies": {
     "@ogfcommunity/variants-shared": "1.0.0",

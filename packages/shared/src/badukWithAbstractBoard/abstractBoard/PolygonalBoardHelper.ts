@@ -55,7 +55,7 @@ const Shift18 = new Vector2D(0.5, -0.86602540);
 
 class PolygonalTile {
     ReferencePoint: Vector2D;
-    Completed: Boolean = false;
+    Completed = false;
     Intersections: Intersection[];
     NeighbourTiles: (PolygonalTile | null)[] = [null, null, null, null, null, null];
 
@@ -73,7 +73,7 @@ class PolygonalTile {
         this.Intersections[5].ConnectTo(this.Intersections[0], true);
     }
 
-    ConnectToRight(tile: PolygonalTile, bothSides: Boolean) {
+    ConnectToRight(tile: PolygonalTile, bothSides: boolean) {
         this.NeighbourTiles[0] = tile;
 
         this.Intersections[5].ConnectTo(tile.Intersections[1], false);
@@ -84,7 +84,7 @@ class PolygonalTile {
         }
     }
 
-    ConnectToTopRight(tile: PolygonalTile, bothSides: Boolean) {
+    ConnectToTopRight(tile: PolygonalTile, bothSides: boolean) {
         this.NeighbourTiles[1] = tile;
 
         this.Intersections[0].ConnectTo(tile.Intersections[2], false);
@@ -95,7 +95,7 @@ class PolygonalTile {
         }
     }
 
-    ConnectToTopLeft(tile: PolygonalTile, bothSides: Boolean) {
+    ConnectToTopLeft(tile: PolygonalTile, bothSides: boolean) {
         this.NeighbourTiles[2] = tile;
 
         this.Intersections[0].ConnectTo(tile.Intersections[4], false);
@@ -106,7 +106,7 @@ class PolygonalTile {
         }
     }
 
-    ConnectToLeft(tile: PolygonalTile, bothSides: Boolean) {
+    ConnectToLeft(tile: PolygonalTile, bothSides: boolean) {
         this.NeighbourTiles[3] = tile;
 
         this.Intersections[1].ConnectTo(tile.Intersections[5], false);
@@ -117,7 +117,7 @@ class PolygonalTile {
         }
     }
 
-    ConnectToBottomLeft(tile: PolygonalTile, bothSides: Boolean) {
+    ConnectToBottomLeft(tile: PolygonalTile, bothSides: boolean) {
         this.NeighbourTiles[4] = tile;
 
         this.Intersections[2].ConnectTo(tile.Intersections[0], false);
@@ -128,7 +128,7 @@ class PolygonalTile {
         }
     }
 
-    ConnectToBottomRight(tile: PolygonalTile, bothSides: Boolean) {
+    ConnectToBottomRight(tile: PolygonalTile, bothSides: boolean) {
         this.NeighbourTiles[5] = tile;
 
         this.Intersections[3].ConnectTo(tile.Intersections[1], false);
@@ -316,18 +316,18 @@ class PolygonalTile {
 }
 
 export function CreatePolygonalBoard(size: number) : Intersection[] {
-    let StartTile: PolygonalTile = new PolygonalTile(new Vector2D(0, 0));
-    let Tiles: PolygonalTile[] = [StartTile];
+    const StartTile: PolygonalTile = new PolygonalTile(new Vector2D(0, 0));
+    const Tiles: PolygonalTile[] = [StartTile];
     let tileQueue: PolygonalTile[] = [StartTile];
 
     for (let i = 1; i < (size + 1) / 2; i++) {
-        let newTilesQueue: PolygonalTile[] = [];
+        const newTilesQueue: PolygonalTile[] = [];
 
         while (tileQueue.length > 0) {
-            let tile = tileQueue.pop() as PolygonalTile;
+            const tile = tileQueue.pop() as PolygonalTile;
 
             if (tile.NeighbourTiles[0] == null) {
-                let newTile = new PolygonalTile(tile.ReferencePoint.Add(TileShiftRight));
+                const newTile = new PolygonalTile(tile.ReferencePoint.Add(TileShiftRight));
                 Tiles.push(newTile);
                 tile.ConnectToRight(newTile, true);
                 newTilesQueue.push(newTile);
@@ -342,7 +342,7 @@ export function CreatePolygonalBoard(size: number) : Intersection[] {
             }
 
             if (tile.NeighbourTiles[1] == null) {
-                let newTile = new PolygonalTile(tile.ReferencePoint.Substract(TileShiftBottomLeft));
+                const newTile = new PolygonalTile(tile.ReferencePoint.Substract(TileShiftBottomLeft));
                 Tiles.push(newTile);
                 tile.ConnectToTopRight(newTile, true);
                 newTilesQueue.push(newTile);
@@ -357,7 +357,7 @@ export function CreatePolygonalBoard(size: number) : Intersection[] {
             }
 
             if (tile.NeighbourTiles[2] == null) {
-                let newTile = new PolygonalTile(tile.ReferencePoint.Substract(TileShiftBottomRight));
+                const newTile = new PolygonalTile(tile.ReferencePoint.Substract(TileShiftBottomRight));
                 Tiles.push(newTile);
                 tile.ConnectToTopLeft(newTile, true);
                 newTilesQueue.push(newTile);
@@ -372,7 +372,7 @@ export function CreatePolygonalBoard(size: number) : Intersection[] {
             }
 
             if (tile.NeighbourTiles[3] == null) {
-                let newTile = new PolygonalTile(tile.ReferencePoint.Substract(TileShiftRight));
+                const newTile = new PolygonalTile(tile.ReferencePoint.Substract(TileShiftRight));
                 Tiles.push(newTile);
                 tile.ConnectToLeft(newTile, true);
                 newTilesQueue.push(newTile);
@@ -387,7 +387,7 @@ export function CreatePolygonalBoard(size: number) : Intersection[] {
             }
 
             if (tile.NeighbourTiles[4] == null) {
-                let newTile = new PolygonalTile(tile.ReferencePoint.Add(TileShiftBottomLeft));
+                const newTile = new PolygonalTile(tile.ReferencePoint.Add(TileShiftBottomLeft));
                 Tiles.push(newTile);
                 tile.ConnectToBottomLeft(newTile, true);
                 newTilesQueue.push(newTile);
@@ -402,7 +402,7 @@ export function CreatePolygonalBoard(size: number) : Intersection[] {
             }
 
             if (tile.NeighbourTiles[5] == null) {
-                let newTile = new PolygonalTile(tile.ReferencePoint.Add(TileShiftBottomRight));
+                const newTile = new PolygonalTile(tile.ReferencePoint.Add(TileShiftBottomRight));
                 Tiles.push(newTile);
                 tile.ConnectToBottomRight(newTile, true);
                 newTilesQueue.push(newTile);
@@ -419,17 +419,17 @@ export function CreatePolygonalBoard(size: number) : Intersection[] {
         tileQueue = newTilesQueue;
     }
 
-    let completed: Boolean = false;
+    let completed = false;
     if (size % 2 === 0) {
         Tiles.forEach(tile => tile.Complete());
         completed = true;
     }
 
-    let intersections: Intersection[] = [];
+    const intersections: Intersection[] = [];
     for (let i = 0; i < Tiles.length; i++) {
         const tile = Tiles[i];
         for (let j = 0; j < tile.Intersections.length; j++) {
-            let intersection = tile.Intersections[j];
+            const intersection = tile.Intersections[j];
             if (intersections.indexOf(intersection) < 0) {
                 intersections.push(tile.Intersections[j]);
             }
@@ -442,11 +442,11 @@ export function CreatePolygonalBoard(size: number) : Intersection[] {
         minX = Math.min(minX, intersections[i].Position.X);
         minY = Math.min(minY, intersections[i].Position.Y);
     }
-    let shift: Vector2D = new Vector2D(minX, minY);
+    const shift: Vector2D = new Vector2D(minX, minY);
 
     for (let z = 0; z < intersections.length; z++)
     {
-        let i = intersections[z];
+        const i = intersections[z];
         i.Identifier = z;
         i.Position = i.Position.Substract(shift);
     }

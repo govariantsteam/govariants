@@ -4,6 +4,9 @@
   "main": "./dist/index.js",
   "devDependencies": {
     "@types/jest": "^28.1.4",
+    "@typescript-eslint/eslint-plugin": "^5.40.0",
+    "@typescript-eslint/parser": "^5.40.0",
+    "eslint": "^8.25.0",
     "jest": "^28.1.2",
     "ts-jest": "^28.0.5"
   },
@@ -11,7 +14,8 @@
     "build": "tsc",
     "start": "tsc --watch",
     "test": "jest",
-    "lint": "echo \"Linter not yet set up in packages/shared.\""
+    "lint:check": "eslint ./src",
+    "lint": "eslint --fix ./src"
   },
   "dependencies": {
     "typescript": "^4.7.4"

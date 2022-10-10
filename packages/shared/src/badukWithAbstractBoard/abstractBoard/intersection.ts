@@ -14,20 +14,20 @@ export class Intersection {
         this.StoneState = new StoneState(Color.EMPTY);
     }
 
-    ConnectTo(intersection: Intersection, bothSides: Boolean) {
+    ConnectTo(intersection: Intersection, bothSides: boolean) {
         this.Neighbours.push(intersection);
         if (bothSides) {
             intersection.ConnectTo(this, false);
         }
     }
 
-    IsConnectedTo(intersection: Intersection): Boolean {
+    IsConnectedTo(intersection: Intersection): boolean {
         return this.Neighbours.includes(intersection);
     }
 
     Export(): Intersection
     {
-        let intersection = new Intersection(this.Position.Export())
+        const intersection = new Intersection(this.Position.Export())
         intersection.Identifier = this.Identifier;
         intersection.StoneState = this.StoneState.Export();
         //ToDo: How to export Neighbours?

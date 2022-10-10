@@ -194,10 +194,10 @@ export class ParallelGo extends AbstractGame<
   }
 
   private removeGroupsIf(predicate: (group: Group) => boolean) {
-    let checked: Grid<{ [color: number]: boolean }> = this.board.map(() => {
+    const checked: Grid<{ [color: number]: boolean }> = this.board.map(() => {
       return {};
     });
-    let groups: Group[] = [];
+    const groups: Group[] = [];
 
     this.board.forEach((colors, pos) => {
       colors.forEach((color) => {

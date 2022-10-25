@@ -97,7 +97,10 @@ app.use(passport.session());
 const server = http.createServer(app);
 
 // Initialize MongoDB
-connectToDb();
+connectToDb().catch((e) => {
+  console.log("Unable to connect to the database.");
+  console.log(e);
+});
 
 app.use("/api", apiRouter);
 

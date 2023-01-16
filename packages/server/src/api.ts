@@ -46,7 +46,8 @@ router.post("/games/:gameId/move", async (req, res, next) => {
   try {
     res.send(await playMove(req.params.gameId, move, user_id));
   } catch (e) {
-    next(e.message);
+    res.status(500);
+    res.json(e.message);
   }
 });
 

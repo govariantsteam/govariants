@@ -20,12 +20,18 @@ const DEFAULT_GAME: GameResponse = {
   config: {},
 };
 const gameResponse: GameResponse = reactive(DEFAULT_GAME);
-const gamestate = computed(() => {
+const game = computed(() => {
   const game_obj = makeGameObject(gameResponse.variant, gameResponse.config);
   gameResponse.moves.forEach((move) => {
     game_obj.playMove(move);
   });
-  return game_obj.exportState(playing_as.value);
+  const result =
+    game_obj.phase === "gameover" ? game_obj.result || "Game over" : null;
+  const state = game_obj.exportState(playing_as.value);
+  return {
+    result,
+    state,
+  };
 });
 const specialMoves = computed(() =>
   !gameResponse.variant || !gameResponse.config
@@ -113,7 +119,7 @@ watchEffect((onCleanup) => {
   <component
     v-if="variantGameView"
     v-bind:is="variantGameView"
-    v-bind:gamestate="gamestate"
+    v-bind:gamestate="game.state"
     v-bind:config="gameResponse.config"
     v-on:move="makeMove"
   />
@@ -130,7 +136,6 @@ watchEffect((onCleanup) => {
       />
     </div>
   </div>
-
   <div>
     <button
       v-for="(value, key) in specialMoves"
@@ -143,6 +148,9 @@ watchEffect((onCleanup) => {
       <span>from /games/{{gameResponse.id}}</span>
       {{JSON.stringify(gameResponse, null, 2)}}
     </pre>
+  </div>
+  <div v-if="game.result" style="font-weight: bold; font-size: 24pt">
+    Result: {{ game.result }}
   </div>
 </template>
 

@@ -19,7 +19,7 @@ export interface BadukState extends AbstractAlternatingOnGridState {
 }
 
 export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
-  private captures = { 0: 0, 1: 0 };
+  protected captures = { 0: 0, 1: 0 };
 
   constructor(config?: BadukConfig) {
     super(config);

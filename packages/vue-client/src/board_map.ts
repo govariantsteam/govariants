@@ -10,4 +10,5 @@ export const board_map: {
   phantom: Baduk,
   badukWithAbstractBoard: BadukBoardAbstract,
   parallel: ParallelGoBoard,
+  capture: Baduk,
 };

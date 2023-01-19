@@ -3,6 +3,7 @@ import { AbstractGame } from "./abstract_game";
 import { BadukWithAbstractBoard } from "./badukWithAbstractBoard/badukWithAbstractBoard";
 import { Phantom } from "./phantom";
 import { ParallelGo } from "./parallel";
+import { Capture } from "./capture";
 
 export const game_map: {
   [variant: string]: new (config?: any) => AbstractGame;
@@ -11,6 +12,7 @@ export const game_map: {
   badukWithAbstractBoard: BadukWithAbstractBoard,
   phantom: Phantom,
   parallel: ParallelGo,
+  capture: Capture,
 };
 
 class ConfigError extends Error {

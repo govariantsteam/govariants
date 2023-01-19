@@ -83,29 +83,18 @@ export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
     );
 
     const determineController = (pos: CoordinateLike): Color => {
-      if (isOutOfBounds(pos, board)) {
-        return Color.EMPTY;
-      }
       if (board[pos.y][pos.x] !== Color.EMPTY) {
         return board[pos.y][pos.x];
       }
-      if (visited[pos.y][pos.x]) {
-        return Color.EMPTY;
-      }
       visited[pos.y][pos.x] = true;
-      const neighbor_results =
-        neighboringPositions(pos).map(determineController);
-      const saw_white = neighbor_results.includes(Color.WHITE);
-      const saw_black = neighbor_results.includes(Color.BLACK);
-      if (saw_black && saw_white) {
-        return Color.EMPTY;
-      }
-      if (saw_black) {
-        return Color.BLACK;
-      }
-
-      if (saw_white) {
+      const neighbor_results = neighboringPositions(pos)
+        .filter((pos) => !isOutOfBounds(pos, board) && !visited[pos.y][pos.x])
+        .map(determineController);
+      if (neighbor_results.every((result) => result == Color.WHITE)) {
         return Color.WHITE;
+      }
+      if (neighbor_results.every((result) => result == Color.BLACK)) {
+        return Color.BLACK;
       }
       return Color.EMPTY;
     };

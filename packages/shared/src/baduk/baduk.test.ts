@@ -35,7 +35,7 @@ test("Play a game with captures", () => {
   const game = new Baduk({ width: 2, height: 2, komi: 0.5 });
   // Tiny board
   // B W
-  // B O
+  // B .
   game.playMove({ 0: "aa" });
   game.playMove({ 1: "ba" });
   game.playMove({ 0: "ab" });
@@ -43,6 +43,10 @@ test("Play a game with captures", () => {
     [Color.BLACK, Color.WHITE],
     [Color.BLACK, Color.EMPTY],
   ]);
+
+  // Tiny board
+  // . W
+  // . W
   game.playMove({ 1: "bb" });
   expect(game.exportState().board).toEqual([
     [Color.EMPTY, Color.WHITE],
@@ -62,4 +66,14 @@ test("Resign a game", () => {
   game.playMove({ 0: "resign" });
   expect(game.phase).toBe("gameover");
   expect(game.result).toBe("W+R");
+});
+
+test("Scoring with open borders", () => {
+  const game = new Baduk({ width: 5, height: 5, komi: 6.5 });
+  game.playMove({ "0": "cb" });
+  game.playMove({ "1": "cc" });
+  game.playMove({ "0": "pass" });
+  game.playMove({ "1": "pass" });
+
+  expect(game.result).toBe("W+6.5");
 });

@@ -9,6 +9,7 @@ import { TetrisGo } from "./variants/tetris";
 import { PyramidGo } from "./variants/pyramid";
 import { ThueMorse } from "./variants/thue_morse";
 import { FreezeGo } from "./variants/freeze";
+import { Fractional } from "./variants/fractional";
 
 export const game_map: {
   [variant: string]: new (config?: any) => AbstractGame;
@@ -23,6 +24,7 @@ export const game_map: {
   pyramid: PyramidGo,
   "thue-morse": ThueMorse,
   freeze: FreezeGo,
+  fractional: Fractional,
 };
 
 class ConfigError extends Error {

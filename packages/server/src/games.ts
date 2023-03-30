@@ -13,10 +13,19 @@ function gamesCollection() {
 }
 
 /**
- * @param page NOT YET IMPLEMENTED
+ * @param count number of games to return (default = 10)
+ * @param offset number of games to skip
  */
-export async function getGames(page: number): Promise<GameResponse[]> {
-  const games = gamesCollection().find().sort({ _id: -1 }).limit(10).toArray();
+export async function getGames(
+  count: number,
+  offset: number
+): Promise<GameResponse[]> {
+  const games = gamesCollection()
+    .find()
+    .sort({ _id: -1 })
+    .skip(offset)
+    .limit(count || 10)
+    .toArray();
   return (await games).map(outwardFacingGame);
 }
 

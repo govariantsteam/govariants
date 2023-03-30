@@ -16,8 +16,10 @@ export const useStore = defineStore({
     // doubleCount: (state) => state.counter * 2,
   },
   actions: {
-    async fetchGames() {
-      this.games = await requests.get(`/games`);
+    async fetchGames(count?: number, offset?: number) {
+      this.games = await requests.get(
+        `/games?count=${count ?? 0}&offset=${offset ?? 0}`
+      );
     },
 
     async createGame(variant: string, config: string): Promise<GameResponse> {

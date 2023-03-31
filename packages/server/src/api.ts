@@ -25,7 +25,10 @@ router.get("/games/:gameId", async (req, res) => {
 });
 
 router.get("/games", async (req, res) => {
-  const games: GameResponse[] = await getGames(Number(req.query.page));
+  const games: GameResponse[] = await getGames(
+    Number(req.query.count),
+    Number(req.query.offset)
+  );
   res.send(games || 0);
 });
 

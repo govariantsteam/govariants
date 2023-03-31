@@ -4,10 +4,8 @@ import {
   getVariantList,
   getDefaultConfig,
 } from "@ogfcommunity/variants-shared";
-import { useStore } from "../stores/games";
 import router from "@/router";
-
-const store = useStore();
+import * as requests from "@/requests";
 
 const variants: string[] = getVariantList();
 const variant: Ref<string> = ref(variants.length ? variants[0] : "");
@@ -21,7 +19,10 @@ watch(
 );
 
 const createGame = async () => {
-  const game = await store.createGame(variant.value, config.value);
+  const game = await requests.post("/games", {
+    variant: variant.value,
+    config: JSON.parse(config.value),
+  });
   console.log(game);
   router.push({ name: "game", params: { gameId: game.id } });
 };

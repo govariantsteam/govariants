@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@ogfcommunity/variants-shared": "1.0.0",
+    "@vueuse/core": "^9.13.0",
     "pinia": "^2.0.14",
     "socket.io-client": "^4.5.2",
     "vue": "^3.2.37",

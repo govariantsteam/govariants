@@ -42,6 +42,15 @@ const variantGameView = computed(() => board_map[gameResponse.variant]);
 watchEffect(async () => {
   // TODO: provide a cleanup function to cancel the request.
   Object.assign(gameResponse, await requests.get(`/games/${props.gameId}`));
+
+  const userSeats = gameResponse.players
+    ?.map((playerUser: User | undefined, index: number) =>
+      playerUser && playerUser?.id === user.value?.id ? index : null
+    )
+    .filter((index: number | null): index is number => index !== null);
+  if (userSeats?.length === 1) {
+    setPlayingAs(userSeats[0]);
+  }
 });
 
 const sit = (seat: number) => {

@@ -1,3 +1,12 @@
+# We use yarn, not npm
+package-lock.json
+
+# VS Config was pretty large, even for a vanilla setup
+# Don't need the whole thing in source control
+.vs/
+
+# BELOW THIS LINE, copied from https://github.com/github/gitignore/blob/main/Node.gitignore
+
 # Logs
 logs
 *.log
@@ -128,5 +137,3 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
-
-.vs/

@@ -316,11 +316,13 @@ class PolygonalTile {
 }
 
 export function CreatePolygonalBoard(size: number) : Intersection[] {
+    
     const StartTile: PolygonalTile = new PolygonalTile(new Vector2D(0, 0));
     const Tiles: PolygonalTile[] = [StartTile];
     let tileQueue: PolygonalTile[] = [StartTile];
 
-    for (let i = 1; i < (size + 1) / 2; i++) {
+    for (let i = 1; i <= (size - 1) / 2; i++) {
+        
         const newTilesQueue: PolygonalTile[] = [];
 
         while (tileQueue.length > 0) {

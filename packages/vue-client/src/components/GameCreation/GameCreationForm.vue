@@ -51,7 +51,7 @@ const setConfig = (newConfig: object) => (config = newConfig);
     </div>
     <label>Config: </label>
     <template v-if="variantConfigForm">
-      <component 
+      <component
         v-bind:is="variantConfigForm"
         v-bind:initialConfig="getDefaultConfig(variant)"
         v-on:configChanged="setConfig"

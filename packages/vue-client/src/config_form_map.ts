@@ -4,11 +4,11 @@ import BadukWithAbstractBoardConfigForm from "@/components/GameCreation/BadukWit
 import ParalleGoConfigForm from "@/components/GameCreation/ParallelGoConfigForm.vue";
 
 export const config_form_map: {
-    [variant: string]: Component<{initialConfig: object}>;
+  [variant: string]: Component<{ initialConfig: object }>;
 } = {
-    baduk: BadukConfigForm,
-    phantom: BadukConfigForm,
-    badukWithAbstractBoard: BadukWithAbstractBoardConfigForm,
-    parallel: ParalleGoConfigForm,
-    capture: BadukConfigForm,
+  baduk: BadukConfigForm,
+  phantom: BadukConfigForm,
+  badukWithAbstractBoard: BadukWithAbstractBoardConfigForm,
+  parallel: ParalleGoConfigForm,
+  capture: BadukConfigForm,
 };

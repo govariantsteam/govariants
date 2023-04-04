@@ -2,7 +2,6 @@
 import {
   BoardPattern,
   type BadukWithAbstractBoardConfig,
-  BadukWithAbstractBoard,
 } from "@ogfcommunity/variants-shared/src/badukWithAbstractBoard/badukWithAbstractBoard";
 import { type Ref, ref, watch } from "vue";
 

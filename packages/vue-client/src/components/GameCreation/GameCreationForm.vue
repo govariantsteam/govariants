@@ -27,15 +27,10 @@ watch(
 );
 
 const createGame = async () => {
-  console.log("config:");
-
-  console.log(config);
-
   const game = await requests.post("/games", {
     variant: variant.value,
     config: config,
   });
-  console.log(game);
   router.push({ name: "game", params: { gameId: game.id } });
 };
 

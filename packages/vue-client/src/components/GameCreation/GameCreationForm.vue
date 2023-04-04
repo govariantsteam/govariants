@@ -3,19 +3,19 @@ import { ref, type Ref, watch } from "vue";
 import {
   getVariantList,
   getDefaultConfig,
-type BadukConfig,
-type ParallelGoConfig,
+  type BadukConfig,
+  type ParallelGoConfig,
 } from "@ogfcommunity/variants-shared";
 import * as requests from "@/requests";
 import router from "@/router";
 import BadukConfigFormVue from "./BadukConfigForm.vue";
 import type { BadukWithAbstractBoardConfig } from "@ogfcommunity/variants-shared/src/badukWithAbstractBoard/badukWithAbstractBoard";
 import BadukWithAbstractBoardConfigFormVue from "./BadukWithAbstractBoardConfigForm.vue";
-import  ParallelGoConfigFormVue from "./ParallelGoConfigForm.vue";
+import ParallelGoConfigFormVue from "./ParallelGoConfigForm.vue";
 
 const variants: string[] = getVariantList();
 const variant: Ref<string> = ref(variants.length ? variants[0] : "");
-var config: object;
+let config: object;
 const configString: Ref<string> = ref("");
 watch(
   variant,
@@ -27,10 +27,10 @@ watch(
 );
 
 const createGame = async () => {
-  console.log('config:');
-  
+  console.log("config:");
+
   console.log(config);
-  
+
   const game = await requests.post("/games", {
     variant: variant.value,
     config: config,
@@ -42,9 +42,9 @@ const createGame = async () => {
 const parseConfigThenCreateGame = async () => {
   config = JSON.parse(configString.value);
   await createGame();
-}
+};
 
-const setConfig = (newConfig: object) => config = newConfig;
+const setConfig = (newConfig: object) => (config = newConfig);
 </script>
 
 <template>
@@ -59,16 +59,29 @@ const setConfig = (newConfig: object) => config = newConfig;
       </select>
     </div>
     <label>Config: </label>
-    <template v-if="variant==='baduk' || variant==='phantom' || variant=='capture'">
-      <BadukConfigFormVue :initialConfig="getDefaultConfig(variant) as BadukConfig" @configChanged="setConfig" />
+    <template
+      v-if="
+        variant === 'baduk' || variant === 'phantom' || variant == 'capture'
+      "
+    >
+      <BadukConfigFormVue
+        :initialConfig="getDefaultConfig(variant) as BadukConfig"
+        @configChanged="setConfig"
+      />
       <button v-on:click="createGame">Create Game</button>
     </template>
-    <template v-else-if="variant==='badukWithAbstractBoard'">
-      <BadukWithAbstractBoardConfigFormVue :initialConfig="getDefaultConfig(variant) as BadukWithAbstractBoardConfig" @configChanged="setConfig" />
+    <template v-else-if="variant === 'badukWithAbstractBoard'">
+      <BadukWithAbstractBoardConfigFormVue
+        :initialConfig="getDefaultConfig(variant) as BadukWithAbstractBoardConfig"
+        @configChanged="setConfig"
+      />
       <button v-on:click="createGame">Create Game</button>
     </template>
-    <template v-else-if="variant==='parallel'">
-      <ParallelGoConfigFormVue :initialConfig="getDefaultConfig(variant) as ParallelGoConfig" @configChanged="setConfig" />
+    <template v-else-if="variant === 'parallel'">
+      <ParallelGoConfigFormVue
+        :initialConfig="getDefaultConfig(variant) as ParallelGoConfig"
+        @configChanged="setConfig"
+      />
       <button v-on:click="createGame">Create Game</button>
     </template>
     <template v-else>

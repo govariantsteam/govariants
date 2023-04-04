@@ -1,22 +1,18 @@
 <script setup lang="ts">
-import { ref, type Ref, watch } from "vue";
+import { ref, type Ref, watch, computed } from "vue";
 import {
   getVariantList,
   getDefaultConfig,
-  type BadukConfig,
-  type ParallelGoConfig,
 } from "@ogfcommunity/variants-shared";
 import * as requests from "@/requests";
 import router from "@/router";
-import BadukConfigFormVue from "./BadukConfigForm.vue";
-import type { BadukWithAbstractBoardConfig } from "@ogfcommunity/variants-shared/src/badukWithAbstractBoard/badukWithAbstractBoard";
-import BadukWithAbstractBoardConfigFormVue from "./BadukWithAbstractBoardConfigForm.vue";
-import ParallelGoConfigFormVue from "./ParallelGoConfigForm.vue";
+import { config_form_map } from "@/config_form_map";
 
 const variants: string[] = getVariantList();
 const variant: Ref<string> = ref(variants.length ? variants[0] : "");
 let config: object;
 const configString: Ref<string> = ref("");
+const variantConfigForm = computed(() => config_form_map[variant.value]);
 watch(
   variant,
   () => {
@@ -54,28 +50,11 @@ const setConfig = (newConfig: object) => (config = newConfig);
       </select>
     </div>
     <label>Config: </label>
-    <template
-      v-if="
-        variant === 'baduk' || variant === 'phantom' || variant == 'capture'
-      "
-    >
-      <BadukConfigFormVue
-        :initialConfig="getDefaultConfig(variant) as BadukConfig"
-        @configChanged="setConfig"
-      />
-      <button v-on:click="createGame">Create Game</button>
-    </template>
-    <template v-else-if="variant === 'badukWithAbstractBoard'">
-      <BadukWithAbstractBoardConfigFormVue
-        :initialConfig="getDefaultConfig(variant) as BadukWithAbstractBoardConfig"
-        @configChanged="setConfig"
-      />
-      <button v-on:click="createGame">Create Game</button>
-    </template>
-    <template v-else-if="variant === 'parallel'">
-      <ParallelGoConfigFormVue
-        :initialConfig="getDefaultConfig(variant) as ParallelGoConfig"
-        @configChanged="setConfig"
+    <template v-if="variantConfigForm">
+      <component 
+        v-bind:is="variantConfigForm"
+        v-bind:initialConfig="getDefaultConfig(variant)"
+        v-on:configChanged="setConfig"
       />
       <button v-on:click="createGame">Create Game</button>
     </template>

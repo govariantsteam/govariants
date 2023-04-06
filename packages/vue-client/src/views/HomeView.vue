@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import GameCreationForm from "@/components/GameCreationForm.vue";
+import GameCreationForm from "@/components/GameCreation/GameCreationForm.vue";
 import GameList from "@/components/GameList.vue";
 </script>
 

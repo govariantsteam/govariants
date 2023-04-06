@@ -40,7 +40,7 @@ watch(heightRef, emitConfigChange);
 </script>
 
 <template>
-  <div class="column">
+  <div class="config-form-column">
     <label>Pattern</label>
     <select v-model="patternRef" style="width: fit-content">
       <option :value="BoardPattern.Rectangular">Rectangular</option>
@@ -48,35 +48,21 @@ watch(heightRef, emitConfigChange);
     </select>
     <template v-if="patternRef === BoardPattern.Rectangular">
       <label>Width</label>
-      <input
-        type="number"
-        min="1"
-        v-model="widthRef"
-        style="width: fit-content"
-      />
+      <input type="number" min="1" v-model="widthRef" />
       <label>Height</label>
-      <input
-        type="number"
-        min="1"
-        v-model="heightRef"
-        style="width: fit-content"
-      />
+      <input type="number" min="1" v-model="heightRef" />
     </template>
     <template v-if="patternRef === BoardPattern.Polygonal">
       <label>Size</label>
-      <input
-        type="number"
-        min="1"
-        v-model="sizeRef"
-        style="width: fit-content"
-      />
+      <input type="number" min="1" v-model="sizeRef" />
     </template>
     <label>Komi</label>
-    <input
-      type="number"
-      step="0.5"
-      v-model="komiRef"
-      style="width: fit-content"
-    />
+    <input type="number" step="0.5" v-model="komiRef" />
   </div>
 </template>
+
+<style>
+input {
+  width: fit-content;
+}
+</style>

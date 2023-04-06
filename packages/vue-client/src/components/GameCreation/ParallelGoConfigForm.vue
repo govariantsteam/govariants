@@ -14,40 +14,24 @@ function emitConfigChange() {
 </script>
 
 <template>
-  <div class="column">
+  <form @change="emitConfigChange" class="config-form-column">
     <label>Width</label>
-    <input
-      type="number"
-      min="1"
-      v-model="config.width"
-      @change="emitConfigChange"
-      style="width: fit-content"
-    />
+    <input type="number" min="1" v-model="config.width" />
     <label>Height</label>
-    <input
-      type="number"
-      min="1"
-      v-model="config.height"
-      @change="emitConfigChange"
-      style="width: fit-content"
-    />
+    <input type="number" min="1" v-model="config.height" />
     <label>Number of players</label>
-    <input
-      type="number"
-      min="1"
-      v-model="config.num_players"
-      @change="emitConfigChange"
-      style="width: fit-content"
-    />
+    <input type="number" min="1" v-model="config.num_players" />
     <label>Collision Handling</label>
-    <select
-      v-model="config.collision_handling"
-      @change="emitConfigChange"
-      style="width: fit-content"
-    >
+    <select v-model="config.collision_handling" style="width: fit-content">
       <option :value="'merge'">Merge</option>
       <option :value="'pass'">Pass</option>
       <option :value="'ko'">Ko</option>
     </select>
-  </div>
+  </form>
 </template>
+
+<style>
+input {
+  width: fit-content;
+}
+</style>

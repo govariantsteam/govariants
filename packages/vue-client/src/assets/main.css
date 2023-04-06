@@ -34,7 +34,7 @@ a,
   }
 }
 
-.column {
+.config-form-column {
   display: flex;
   flex-direction: column;
 }

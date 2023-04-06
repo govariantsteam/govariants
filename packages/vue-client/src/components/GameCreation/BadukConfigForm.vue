@@ -14,30 +14,18 @@ function emitConfigChange() {
 </script>
 
 <template>
-  <div class="column">
+  <form @change="emitConfigChange" class="config-form-column">
     <label>Width</label>
-    <input
-      type="number"
-      min="1"
-      v-model="config.width"
-      @change="emitConfigChange"
-      style="width: fit-content"
-    />
+    <input type="number" min="1" v-model="config.width" />
     <label>Height</label>
-    <input
-      type="number"
-      min="1"
-      v-model="config.height"
-      @change="emitConfigChange"
-      style="width: fit-content"
-    />
+    <input type="number" min="1" v-model="config.height" />
     <label>Komi</label>
-    <input
-      type="number"
-      step="0.5"
-      v-model="config.komi"
-      @change="emitConfigChange"
-      style="width: fit-content"
-    />
-  </div>
+    <input type="number" step="0.5" v-model="config.komi" />
+  </form>
 </template>
+
+<style>
+input {
+  width: fit-content;
+}
+</style>

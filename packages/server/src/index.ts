@@ -1,11 +1,12 @@
 import express from "express";
 import session from "express-session";
+import MongoStore from "connect-mongo";
 import http from "http";
 import { createUserWithSessionId, getUser, getUserBySessionId } from "./users";
 import bodyParser from "body-parser";
 import cors from "cors";
 import path from "path";
-import { connectToDb } from "./db";
+import { connectToDb, getDb } from "./db";
 import passport from "passport";
 import { Strategy as CustomStrategy } from "passport-custom";
 import { UserResponse } from "@ogfcommunity/variants-shared";
@@ -38,6 +39,12 @@ const LOCAL_ORIGIN = "http://localhost:3000";
 //     }
 //   })
 // );
+
+// Initialize MongoDB
+connectToDb().catch((e) => {
+  console.log("Unable to connect to the database.");
+  console.log(e);
+});
 
 passport.use(
   "guest",
@@ -88,6 +95,7 @@ app.use(
       sameSite: "strict",
       secure: "auto", // TODO: See https://www.npmjs.com/package/express-session
     },
+    store: MongoStore.create({ client: getDb() }),
   })
 );
 app.use(passport.initialize());
@@ -95,12 +103,6 @@ app.use(passport.session());
 
 // initialize socket.io
 const server = http.createServer(app);
-
-// Initialize MongoDB
-connectToDb().catch((e) => {
-  console.log("Unable to connect to the database.");
-  console.log(e);
-});
 
 app.use("/api", apiRouter);
 

@@ -25,13 +25,6 @@ export abstract class AbstractGame<GameConfig = object, GameState = object> {
   /** Returns complete representation of the game at this point in time. */
   abstract exportState(player?: number): GameState;
 
-  /** Sets the state of the game.
-   *
-   * After `game_b.importState(game_a.exportState())`, game_a and game_b should
-   * be equivalent.
-   */
-  abstract importState(state: GameState): void;
-
   /**
    * Returns the list of players that need to play a move the next round.
    */

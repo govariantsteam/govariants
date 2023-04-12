@@ -8,6 +8,7 @@ import {
   Color,
 } from "../abstractAlternatingOnGrid";
 import { Coordinate, CoordinateLike } from "../coordinate";
+import { SuperKoDetector } from "../ko_detector";
 
 export interface BadukConfig extends AbstractAlternatingOnGridConfig {
   komi: number;
@@ -20,6 +21,7 @@ export interface BadukState extends AbstractAlternatingOnGridState {
 
 export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
   protected captures = { 0: 0, 1: 0 };
+  private ko_detector = new SuperKoDetector();
 
   constructor(config?: BadukConfig) {
     super(config);
@@ -61,6 +63,12 @@ export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
       console.log(this.board);
       throw Error("Move is suicidal!");
     }
+
+    // situational superko
+    this.ko_detector.push({
+      board: this.board,
+      next_to_play: this.next_to_play,
+    });
   }
 
   protected override prepareForNextMove(

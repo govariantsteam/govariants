@@ -1,5 +1,6 @@
 import { Baduk } from "./baduk";
 import { Color } from "../abstractAlternatingOnGrid";
+import { KoError } from "../ko_detector";
 
 test("Play a game", () => {
   const game = new Baduk({ width: 4, height: 2, komi: 0.5 });
@@ -76,4 +77,30 @@ test("Scoring with open borders", () => {
   game.playMove({ "1": "pass" });
 
   expect(game.result).toBe("W+6.5");
+});
+
+test("ko", () => {
+  // . B W .
+  // B . B W
+  // . B W .
+
+  const game = new Baduk({
+    width: 4,
+    height: 3,
+    komi: 6.5,
+  });
+
+  game.playMove({ "0": "ba" });
+  game.playMove({ "1": "ca" });
+  game.playMove({ "0": "ab" });
+  game.playMove({ "1": "db" });
+  game.playMove({ "0": "bc" });
+  game.playMove({ "1": "cc" });
+  game.playMove({ "0": "cb" });
+
+  // White captures
+  game.playMove({ "1": "bb" });
+
+  // Black captures back
+  expect(() => game.playMove({ "0": "cb" })).toThrow(KoError);
 });

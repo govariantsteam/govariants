@@ -34,13 +34,6 @@ export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
     };
   }
 
-  importState(state: BadukState) {
-    this.board = copyBoard(state.board);
-    this.captures = { 0: state.captures[0], 1: state.captures[1] };
-    this.next_to_play = state.next_to_play;
-    this.last_move = state.last_move;
-  }
-
   protected override playMoveInternal(move: Coordinate): void {
     super.playMoveInternal(move);
     const opponent_color = this.next_to_play === 0 ? Color.WHITE : Color.BLACK;

@@ -49,11 +49,6 @@ export class ParallelGo extends AbstractGame<
     };
   }
 
-  importState(state: ParallelGoState) {
-    this.board = Grid.from2DArray(state.board);
-    this.staged = state.staged;
-  }
-
   nextToPlay(): number[] {
     return [...Array(this.config.num_players).keys()];
   }

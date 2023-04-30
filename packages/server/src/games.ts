@@ -9,7 +9,7 @@ import { getDb } from "./db";
 import { io } from "./socket_io";
 import { HasTimeControlConfig, timeControlHandlerMap, ValidateTimeControlConfig } from "./time-control";
 
-export function gamesCollection() {
+function gamesCollection() {
   return getDb().db().collection("games");
 }
 
@@ -103,8 +103,6 @@ export async function playMove(
   }
 
   game_obj.playMove(moves);
-
-  console.log(game);
 
   if (HasTimeControlConfig(game)) {
     ValidateTimeControlConfig(game.config);

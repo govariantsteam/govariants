@@ -104,12 +104,10 @@ export async function playMove(
 
   game_obj.playMove(moves);
 
-  if (HasTimeControlConfig(game)) {
-    ValidateTimeControlConfig(game.config);
+  if (HasTimeControlConfig(game) && ValidateTimeControlConfig(game.config)) {
+    const timeHandler = new timeControlHandlerMap[game.variant]();
+    await timeHandler.handleMove(game, move.player, move.move);
   }
-
-  const timeHandler = new timeControlHandlerMap[game.variant]();
-  await timeHandler.handleMove(game, move.player, move.move);
 
   gamesCollection()
     .updateOne({ _id: new ObjectId(game_id) }, { $push: { moves: moves } })

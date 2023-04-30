@@ -49,7 +49,7 @@ class TimeHandlerSequentialMoves implements ITimeHandler {
                     return;
                 }
 
-                const nextPlayerNr = (playerNr + 1) % game.players.length;
+                const nextPlayerNr = (playerNr + 1) % (game.players.length + 1);
 
                 if (!timeData.onThePlaySince[playerNr] || timeData.onThePlaySince[nextPlayerNr] === undefined) {
                     console.error(`game with id ${game.id} has defect time control date`);

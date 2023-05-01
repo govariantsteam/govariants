@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import { TimeControlType, ITimeControlBase, ITimeControlConfig, IConfigWithTimeControl } from "@ogfcommunity/variants-shared/src/time_control/time_control.types";
 import { gamesCollection } from "./games";
-import { GameResponse } from "@ogfcommunity/variants-shared";
+import { AbstractGame, GameResponse } from "@ogfcommunity/variants-shared";
 
 export function HasTimeControlConfig(game_config: unknown): game_config is IConfigWithTimeControl {
     return (game_config && typeof game_config == "object" && 'time_control' in game_config);
@@ -18,13 +18,12 @@ export function ValidateTimeControlBase(time_control: unknown): time_control is 
 
 // validation of the config should happen before this is called
 export interface ITimeHandler {
-    handleMove(game: GameResponse, playerNr: number, move: string): Promise<void>;
+    handleMove(game: GameResponse, game_obj: AbstractGame<unknown, unknown>, playerNr: number, move: string): Promise<void>;
     // ToDo: this interface will probably need more functions, like handle create game etc.
 }
 
 class TimeHandlerSequentialMoves implements ITimeHandler {
-    constructor() {}
-    async handleMove( game: GameResponse, playerNr: number, move: string): Promise<void> {
+    async handleMove( game: GameResponse, game_obj: AbstractGame<unknown, unknown>, playerNr: number, move: string): Promise<void> {
         if (!HasTimeControlConfig(game.config)) {
             return;
         }
@@ -49,16 +48,18 @@ class TimeHandlerSequentialMoves implements ITimeHandler {
                     return;
                 }
 
-                const nextPlayerNr = (playerNr + 1) % (game.players.length + 1);
+                const nextPlayers = game_obj.nextToPlay();
 
-                if (!timeData.onThePlaySince[playerNr] || timeData.onThePlaySince[nextPlayerNr] === undefined) {
+                if (!timeData.onThePlaySince[playerNr] || nextPlayers.some(player => timeData.onThePlaySince[player] === undefined)) {
                     console.error(`game with id ${game.id} has defect time control date`);
                     return;
                 }
 
-                timeData.remainingMilliseconds[playerNr] -= ((new Date().getMilliseconds()) - timeData.onThePlaySince[playerNr].getMilliseconds());
+                var timestamp = new Date();
+                timeData.moveTimestamps.push(timestamp);
+                timeData.remainingMilliseconds[playerNr] -= ((timestamp.getMilliseconds()) - timeData.onThePlaySince[playerNr].getMilliseconds());
                 timeData.onThePlaySince[playerNr] = null;
-                timeData.onThePlaySince[nextPlayerNr] = new Date();
+                nextPlayers.forEach(player => timeData.onThePlaySince[player] = timestamp);
 
                 await gamesCollection()
                 .updateOne({ _id: new ObjectId(game.id) }, { $set: { "time_control": timeData } })
@@ -72,8 +73,7 @@ class TimeHandlerSequentialMoves implements ITimeHandler {
 }
 
 class TimeHandlerParallelMoves implements ITimeHandler {
-    constructor() {}
-    handleMove( game: GameResponse, playerNr: number, move: string): Promise<void> {
+    handleMove( game: GameResponse, game_obj: AbstractGame<unknown, unknown>, playerNr: number, move: string): Promise<void> {
         console.log("time control handler for parallel moves is not implemented yet");
         return;
     }

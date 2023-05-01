@@ -9,7 +9,7 @@ import { getDb } from "./db";
 import { io } from "./socket_io";
 import { HasTimeControlConfig, timeControlHandlerMap, ValidateTimeControlConfig } from "./time-control";
 
-function gamesCollection() {
+export function gamesCollection() {
   return getDb().db().collection("games");
 }
 
@@ -104,9 +104,9 @@ export async function playMove(
 
   game_obj.playMove(moves);
 
-  if (HasTimeControlConfig(game) && ValidateTimeControlConfig(game.config)) {
+  if (HasTimeControlConfig(game.config) && ValidateTimeControlConfig(game.config.time_control)) {
     const timeHandler = new timeControlHandlerMap[game.variant]();
-    await timeHandler.handleMove(game, move.player, move.move);
+    await timeHandler.handleMove(game, game_obj, move.player, move.move);
   }
 
   gamesCollection()

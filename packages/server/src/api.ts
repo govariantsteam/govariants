@@ -80,22 +80,25 @@ router.post("/games/:gameId/leave/:seat", async (req, res) => {
 });
 
 router.get("/guestLogin", function (req, res, next) {
-  passport.authenticate("guest", (err, user, info) => {
-    if (err) {
-      return next(err);
-    }
-    if (!user) {
-      return next(new Error(info.message));
-    }
-
-    req.logIn(user, function (err) {
+  passport.authenticate(
+    "guest",
+    (err: unknown, user?: Express.User, info?: { message: string }) => {
       if (err) {
         return next(err);
       }
+      if (!user) {
+        return next(new Error(info.message));
+      }
 
-      return res.json(user);
-    });
-  })(req, res, next);
+      req.logIn(user, function (err) {
+        if (err) {
+          return next(err);
+        }
+
+        return res.json(user);
+      });
+    }
+  )(req, res, next);
 });
 
 router.get("/checkLogin", function (req, res) {

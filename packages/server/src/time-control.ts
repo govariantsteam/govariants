@@ -29,7 +29,7 @@ class TimeHandlerSequentialMoves implements ITimeHandler {
         }
 
         switch (game.config.time_control.type) {
-            case TimeControlType.Absolute:
+            case TimeControlType.Absolute: {
                 if (!ValidateTimeControlBase(game.time_control))
                 {
                     console.error(`game with id ${game.id} has invalid time control data`);
@@ -55,7 +55,7 @@ class TimeHandlerSequentialMoves implements ITimeHandler {
                     return;
                 }
 
-                var timestamp = new Date();
+                const timestamp = new Date();
                 timeData.moveTimestamps.push(timestamp);
                 timeData.remainingMilliseconds[playerNr] -= ((timestamp.getMilliseconds()) - timeData.onThePlaySince[playerNr].getMilliseconds());
                 timeData.onThePlaySince[playerNr] = null;
@@ -64,6 +64,8 @@ class TimeHandlerSequentialMoves implements ITimeHandler {
                 await gamesCollection()
                 .updateOne({ _id: new ObjectId(game.id) }, { $set: { "time_control": timeData } })
                 .catch(console.log);
+                break;
+            }
 
             case TimeControlType.Invalid:
                 console.error("game with invalid time control type");

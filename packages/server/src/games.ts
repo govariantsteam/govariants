@@ -7,8 +7,9 @@ import {
 import { ObjectId, WithId, Document } from "mongodb";
 import { getDb } from "./db";
 import { io } from "./socket_io";
+import { HasTimeControlConfig, timeControlHandlerMap, ValidateTimeControlConfig } from "./time-control";
 
-function gamesCollection() {
+export function gamesCollection() {
   return getDb().db().collection("games");
 }
 
@@ -103,6 +104,11 @@ export async function playMove(
 
   game_obj.playMove(moves);
 
+  if (HasTimeControlConfig(game.config) && ValidateTimeControlConfig(game.config.time_control)) {
+    const timeHandler = new timeControlHandlerMap[game.variant]();
+    await timeHandler.handleMove(game, game_obj, move.player, move.move);
+  }
+
   gamesCollection()
     .updateOne({ _id: new ObjectId(game_id) }, { $push: { moves: moves } })
     .catch(console.log);
@@ -176,6 +182,7 @@ function outwardFacingGame(db_game: WithId<Document>): GameResponse {
     moves: db_game.moves,
     config: db_game.config,
     players: db_game.players,
+    time_control: db_game.time_control,
   };
 }
 

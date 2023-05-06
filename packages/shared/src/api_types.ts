@@ -1,4 +1,5 @@
 import { MovesType } from "./abstract_game";
+import { ITimeControlBase } from "./time_control/time_control.types";
 
 export interface User {
   username?: string;
@@ -10,6 +11,7 @@ export interface GameResponse {
   moves: MovesType[];
   config: unknown;
   players?: Array<User | undefined>;
+  time_control?: ITimeControlBase;
 }
 
 export interface UserResponse {

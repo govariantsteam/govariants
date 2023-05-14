@@ -114,6 +114,7 @@ function outwardFacingUser(
   return {
     id: db_user._id.toString(),
     login_type: db_user.login_type,
+    ...(db_user.login_type === "persistent" && { username: db_user.username }),
   };
 }
 

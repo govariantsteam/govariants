@@ -2,43 +2,39 @@ import express from "express";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 import http from "http";
-import { createUserWithSessionId, getUser, getUserBySessionId } from "./users";
+import {
+  authenticateUser,
+  createUserWithSessionId,
+  getUser,
+  getUserBySessionId,
+} from "./users";
 import bodyParser from "body-parser";
 import cors from "cors";
 import path from "path";
 import { connectToDb, getDb } from "./db";
 import passport from "passport";
 import { Strategy as CustomStrategy } from "passport-custom";
+import { Strategy as LocalStrategy } from "passport-local";
 import { UserResponse } from "@ogfcommunity/variants-shared";
 import { router as apiRouter } from "./api";
 import * as socket_io from "./socket_io";
 
 const LOCAL_ORIGIN = "http://localhost:3000";
 
-// passport.use(
-//   new LocalStrategy(async function (username, password, callback) {
-//     try {
-//       const user = await LocalUser.findOne({ name: username }).select(
-//         "+passwordHash"
-//       );
-//       // TODO: scrypt instead of bcrypt
-//       const passwordHash = user
-//         ? user.passwordHash
-//         : `$2b$${saltRounds}$TakeSomeTimeToCheckEvenIfUsernameIsWrong1234567890123`;
+passport.use(
+  new LocalStrategy(async function (username, password, callback) {
+    try {
+      const user = await authenticateUser(username, password);
 
-//       if (!(await bcrypt.compare(password, passwordHash)) || !user) {
-//         return callback(null, false, {
-//           message: "Wrong username or password.",
-//         });
-//       }
-
-//       delete user._doc.passwordHash;
-//       return callback(null, user);
-//     } catch (err) {
-//       return callback(err);
-//     }
-//   })
-// );
+      if (!user) {
+        return callback("no user found");
+      }
+      return callback(null, user);
+    } catch (err) {
+      return callback(err);
+    }
+  })
+);
 
 // Initialize MongoDB
 connectToDb().catch((e) => {

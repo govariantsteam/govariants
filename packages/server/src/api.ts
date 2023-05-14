@@ -8,7 +8,11 @@ import {
   takeSeat,
   leaveSeat,
 } from "./games";
-import { deleteUser } from "./users";
+import {
+  createUserWithUsernameAndPassword,
+  deleteUser,
+  getUserByName,
+} from "./users";
 import {
   GameResponse,
   MovesType,
@@ -77,6 +81,42 @@ router.post("/games/:gameId/leave/:seat", async (req, res) => {
   );
 
   res.send(players);
+});
+
+router.post("/register", async (req, res, next) => {
+  const data = req.body;
+  const user = await getUserByName(data.username);
+  if (!user) {
+    const user = await createUserWithUsernameAndPassword(
+      data.username,
+      data.password
+    );
+    res.send(user);
+    return;
+  }
+  res.sendStatus(403);
+});
+
+router.post("/login", (req, res, next) => {
+  passport.authenticate(
+    "local",
+    (err: unknown, user?: Express.User, info?: { message: string }) => {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        return next(new Error(info.message));
+      }
+
+      req.logIn(user, function (err) {
+        if (err) {
+          return next(err);
+        }
+
+        return res.json(user);
+      });
+    }
+  )(req, res, next);
 });
 
 router.get("/guestLogin", function (req, res, next) {

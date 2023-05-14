@@ -73,6 +73,21 @@ export async function createUserWithUsernameAndPassword(
   return { id: result.insertedId.toString(), login_type: "persistent" };
 }
 
+export async function authenticateUser(
+  username: string,
+  password: string
+): Promise<UserResponse | null> {
+  const result = await getUserByName(username);
+
+  if (!result) return null;
+
+  if (await bcrypt.compare(password, result.password_hash)) {
+    return { id: result.id.toString(), login_type: "persistent" };
+  }
+
+  return null;
+}
+
 export async function createUserWithSessionId(id: string): Promise<GuestUser> {
   const result = await usersCollection().insertOne({
     token: id,

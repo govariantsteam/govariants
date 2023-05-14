@@ -1,7 +1,7 @@
 import { getDb } from "./db";
-import bcrypt from "bcrypt";
 import { UserResponse } from "@ogfcommunity/variants-shared";
 import { Collection, WithId, ObjectId } from "mongodb";
+import { randomBytes, scrypt } from "node:crypto";
 
 export interface GuestUser extends UserResponse {
   token: string;
@@ -55,13 +55,65 @@ export async function getUserBySessionId(
   };
 }
 
-const SALT_ROUNDS = 10;
+function hashPassword(password: string): Promise<string> {
+  const N = 16384; // cost; power of 2
+  const r = 8; // blockSize
+  const p = 1; // parallelization
+  const saltLength = 16; // in bytes
+  const keyLength = 64; // in bytes
+
+  return new Promise((resolve, reject) => {
+    randomBytes(saltLength, (error, saltBuffer) => {
+      if (error) reject(error);
+      const saltString = saltBuffer.toString("base64");
+      scrypt(
+        password,
+        saltBuffer,
+        keyLength,
+        { N, r, p },
+        (error, derivedKey) => {
+          if (error) reject(error);
+          const keyString = derivedKey.toString("base64");
+          resolve(`s$N${N}$r${r}$p${p}$${saltString}$${keyString}`);
+        }
+      );
+    });
+  });
+}
+
+function comparePassword(
+  password: string,
+  passwordHash: string
+): Promise<boolean> {
+  const regex =
+    /^s\$N(\d+)\$r(\d+)\$p(\d+)\$([a-zA-Z0-9+/]+=?=?)\$([a-zA-Z0-9+/]+)(=?=?)$/;
+  const [match, NStr, rStr, pStr, saltString, keyString, keyPadding] =
+    passwordHash.match(regex);
+
+  const [N, r, p] = [Number(NStr), Number(rStr), Number(pStr)];
+  const saltBuffer = Buffer.from(saltString, "base64");
+  const keyLength = Math.floor(keyString.length * 0.75);
+
+  return new Promise((resolve, reject) => {
+    if (!match) reject("Unexpected password hash");
+    scrypt(
+      password,
+      saltBuffer,
+      keyLength,
+      { N, r, p },
+      (error, derivedKey) => {
+        if (error) reject(error);
+        resolve(keyString + keyPadding === derivedKey.toString("base64"));
+      }
+    );
+  });
+}
 
 export async function createUserWithUsernameAndPassword(
   username: string,
   password: string
 ): Promise<UserResponse> {
-  const password_hash = await bcrypt.hash(password, SALT_ROUNDS);
+  const password_hash = await hashPassword(password);
 
   const user: PersistentUser = {
     username,
@@ -81,7 +133,7 @@ export async function authenticateUser(
 
   if (!result) return null;
 
-  if (await bcrypt.compare(password, result.password_hash)) {
+  if (await comparePassword(password, result.password_hash)) {
     return { id: result.id.toString(), login_type: "persistent" };
   }
 

@@ -1,15 +1,24 @@
 <script setup lang="ts">
 import * as requests from "@/requests";
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 
 const username = ref("");
 const password = ref("");
+const error = ref("");
+
+const router = useRouter();
 
 const submit = () =>
-  requests.post("/login", {
-    username: username.value,
-    password: password.value,
-  });
+  requests
+    .post("/login", {
+      username: username.value,
+      password: password.value,
+    })
+    .then(() => {
+      router.push("/");
+    })
+    .catch((e) => (error.value = e));
 </script>
 
 <template>
@@ -25,7 +34,6 @@ const submit = () =>
         v-model="username"
       />
     </div>
-    <span>hhfhf</span>
     <div>
       <label for="current-password">Password</label>
       <input
@@ -40,5 +48,12 @@ const submit = () =>
     <div>
       <button type="submit" @click="submit">Sign in</button>
     </div>
+    <span class="error">{{ error }}</span>
   </main>
 </template>
+
+<style>
+.error {
+  color: red;
+}
+</style>

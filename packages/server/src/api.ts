@@ -1,5 +1,5 @@
 import express from "express";
-import passport from "passport";
+import passport, { AuthenticateCallback } from "passport";
 import {
   getGame,
   getGames,
@@ -84,61 +84,46 @@ router.post("/games/:gameId/leave/:seat", async (req, res) => {
 });
 
 router.post("/register", async (req, res, next) => {
-  const data = req.body;
-  const user = await getUserByName(data.username);
-  if (!user) {
-    const user = await createUserWithUsernameAndPassword(
-      data.username,
-      data.password
-    );
-    res.send(user);
+  const { username, password } = req.body;
+  const user = await getUserByName(username);
+  if (user) {
+    next(`Username "${username}" already taken!`);
     return;
   }
-  res.sendStatus(403);
+
+  await createUserWithUsernameAndPassword(username, password);
+  passport.authenticate("local", make_auth_cb(req, res, next))(req, res, next);
 });
 
-router.post("/login", (req, res, next) => {
-  passport.authenticate(
-    "local",
-    (err: unknown, user?: Express.User, info?: { message: string }) => {
+function make_auth_cb(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+): AuthenticateCallback {
+  return (err: unknown, user?: Express.User, info?: { message: string }) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return next(new Error(info.message));
+    }
+
+    req.logIn(user, function (err) {
       if (err) {
         return next(err);
       }
-      if (!user) {
-        return next(new Error(info.message));
-      }
 
-      req.logIn(user, function (err) {
-        if (err) {
-          return next(err);
-        }
+      return res.json(user);
+    });
+  };
+}
 
-        return res.json(user);
-      });
-    }
-  )(req, res, next);
+router.post("/login", (req, res, next) => {
+  passport.authenticate("local", make_auth_cb(req, res, next))(req, res, next);
 });
 
 router.get("/guestLogin", function (req, res, next) {
-  passport.authenticate(
-    "guest",
-    (err: unknown, user?: Express.User, info?: { message: string }) => {
-      if (err) {
-        return next(err);
-      }
-      if (!user) {
-        return next(new Error(info.message));
-      }
-
-      req.logIn(user, function (err) {
-        if (err) {
-          return next(err);
-        }
-
-        return res.json(user);
-      });
-    }
-  )(req, res, next);
+  passport.authenticate("guest", make_auth_cb(req, res, next))(req, res, next);
 });
 
 router.get("/checkLogin", function (req, res) {

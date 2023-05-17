@@ -9,6 +9,7 @@ import {
   leaveSeat,
 } from "./games";
 import {
+  checkUsername,
   createUserWithUsernameAndPassword,
   deleteUser,
   getUserByName,
@@ -88,6 +89,13 @@ router.post("/register", async (req, res, next) => {
   const user = await getUserByName(username);
   if (user) {
     next(`Username "${username}" already taken!`);
+    return;
+  }
+
+  try {
+    checkUsername(username);
+  } catch (e) {
+    next(e);
     return;
   }
 

@@ -131,13 +131,13 @@ export async function authenticateUser(
 ): Promise<UserResponse | null> {
   const result = await getUserByName(username);
 
-  if (!result) return null;
+  if (!result) throw new Error("user not found");
 
   if (await comparePassword(password, result.password_hash)) {
     return { id: result.id.toString(), login_type: "persistent" };
   }
 
-  return null;
+  throw new Error("invalid password");
 }
 
 export async function createUserWithSessionId(id: string): Promise<GuestUser> {

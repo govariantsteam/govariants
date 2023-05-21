@@ -88,37 +88,36 @@ router.post("/register", async (req, res, next) => {
   const { username, password } = req.body;
   const user = await getUserByName(username);
   if (user) {
-    next(`Username "${username}" already taken!`);
+    res.status(500).json(`Username "${username}" already taken!`);
     return;
   }
 
   try {
     checkUsername(username);
   } catch (e) {
-    next(e);
+    res.status(500).json(e);
     return;
   }
 
   await createUserWithUsernameAndPassword(username, password);
-  passport.authenticate("local", make_auth_cb(req, res, next))(req, res, next);
+  passport.authenticate("local", make_auth_cb(req, res))(req, res, next);
 });
 
 function make_auth_cb(
   req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
+  res: express.Response
 ): AuthenticateCallback {
-  return (err: unknown, user?: Express.User, info?: { message: string }) => {
+  return (err: Error, user?: Express.User, info?: { message: string }) => {
     if (err) {
-      return next(err);
+      return res.status(500).json(err.message);
     }
     if (!user) {
-      return next(new Error(info.message));
+      return res.status(500).json(info.message);
     }
 
     req.logIn(user, function (err) {
       if (err) {
-        return next(err);
+        return res.status(500).json(err.message);
       }
 
       return res.json(user);
@@ -127,11 +126,11 @@ function make_auth_cb(
 }
 
 router.post("/login", (req, res, next) => {
-  passport.authenticate("local", make_auth_cb(req, res, next))(req, res, next);
+  passport.authenticate("local", make_auth_cb(req, res))(req, res, next);
 });
 
 router.get("/guestLogin", function (req, res, next) {
-  passport.authenticate("guest", make_auth_cb(req, res, next))(req, res, next);
+  passport.authenticate("guest", make_auth_cb(req, res))(req, res, next);
 });
 
 router.get("/checkLogin", function (req, res) {

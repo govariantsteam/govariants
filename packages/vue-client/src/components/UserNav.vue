@@ -7,7 +7,7 @@ store.update();
 </script>
 
 <template>
-  <RouterLink v-if="!user" to="login">Log in</RouterLink>
+  <RouterLink v-if="!user" to="/login">Log in</RouterLink>
   <template v-else>
     <!-- TODO: make this a link to the user's profile? -->
     <RouterLink to="#">{{ user.username }}</RouterLink>

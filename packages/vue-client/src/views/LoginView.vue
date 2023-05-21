@@ -2,6 +2,9 @@
 import * as requests from "@/requests";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { useStore } from "@/stores/user";
+
+const store = useStore();
 
 const username = ref("");
 const password = ref("");
@@ -10,11 +13,8 @@ const error = ref("");
 const router = useRouter();
 
 const submit = () =>
-  requests
-    .post("/login", {
-      username: username.value,
-      password: password.value,
-    })
+  store
+    .userLogin(username.value, password.value)
     .then(() => {
       router.push("/");
     })
@@ -46,7 +46,17 @@ const submit = () =>
       />
     </div>
     <div>
-      <button type="submit" @click="submit">Sign in</button>
+      <button type="submit" @click="submit">Log in</button>
+    </div>
+    <hr />
+    <input
+      type="button"
+      v-on:click="store.guestLogin()"
+      value="Log in as guest"
+    />
+    <div>
+      Don't have an account?
+      <RouterLink to="register">Register here!</RouterLink>
     </div>
     <span class="error">{{ error }}</span>
   </main>

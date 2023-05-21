@@ -2,19 +2,19 @@
 import * as requests from "@/requests";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { useStore } from "@/stores/user";
 
 const username = ref("");
 const password = ref("");
 const error = ref("");
 
+const store = useStore();
+
 const router = useRouter();
 
 const submit = () =>
-  requests
-    .post("/register", {
-      username: username.value,
-      password: password.value,
-    })
+  store
+    .registerUser(username.value, password.value)
     .then(() => {
       router.push("/");
     })
@@ -47,6 +47,10 @@ const submit = () =>
     </div>
     <div>
       <button type="submit" @click="submit">Register</button>
+    </div>
+    <div>
+      Already have an account?
+      <RouterLink to="login">Log in!</RouterLink>
     </div>
     <span class="error">{{ error }}</span>
   </main>

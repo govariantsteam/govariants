@@ -167,4 +167,10 @@ watchEffect((onCleanup) => {
 pre {
   text-align: left;
 }
+
+@media (min-width: 664px) {
+  .board {
+    width: 600px;
+  }
+}
 </style>

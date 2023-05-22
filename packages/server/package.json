@@ -16,7 +16,6 @@
     "@types/jsdom": "^20.0.0",
     "@types/passport": "^1.0.9",
     "@types/passport-local": "^1.0.34",
-    "bcrypt": "^5.0.1",
     "body-parser": "^1.20.0",
     "connect-mongo": "^5.0.0",
     "cors": "^2.8.5",

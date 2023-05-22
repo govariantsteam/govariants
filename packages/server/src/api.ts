@@ -1,5 +1,5 @@
 import express from "express";
-import passport from "passport";
+import passport, { AuthenticateCallback } from "passport";
 import {
   getGame,
   getGames,
@@ -8,7 +8,12 @@ import {
   takeSeat,
   leaveSeat,
 } from "./games";
-import { deleteUser } from "./users";
+import {
+  checkUsername,
+  createUserWithUsernameAndPassword,
+  deleteUser,
+  getUserByName,
+} from "./users";
 import {
   GameResponse,
   MovesType,
@@ -79,26 +84,53 @@ router.post("/games/:gameId/leave/:seat", async (req, res) => {
   res.send(players);
 });
 
-router.get("/guestLogin", function (req, res, next) {
-  passport.authenticate(
-    "guest",
-    (err: unknown, user?: Express.User, info?: { message: string }) => {
-      if (err) {
-        return next(err);
-      }
-      if (!user) {
-        return next(new Error(info.message));
-      }
+router.post("/register", async (req, res, next) => {
+  const { username, password } = req.body;
+  const user = await getUserByName(username);
+  if (user) {
+    res.status(500).json(`Username "${username}" already taken!`);
+    return;
+  }
 
-      req.logIn(user, function (err) {
-        if (err) {
-          return next(err);
-        }
+  try {
+    checkUsername(username);
+  } catch (e) {
+    res.status(500).json(e);
+    return;
+  }
 
-        return res.json(user);
-      });
+  await createUserWithUsernameAndPassword(username, password);
+  passport.authenticate("local", make_auth_cb(req, res))(req, res, next);
+});
+
+function make_auth_cb(
+  req: express.Request,
+  res: express.Response
+): AuthenticateCallback {
+  return (err: Error, user?: Express.User, info?: { message: string }) => {
+    if (err) {
+      return res.status(500).json(err.message);
     }
-  )(req, res, next);
+    if (!user) {
+      return res.status(500).json(info.message);
+    }
+
+    req.logIn(user, function (err) {
+      if (err) {
+        return res.status(500).json(err.message);
+      }
+
+      return res.json(user);
+    });
+  };
+}
+
+router.post("/login", (req, res, next) => {
+  passport.authenticate("local", make_auth_cb(req, res))(req, res, next);
+});
+
+router.get("/guestLogin", function (req, res, next) {
+  passport.authenticate("guest", make_auth_cb(req, res))(req, res, next);
 });
 
 router.get("/checkLogin", function (req, res) {

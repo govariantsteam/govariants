@@ -22,6 +22,22 @@ export const useStore = defineStore("user", {
       this.update();
     },
 
+    async registerUser(username: string, password: string) {
+      this.user = await requests.post("/register", {
+        username,
+        password,
+      });
+      this.update();
+    },
+
+    async userLogin(username: string, password: string) {
+      this.user = await requests.post("/login", {
+        username,
+        password,
+      });
+      this.update();
+    },
+
     async logout() {
       await requests.get("/logout");
       this.user = null;

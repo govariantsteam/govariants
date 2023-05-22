@@ -7,11 +7,19 @@ store.update();
 </script>
 
 <template>
-  <input
-    v-if="!user"
-    type="button"
-    v-on:click="store.guestLogin()"
-    value="Remember me"
-  />
-  <input v-else type="button" v-on:click="store.logout()" value="Forget me" />
+  <RouterLink v-if="!user" to="/login">Log in</RouterLink>
+  <template v-else>
+    <!-- TODO: make this a link to the user's profile? -->
+    <RouterLink to="#">{{ user.username }}</RouterLink>
+    <input type="button" v-on:click="store.logout()" value="Log out" />
+  </template>
 </template>
+
+<style scoped>
+nav a {
+  display: inline-block;
+  padding: 0 1rem;
+  border-left: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+</style>

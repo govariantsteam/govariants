@@ -44,8 +44,8 @@ const viewBox = computed(() => {
   <svg
     class="board"
     xmlns="http://www.w3.org/2000/svg"
-    width="600px"
-    height="600px"
+    width="100%"
+    height="100%"
     v-bind:viewBox="viewBox"
   >
     <g

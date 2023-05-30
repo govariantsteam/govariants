@@ -1,5 +1,10 @@
 import { ObjectId } from "mongodb";
-import { TimeControlType, ITimeControlBase, ITimeControlConfig, IConfigWithTimeControl } from "@ogfcommunity/variants-shared/src/time_control/time_control.types";
+import {
+  TimeControlType,
+  ITimeControlBase,
+  ITimeControlConfig,
+  IConfigWithTimeControl,
+} from "@ogfcommunity/variants-shared";
 import { gamesCollection } from "./games";
 import { AbstractGame, GameResponse } from "@ogfcommunity/variants-shared";
 
@@ -12,8 +17,13 @@ export function ValidateTimeControlConfig(time_control_config: unknown): time_co
 }
 
 export function ValidateTimeControlBase(time_control: unknown): time_control is ITimeControlBase {
-    return (time_control && typeof time_control === "object" && 
-    'moveTimestamps' in time_control && 'remainingMilliseconds' in time_control && 'onThePlaySince' in time_control);
+    return (
+      time_control &&
+      typeof time_control === "object" &&
+      "moveTimestamps" in time_control &&
+      "remainingMilliseconds" in time_control &&
+      "onThePlaySince" in time_control
+    );
 }
 
 // validation of the config should happen before this is called

@@ -153,10 +153,6 @@ watchEffect((onCleanup) => {
     >
       {{ value }}
     </button>
-    <pre>
-      <span>from /games/{{gameResponse.id}}</span>
-      {{JSON.stringify(gameResponse, null, 2)}}
-    </pre>
   </div>
   <div v-if="game.result" style="font-weight: bold; font-size: 24pt">
     Result: {{ game.result }}

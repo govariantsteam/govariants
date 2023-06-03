@@ -2,6 +2,8 @@
 import { ref, computed } from "vue";
 import { useFetch } from "@vueuse/core";
 import type { GameResponse } from "@ogfcommunity/variants-shared";
+import GameListItem from "@/components/GameListItem.vue";
+
 const countOptions = [10, 15, 25, 50];
 const count = ref(countOptions[0]);
 const offset = ref(0);
@@ -24,11 +26,9 @@ const next = () => {
 
 <template>
   <ul>
-    <li v-for="game in games" :key="game.id">
-      <RouterLink v-bind:to="{ name: 'game', params: { gameId: game.id } }">
-        {{ game.id }}
-      </RouterLink>
-    </li>
+    <template v-for="game in games" :key="game.id">
+      <GameListItem :game="game" />
+    </template>
   </ul>
   <button @click="first()" :disabled="offset === 0">First</button>
   <button @click="previous()" :disabled="offset === 0">Previous</button>
@@ -42,3 +42,9 @@ const next = () => {
     </select>
   </label>
 </template>
+
+<style scoped>
+ul {
+  padding: 0;
+}
+</style>

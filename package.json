@@ -12,7 +12,7 @@
     "lint:check": "yarn workspaces foreach -pti run lint:check",
     "lint": "yarn workspaces foreach -pti run lint",
     "start:server": "yarn workspace @ogfcommunity/variants-server run start",
-    "start:client": "yarn workspace @ogfcommunity/variants-client run start",
+    "start:client": "yarn workspace @ogfcommunity/variants-vue-client run start",
     "start:shared": "yarn workspace @ogfcommunity/variants-shared run start"
   },
   "workspaces": {

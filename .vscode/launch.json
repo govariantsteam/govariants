@@ -1,0 +1,32 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Server",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/packages/server",
+            "runtimeExecutable": "yarn",
+            "runtimeArgs": ["workspace", "@ogfcommunity/variants-server", "run", "start"],
+            "outputCapture": "std",
+        },
+        {
+            "name": "Client",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/packages/vue-client",
+            "runtimeExecutable": "yarn",
+            "runtimeArgs": ["workspace", "@ogfcommunity/variants-vue-client", "run", "dev"],
+        },
+    ],
+    "compounds": [
+        {
+            "name": "Server+Client",
+            "configurations": ["Server", "Client"],
+            "stopAll": true,
+        }
+    ]
+}

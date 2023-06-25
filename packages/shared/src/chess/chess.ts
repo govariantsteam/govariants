@@ -1,53 +1,48 @@
 import { AbstractGame, MovesType } from "../abstract_game";
-import { Grid } from "../grid";
+import { Chess } from "chess.js";
 
-type WhitePiece = "p" | "r" | "n" | "b" | "q" | "k";
-type BlackPiece = Uppercase<WhitePiece>;
-type Piece = WhitePiece | BlackPiece;
-type Rank = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
-type File = "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h";
-type Square = `${File}${Rank}`;
-
-// Not exactly FEN, but concepts and notations borrowed
 export interface ChessState {
-  board: Array<Array<Piece | null>>;
-  en_passant_target: Square | null;
-  castling_rights: { K: boolean; Q: boolean; k: boolean; q: boolean };
+  fen: string;
 }
 
-const EMPTY_ROW = [null, null, null, null, null, null, null, null];
-const STARTING_BOARD: Array<Array<Piece | null>> = [
-  ["r", "n", "b", "q", "k", "b", "n", "r"],
-  ["p", "p", "p", "p", "p", "p", "p", "p"],
-  EMPTY_ROW,
-  EMPTY_ROW,
-  EMPTY_ROW,
-  EMPTY_ROW,
-  ["P", "P", "P", "P", "P", "P", "P", "P"],
-  ["R", "N", "B", "Q", "K", "B", "N", "R"],
-];
+export class ChessGame extends AbstractGame<object, ChessState> {
+  // third-party chess object
+  private chess = new Chess();
 
-export class Chess extends AbstractGame<object, ChessState> {
-  private board = Grid.from2DArray(STARTING_BOARD);
-  private active_color: 0 | 1 = 0;
-  private en_passant_target: Square | null = null;
-  private castling_rights = { K: true, Q: true, k: true, q: true };
-  private halfmove_clock = 0;
-
-  playMove(move: MovesType): void {
-    throw new Error("Method not implemented.");
+  playMove(moves: MovesType): void {
+    const { move, player } = getOnlyMove(moves);
+    if (player === 1 && "b" != this.chess.turn()) {
+      throw Error("Not Black's turn");
+    }
+    if (player === 0 && "w" != this.chess.turn()) {
+      throw Error("Not White's turn");
+    }
+    this.chess.move(move);
   }
 
   exportState(): ChessState {
-    throw new Error("Method not implemented.");
+    return { fen: this.chess.fen() };
   }
   nextToPlay(): number[] {
-    throw new Error("Method not implemented.");
+    return [this.chess.turn() == "b" ? 1 : 0];
   }
   numPlayers(): number {
-    throw new Error("Method not implemented.");
+    return 2;
   }
   defaultConfig(): object {
-    throw new Error("Method not implemented.");
+    return {};
   }
+}
+
+// TODO: dedupe
+function getOnlyMove(moves: MovesType): { player: number; move: string } {
+  const players = Object.keys(moves);
+  if (players.length > 1) {
+    throw Error(`More than one player: ${players}`);
+  }
+  if (players.length === 0) {
+    throw Error("No players specified!");
+  }
+  const player = Number(players[0]);
+  return { player, move: moves[player] };
 }

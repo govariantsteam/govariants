@@ -18,10 +18,12 @@
   "dependencies": {
     "@ogfcommunity/variants-shared": "1.0.0",
     "@vueuse/core": "^9.13.0",
+    "chessground": "^8.3.10",
     "pinia": "^2.0.14",
     "socket.io-client": "^4.5.2",
-    "vue": "^3.2.37",
-    "vue-router": "^4.1.2"
+    "vue": "3.2.47",
+    "vue-router": "^4.1.2",
+    "vue3-chessboard": "^1.1.8"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.0",

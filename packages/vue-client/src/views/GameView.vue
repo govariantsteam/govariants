@@ -21,6 +21,9 @@ const DEFAULT_GAME: GameResponse = {
 };
 const gameResponse: GameResponse = reactive(DEFAULT_GAME);
 const game = computed(() => {
+  if (!gameResponse.variant) {
+    return { result: null, state: null };
+  }
   const game_obj = makeGameObject(gameResponse.variant, gameResponse.config);
   gameResponse.moves.forEach((move) => {
     game_obj.playMove(move);
@@ -126,7 +129,7 @@ watchEffect((onCleanup) => {
 
 <template>
   <component
-    v-if="variantGameView"
+    v-if="variantGameView && game.state"
     v-bind:is="variantGameView"
     v-bind:gamestate="game.state"
     v-bind:config="gameResponse.config"

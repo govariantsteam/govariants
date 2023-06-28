@@ -1,8 +1,8 @@
 import { AbstractGame } from "../abstract_game";
-import type { MovesType } from "../abstract_game";
 import type { IBadukBoard } from "./abstractBoard/Interfaces/IBadukBoard";
 import { BadukBoardAbstract } from "./abstractBoard/BadukBoardAbstract";
 import type { Intersection } from "./abstractBoard/intersection";
+import { getOnlyMove } from "../utils";
 
 export enum Color {
     EMPTY = 0,
@@ -166,19 +166,6 @@ function groupHasLiberties(intersection: Intersection, board: BadukBoardAbstract
  */
 function removeGroup(intersection: Intersection, board: IBadukBoard): number {
     return floodFill(intersection, Color.EMPTY, board);
-}
-
-/** Asserts there is exaclty one move, and returns it */
-function getOnlyMove(moves: MovesType): { player: number; move: string } {
-    const players = Object.keys(moves);
-    if (players.length > 1) {
-        throw Error(`More than one player: ${players}`);
-    }
-    if (players.length === 0) {
-        throw Error("No players specified!");
-    }
-    const player = Number(players[0]);
-    return { player, move: moves[player] };
 }
 
 function isOutOfBounds(i: number, board: BadukBoardAbstract): boolean {

@@ -1,5 +1,6 @@
-import { AbstractGame, MovesType } from "../abstract_game";
+import { AbstractGame } from "../abstract_game";
 import { Coordinate, CoordinateLike } from "../coordinate";
+import { getOnlyMove } from "../utils";
 
 export enum Color {
   EMPTY = 0,
@@ -123,19 +124,6 @@ export function makeGridWithValue<T>(
 
 export function copyBoard(board: Color[][]) {
   return board.map((row) => [...row]);
-}
-
-/** Asserts there is exaclty one move, and returns it */
-function getOnlyMove(moves: MovesType): { player: number; move: string } {
-  const players = Object.keys(moves);
-  if (players.length > 1) {
-    throw Error(`More than one player: ${players}`);
-  }
-  if (players.length === 0) {
-    throw Error("No players specified!");
-  }
-  const player = Number(players[0]);
-  return { player, move: moves[player] };
 }
 
 export function isOutOfBounds(

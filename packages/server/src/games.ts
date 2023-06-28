@@ -3,6 +3,7 @@ import {
   makeGameObject,
   MovesType,
   User,
+  getOnlyMove,
 } from "@ogfcommunity/variants-shared";
 import { ObjectId, WithId, Document } from "mongodb";
 import { getDb } from "./db";
@@ -184,24 +185,4 @@ function outwardFacingGame(db_game: WithId<Document>): GameResponse {
     players: db_game.players,
     time_control: db_game.time_control,
   };
-}
-
-// This is copied and pasted from baduk.ts.  I realized that we only ever consume
-// one move at a time, making me think that maybe we should be storing it in a
-// way that TS understands that.
-//
-// Ideas: [number, string], { player: number, move: string }
-//
-// TODO: remove this function once a proper data format is decided.
-/** Asserts there is exaclty one move, and returns it */
-function getOnlyMove(moves: MovesType): { player: number; move: string } {
-  const players = Object.keys(moves);
-  if (players.length > 1) {
-    throw Error(`More than one player: ${players}`);
-  }
-  if (players.length === 0) {
-    throw Error("No players specified!");
-  }
-  const player = Number(players[0]);
-  return { player, move: moves[player] };
 }

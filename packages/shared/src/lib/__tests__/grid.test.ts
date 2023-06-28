@@ -96,3 +96,14 @@ test("forEach on unset array", () => {
   expect(f).toBeCalledTimes(1);
   expect(f).toBeCalledWith(8, index, g);
 });
+
+  
+test("reduce", () => {
+  const g = Grid.from2DArray([
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9],
+  ]);
+
+  expect(g.reduce((x, y) => x + y, 0)).toEqual(45);
+});

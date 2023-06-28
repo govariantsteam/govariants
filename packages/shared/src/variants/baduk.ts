@@ -23,7 +23,7 @@ export interface BadukState extends AbstractAlternatingOnGridState {
 export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
   protected captures = { 0: 0, 1: 0 };
   private ko_detector = new SuperKoDetector();
-  private score_board?: Grid<Color>;
+  protected score_board?: Grid<Color>;
 
   constructor(config?: BadukConfig) {
     super(config);

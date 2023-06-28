@@ -14,4 +14,5 @@ export const board_map: {
   capture: Baduk,
   chess: ChessBoard,
   tetris: Baduk,
+  pyramid: Baduk,
 };

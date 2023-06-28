@@ -118,6 +118,27 @@ export class Grid<T> {
     const w = this.width;
     const h = this.height;
     return x < w && y < h && x >= 0 && y >= 0;
+  }  
+
+  reduce(
+    callbackfn: (
+      previousValue: T,
+      currentValue: T,
+      index: Coordinate,
+      array: Grid<T>
+    ) => T,
+    initialValue: T
+  ): T {
+    return this.arr.reduce(
+      (previousValue, currentValue, flat_index) =>
+        callbackfn(
+          previousValue,
+          currentValue,
+          flat_index_to_coordinate(flat_index, this.width),
+          this
+        ),
+      initialValue
+    );
   }
 }
 

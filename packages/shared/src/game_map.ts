@@ -6,6 +6,7 @@ import { ParallelGo } from "./variants/parallel";
 import { Capture } from "./variants/capture";
 import { ChessGame } from "./variants/chess";
 import { TetrisGo } from "./variants/tetris";
+import { PyramidGo } from "./variants/pyramid";
 
 export const game_map: {
   [variant: string]: new (config?: any) => AbstractGame;
@@ -17,6 +18,7 @@ export const game_map: {
   capture: Capture,
   chess: ChessGame,
   tetris: TetrisGo,
+  pyramid: PyramidGo,
 };
 
 class ConfigError extends Error {

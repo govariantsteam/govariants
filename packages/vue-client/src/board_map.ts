@@ -13,4 +13,5 @@ export const board_map: {
   parallel: ParallelGoBoard,
   capture: Baduk,
   chess: ChessBoard,
+  tetris: Baduk,
 };

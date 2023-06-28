@@ -1,5 +1,6 @@
 import { AbstractGame, MovesType } from "../abstract_game";
 import { Chess } from "chess.js";
+import { getOnlyMove } from "../utils";
 
 export interface ChessState {
   fen: string;
@@ -32,17 +33,4 @@ export class ChessGame extends AbstractGame<object, ChessState> {
   defaultConfig(): object {
     return {};
   }
-}
-
-// TODO: dedupe
-function getOnlyMove(moves: MovesType): { player: number; move: string } {
-  const players = Object.keys(moves);
-  if (players.length > 1) {
-    throw Error(`More than one player: ${players}`);
-  }
-  if (players.length === 0) {
-    throw Error("No players specified!");
-  }
-  const player = Number(players[0]);
-  return { player, move: moves[player] };
 }

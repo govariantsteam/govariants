@@ -1,6 +1,7 @@
 import { AbstractGame, MovesType } from "../abstract_game";
 import { Coordinate } from "../coordinate";
 import { Grid } from "../grid";
+import { getOnlyMove } from "../utils";
 
 export interface ParallelGoConfig {
   width: number;
@@ -212,19 +213,6 @@ export class ParallelGo extends AbstractGame<
       group.stones.forEach((pos) => this.board.set(pos, []));
     });
   }
-}
-
-/** Asserts there is exactly one move, and returns it */
-function getOnlyMove(moves: MovesType): { player: number; move: string } {
-  const players = Object.keys(moves);
-  if (players.length > 1) {
-    throw Error(`More than one player: ${players}`);
-  }
-  if (players.length === 0) {
-    throw Error("No players specified!");
-  }
-  const player = Number(players[0]);
-  return { player, move: moves[player] };
 }
 
 interface Group {

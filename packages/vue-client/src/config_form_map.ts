@@ -11,4 +11,5 @@ export const config_form_map: {
   badukWithAbstractBoard: BadukWithAbstractBoardConfigForm,
   parallel: ParalleGoConfigForm,
   capture: BadukConfigForm,
+  tetris: BadukConfigForm,
 };

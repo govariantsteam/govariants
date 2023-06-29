@@ -1,5 +1,6 @@
 import { AbstractGame } from "../../abstract_game";
 import { Coordinate, CoordinateLike } from "../coordinate";
+import { Grid } from "../grid";
 import { getOnlyMove } from "../utils";
 
 export enum Color {
@@ -25,18 +26,20 @@ export abstract class AbstractAlternatingOnGrid<
   TConfig extends AbstractAlternatingOnGridConfig,
   TState extends AbstractAlternatingOnGridState
 > extends AbstractGame<TConfig, TState> {
-  protected board: Color[][];
+  protected board: Grid<Color>;
   protected next_to_play: 0 | 1 = 0;
   protected last_move = "";
 
   constructor(config?: AbstractAlternatingOnGridConfig) {
     super(config as TConfig);
-    this.board = makeEmptyBoard(this.config.width, this.config.height);
+    this.board = new Grid<Color>(this.config.width, this.config.height).fill(
+      Color.EMPTY
+    );
   }
 
   override exportState(): TState {
     return {
-      board: copyBoard(this.board),
+      board: this.board.to2DArray(),
       next_to_play: this.next_to_play,
       last_move: this.last_move,
     } as TState;
@@ -67,14 +70,15 @@ export abstract class AbstractAlternatingOnGrid<
     if (move != "pass") {
       const decoded_move = Coordinate.fromSgfRepr(move);
       const { x, y } = decoded_move;
-      if (isOutOfBounds(decoded_move, this.board)) {
+      const color = this.board.at(decoded_move);
+      if (color === undefined) {
         throw Error(
           `Move out of bounds. (move: ${decoded_move}, board dimensions: ${this.config.width}x${this.config.height}`
         );
       }
-      if (this.board[y][x] != Color.EMPTY) {
+      if (color !== Color.EMPTY) {
         throw Error(
-          `Cannot place a stone on top of an existing stone. (${this.board[y][x]} at (${x}, ${y}))`
+          `Cannot place a stone on top of an existing stone. (${color} at (${x}, ${y}))`
         );
       }
 
@@ -92,8 +96,7 @@ export abstract class AbstractAlternatingOnGrid<
   protected postValidateMove(move: Coordinate): void {}
 
   protected playMoveInternal(move: Coordinate): void {
-    this.board[move.y][move.x] =
-      this.next_to_play === 0 ? Color.BLACK : Color.WHITE;
+    this.board.set(move, this.next_to_play === 0 ? Color.BLACK : Color.WHITE);
   }
 
   protected prepareForNextMove(move: string, decoded_move?: Coordinate): void {
@@ -126,9 +129,6 @@ export function copyBoard(board: Color[][]) {
   return board.map((row) => [...row]);
 }
 
-export function isOutOfBounds(
-  { x, y }: CoordinateLike,
-  board: Color[][]
-): boolean {
-  return board[y] === undefined || board[y][x] === undefined;
+export function isOutOfBounds(pos: CoordinateLike, board: Grid<Color>): boolean {
+  return board.at(pos) === undefined;
 }

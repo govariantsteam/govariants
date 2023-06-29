@@ -2,8 +2,6 @@ import {
   AbstractAlternatingOnGrid,
   AbstractAlternatingOnGridConfig,
   AbstractAlternatingOnGridState,
-  makeGridWithValue,
-  copyBoard,
   isOutOfBounds,
   Color,
 } from "../lib/abstractAlternatingOnGrid";

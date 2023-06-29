@@ -113,22 +113,6 @@ export abstract class AbstractAlternatingOnGrid<
   }
 }
 
-function makeEmptyBoard(width: number, height: number): Color[][] {
-  return makeGridWithValue(width, height, Color.EMPTY);
-}
-
-export function makeGridWithValue<T>(
-  width: number,
-  height: number,
-  value: T
-): T[][] {
-  return new Array(height).fill(null).map(() => new Array(width).fill(value));
-}
-
-export function copyBoard(board: Color[][]) {
-  return board.map((row) => [...row]);
-}
-
 export function isOutOfBounds(pos: CoordinateLike, board: Grid<Color>): boolean {
   return board.at(pos) === undefined;
 }

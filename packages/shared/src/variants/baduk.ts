@@ -8,6 +8,7 @@ import {
   Color,
 } from "../lib/abstractAlternatingOnGrid";
 import { Coordinate, CoordinateLike } from "../lib/coordinate";
+import { Grid } from "../lib/grid";
 import { SuperKoDetector } from "../lib/ko_detector";
 
 export interface BadukConfig extends AbstractAlternatingOnGridConfig {
@@ -38,11 +39,12 @@ export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
     super.playMoveInternal(move);
     const opponent_color = this.next_to_play === 0 ? Color.WHITE : Color.BLACK;
     neighboringPositions(move).forEach((pos) => {
+      const neighbor_color = this.board.at(pos);
       if (isOutOfBounds(pos, this.board)) {
         return;
       }
       if (
-        this.board[pos.y][pos.x] === opponent_color &&
+        neighbor_color === opponent_color &&
         !groupHasLiberties(pos, this.board)
       ) {
         this.captures[this.next_to_play] += removeGroup(pos, this.board);
@@ -76,20 +78,17 @@ export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
   }
 
   private finalizeScore(): void {
-    const board = copyBoard(this.board);
-    const visited = makeGridWithValue(
-      this.config.width,
-      this.config.height,
-      false
-    );
+    const board = this.board.map((x) => x);
+    const visited = this.board.map(() => false);
 
     const determineController = (pos: CoordinateLike): Color => {
-      if (board[pos.y][pos.x] !== Color.EMPTY) {
-        return board[pos.y][pos.x];
+      const color = board.at(pos)!;
+      if (color !== Color.EMPTY) {
+        return color;
       }
-      visited[pos.y][pos.x] = true;
+      visited.set(pos, true);
       const neighbor_results = neighboringPositions(pos)
-        .filter((pos) => !isOutOfBounds(pos, board) && !visited[pos.y][pos.x])
+        .filter((pos) => !isOutOfBounds(pos, board) && !visited.at(pos))
         .map(determineController);
       if (neighbor_results.every((result) => result == Color.WHITE)) {
         return Color.WHITE;
@@ -100,17 +99,15 @@ export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
       return Color.EMPTY;
     };
 
-    for (let y = 0; y < this.config.height; y++) {
-      for (let x = 0; x < this.config.width; x++) {
-        if (visited[y][x]) {
-          continue;
-        }
-        if (board[y][x] === Color.EMPTY) {
-          const controller = determineController({ x, y });
-          floodFill({ x, y }, controller, board);
-        }
+    board.forEach((color, pos) => {
+      if (visited.at(pos)) {
+        return;
       }
-    }
+      if (color === Color.EMPTY) {
+        const controller = determineController(pos);
+        floodFill(pos, controller, board);
+      }
+    });
 
     const black_points: number = countValueIn2dArray(Color.BLACK, board);
     const white_points: number =
@@ -133,31 +130,30 @@ export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
 }
 
 /** Returns true if the group containing (x, y) has at least one liberty. */
-function groupHasLiberties(pos: CoordinateLike, board: Color[][]) {
-  const color = board[pos.y][pos.x];
-  const width = board[0].length;
-  const height = board.length;
-  const visited = makeGridWithValue(width, height, false);
+function groupHasLiberties(pos: CoordinateLike, board: Grid<Color>) {
+  const color = board.at(pos);
+  const visited = board.map(() => false);
 
-  function helper({ x, y }: CoordinateLike): boolean {
-    if (isOutOfBounds({ x, y }, board)) {
+  function helper(pos: CoordinateLike): boolean {
+    const current_color = board.at(pos);
+    if (current_color === undefined) {
       return false;
     }
 
-    if (board[y][x] === Color.EMPTY) {
+    if (current_color === Color.EMPTY) {
       // found a liberty
       return true;
     }
-    if (color !== board[y][x]) {
+    if (current_color !== color) {
       // opponent color
       return false;
     }
-    if (visited[y][x]) {
+    if (visited.at(pos)) {
       // Already seen
       return false;
     }
-    visited[y][x] = true;
-    return neighboringPositions({ x, y }).some(helper);
+    visited.set(pos, true);
+    return neighboringPositions(pos).some(helper);
   }
 
   return helper(pos);
@@ -176,7 +172,7 @@ function neighboringPositions({ x, y }: CoordinateLike) {
  * Removes the group containing pos, and returns the number of stones removed
  * from the board.
  */
-function removeGroup(pos: Coordinate, board: Color[][]): number {
+function removeGroup(pos: Coordinate, board: Grid<Color>): number {
   return floodFill(pos, Color.EMPTY, board);
 }
 
@@ -184,25 +180,26 @@ function removeGroup(pos: Coordinate, board: Color[][]): number {
 function floodFill(
   pos: CoordinateLike,
   target_color: Color,
-  board: Color[][]
+  board: Grid<Color>
 ): number {
-  const starting_color = board[pos.y][pos.x];
+  const starting_color = board.at(pos);
   if (starting_color === target_color) {
     return 0;
   }
 
-  function helper({ x, y }: CoordinateLike): number {
-    if (isOutOfBounds({ x, y }, board)) {
+  function helper(pos: CoordinateLike): number {
+    const current_color = board.at(pos);
+    if (current_color === undefined) {
       return 0;
     }
 
-    if (starting_color !== board[y][x]) {
+    if (starting_color !== current_color) {
       return 0;
     }
 
-    board[y][x] = target_color;
+    board.set(pos, target_color);
 
-    return neighboringPositions({ x, y })
+    return neighboringPositions(pos)
       .map(helper)
       .reduce((acc, val) => acc + val, 1);
   }
@@ -211,6 +208,10 @@ function floodFill(
 }
 
 /** Returns the number of occurrences for the given color */
-function countValueIn2dArray<T>(value: T, array: T[][]) {
-  return array.flat().filter((val) => val === value).length;
+function countValueIn2dArray<T>(value: T, array: Grid<T>) {
+  // TODO: implement Grid.reduce and use it here
+  return array
+    .to2DArray()
+    .flat()
+    .filter((val) => val === value).length;
 }

@@ -13,9 +13,7 @@ export class TetrisGo extends Baduk {
   }
 }
 
-function getGroup(pos: CoordinateLike, board_arr: Color[][]) {
-  // Not efficient to copy, but eventually I'd like to convert baduk to use Grid too.
-  const board = Grid.from2DArray(board_arr);
+function getGroup(pos: CoordinateLike, board: Grid<Color>) {
   const starting_color = board.at(pos);
   const visited = board.map(() => false);
   const group: Coordinate[] = [];

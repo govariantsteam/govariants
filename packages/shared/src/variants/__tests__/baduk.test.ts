@@ -1,6 +1,6 @@
-import { Baduk } from "./baduk";
-import { Color } from "../abstractAlternatingOnGrid";
-import { KoError } from "../ko_detector";
+import { Baduk } from "../baduk";
+import { Color } from "../../lib/abstractAlternatingOnGrid";
+import { KoError } from "../../lib/ko_detector";
 
 test("Play a game", () => {
   const game = new Baduk({ width: 4, height: 2, komi: 0.5 });

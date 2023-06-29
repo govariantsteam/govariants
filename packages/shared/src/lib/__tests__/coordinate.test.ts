@@ -1,4 +1,4 @@
-import { Coordinate } from "./coordinate";
+import { Coordinate } from "../coordinate";
 
 test("constructor", () => {
   const pos = new Coordinate(2, 3);

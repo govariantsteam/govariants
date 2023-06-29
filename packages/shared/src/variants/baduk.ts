@@ -6,9 +6,9 @@ import {
   copyBoard,
   isOutOfBounds,
   Color,
-} from "../abstractAlternatingOnGrid";
-import { Coordinate, CoordinateLike } from "../coordinate";
-import { SuperKoDetector } from "../ko_detector";
+} from "../lib/abstractAlternatingOnGrid";
+import { Coordinate, CoordinateLike } from "../lib/coordinate";
+import { SuperKoDetector } from "../lib/ko_detector";
 
 export interface BadukConfig extends AbstractAlternatingOnGridConfig {
   komi: number;

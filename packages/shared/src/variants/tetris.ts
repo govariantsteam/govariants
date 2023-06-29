@@ -1,7 +1,7 @@
-import { Color } from "../abstractAlternatingOnGrid";
-import { Baduk } from "../baduk";
-import { Coordinate, CoordinateLike } from "../coordinate";
-import { Grid } from "../grid";
+import { Color } from "../lib/abstractAlternatingOnGrid";
+import { Baduk } from "./baduk";
+import { Coordinate, CoordinateLike } from "../lib/coordinate";
+import { Grid } from "../lib/grid";
 
 export class TetrisGo extends Baduk {
   protected postValidateMove(move: Coordinate): void {

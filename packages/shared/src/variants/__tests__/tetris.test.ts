@@ -1,5 +1,5 @@
-import { TetrisGo } from "./tetris";
-import { Color } from "../abstractAlternatingOnGrid";
+import { TetrisGo } from "../tetris";
+import { Color } from "../../lib/abstractAlternatingOnGrid";
 
 test("Play a game", () => {
   const game = new TetrisGo({ width: 4, height: 2, komi: 0.5 });

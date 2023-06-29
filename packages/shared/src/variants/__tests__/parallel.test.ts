@@ -1,4 +1,4 @@
-import { ParallelGo } from "./parallel";
+import { ParallelGo } from "../parallel";
 
 test("Halfway through the round, moves are staged, but not placed.", () => {
   const game = new ParallelGo({

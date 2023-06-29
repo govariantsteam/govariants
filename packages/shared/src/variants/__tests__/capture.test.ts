@@ -1,5 +1,5 @@
-import { Capture } from "./capture";
-import { Color } from "../abstractAlternatingOnGrid";
+import { Capture } from "../capture";
+import { Color } from "../../lib/abstractAlternatingOnGrid";
 
 test("White wins by capture", () => {
   const game = new Capture({ width: 2, height: 2, komi: 0.5 });

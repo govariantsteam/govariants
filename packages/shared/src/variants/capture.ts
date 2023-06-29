@@ -1,4 +1,4 @@
-import { Baduk } from "../baduk";
+import { Baduk } from "./baduk";
 
 export class Capture extends Baduk {
   playMove(move: { 0: string } | { 1: string }): void {

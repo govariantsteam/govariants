@@ -1,6 +1,6 @@
 import { AbstractGame, MovesType } from "../abstract_game";
 import { Chess } from "chess.js";
-import { getOnlyMove } from "../utils";
+import { getOnlyMove } from "../lib/utils";
 
 export interface ChessState {
   fen: string;

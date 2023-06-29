@@ -1,7 +1,7 @@
 import { MovesType } from "../abstract_game";
-import { Baduk, BadukState } from "../baduk";
-import { Color } from "../abstractAlternatingOnGrid";
-import { Grid } from "../grid";
+import { Baduk, BadukState } from "./baduk";
+import { Color } from "../lib/abstractAlternatingOnGrid";
+import { Grid } from "../lib/grid";
 
 export class Phantom extends Baduk {
   exportState(player?: number): BadukState {

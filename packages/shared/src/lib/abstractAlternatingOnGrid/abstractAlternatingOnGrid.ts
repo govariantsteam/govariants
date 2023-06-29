@@ -1,4 +1,4 @@
-import { AbstractGame } from "../abstract_game";
+import { AbstractGame } from "../../abstract_game";
 import { Coordinate, CoordinateLike } from "../coordinate";
 import { getOnlyMove } from "../utils";
 

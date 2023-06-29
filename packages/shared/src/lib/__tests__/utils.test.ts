@@ -1,4 +1,4 @@
-import { getOnlyMove } from "./utils";
+import { getOnlyMove } from "../utils";
 
 const MOVE_STRING = "test";
 

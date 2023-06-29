@@ -1,7 +1,7 @@
 import { AbstractGame, MovesType } from "../abstract_game";
-import { Coordinate } from "../coordinate";
-import { Grid } from "../grid";
-import { getOnlyMove } from "../utils";
+import { Coordinate } from "../lib/coordinate";
+import { Grid } from "../lib/grid";
+import { getOnlyMove } from "../lib/utils";
 
 export interface ParallelGoConfig {
   width: number;

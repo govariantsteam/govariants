@@ -1,11 +1,11 @@
-import { Baduk } from "./baduk";
+import { Baduk } from "./variants/baduk";
 import { AbstractGame } from "./abstract_game";
-import { BadukWithAbstractBoard } from "./badukWithAbstractBoard/badukWithAbstractBoard";
-import { Phantom } from "./phantom";
-import { ParallelGo } from "./parallel";
-import { Capture } from "./capture";
-import { ChessGame } from "./chess/chess";
-import { TetrisGo } from "./tetris/tetris";
+import { BadukWithAbstractBoard } from "./variants/badukWithAbstractBoard";
+import { Phantom } from "./variants/phantom";
+import { ParallelGo } from "./variants/parallel";
+import { Capture } from "./variants/capture";
+import { ChessGame } from "./variants/chess";
+import { TetrisGo } from "./variants/tetris";
 
 export const game_map: {
   [variant: string]: new (config?: any) => AbstractGame;

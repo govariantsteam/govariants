@@ -1,4 +1,4 @@
-import { Grid } from "./grid";
+import { Grid } from "../grid";
 
 test("constructor", () => {
   const g = new Grid(2, 3);

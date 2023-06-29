@@ -1,8 +1,8 @@
-import { AbstractGame } from "../abstract_game";
+import { AbstractGame } from "../../abstract_game";
 import type { IBadukBoard } from "./abstractBoard/Interfaces/IBadukBoard";
 import { BadukBoardAbstract } from "./abstractBoard/BadukBoardAbstract";
 import type { Intersection } from "./abstractBoard/intersection";
-import { getOnlyMove } from "../utils";
+import { getOnlyMove } from "../../lib/utils";
 
 export enum Color {
     EMPTY = 0,

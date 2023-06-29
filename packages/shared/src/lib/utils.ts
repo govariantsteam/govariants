@@ -1,4 +1,4 @@
-import type { MovesType } from "./abstract_game";
+import type { MovesType } from "../abstract_game";
 
 export function getOnlyMove(moves: MovesType): {
   player: number;

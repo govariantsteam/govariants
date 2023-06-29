@@ -1,4 +1,4 @@
-import { ChessGame } from "./chess";
+import { ChessGame } from "../chess";
 
 // A 3-letter placeholder helps with board alignment
 const ___ = null;

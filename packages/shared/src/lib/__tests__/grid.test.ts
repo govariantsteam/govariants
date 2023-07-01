@@ -63,3 +63,36 @@ test("set", () => {
 
   expect(g.at({ x: 1, y: 1 })).toBe(10);
 });
+
+test("neighbors", () => {
+  const g = new Grid(3, 3);
+  expect(g.neighbors({ x: 3, y: 0 })).toEqual([]);
+  expect(g.neighbors({ x: 0, y: 0 })).toEqual(
+    expect.arrayContaining([
+      { x: 1, y: 0 },
+      { x: 0, y: 1 },
+    ])
+  );
+  expect(g.neighbors({ x: 1, y: 1 })).toEqual(
+    expect.arrayContaining([
+      { x: 0, y: 1 },
+      { x: 1, y: 0 },
+      { x: 1, y: 2 },
+      { x: 2, y: 1 },
+    ])
+  );
+});
+
+test("forEach on unset array", () => {
+  const g = new Grid(3, 3);
+  const f = jest.fn();
+  g.forEach(f);
+  expect(f).not.toBeCalled();
+
+  // Try setting exactly one value and doing the same
+  const index = { x: 0, y: 1 };
+  g.set(index, 8);
+  g.forEach(f);
+  expect(f).toBeCalledTimes(1);
+  expect(f).toBeCalledWith(8, index, g);
+});

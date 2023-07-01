@@ -2,6 +2,10 @@ import { Baduk } from "../baduk";
 import { Color } from "../../lib/abstractAlternatingOnGrid";
 import { KoError } from "../../lib/ko_detector";
 
+const B = Color.BLACK;
+const _ = Color.EMPTY;
+const W = Color.WHITE;
+
 test("Play a game", () => {
   const game = new Baduk({ width: 4, height: 2, komi: 0.5 });
   // Tiny board:
@@ -19,8 +23,8 @@ test("Play a game", () => {
 
   // check that the final state is as expected
   expect(game.exportState().board).toEqual([
-    [Color.EMPTY, Color.WHITE, Color.BLACK, Color.EMPTY],
-    [Color.EMPTY, Color.WHITE, Color.BLACK, Color.EMPTY],
+    [_, W, B, _],
+    [_, W, B, _],
   ]);
 
   expect(game.phase).toBe("play");
@@ -30,6 +34,10 @@ test("Play a game", () => {
 
   expect(game.phase).toBe("gameover");
   expect(game.result).toBe("W+0.5");
+  expect(game.exportState().score_board).toEqual([
+    [W, W, B, B],
+    [W, W, B, B],
+  ]);
 });
 
 test("Play a game with captures", () => {
@@ -41,8 +49,8 @@ test("Play a game with captures", () => {
   game.playMove({ 1: "ba" });
   game.playMove({ 0: "ab" });
   expect(game.exportState().board).toEqual([
-    [Color.BLACK, Color.WHITE],
-    [Color.BLACK, Color.EMPTY],
+    [B, W],
+    [B, _],
   ]);
 
   // Tiny board
@@ -50,8 +58,8 @@ test("Play a game with captures", () => {
   // . W
   game.playMove({ 1: "bb" });
   expect(game.exportState().board).toEqual([
-    [Color.EMPTY, Color.WHITE],
-    [Color.EMPTY, Color.WHITE],
+    [_, W],
+    [_, W],
   ]);
 
   expect(game.phase).toBe("play");
@@ -60,6 +68,10 @@ test("Play a game with captures", () => {
   game.playMove({ 1: "pass" });
   expect(game.phase).toBe("gameover");
   expect(game.result).toBe("W+4.5");
+  expect(game.exportState().score_board).toEqual([
+    [W, W],
+    [W, W],
+  ]);
 });
 
 test("Resign a game", () => {
@@ -103,4 +115,60 @@ test("ko", () => {
 
   // Black captures back
   expect(() => game.playMove({ "0": "cb" })).toThrow(KoError);
+});
+
+test("inner group score", () => {
+  const game = new Baduk({ width: 9, height: 9, komi: 0 });
+
+  const rounds = [
+    ["cc", "cb"],
+    ["dc", "db"],
+    ["ec", "eb"],
+    ["fc", "fb"],
+    ["gc", "gb"],
+    ["gd", "hc"],
+    ["ge", "hd"],
+    ["gf", "he"],
+    ["gg", "hf"],
+    ["fg", "hg"],
+    ["eg", "gh"],
+    ["dg", "fh"],
+    ["cg", "eh"],
+    ["cd", "dh"],
+    ["cf", "ch"],
+    ["ce", "bg"],
+    ["pass", "bf"],
+    ["pass", "be"],
+    ["pass", "bd"],
+    ["pass", "bc"],
+    ["pass", "pass"],
+  ];
+
+  rounds.forEach((round) => {
+    game.playMove({ 0: round[0] });
+    game.playMove({ 1: round[1] });
+  });
+
+  // . . . . . . . . .
+  // . . W W W W W . .
+  // . W B B B B B W .
+  // . W B . . . B W .
+  // . W B . . . B W .
+  // . W B . . . B W .
+  // . W B B B B B W .
+  // . . W W W W W . .
+  // . . . . . . . . .
+
+  expect(game.result).toBe("W+31"); // 56 - 25
+  expect(game.exportState().score_board).toEqual([
+    [W, W, W, W, W, W, W, W, W],
+    [W, W, W, W, W, W, W, W, W],
+    [W, W, B, B, B, B, B, W, W],
+    [W, W, B, B, B, B, B, W, W],
+    [W, W, B, B, B, B, B, W, W],
+    [W, W, B, B, B, B, B, W, W],
+    [W, W, B, B, B, B, B, W, W],
+    [W, W, W, W, W, W, W, W, W],
+    [W, W, W, W, W, W, W, W, W],
+  ]);
 });

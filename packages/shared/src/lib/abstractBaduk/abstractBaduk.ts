@@ -45,7 +45,7 @@ export abstract class AbstractBaduk<
     // TODO: Name
     const changedIntersections = this.intersections
       .filter((intersection) => intersection.stone?.isNew)
-      .flatMap((intersection) => intersection.neighbours);
+      .flatMap((intersection) => [intersection, ...intersection.neighbours]);
 
     const chainsWithoutLiberties: Set<BadukIntersection<TChainType, TStone>>[] =
       [];

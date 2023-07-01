@@ -20,10 +20,9 @@ export class Grid<T> {
 
     index = handleNegativeIndices(index, w, h);
 
-    if (isOutOfBounds(index, w, h)) {
+    if (!this.isInBounds(index)) {
       return undefined;
     }
-
     return this.arr[coordinate_to_flat_index(index, w)];
   }
 
@@ -33,7 +32,7 @@ export class Grid<T> {
 
     index = handleNegativeIndices(index, w, h);
 
-    if (isOutOfBounds(index, w, h)) {
+    if (!this.isInBounds(index)) {
       return;
     }
 
@@ -99,6 +98,27 @@ export class Grid<T> {
     this.arr.fill(val);
     return this;
   }
+
+  neighbors(index: CoordinateLike) {
+    if (!this.isInBounds(index)) {
+      // An alternative is to return edge points for some out-of-bounds inputs,
+      // but our floodfill algorithms depend on an empty array here.
+      return [];
+    }
+    const { x, y } = index;
+    return [
+      { x, y: y - 1 },
+      { x, y: y + 1 },
+      { x: x - 1, y },
+      { x: x + 1, y },
+    ].filter((index) => this.isInBounds(index));
+  }
+
+  isInBounds({ x, y }: CoordinateLike) {
+    const w = this.width;
+    const h = this.height;
+    return x < w && y < h && x >= 0 && y >= 0;
+  }
 }
 
 function flat_index_to_coordinate(index: number, width: number): Coordinate {
@@ -126,18 +146,4 @@ function handleNegativeIndices(
     y = h + y;
   }
   return new Coordinate(x, y);
-}
-
-function isOutOfBounds(
-  { x, y }: CoordinateLike,
-  w: number,
-  h: number
-): boolean {
-  if (x >= w) {
-    return true;
-  }
-  if (y >= h) {
-    return true;
-  }
-  return false;
 }

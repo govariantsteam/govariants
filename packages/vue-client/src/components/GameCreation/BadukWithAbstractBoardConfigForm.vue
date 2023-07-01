@@ -39,6 +39,13 @@ watch(patternRef, emitConfigChange);
 watch(sizeRef, emitConfigChange);
 watch(widthRef, emitConfigChange);
 watch(heightRef, emitConfigChange);
+watch(patternRef, () => {
+  // defaults for circular board need to be larger
+  if (patternRef.value === BoardPattern.Circular) {
+    widthRef.value = 9;
+    heightRef.value = 9;
+  }
+});
 </script>
 
 <template>
@@ -60,10 +67,10 @@ watch(heightRef, emitConfigChange);
       <input type="number" min="1" v-model="sizeRef" />
     </template>
     <template v-if="patternRef === BoardPattern.Circular">
-      <label>Rings</label>
-      <input type="number" min="1" v-model="widthRef" />
       <label>Nodes per Ring</label>
-      <input type="number" min="1" v-model="heightRef" />
+      <input type="number" min="3" v-model="widthRef" />
+      <label>Number of Rings</label>
+      <input type="number" min="3" v-model="heightRef" />
     </template>
     <label>Komi</label>
     <input type="number" step="0.5" v-model="komiRef" />

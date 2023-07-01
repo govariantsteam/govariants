@@ -34,9 +34,12 @@ const viewBox = computed(() => {
   const yPositions = props.gamestate.board.Intersections.map(
     (i) => i.Position.Y
   );
-  return `${Math.min(...xPositions) - 1} ${Math.min(...yPositions) - 1} ${
-    Math.max(...xPositions) + 2
-  } ${Math.max(...yPositions) + 2}`;
+  const minX = Math.min(...xPositions) - 1;
+  const minY = Math.min(...yPositions) - 1;
+  const width = Math.max(...xPositions) - Math.min(...xPositions) + 2;
+  const height = Math.max(...yPositions) - Math.min(...yPositions) + 2;
+  const vb = `${minX} ${minY} ${width} ${height}`;
+  return vb;
 });
 </script>
 

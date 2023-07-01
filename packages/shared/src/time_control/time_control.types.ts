@@ -4,8 +4,13 @@ export enum TimeControlType {
     // unlimited time is configured by config.time_control = undefined
 }
 
+export interface IWithConfig<TConfig> {
+    config: TConfig;
+}
+
 export interface ITimeControlConfig {
     type: TimeControlType;
+    mainTimeMS: number;
 }
 
 export interface IConfigWithTimeControl {
@@ -14,7 +19,7 @@ export interface IConfigWithTimeControl {
 
 export interface ITimeControlBase {
     moveTimestamps: Date[];
-    remainingMilliseconds: {
+    remainingTimeMS: {
         [player: number]: number;
     };
     onThePlaySince: {

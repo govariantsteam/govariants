@@ -10,6 +10,7 @@ import type { User } from "@ogfcommunity/variants-shared";
 import { computed, reactive, ref, watchEffect } from "vue";
 import { board_map } from "@/board_map";
 import { socket } from "../requests";
+import Timer from "../components/Timer.vue";
 
 const props = defineProps<{ gameId: string }>();
 
@@ -145,6 +146,10 @@ watchEffect((onCleanup) => {
         @leave="leave(idx)"
         @select="setPlayingAs(idx)"
         :selected="playing_as"
+      />
+      <Timer 
+        v-bind:remainingTimeMS="gameResponse.time_control?.remainingTimeMS[idx] ?? 0" 
+        v-bind:countsDown="!!gameResponse.time_control?.onThePlaySince[idx]"
       />
     </div>
   </div>

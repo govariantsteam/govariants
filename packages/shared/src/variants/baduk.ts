@@ -8,9 +8,11 @@ import {
 import { Coordinate, CoordinateLike } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
 import { SuperKoDetector } from "../lib/ko_detector";
+import { ITimeControlConfig } from "../time_control";
 
 export interface BadukConfig extends AbstractAlternatingOnGridConfig {
   komi: number;
+  time_control: ITimeControlConfig | null;
 }
 
 export interface BadukState extends AbstractAlternatingOnGridState {
@@ -123,7 +125,7 @@ export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
   }
 
   defaultConfig(): BadukConfig {
-    return { width: 19, height: 19, komi: 6.5 };
+    return { width: 19, height: 19, komi: 6.5, time_control: null };
   }
 }
 

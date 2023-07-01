@@ -3,6 +3,7 @@ import type { BadukWithAbstractBoardConfig } from "../badukWithAbstractBoard";
 import { BoardPattern } from "../badukWithAbstractBoard";
 import { Intersection } from "./intersection";
 import { CreatePolygonalBoard } from "./PolygonalBoardHelper";
+import { CreateCircularBoard } from "./CircularBoardHelper";
 import { Vector2D } from "./Vector2D";
 
 export class BadukBoardAbstract implements IBadukBoard 
@@ -39,6 +40,10 @@ export class BadukBoardAbstract implements IBadukBoard
 			case BoardPattern.Polygonal:
 				this.Array2D = null;
 				this.Intersections = CreatePolygonalBoard(Math.min(conf.height, conf.width));
+				return;
+			case BoardPattern.Circular:
+				this.Array2D = null;
+				this.Intersections = CreateCircularBoard(conf.height, conf.width);
 				return;
 			default:
 				throw new Error("unknown board pattern");

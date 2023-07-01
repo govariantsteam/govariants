@@ -53,11 +53,13 @@ export abstract class AbstractBaduk<
 
     changedIntersections.forEach((intersection) => {
       if (!intersection.stone) {
+        // This shouldn't be possible.
+        // Maybe use better typing to show that all intersections here have stones.
         return;
       }
 
       const uncheckedChainTypes = new Set(
-        Array.from(intersection.stone.possibleChainTypes()).filter(
+        Array.from(intersection.stone.getChainTypes()).filter(
           (chainType) =>
             !(
               checkedIntersections.get(intersection.id) ?? new Set<TChainType>()
@@ -70,11 +72,13 @@ export abstract class AbstractBaduk<
       }
 
       const checkedNow: Map<number, Set<TChainType>> = new Map();
-      this.aCheck(intersection, uncheckedChainTypes, checkedNow).forEach(
-        (chain) => {
-          if (chain) chainsWithoutLiberties.push(chain);
-        }
-      );
+      this.findChainsWithoutLiberties(
+        intersection,
+        uncheckedChainTypes,
+        checkedNow
+      ).forEach((chain) => {
+        if (chain) chainsWithoutLiberties.push(chain);
+      });
 
       checkedNow.forEach((chainTypes, intersectionId) =>
         chainTypes.forEach((chainType) =>
@@ -115,23 +119,22 @@ export abstract class AbstractBaduk<
     }
   }
 
-  // Returns per chainType unchecked "adjacent" intersections without liberties
-  // "neighbouring" is transitive and reflexive
-  aCheck(
+  /**
+   * Finds chains without spotted liberties at the given intersection by recursion.
+   *
+   * @param intersection The intersection to check
+   * @param chainTypes The chain types to check
+   * @param checked The checks which were already called during this recursion
+   * @returns Chains at this intersection without spotted liberties.
+   *          `null` means there's nothing to look for.
+   */
+  findChainsWithoutLiberties(
     intersection: BadukIntersection<TChainType, TStone>,
     chainTypes: Set<TChainType>,
-    checked: Map<number, Set<TChainType>>
+    checked: Map<number, Set<TChainType>> = new Map()
   ): Map<TChainType, null | Set<BadukIntersection<TChainType, TStone>>> {
-    const s = `aCheck(${intersection.id}, [${[...chainTypes]}], [${[
-      ...checked,
-    ].map(([id, s]) => `${id}: [${[...s]}]`)}]), chains: ${
-      intersection.stone
-        ? `[${[...intersection.stone.possibleChainTypes()]}]`
-        : "no stone"
-    }, neighbours: [${intersection.neighbours.map((n) => n.id)}]`;
-    console.log(`called: ${s}`);
     if (intersection.stone === null) {
-      console.log("returns, liberty found");
+      // Liberty spotted
       return new Map(
         Array.from(chainTypes).map((chainType) => [chainType, new Set()])
       );
@@ -146,7 +149,7 @@ export abstract class AbstractBaduk<
       })();
 
     const uncheckedChainTypes = Array.from(
-      intersection.stone.possibleChainTypes()
+      intersection.stone.getChainTypes()
     ).filter(
       (chainTypeOfStone) =>
         !checkedChainTypes.has(chainTypeOfStone) &&
@@ -156,7 +159,7 @@ export abstract class AbstractBaduk<
     );
 
     if (!uncheckedChainTypes.length) {
-      console.log(`returns: null`);
+      // Nothing new to check
       return new Map(Array.from(chainTypes).map((ct) => [ct, null]));
     }
 
@@ -165,32 +168,25 @@ export abstract class AbstractBaduk<
     );
 
     const neighbouringResults = intersection.neighbours.map((neighbour) =>
-      this.aCheck(neighbour, new Set(uncheckedChainTypes), checked)
+      this.findChainsWithoutLiberties(
+        neighbour,
+        new Set(uncheckedChainTypes),
+        checked
+      )
     );
 
     const r = new Map(
       Array.from(chainTypes).map((chainType) => {
-        if (!intersection.stone?.possibleChainTypes().has(chainType)) {
+        if (!intersection.stone?.getChainTypes().has(chainType)) {
+          // Nothing new to check
           return [chainType, null];
         }
         const neighbouringChains = neighbouringResults.map(
           (neighbouringResult) => neighbouringResult.get(chainType)
         );
 
-        console.log(`id: ${intersection.id}, chainType: ${chainType}`);
-        console.log(
-          `NCs: [${[
-            ...neighbouringChains.map((chain) =>
-              chain
-                ? `${[...chain].map((i) => i.id)}`
-                : chain === null
-                ? "null"
-                : "undefined"
-            ),
-          ]}], some: ${neighbouringChains.some((chain) => chain?.size === 0)}`
-        );
-
         if (neighbouringChains.some((chain) => chain?.size === 0)) {
+          // Liberty spotted
           return [chainType, new Set<BadukIntersection<TChainType, TStone>>()];
         }
 
@@ -204,17 +200,6 @@ export abstract class AbstractBaduk<
           ]),
         ];
       })
-    );
-
-    console.log(
-      `${s}\nreturns:\n${[...r]
-        .map(
-          ([chainType, intersections]) =>
-            `${chainType}: ${
-              intersections ? `[${[...intersections].map((i) => i.id)}]` : null
-            }`
-        )
-        .join("\n")}`
     );
 
     return r;

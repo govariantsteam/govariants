@@ -25,7 +25,7 @@ interface FractionalPlayer extends FractionalPlayerConfig {
   index: number;
 }
 
-type FractionalIntersection = BadukIntersection<Color, FractionalStone>;
+export type FractionalIntersection = BadukIntersection<Color, FractionalStone>;
 
 interface FractionalMove {
   player: FractionalPlayer;

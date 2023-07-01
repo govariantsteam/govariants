@@ -3,7 +3,7 @@ import { Vector2D } from "../../variants/badukWithAbstractBoard/abstractBoard/Ve
 
 export interface AbstractBadukStone<TChainType> {
   isNew: boolean;
-  possibleChainTypes(): Set<TChainType>;
+  getChainTypes(): Set<TChainType>;
 }
 
 export class BadukIntersection<

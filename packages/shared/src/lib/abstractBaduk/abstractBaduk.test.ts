@@ -17,7 +17,7 @@ class AbstractBadukTestStone implements AbstractBadukStone<Set<any>> {
     this.types = types;
   }
 
-  possibleChainTypes(): Set<any> {
+  getChainTypes(): Set<any> {
     return this.types;
   }
 }
@@ -57,7 +57,7 @@ class AbstractBadukTestChild extends AbstractBaduk<
 
   test(types: Set<any>): Map<any, null | Set<TestIntersection>> {
     this.center.stone = new AbstractBadukTestStone(types);
-    return this.aCheck(this.center, types, new Map());
+    return this.findChainsWithoutLiberties(this.center, types, new Map());
   }
 
   playMove(move: MovesType): void {

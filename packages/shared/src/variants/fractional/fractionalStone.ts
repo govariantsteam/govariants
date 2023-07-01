@@ -10,7 +10,7 @@ export class FractionalStone implements AbstractBadukStone<Color> {
     this.colors = colors;
   }
 
-  possibleChainTypes(): Set<Color> {
+  getChainTypes(): Set<Color> {
     return this.colors;
   }
 }

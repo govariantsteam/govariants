@@ -21,11 +21,13 @@ function emitConfigChange() {
     komi: komiRef.value,
     pattern: patternRef.value,
     width:
-      patternRef.value === BoardPattern.Rectangular
+      patternRef.value === BoardPattern.Rectangular ||
+      patternRef.value === BoardPattern.Circular
         ? widthRef.value
         : sizeRef.value,
     height:
-      patternRef.value === BoardPattern.Rectangular
+      patternRef.value === BoardPattern.Rectangular ||
+      patternRef.value === BoardPattern.Circular
         ? heightRef.value
         : sizeRef.value,
   } as BadukWithAbstractBoardConfig;
@@ -45,6 +47,7 @@ watch(heightRef, emitConfigChange);
     <select v-model="patternRef" style="width: fit-content">
       <option :value="BoardPattern.Rectangular">Rectangular</option>
       <option :value="BoardPattern.Polygonal">Polygonal</option>
+      <option :value="BoardPattern.Circular">Circular</option>
     </select>
     <template v-if="patternRef === BoardPattern.Rectangular">
       <label>Width</label>
@@ -55,6 +58,12 @@ watch(heightRef, emitConfigChange);
     <template v-if="patternRef === BoardPattern.Polygonal">
       <label>Size</label>
       <input type="number" min="1" v-model="sizeRef" />
+    </template>
+    <template v-if="patternRef === BoardPattern.Circular">
+      <label>Rings</label>
+      <input type="number" min="1" v-model="widthRef" />
+      <label>Nodes per Ring</label>
+      <input type="number" min="1" v-model="heightRef" />
     </template>
     <label>Komi</label>
     <input type="number" step="0.5" v-model="komiRef" />

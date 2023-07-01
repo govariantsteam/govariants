@@ -7,6 +7,7 @@ import {
 } from "../lib/abstractAlternatingOnGrid";
 import { Coordinate, CoordinateLike } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
+import { getGroup, getOuterBorder } from "../lib/group_utils";
 import { SuperKoDetector } from "../lib/ko_detector";
 
 export interface BadukConfig extends AbstractAlternatingOnGridConfig {
@@ -82,31 +83,19 @@ export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
     const board = this.board.map((x) => x);
     const visited = this.board.map(() => false);
 
-    const determineController = (pos: CoordinateLike): Color => {
-      const color = board.at(pos)!;
-      if (color !== Color.EMPTY) {
-        return color;
-      }
-      visited.set(pos, true);
-      const neighbor_results = neighboringPositions(pos)
-        .filter((pos) => !isOutOfBounds(pos, board) && !visited.at(pos))
-        .map(determineController);
-      if (neighbor_results.every((result) => result == Color.WHITE)) {
-        return Color.WHITE;
-      }
-      if (neighbor_results.every((result) => result == Color.BLACK)) {
-        return Color.BLACK;
-      }
-      return Color.EMPTY;
-    };
-
     board.forEach((color, pos) => {
       if (visited.at(pos)) {
         return;
       }
       if (color === Color.EMPTY) {
-        const controller = determineController(pos);
-        floodFill(pos, controller, board);
+        const group = getGroup(pos, board);
+        const outer_border = getOuterBorder(group, board);
+        const border_colors = outer_border.map((pos) => board.at(pos) as Color);
+        const color = border_colors[0];
+        if (border_colors.every((c) => c === color)) {
+          group.forEach((pos) => board.set(pos, color));
+        }
+        group.forEach((pos) => visited.set(pos, true));
       }
     });
 

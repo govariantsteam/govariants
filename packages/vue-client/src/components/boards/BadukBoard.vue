@@ -87,6 +87,26 @@ function positionClicked(pos: Coordinate) {
         r="0.4"
       />
     </g>
+    <g v-if="gamestate.score_board">
+      <template v-for="pos in positions">
+        <rect
+          v-if="gamestate.score_board[pos.y][pos.x]"
+          :key="`${pos.x},${pos.y}`"
+          v-bind:x="pos.x - 0.2"
+          v-bind:y="pos.y - 0.2"
+          v-bind:fill="
+            gamestate.score_board[pos.y][pos.x] === Color.BLACK
+              ? 'black'
+              : 'white'
+          "
+          stroke="gray"
+          stroke-width="0.05"
+          width="0.4"
+          height="0.4"
+          opacity="0.6"
+        />
+      </template>
+    </g>
   </svg>
 </template>
 

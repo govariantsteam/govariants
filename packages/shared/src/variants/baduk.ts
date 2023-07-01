@@ -16,11 +16,13 @@ export interface BadukConfig extends AbstractAlternatingOnGridConfig {
 export interface BadukState extends AbstractAlternatingOnGridState {
   captures: { 0: number; 1: number };
   last_move: string;
+  score_board?: Color[][];
 }
 
 export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
   protected captures = { 0: 0, 1: 0 };
   private ko_detector = new SuperKoDetector();
+  private score_board?: Grid<Color>;
 
   constructor(config?: BadukConfig) {
     super(config);
@@ -29,6 +31,7 @@ export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
   override exportState(): BadukState {
     return {
       ...super.exportState(),
+      ...(this.score_board && { score_board: this.score_board.to2DArray() }),
       captures: { 0: this.captures[0], 1: this.captures[1] },
     };
   }
@@ -107,9 +110,12 @@ export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
       }
     });
 
+    this.score_board = board;
+
     const black_points: number = countValueIn2dArray(Color.BLACK, board);
     const white_points: number =
       countValueIn2dArray(Color.WHITE, board) + this.config.komi;
+
     const diff = black_points - white_points;
     if (diff < 0) {
       this.result = `W+${-diff}`;

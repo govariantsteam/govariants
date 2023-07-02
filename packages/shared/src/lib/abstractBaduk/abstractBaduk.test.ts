@@ -2,31 +2,33 @@ import { MovesType } from "../../abstract_game";
 import { AbstractBaduk, AbstractBadukConfig } from "./abstractBaduk";
 import { BadukIntersection, AbstractBadukStone } from "./badukIntersection";
 
-interface FooState {
-  foo: string;
-}
+type TestState = "test";
 
-type TestIntersection = BadukIntersection<any, AbstractBadukStone<any>>;
+type TestChainType = "a" | "e";
+type TestIntersection = BadukIntersection<
+  TestChainType,
+  AbstractBadukStone<TestChainType>
+>;
 
-class AbstractBadukTestStone implements AbstractBadukStone<Set<any>> {
+class AbstractBadukTestStone implements AbstractBadukStone<TestChainType> {
   isNew: boolean;
-  types: Set<any>;
+  types: Set<TestChainType>;
 
-  constructor(types: Set<any>) {
+  constructor(types: Set<TestChainType>) {
     this.isNew = true;
     this.types = types;
   }
 
-  getChainTypes(): Set<any> {
+  getChainTypes(): Set<TestChainType> {
     return this.types;
   }
 }
 
-class AbstractBadukTestChild extends AbstractBaduk<
+class AbstractBadukTestGame extends AbstractBaduk<
   AbstractBadukConfig,
-  any,
-  AbstractBadukStone<any>,
-  FooState
+  TestChainType,
+  AbstractBadukStone<TestChainType>,
+  TestState
 > {
   center: TestIntersection;
 
@@ -55,7 +57,9 @@ class AbstractBadukTestChild extends AbstractBaduk<
     });
   }
 
-  test(types: Set<any>): Map<any, null | Set<TestIntersection>> {
+  test(
+    types: Set<TestChainType>
+  ): Map<TestChainType, null | Set<TestIntersection>> {
     this.center.stone = new AbstractBadukTestStone(types);
     return this.findChainsWithoutLiberties(this.center, types, new Map());
   }
@@ -68,11 +72,11 @@ class AbstractBadukTestChild extends AbstractBaduk<
     return { board: { type: "grid", height: 19, width: 19 } };
   }
 
-  exportState(player?: number): FooState {
-    return { foo: "bar" };
+  exportState(player?: number): TestState {
+    return "test";
   }
 
-  importState(state: FooState): void {
+  importState(state: TestState): void {
     throw new Error("Not implemented");
   }
 
@@ -85,21 +89,21 @@ class AbstractBadukTestChild extends AbstractBaduk<
   }
 }
 
-test("foo", () => {
-  const game = new AbstractBadukTestChild();
+test("Test AbstractBaduk.findChainsWithoutLiberties()", () => {
+  const game = new AbstractBadukTestGame();
 
-  const e = game.test(new Set<any>(["e"]));
+  const e = game.test(new Set<TestChainType>(["e"]));
   expect(Array.from(e)).toHaveLength(1);
   expect(e.get("e")).toBeTruthy();
   expect(Array.from(e.get("e") ?? [])).toHaveLength(1);
   expect(e.get("e")?.has(game.center)).toBeTruthy();
 
-  const a = game.test(new Set<any>(["a"]));
+  const a = game.test(new Set<TestChainType>(["a"]));
   expect(Array.from(a)).toHaveLength(1);
   expect(a.get("a")).toBeTruthy();
   expect(Array.from(a.get("a") ?? [])).toHaveLength(0);
 
-  const ae = game.test(new Set<any>(["a", "e"]));
+  const ae = game.test(new Set<TestChainType>(["a", "e"]));
   expect(Array.from(ae)).toHaveLength(2);
   expect(ae.get("e")).toBeTruthy();
   expect(Array.from(ae.get("e") ?? [])).toHaveLength(1);

@@ -4,7 +4,7 @@ import {
   ITimeControlBase,
   ITimeControlConfig,
   IConfigWithTimeControl,
-} from "@ogfcommunity/variants-shared/src/time_control/time_control.types";
+} from "@ogfcommunity/variants-shared";
 import { gamesCollection } from "./games";
 import { AbstractGame, GameResponse } from "@ogfcommunity/variants-shared";
 

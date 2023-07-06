@@ -118,17 +118,17 @@ export class Grid<T> {
     const w = this.width;
     const h = this.height;
     return x < w && y < h && x >= 0 && y >= 0;
-  }  
+  }
 
-  reduce(
+  reduce<OutT>(
     callbackfn: (
-      previousValue: T,
+      previousValue: OutT,
       currentValue: T,
       index: Coordinate,
       array: Grid<T>
-    ) => T,
-    initialValue: T
-  ): T {
+    ) => OutT,
+    initialValue: OutT
+  ): OutT {
     return this.arr.reduce(
       (previousValue, currentValue, flat_index) =>
         callbackfn(

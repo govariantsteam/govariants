@@ -172,3 +172,32 @@ test("inner group score", () => {
     [W, W, W, W, W, W, W, W, W],
   ]);
 });
+
+test("asdf", () => {
+  const game = new Baduk({ width: 3, height: 3, komi: 6.5 });
+
+  const moves = [
+    { "0": "aa" },
+    { "1": "ba" },
+    { "0": "ab" },
+    { "1": "bc" },
+    { "0": "cb" },
+    { "1": "bb" },
+    { "0": "ca" },
+    { "1": "cc" },
+    { "0": "cb" },
+    { "1": "ac" },
+    { "0": "pass" },
+    { "1": "pass" },
+  ];
+
+  moves.forEach((move) => {
+    game.playMove(move);
+  });
+
+  expect(game.exportState().board).toEqual([
+    [_, W, _],
+    [_, W, B],
+    [W, W, W],
+  ]);
+});

@@ -7,6 +7,7 @@ import { Capture } from "./variants/capture";
 import { ChessGame } from "./variants/chess";
 import { TetrisGo } from "./variants/tetris";
 import { PyramidGo } from "./variants/pyramid";
+import { ThueMorse } from "./variants/thue_morse";
 
 export const game_map: {
   [variant: string]: new (config?: any) => AbstractGame;
@@ -19,6 +20,7 @@ export const game_map: {
   chess: ChessGame,
   tetris: TetrisGo,
   pyramid: PyramidGo,
+  "thue-morse": ThueMorse,
 };
 
 class ConfigError extends Error {

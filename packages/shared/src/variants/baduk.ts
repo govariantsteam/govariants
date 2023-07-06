@@ -20,6 +20,8 @@ export interface BadukState extends AbstractAlternatingOnGridState {
   score_board?: Color[][];
 }
 
+export type BadukMove = { 0: string } | { 1: string };
+
 export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
   protected captures = { 0: 0, 1: 0 };
   private ko_detector = new SuperKoDetector();

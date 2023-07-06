@@ -15,4 +15,5 @@ export const board_map: {
   chess: ChessBoard,
   tetris: Baduk,
   pyramid: Baduk,
+  "thue-morse": Baduk,
 };

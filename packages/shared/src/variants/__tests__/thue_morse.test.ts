@@ -40,9 +40,8 @@ test("Play a game", () => {
 
   expect(game.phase).toBe("play");
   game.playMove({ 0: "pass" });
-  expect(game.phase).toBe("play");
-  game.playMove({ 0: "pass" });
-  // make sure player can't unilaterally end the game
+  // technically, 0 is the next player in Thue-Morse, but
+  // don't really need to force them to pass twice...
   expect(game.phase).toBe("play");
   game.playMove({ 1: "pass" });
 

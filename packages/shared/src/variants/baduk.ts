@@ -40,24 +40,22 @@ export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
   protected override playMoveInternal(move: Coordinate): void {
     super.playMoveInternal(move);
     const opponent_color = this.next_to_play === 0 ? Color.WHITE : Color.BLACK;
-    neighboringPositions(move).forEach((pos) => {
+    this.board.neighbors(move).forEach((pos) => {
       const neighbor_color = this.board.at(pos);
-      if (isOutOfBounds(pos, this.board)) {
-        return;
-      }
+      const group = getGroup(pos, this.board);
       if (
         neighbor_color === opponent_color &&
-        !groupHasLiberties(pos, this.board)
+        !groupHasLiberties(group, this.board)
       ) {
-        this.captures[this.next_to_play] += removeGroup(pos, this.board);
+        group.forEach((pos) => this.board.set(pos, Color.EMPTY));
+        this.captures[this.next_to_play] += group.length;
       }
     });
   }
 
   protected override postValidateMove(move: Coordinate): void {
     // Detect suicide
-    if (!groupHasLiberties(move, this.board)) {
-      console.log(this.board);
+    if (!groupHasLiberties(getGroup(move, this.board), this.board)) {
       throw Error("Move is suicidal!");
     }
 
@@ -101,9 +99,12 @@ export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
 
     this.score_board = board;
 
-    const black_points: number = countValueIn2dArray(Color.BLACK, board);
+    const black_points: number = board.reduce(
+      count_color<Color>(Color.BLACK),
+      0
+    );
     const white_points: number =
-      countValueIn2dArray(Color.WHITE, board) + this.config.komi;
+      board.reduce(count_color<Color>(Color.WHITE), 0) + this.config.komi;
 
     const diff = black_points - white_points;
     if (diff < 0) {
@@ -123,88 +124,13 @@ export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
 }
 
 /** Returns true if the group containing (x, y) has at least one liberty. */
-function groupHasLiberties(pos: CoordinateLike, board: Grid<Color>) {
-  const color = board.at(pos);
-  const visited = board.map(() => false);
-
-  function helper(pos: CoordinateLike): boolean {
-    const current_color = board.at(pos);
-    if (current_color === undefined) {
-      return false;
-    }
-
-    if (current_color === Color.EMPTY) {
-      // found a liberty
-      return true;
-    }
-    if (current_color !== color) {
-      // opponent color
-      return false;
-    }
-    if (visited.at(pos)) {
-      // Already seen
-      return false;
-    }
-    visited.set(pos, true);
-    return neighboringPositions(pos).some(helper);
-  }
-
-  return helper(pos);
+function groupHasLiberties(group: CoordinateLike[], board: Grid<Color>) {
+  const outer_border = getOuterBorder(group, board);
+  const border_colors = outer_border.map((pos) => board.at(pos));
+  return border_colors.includes(Color.EMPTY);
 }
 
-function neighboringPositions({ x, y }: CoordinateLike) {
-  return [
-    new Coordinate(x - 1, y),
-    new Coordinate(x + 1, y),
-    new Coordinate(x, y - 1),
-    new Coordinate(x, y + 1),
-  ] as const;
-}
-
-/**
- * Removes the group containing pos, and returns the number of stones removed
- * from the board.
- */
-function removeGroup(pos: Coordinate, board: Grid<Color>): number {
-  return floodFill(pos, Color.EMPTY, board);
-}
-
-/** Fills area with the given color, and returns the number of spaces filled. */
-function floodFill(
-  pos: CoordinateLike,
-  target_color: Color,
-  board: Grid<Color>
-): number {
-  const starting_color = board.at(pos);
-  if (starting_color === target_color) {
-    return 0;
-  }
-
-  function helper(pos: CoordinateLike): number {
-    const current_color = board.at(pos);
-    if (current_color === undefined) {
-      return 0;
-    }
-
-    if (starting_color !== current_color) {
-      return 0;
-    }
-
-    board.set(pos, target_color);
-
-    return neighboringPositions(pos)
-      .map(helper)
-      .reduce((acc, val) => acc + val, 1);
-  }
-
-  return helper(pos);
-}
-
-/** Returns the number of occurrences for the given color */
-function countValueIn2dArray<T>(value: T, array: Grid<T>) {
-  // TODO: implement Grid.reduce and use it here
-  return array
-    .to2DArray()
-    .flat()
-    .filter((val) => val === value).length;
+/** Returns a reducer that will count occurences of a given number **/
+function count_color<T>(value: T) {
+  return (total: number, color: T) => total + (color === value ? 1 : 0);
 }

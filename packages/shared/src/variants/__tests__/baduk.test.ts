@@ -173,7 +173,7 @@ test("inner group score", () => {
   ]);
 });
 
-test("asdf", () => {
+test("Capture test", () => {
   const game = new Baduk({ width: 3, height: 3, komi: 6.5 });
 
   const moves = [

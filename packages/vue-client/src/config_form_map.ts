@@ -12,4 +12,6 @@ export const config_form_map: {
   parallel: ParalleGoConfigForm,
   capture: BadukConfigForm,
   tetris: BadukConfigForm,
+  pyramid: BadukConfigForm,
+  "thue-morse": BadukConfigForm,
 };

@@ -35,14 +35,12 @@ export abstract class AbstractBaduk<
 
   protected removeChains(setNewToOld = true) {
     /*
-      TODO:
-        * Check old chains (next to new stones) for liberties
-        * Remove old chains without liberties
-        * Check new chains (new stones are part of them) for liberties
-        * Remove new chains without liberties
-    */
+     * Check old chains (next to new stones) for liberties
+     * Remove old chains without liberties
+     * Check new chains (new stones are part of them) for liberties
+     * Remove new chains without liberties
+     */
 
-    // TODO: Name
     const changedIntersections = this.intersections
       .filter((intersection) => intersection.stone?.isNew)
       .flatMap((intersection) => [intersection, ...intersection.neighbours]);

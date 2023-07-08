@@ -5,6 +5,7 @@ import {
   AbstractBadukConfig,
 } from "../../lib/abstractBaduk/abstractBaduk";
 import { FractionalStone } from "./fractionalStone";
+import { getOnlyMove } from "../../lib/utils";
 
 export type Color =
   | "black"
@@ -169,18 +170,4 @@ export class Fractional extends AbstractBaduk<
       null
     );
   }
-}
-
-/** Asserts there is exactly one move, and returns it */
-// TODO: Duplicate code, copied
-function getOnlyMove(moves: MovesType): { player: number; move: string } {
-  const players = Object.keys(moves);
-  if (players.length > 1) {
-    throw Error(`More than one player: ${players}`);
-  }
-  if (players.length === 0) {
-    throw Error("No players specified!");
-  }
-  const player = Number(players[0]);
-  return { player, move: moves[player] };
 }

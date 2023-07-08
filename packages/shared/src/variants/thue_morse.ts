@@ -9,14 +9,21 @@ export class ThueMorse extends Baduk {
 
     super.playMove(moves);
 
+    this.increment_next_to_play();
+
     // Not sure if this is the best way to handle passes, but at least prevents
-    // unilaterally ending the game.
+    // unilaterally ending the game.  If a player wishes to play only one move
+    // when a string of two is available, they should play the move BEFORE passing.
     if (move === "pass") {
-      this.next_to_play = player === 0 ? 1 : 0;
-    } else {
-      this.move_number++;
-      this.next_to_play = count_binary_ones(this.move_number) % 2 ? 1 : 0;
+      while (this.next_to_play === player) {
+        this.increment_next_to_play();
+      }
     }
+  }
+
+  increment_next_to_play() {
+    this.move_number++;
+    this.next_to_play = count_binary_ones(this.move_number) % 2 ? 1 : 0;
   }
 }
 

@@ -16,4 +16,5 @@ export const board_map: {
   tetris: Baduk,
   pyramid: Baduk,
   "thue-morse": Baduk,
+  freeze: Baduk,
 };

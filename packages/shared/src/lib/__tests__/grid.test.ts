@@ -97,7 +97,6 @@ test("forEach on unset array", () => {
   expect(f).toBeCalledWith(8, index, g);
 });
 
-  
 test("reduce", () => {
   const g = Grid.from2DArray([
     [1, 2, 3],
@@ -106,4 +105,19 @@ test("reduce", () => {
   ]);
 
   expect(g.reduce((x, y) => x + y, 0)).toEqual(45);
+});
+
+test("empty slots are undefined", () => {
+  const g = new Grid(5, 5);
+  expect(g.at({ x: 1, y: 1 })).toBeUndefined();
+});
+
+test("out of bounds is undefined", () => {
+  const g = Grid.from2DArray([
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9],
+  ]);
+  // out-of-bounds
+  expect(g.at({ x: 0, y: 5 })).toBeUndefined();
 });

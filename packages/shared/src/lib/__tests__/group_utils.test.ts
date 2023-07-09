@@ -92,3 +92,12 @@ test("getInnerBorder", () => {
     { x: 2, y: 0 },
   ]);
 });
+
+test("getGroup - undefined group", () => {
+  const grid: Grid<undefined | number> = Grid.from2DArray([
+    [undefined, 0, 1],
+    [undefined, 0, 1],
+    [undefined, 0, 1],
+  ]);
+  expect(getGroup({ x: 0, y: 0 }, grid)).toHaveLength(3);
+});

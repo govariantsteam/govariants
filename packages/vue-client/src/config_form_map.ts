@@ -14,4 +14,5 @@ export const config_form_map: {
   tetris: BadukConfigForm,
   pyramid: BadukConfigForm,
   "thue-morse": BadukConfigForm,
+  freeze: BadukConfigForm,
 };

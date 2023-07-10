@@ -1,4 +1,4 @@
-import { MovesType } from "./abstract_game";
+import { MovesType } from "./lib/utils";
 import { ITimeControlBase } from "./time_control/time_control.types";
 
 export interface User {

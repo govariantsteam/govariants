@@ -28,8 +28,8 @@ test("inner group score", () => {
   ];
 
   rounds.forEach((round) => {
-    game.playMove({ 0: round[0] });
-    game.playMove({ 1: round[1] });
+    game.playMove(0, round[0]);
+    game.playMove(1, round[1]);
   });
 
   // from https://forums.online-go.com/t/pyramid-go/36944

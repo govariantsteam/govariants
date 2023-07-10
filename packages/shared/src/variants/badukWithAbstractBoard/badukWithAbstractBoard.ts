@@ -2,7 +2,6 @@ import { AbstractGame } from "../../abstract_game";
 import type { IBadukBoard } from "./abstractBoard/Interfaces/IBadukBoard";
 import { BadukBoardAbstract } from "./abstractBoard/BadukBoardAbstract";
 import type { Intersection } from "./abstractBoard/intersection";
-import { getOnlyMove } from "../../lib/utils";
 
 export enum Color {
     EMPTY = 0,
@@ -30,8 +29,6 @@ export interface BadukWithAbstractBoardState {
     captures: { 0: number; 1: number };
 }
 
-type BadukMovesType = { 0: string } | { 1: string };
-
 export class BadukWithAbstractBoard extends AbstractGame<BadukWithAbstractBoardConfig, BadukWithAbstractBoardState> {
     board: BadukBoardAbstract;
     private next_to_play: 0 | 1 = 0;
@@ -55,8 +52,7 @@ export class BadukWithAbstractBoard extends AbstractGame<BadukWithAbstractBoardC
         return [this.next_to_play];
     }
 
-    playMove(moves: BadukMovesType): void {
-        const { player, move } = getOnlyMove(moves);
+    playMove(player: number, move: string): void {
         if (player != this.next_to_play) {
             throw Error(`It's not player ${player}'s turn!`);
         }

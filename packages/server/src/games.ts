@@ -8,7 +8,11 @@ import {
 import { ObjectId, WithId, Document } from "mongodb";
 import { getDb } from "./db";
 import { io } from "./socket_io";
-import { HasTimeControlConfig, timeControlHandlerMap, ValidateTimeControlConfig } from "./time-control";
+import {
+  HasTimeControlConfig,
+  timeControlHandlerMap,
+  ValidateTimeControlConfig,
+} from "./time-control";
 
 export function gamesCollection() {
   return getDb().db().collection("games");
@@ -81,8 +85,9 @@ export async function playMove(
 
   // Verify that moves are legal
   const game_obj = makeGameObject(game.variant, game.config);
-  game.moves.forEach((move) => {
-    game_obj.playMove(move);
+  game.moves.forEach((moves) => {
+    const { player, move } = getOnlyMove(moves);
+    game_obj.playMove(player, move);
   });
 
   if (game_obj.result !== "") {
@@ -103,9 +108,13 @@ export async function playMove(
     );
   }
 
-  game_obj.playMove(moves);
+  const { player, move: new_move } = getOnlyMove(moves);
+  game_obj.playMove(player, new_move);
 
-  if (HasTimeControlConfig(game.config) && ValidateTimeControlConfig(game.config.time_control)) {
+  if (
+    HasTimeControlConfig(game.config) &&
+    ValidateTimeControlConfig(game.config.time_control)
+  ) {
     const timeHandler = new timeControlHandlerMap[game.variant]();
     await timeHandler.handleMove(game, game_obj, move.player, move.move);
   }

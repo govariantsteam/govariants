@@ -6,10 +6,10 @@ test("Play a game", () => {
   // Tiny board:
   // - W B -
   // - W B -
-  game.playMove({ 0: "ca" });
-  game.playMove({ 1: "ba" });
-  game.playMove({ 0: "cb" });
-  game.playMove({ 1: "bb" });
+  game.playMove(0, "ca");
+  game.playMove(1, "ba");
+  game.playMove(0, "cb");
+  game.playMove(1, "bb");
 
   // check that gobal state is as expected
   expect(game.exportState().board).toEqual([
@@ -35,10 +35,10 @@ test("Play a game with captures", () => {
   // Tiny board
   // B W
   // B O
-  game.playMove({ 0: "aa" });
-  game.playMove({ 1: "ba" });
-  game.playMove({ 0: "ab" });
-  game.playMove({ 1: "bb" });
+  game.playMove(0, "aa");
+  game.playMove(1, "ba");
+  game.playMove(0, "ab");
+  game.playMove(1, "bb");
 
   expect(game.exportState().board).toEqual([
     [Color.EMPTY, Color.WHITE],

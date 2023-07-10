@@ -20,7 +20,7 @@ export abstract class AbstractGame<GameConfig = object, GameState = object> {
    * May throw if the move was invalid and we should return that information
    * to the user
    */
-  abstract playMove(move: MovesType): void;
+  abstract playMove(player: number, move: string): void;
 
   /** Returns complete representation of the game at this point in time. */
   abstract exportState(player?: number): GameState;
@@ -66,9 +66,6 @@ export abstract class AbstractGame<GameConfig = object, GameState = object> {
    * This is used in the game creation form.
    */
   abstract defaultConfig(): GameConfig;
-}
-export interface MovesType {
-  [player: number]: string;
 }
 
 export type GamePhase = "play" | "gameover";

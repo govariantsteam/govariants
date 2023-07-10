@@ -12,13 +12,13 @@ test("Play a game", () => {
   // - W B -
   // - W B -
   expect(game.nextToPlay()).toEqual([0]);
-  game.playMove({ 0: "ca" });
+  game.playMove(0, "ca");
   expect(game.nextToPlay()).toEqual([1]);
-  game.playMove({ 1: "ba" });
+  game.playMove(1, "ba");
   expect(game.nextToPlay()).toEqual([0]);
-  game.playMove({ 0: "cb" });
+  game.playMove(0, "cb");
   expect(game.nextToPlay()).toEqual([1]);
-  game.playMove({ 1: "bb" });
+  game.playMove(1, "bb");
   expect(game.nextToPlay()).toEqual([0]);
 
   // check that the final state is as expected
@@ -28,9 +28,9 @@ test("Play a game", () => {
   ]);
 
   expect(game.phase).toBe("play");
-  game.playMove({ 0: "pass" });
+  game.playMove(0, "pass");
   expect(game.phase).toBe("play");
-  game.playMove({ 1: "pass" });
+  game.playMove(1, "pass");
 
   expect(game.phase).toBe("gameover");
   expect(game.result).toBe("W+0.5");
@@ -45,9 +45,9 @@ test("Play a game with captures", () => {
   // Tiny board
   // B W
   // B .
-  game.playMove({ 0: "aa" });
-  game.playMove({ 1: "ba" });
-  game.playMove({ 0: "ab" });
+  game.playMove(0, "aa");
+  game.playMove(1, "ba");
+  game.playMove(0, "ab");
   expect(game.exportState().board).toEqual([
     [B, W],
     [B, _],
@@ -56,16 +56,16 @@ test("Play a game with captures", () => {
   // Tiny board
   // . W
   // . W
-  game.playMove({ 1: "bb" });
+  game.playMove(1, "bb");
   expect(game.exportState().board).toEqual([
     [_, W],
     [_, W],
   ]);
 
   expect(game.phase).toBe("play");
-  game.playMove({ 0: "pass" });
+  game.playMove(0, "pass");
   expect(game.phase).toBe("play");
-  game.playMove({ 1: "pass" });
+  game.playMove(1, "pass");
   expect(game.phase).toBe("gameover");
   expect(game.result).toBe("W+4.5");
   expect(game.exportState().score_board).toEqual([
@@ -76,17 +76,17 @@ test("Play a game with captures", () => {
 
 test("Resign a game", () => {
   const game = new Baduk({ width: 19, height: 19, komi: 5.5 });
-  game.playMove({ 0: "resign" });
+  game.playMove(0, "resign");
   expect(game.phase).toBe("gameover");
   expect(game.result).toBe("W+R");
 });
 
 test("Scoring with open borders", () => {
   const game = new Baduk({ width: 5, height: 5, komi: 6.5 });
-  game.playMove({ "0": "cb" });
-  game.playMove({ "1": "cc" });
-  game.playMove({ "0": "pass" });
-  game.playMove({ "1": "pass" });
+  game.playMove(0, "cb");
+  game.playMove(1, "cc");
+  game.playMove(0, "pass");
+  game.playMove(1, "pass");
 
   expect(game.result).toBe("W+6.5");
 });
@@ -102,19 +102,19 @@ test("ko", () => {
     komi: 6.5,
   });
 
-  game.playMove({ "0": "ba" });
-  game.playMove({ "1": "ca" });
-  game.playMove({ "0": "ab" });
-  game.playMove({ "1": "db" });
-  game.playMove({ "0": "bc" });
-  game.playMove({ "1": "cc" });
-  game.playMove({ "0": "cb" });
+  game.playMove(0, "ba");
+  game.playMove(1, "ca");
+  game.playMove(0, "ab");
+  game.playMove(1, "db");
+  game.playMove(0, "bc");
+  game.playMove(1, "cc");
+  game.playMove(0, "cb");
 
   // White captures
-  game.playMove({ "1": "bb" });
+  game.playMove(1, "bb");
 
   // Black captures back
-  expect(() => game.playMove({ "0": "cb" })).toThrow(KoError);
+  expect(() => game.playMove(0, "cb")).toThrow(KoError);
 });
 
 test("inner group score", () => {
@@ -145,8 +145,8 @@ test("inner group score", () => {
   ];
 
   rounds.forEach((round) => {
-    game.playMove({ 0: round[0] });
-    game.playMove({ 1: round[1] });
+    game.playMove(0, round[0]);
+    game.playMove(1, round[1]);
   });
 
   // . . . . . . . . .
@@ -176,23 +176,18 @@ test("inner group score", () => {
 test("Capture test", () => {
   const game = new Baduk({ width: 3, height: 3, komi: 6.5 });
 
-  const moves = [
-    { "0": "aa" },
-    { "1": "ba" },
-    { "0": "ab" },
-    { "1": "bc" },
-    { "0": "cb" },
-    { "1": "bb" },
-    { "0": "ca" },
-    { "1": "cc" },
-    { "0": "cb" },
-    { "1": "ac" },
-    { "0": "pass" },
-    { "1": "pass" },
+  const rounds = [
+    ["aa", "ba"],
+    ["ab", "bc"],
+    ["cb", "bb"],
+    ["ca", "cc"],
+    ["cb", "ac"],
+    ["pass", "pass"],
   ];
 
-  moves.forEach((move) => {
-    game.playMove(move);
+  rounds.forEach((round) => {
+    game.playMove(0, round[0]);
+    game.playMove(1, round[1]);
   });
 
   expect(game.exportState().board).toEqual([

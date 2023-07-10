@@ -7,13 +7,13 @@ test("Play a game", () => {
   // - W B -
   // - W B -
   expect(game.nextToPlay()).toEqual([0]);
-  game.playMove({ 0: "ca" });
+  game.playMove(0, "ca");
   expect(game.nextToPlay()).toEqual([1]);
-  game.playMove({ 1: "ba" });
+  game.playMove(1, "ba");
   expect(game.nextToPlay()).toEqual([0]);
-  game.playMove({ 0: "cb" });
+  game.playMove(0, "cb");
   expect(game.nextToPlay()).toEqual([1]);
-  game.playMove({ 1: "bb" });
+  game.playMove(1, "bb");
   expect(game.nextToPlay()).toEqual([0]);
 
   // check that the final state is as expected
@@ -23,9 +23,9 @@ test("Play a game", () => {
   ]);
 
   expect(game.phase).toBe("play");
-  game.playMove({ 0: "pass" });
+  game.playMove(0, "pass");
   expect(game.phase).toBe("play");
-  game.playMove({ 1: "pass" });
+  game.playMove(1, "pass");
 
   expect(game.phase).toBe("gameover");
   expect(game.result).toBe("W+0.5");
@@ -36,15 +36,15 @@ test("four stone group throws", () => {
   // Tiny board:
   // B B B<B>
   // W W W -
-  game.playMove({ 0: "aa" });
-  game.playMove({ 1: "ab" });
-  game.playMove({ 0: "ba" });
-  game.playMove({ 1: "bb" });
-  game.playMove({ 0: "ca" });
-  game.playMove({ 1: "cb" });
+  game.playMove(0, "aa");
+  game.playMove(1, "ab");
+  game.playMove(0, "ba");
+  game.playMove(1, "bb");
+  game.playMove(0, "ca");
+  game.playMove(1, "cb");
 
   //check that the final state is as expected
   expect(() => {
-    game.playMove({ 0: "da" });
+    game.playMove(0, "da");
   }).toThrow("four stones");
 });

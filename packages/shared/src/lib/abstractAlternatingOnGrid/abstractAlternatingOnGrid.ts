@@ -1,7 +1,6 @@
 import { AbstractGame } from "../../abstract_game";
 import { Coordinate, CoordinateLike } from "../coordinate";
 import { Grid } from "../grid";
-import { getOnlyMove } from "../utils";
 
 export enum Color {
   EMPTY = 0,
@@ -19,8 +18,6 @@ export interface AbstractAlternatingOnGridState {
   next_to_play: 0 | 1;
   last_move: string;
 }
-
-type AbstractAlternatingOnGridMovesType = { 0: string } | { 1: string };
 
 export abstract class AbstractAlternatingOnGrid<
   TConfig extends AbstractAlternatingOnGridConfig,
@@ -49,8 +46,7 @@ export abstract class AbstractAlternatingOnGrid<
     return [this.next_to_play];
   }
 
-  override playMove(moves: AbstractAlternatingOnGridMovesType): void {
-    const { player, move } = getOnlyMove(moves);
+  override playMove(player: number, move: string): void {
     if (player != this.next_to_play) {
       throw Error(`It's not player ${player}'s turn!`);
     }
@@ -113,6 +109,9 @@ export abstract class AbstractAlternatingOnGrid<
   }
 }
 
-export function isOutOfBounds(pos: CoordinateLike, board: Grid<Color>): boolean {
+export function isOutOfBounds(
+  pos: CoordinateLike,
+  board: Grid<Color>
+): boolean {
   return board.at(pos) === undefined;
 }

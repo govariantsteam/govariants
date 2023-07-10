@@ -1,4 +1,3 @@
-import { MovesType } from "../abstract_game";
 import { Baduk, BadukState } from "./baduk";
 import { Color } from "../lib/abstractAlternatingOnGrid";
 import { Grid } from "../lib/grid";

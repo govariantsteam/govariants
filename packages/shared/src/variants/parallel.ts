@@ -1,7 +1,7 @@
-import { AbstractGame, MovesType } from "../abstract_game";
+import { AbstractGame } from "../abstract_game";
 import { Coordinate } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
-import { getOnlyMove } from "../lib/utils";
+import { MovesType } from "../lib/utils";
 
 export interface ParallelGoConfig {
   width: number;
@@ -54,9 +54,7 @@ export class ParallelGo extends AbstractGame<
     return [...Array(this.config.num_players).keys()];
   }
 
-  playMove(moves: MovesType): void {
-    const { player, move } = getOnlyMove(moves);
-
+  playMove(player: number, move: string): void {
     if (!Object.keys(this.specialMoves()).includes(move)) {
       const decoded_move = Coordinate.fromSgfRepr(move);
       const occupants = this.board.at(decoded_move);

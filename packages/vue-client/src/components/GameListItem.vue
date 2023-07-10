@@ -2,6 +2,7 @@
 import {
   makeGameObject,
   type GameResponse,
+  getOnlyMove,
 } from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
 import { board_map } from "@/board_map";
@@ -10,8 +11,9 @@ const props = defineProps<{ game: GameResponse }>();
 
 const game = computed(() => {
   const game_obj = makeGameObject(props.game.variant, props.game.config);
-  props.game.moves.forEach((move) => {
-    game_obj.playMove(move);
+  props.game.moves.forEach((m) => {
+    const { player, move } = getOnlyMove(m);
+    game_obj.playMove(player, move);
   });
   const state = game_obj.exportState();
   return {

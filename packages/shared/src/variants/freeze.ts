@@ -2,16 +2,14 @@ import { Color } from "../lib/abstractAlternatingOnGrid";
 import { Coordinate, CoordinateLike } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
 import { getGroup, getOuterBorder } from "../lib/group_utils";
-import { getOnlyMove } from "../lib/utils";
 import { Baduk } from "./baduk";
 
 export class FreezeGo extends Baduk {
   private frozen = false;
 
-  playMove(moves: { 0: string } | { 1: string }) {
-    const { move, player } = getOnlyMove(moves);
+  playMove(player: number, move: string) {
     const captures_before = this.captures[player as 0 | 1];
-    super.playMove(moves);
+    super.playMove(player, move);
     const captures_after = this.captures[player as 0 | 1];
     if (this.frozen && captures_before !== captures_after) {
       throw new Error("Cannot capture after opponent ataris");

@@ -1,4 +1,6 @@
-import type { MovesType } from "../abstract_game";
+export interface MovesType {
+  [player: number]: string;
+}
 
 export function getOnlyMove(moves: MovesType): {
   player: number;

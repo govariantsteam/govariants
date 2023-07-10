@@ -7,8 +7,8 @@ test("Halfway through the round, moves are staged, but not placed.", () => {
     num_players: 4,
     collision_handling: "pass",
   });
-  game.playMove({ 0: "ba" });
-  game.playMove({ 1: "ca" });
+  game.playMove(0, "ba");
+  game.playMove(1, "ca");
 
   expect(game.exportState()).toEqual({
     board: [
@@ -31,10 +31,10 @@ test("After one round, stones are placed, and no stones are staged.", () => {
     num_players: 4,
     collision_handling: "pass",
   });
-  game.playMove({ 0: "ba" });
-  game.playMove({ 1: "ca" });
-  game.playMove({ 2: "bb" });
-  game.playMove({ 3: "cb" });
+  game.playMove(0, "ba");
+  game.playMove(1, "ca");
+  game.playMove(2, "bb");
+  game.playMove(3, "cb");
 
   expect(game.exportState()).toEqual({
     board: [
@@ -53,10 +53,10 @@ test("If all players pass, the game is ended.", () => {
     num_players: 4,
     collision_handling: "pass",
   });
-  game.playMove({ 0: "pass" });
-  game.playMove({ 1: "pass" });
-  game.playMove({ 2: "pass" });
-  game.playMove({ 3: "pass" });
+  game.playMove(0, "pass");
+  game.playMove(1, "pass");
+  game.playMove(2, "pass");
+  game.playMove(3, "pass");
 
   expect(game.phase).toBe("gameover");
 });
@@ -68,8 +68,8 @@ test("Collision places no stones. (pass mode)", () => {
     num_players: 2,
     collision_handling: "pass",
   });
-  game.playMove({ 0: "aa" });
-  game.playMove({ 1: "aa" });
+  game.playMove(0, "aa");
+  game.playMove(1, "aa");
 
   expect(game.exportState().board).toEqual([
     [[], []],
@@ -84,8 +84,8 @@ test("Collision places Ko Stone. (ko mode)", () => {
     num_players: 2,
     collision_handling: "ko",
   });
-  game.playMove({ 0: "aa" });
-  game.playMove({ 1: "aa" });
+  game.playMove(0, "aa");
+  game.playMove(1, "aa");
 
   expect(game.exportState().board).toEqual([
     [[-1], []],
@@ -100,10 +100,10 @@ test("Ko stone disappears after one round", () => {
     num_players: 2,
     collision_handling: "ko",
   });
-  game.playMove({ 0: "aa" });
-  game.playMove({ 1: "aa" });
-  game.playMove({ 0: "ba" });
-  game.playMove({ 1: "ab" });
+  game.playMove(0, "aa");
+  game.playMove(1, "aa");
+  game.playMove(0, "ba");
+  game.playMove(1, "ab");
 
   expect(game.exportState().board[0][0]).toEqual([]);
 });
@@ -115,9 +115,9 @@ test("Ko stone still exists midround", () => {
     num_players: 2,
     collision_handling: "ko",
   });
-  game.playMove({ 0: "aa" });
-  game.playMove({ 1: "aa" });
-  game.playMove({ 0: "bb" });
+  game.playMove(0, "aa");
+  game.playMove(1, "aa");
+  game.playMove(0, "bb");
 
   expect(game.exportState().board).toEqual([
     [[-1], []],
@@ -132,8 +132,8 @@ test("Collision places merged stone. (merge mode)", () => {
     num_players: 2,
     collision_handling: "merge",
   });
-  game.playMove({ 0: "aa" });
-  game.playMove({ 1: "aa" });
+  game.playMove(0, "aa");
+  game.playMove(1, "aa");
 
   expect(game.exportState().board).toEqual([
     [[0, 1], []],
@@ -148,10 +148,10 @@ test("Double suicide", () => {
     num_players: 2,
     collision_handling: "ko",
   });
-  game.playMove({ 0: "aa" });
-  game.playMove({ 1: "ab" });
-  game.playMove({ 0: "ba" });
-  game.playMove({ 1: "bb" });
+  game.playMove(0, "aa");
+  game.playMove(1, "ab");
+  game.playMove(0, "ba");
+  game.playMove(1, "bb");
 
   expect(game.exportState().board).toEqual([
     [[], []],
@@ -166,10 +166,10 @@ test("Kill already placed groups first", () => {
     num_players: 2,
     collision_handling: "ko",
   });
-  game.playMove({ 0: "aa" });
-  game.playMove({ 1: "da" });
-  game.playMove({ 0: "ca" });
-  game.playMove({ 1: "ba" });
+  game.playMove(0, "aa");
+  game.playMove(1, "da");
+  game.playMove(0, "ca");
+  game.playMove(1, "ba");
 
   expect(game.exportState().board).toEqual([[[], [1], [0], []]]);
 });
@@ -181,10 +181,10 @@ test("Merge kill", () => {
     num_players: 2,
     collision_handling: "merge",
   });
-  game.playMove({ 0: "aa" });
-  game.playMove({ 1: "ca" });
-  game.playMove({ 0: "ba" });
-  game.playMove({ 1: "ba" });
+  game.playMove(0, "aa");
+  game.playMove(1, "ca");
+  game.playMove(0, "ba");
+  game.playMove(1, "ba");
 
   expect(game.exportState().board).toEqual([[[], [], [1], []]]);
 });
@@ -196,33 +196,16 @@ test("Double capture by the wall", () => {
     num_players: 2,
     collision_handling: "merge",
   });
-  const moves: Array<{ 0: string } | { 1: string }> = [
-    {
-      "0": "cd",
-    },
-    {
-      "1": "dd",
-    },
-    {
-      "0": "dc",
-    },
-    {
-      "1": "cc",
-    },
-    {
-      "0": "ed",
-    },
-    {
-      "1": "bd",
-    },
-    {
-      "0": "de",
-    },
-    {
-      "1": "ce",
-    },
+  const rounds = [
+    ["cd", "dd"],
+    ["dc", "cc"],
+    ["ed", "bd"],
+    ["de", "ce"],
   ];
-  moves.forEach((move) => game.playMove(move));
+  rounds.forEach((round) => {
+    game.playMove(0, round[0]);
+    game.playMove(1, round[1]);
+  });
 
   expect(game.exportState().board).toEqual([
     [[], [], [], [], [], []],

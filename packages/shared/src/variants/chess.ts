@@ -1,6 +1,5 @@
-import { AbstractGame, MovesType } from "../abstract_game";
+import { AbstractGame } from "../abstract_game";
 import { Chess } from "chess.js";
-import { getOnlyMove } from "../lib/utils";
 
 export interface ChessState {
   fen: string;
@@ -10,8 +9,7 @@ export class ChessGame extends AbstractGame<object, ChessState> {
   // third-party chess object
   private chess = new Chess();
 
-  playMove(moves: MovesType): void {
-    const { move, player } = getOnlyMove(moves);
+  playMove(player: number, move: string): void {
     if (player === 1 && "b" != this.chess.turn()) {
       throw Error("Not Black's turn");
     }

@@ -2,6 +2,7 @@
 import {
   makeGameObject,
   type GameResponse,
+  getOnlyMove,
 } from "@ogfcommunity/variants-shared";
 import * as requests from "../requests";
 import SeatComponent from "@/components/SeatComponent.vue";
@@ -25,8 +26,9 @@ const game = computed(() => {
     return { result: null, state: null };
   }
   const game_obj = makeGameObject(gameResponse.variant, gameResponse.config);
-  gameResponse.moves.forEach((move) => {
-    game_obj.playMove(move);
+  gameResponse.moves.forEach((m) => {
+    const { player, move } = getOnlyMove(m);
+    game_obj.playMove(player, move);
   });
   const result =
     game_obj.phase === "gameover" ? game_obj.result || "Game over" : null;

@@ -6,12 +6,12 @@ test("White wins by capture", () => {
   // Tiny board
   // B W
   // B O
-  game.playMove({ 0: "aa" });
-  game.playMove({ 1: "ba" });
-  game.playMove({ 0: "ab" });
+  game.playMove(0, "aa");
+  game.playMove(1, "ba");
+  game.playMove(0, "ab");
 
   // capture the black stones on the left
-  game.playMove({ 1: "bb" });
+  game.playMove(1, "bb");
 
   expect(game.exportState().board).toEqual([
     [Color.EMPTY, Color.WHITE],
@@ -27,11 +27,11 @@ test("Black wins by capture", () => {
   // Tiny board
   // B W
   // . .
-  game.playMove({ 0: "aa" });
-  game.playMove({ 1: "ba" });
+  game.playMove(0, "aa");
+  game.playMove(1, "ba");
 
   // capture the white stone on the left
-  game.playMove({ 0: "bb" });
+  game.playMove(0, "bb");
 
   expect(game.exportState().board).toEqual([
     [Color.BLACK, Color.EMPTY],

@@ -1,13 +1,10 @@
-import { getOnlyMove } from "../lib/utils";
-import { Baduk, BadukMove } from "./baduk";
+import { Baduk } from "./baduk";
 
 export class ThueMorse extends Baduk {
   private move_number = 0;
 
-  playMove(moves: BadukMove): void {
-    const { player, move } = getOnlyMove(moves);
-
-    super.playMove(moves);
+  playMove(player: number, move: string): void {
+    super.playMove(player, move);
 
     this.increment_next_to_play();
 

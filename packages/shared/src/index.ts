@@ -10,3 +10,9 @@ export * from "./lib/grid";
 export * from "./lib/coordinate";
 export * from "./time_control";
 export * from "./lib/utils";
+export {
+  Color as FractionalColor,
+  Fractional,
+  FractionalConfig,
+  FractionalState,
+} from "./variants/fractional";

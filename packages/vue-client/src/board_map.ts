@@ -2,6 +2,7 @@ import Baduk from "@/components/boards/BadukBoard.vue";
 import BadukBoardAbstract from "@/components/boards/BadukBoardAbstract.vue";
 import ParallelGoBoard from "@/components/boards/ParallelGoBoard.vue";
 import ChessBoard from "@/components/boards/ChessBoard.vue";
+import FractionalBoard from "@/components/boards/FractionalBoard.vue";
 import type { Component } from "vue";
 
 export const board_map: {
@@ -17,4 +18,5 @@ export const board_map: {
   pyramid: Baduk,
   "thue-morse": Baduk,
   freeze: Baduk,
+  fractional: FractionalBoard,
 };

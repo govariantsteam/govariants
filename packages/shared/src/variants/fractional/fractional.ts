@@ -1,11 +1,9 @@
-import { MovesType } from "../../abstract_game";
 import { BadukIntersection } from "../../lib/abstractBaduk/badukIntersection";
 import {
   AbstractBaduk,
   AbstractBadukConfig,
 } from "../../lib/abstractBaduk/abstractBaduk";
 import { FractionalStone } from "./fractionalStone";
-import { getOnlyMove } from "../../lib/utils";
 
 export type Color =
   | "black"
@@ -56,10 +54,10 @@ export class Fractional extends AbstractBaduk<
     this.stagedMoves = this.stagedMovesDefaults();
   }
 
-  playMove(moves: MovesType): void {
-    const move = this.decodeMove(moves);
+  playMove(p: number, m: string): void {
+    const move = this.decodeMove(p, m);
     if (!move) {
-      throw new Error(`Couldn't decode move ${moves}`);
+      throw new Error(`Couldn't decode move ${{ player: p, move: m }}`);
     }
 
     if (move.intersection.stone) {
@@ -154,14 +152,13 @@ export class Fractional extends AbstractBaduk<
   }
 
   /** Asserts there is exactly one move of type FractionalMove and returns it */
-  private decodeMove(moves: MovesType): FractionalMove | null {
-    const move = getOnlyMove(moves);
-    const player = this.config.players[move.player];
+  private decodeMove(p: number, m: string): FractionalMove | null {
+    const player = this.config.players[p];
     const intersection = this.intersections.find(
-      (intersection) => intersection.id === Number.parseInt(move.move)
+      (intersection) => intersection.id === Number.parseInt(m)
     );
     return player && intersection
-      ? { player: { ...player, index: move.player }, intersection }
+      ? { player: { ...player, index: p }, intersection }
       : null;
   }
 

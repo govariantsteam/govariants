@@ -16,3 +16,4 @@ export {
   FractionalConfig,
   FractionalState,
 } from "./variants/fractional";
+export { KeimaState } from "./variants/keima";

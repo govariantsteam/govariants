@@ -1,6 +1,9 @@
-import { Color } from "../lib/abstractAlternatingOnGrid";
 import { Coordinate } from "../lib/coordinate";
-import { Baduk } from "./baduk";
+import { Baduk, BadukState } from "./baduk";
+
+export interface KeimaState extends BadukState {
+  keima?: string;
+}
 
 export class Keima extends Baduk {
   private move_number = 0;
@@ -31,6 +34,16 @@ export class Keima extends Baduk {
   increment_next_to_play() {
     this.move_number++;
     this.next_to_play = active_player(this.move_number);
+  }
+
+  exportState(): KeimaState {
+    return {
+      ...super.exportState(),
+      keima:
+        is_keima_move_number(this.move_number) && this.last_move !== "pass"
+          ? this.last_move
+          : undefined,
+    };
   }
 }
 

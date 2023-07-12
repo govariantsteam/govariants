@@ -19,4 +19,5 @@ export const board_map: {
   "thue-morse": Baduk,
   freeze: Baduk,
   fractional: FractionalBoard,
+  "one color": Baduk,
 };

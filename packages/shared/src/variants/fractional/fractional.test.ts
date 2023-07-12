@@ -14,6 +14,10 @@ class FractionalTestGame extends Fractional {
       (i) => i.neighbours.length === 2
     );
   }
+
+  countStones(): number {
+    return this.intersections.filter((i) => i.stone).length;
+  }
 }
 
 test("Surrounded merge stone", () => {
@@ -47,9 +51,36 @@ test("Surrounded merge stone", () => {
   game.playMove(1, cornerId);
   game.playMove(2, cornerId);
 
-  const state = game.exportState();
-  expect(state.intersections.filter((i) => i.stone).length).toBe(2);
+  expect(game.countStones()).toBe(2);
   expect(
-    state.intersections.find((i) => i.id === Number(cornerId))?.stone
+    game.exportState().intersections.find((i) => i.id === Number(cornerId))
+      ?.stone
   ).toBeNull();
+});
+
+test("Player passes", () => {
+  const game = new FractionalTestGame({
+    players: [
+      { primaryColor: "black", secondaryColor: "green" },
+      { primaryColor: "white", secondaryColor: "blue" },
+      { primaryColor: "white", secondaryColor: "green" },
+    ],
+  });
+
+  const intersectionA = game.firstCorner;
+  const intersectionB = intersectionA?.neighbours[0];
+
+  game.playMove(1, intersectionA?.id.toString() ?? "");
+  game.playMove(2, intersectionB?.id.toString() ?? "");
+  expect(game.countStones()).toBe(0);
+
+  game.playMove(0, "pass");
+  expect(game.countStones()).toBe(2);
+  expect(intersectionA?.stone?.colors.has("white")).toBeTruthy();
+  expect(intersectionA?.stone?.colors.has("blue")).toBeTruthy();
+  expect(intersectionA?.stone?.colors.has("black")).toBeFalsy();
+
+  expect(intersectionB?.stone?.colors.has("white")).toBeTruthy();
+  expect(intersectionB?.stone?.colors.has("green")).toBeTruthy();
+  expect(intersectionB?.stone?.colors.has("black")).toBeFalsy();
 });

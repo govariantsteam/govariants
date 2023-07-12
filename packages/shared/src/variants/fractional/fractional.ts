@@ -28,8 +28,11 @@ export type FractionalIntersection = BadukIntersection<Color, FractionalStone>;
 
 interface FractionalMove {
   player: FractionalPlayer;
-  intersection: FractionalIntersection;
+  intersection: FractionalIntersection | null;
 }
+
+// null means pass, undefined means not submitted
+type StagedMove = FractionalIntersection | null | undefined;
 
 export interface FractionalConfig extends AbstractBadukConfig {
   players: FractionalPlayerConfig[];
@@ -47,7 +50,7 @@ export class Fractional extends AbstractBaduk<
   FractionalStone,
   FractionalState
 > {
-  private stagedMoves: (FractionalIntersection | null)[];
+  private stagedMoves: StagedMove[];
 
   constructor(config?: FractionalConfig) {
     super(config);
@@ -60,7 +63,7 @@ export class Fractional extends AbstractBaduk<
       throw new Error(`Couldn't decode move ${{ player: p, move: m }}`);
     }
 
-    if (move.intersection.stone) {
+    if (move.intersection?.stone) {
       throw new Error(
         `There is already a stone at intersection ${move.intersection.id}`
       );
@@ -70,17 +73,20 @@ export class Fractional extends AbstractBaduk<
 
     if (
       this.stagedMoves.every(
-        (stagedMove): stagedMove is FractionalIntersection =>
-          stagedMove !== null
+        (m): m is FractionalIntersection | null => m !== undefined
       )
     ) {
-      this.intersections.forEach((intersection) => {
-        if (intersection.stone) intersection.stone.isNew = false;
+      // All players have submitted a move
+
+      this.intersections.forEach((i) => {
+        if (i.stone) i.stone.isNew = false;
       });
 
       // place all moves and proceed to next round
       const playedIntersections = new Set<FractionalIntersection>();
       this.stagedMoves.forEach((intersection, playerId) => {
+        if (!intersection) return;
+
         playedIntersections.add(intersection);
         const colors =
           intersection.stone?.colors ??
@@ -128,6 +134,10 @@ export class Fractional extends AbstractBaduk<
     return this.config.players.length;
   }
 
+  override specialMoves(): { [key: string]: string } {
+    return { pass: "Pass" };
+  }
+
   defaultConfig(): FractionalConfig {
     return {
       players: [
@@ -151,20 +161,20 @@ export class Fractional extends AbstractBaduk<
     return colors;
   }
 
-  /** Asserts there is exactly one move of type FractionalMove and returns it */
-  private decodeMove(p: number, m: string): FractionalMove | null {
-    const player = this.config.players[p];
+  private decodeMove(p: number, m: string): FractionalMove | undefined {
+    const playerConfig = this.config.players[p];
+    if (!playerConfig) return undefined;
+
+    const player = { ...playerConfig, index: p };
+    if (m === "pass") return { player, intersection: null };
+
     const intersection = this.intersections.find(
       (intersection) => intersection.id === Number.parseInt(m)
     );
-    return player && intersection
-      ? { player: { ...player, index: p }, intersection }
-      : null;
+    return intersection ? { player, intersection } : undefined;
   }
 
-  private stagedMovesDefaults(): (FractionalIntersection | null)[] {
-    return new Array<FractionalIntersection | null>(this.numPlayers()).fill(
-      null
-    );
+  private stagedMovesDefaults(): StagedMove[] {
+    return new Array<StagedMove>(this.numPlayers()).fill(undefined);
   }
 }

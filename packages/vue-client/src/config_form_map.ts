@@ -15,4 +15,5 @@ export const config_form_map: {
   pyramid: BadukConfigForm,
   "thue-morse": BadukConfigForm,
   freeze: BadukConfigForm,
+  keima: BadukConfigForm,
 };

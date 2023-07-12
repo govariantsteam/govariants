@@ -2,7 +2,11 @@ import { Color } from "../lib/abstractAlternatingOnGrid";
 import { Coordinate, CoordinateLike } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
 import { getGroup, getOuterBorder } from "../lib/group_utils";
-import { Baduk } from "./baduk";
+import { Baduk, BadukState } from "./baduk";
+
+export interface FreezeGoState extends BadukState {
+  frozen: boolean;
+}
 
 export class FreezeGo extends Baduk {
   private frozen = false;
@@ -21,6 +25,10 @@ export class FreezeGo extends Baduk {
       .some(
         (pos) => this.board.at(pos) === opponent && is_in_atari(pos, this.board)
       );
+  }
+
+  override exportState(): FreezeGoState {
+    return { ...super.exportState(), frozen: this.frozen };
   }
 }
 

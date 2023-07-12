@@ -1,4 +1,4 @@
-import { MovesType } from "../../abstract_game";
+import { MovesType } from "../utils";
 import { AbstractBaduk, AbstractBadukConfig } from "./abstractBaduk";
 import { BadukIntersection, AbstractBadukStone } from "./badukIntersection";
 
@@ -64,7 +64,7 @@ class AbstractBadukTestGame extends AbstractBaduk<
     return this.findChainsWithoutLiberties(this.center, types, new Map());
   }
 
-  playMove(move: MovesType): void {
+  playMove(player: number, move: string): void {
     throw new Error("Not implemented");
   }
 

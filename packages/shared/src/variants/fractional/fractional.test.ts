@@ -37,15 +37,15 @@ test("Surrounded merge stone", () => {
   const neighbour1Id = game.firstCorner?.neighbours[1].id.toString() ?? "";
 
   // Round 1
-  game.playMove({ 0: neighbour0Id });
-  game.playMove({ 1: neighbour1Id });
-  game.playMove({ 2: cornerId });
+  game.playMove(0, neighbour0Id);
+  game.playMove(1, neighbour1Id);
+  game.playMove(2, cornerId);
   expect(game.firstCorner?.stone).toBeNull();
 
   // Round 2
-  game.playMove({ 0: cornerId });
-  game.playMove({ 1: cornerId });
-  game.playMove({ 2: cornerId });
+  game.playMove(0, cornerId);
+  game.playMove(1, cornerId);
+  game.playMove(2, cornerId);
 
   const state = game.exportState();
   expect(state.intersections.filter((i) => i.stone).length).toBe(2);

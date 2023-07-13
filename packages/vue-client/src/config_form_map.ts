@@ -16,4 +16,5 @@ export const config_form_map: {
   "thue-morse": BadukConfigForm,
   freeze: BadukConfigForm,
   keima: BadukConfigForm,
+  "one color": BadukConfigForm,
 };

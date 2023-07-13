@@ -13,6 +13,7 @@ import { Coordinate } from "@ogfcommunity/variants-shared";
 
 const props = defineProps<{
   board: (MulticolorStone | null)[][];
+  background_color?: string;
   config: { height: number; width: number };
 }>();
 
@@ -49,7 +50,13 @@ function positionHovered(pos: Coordinate) {
     height="100%"
     v-bind:viewBox="`-1 -1 ${width + 1} ${height + 1}`"
   >
-    <rect x="-0.5" y="-0.5" :width="width" :height="height" fill="#dcb35c" />
+    <rect
+      x="-0.5"
+      y="-0.5"
+      :width="width"
+      :height="height"
+      :fill="background_color ?? '#dcb35c'"
+    />
     <g>
       <line
         v-for="x in width"

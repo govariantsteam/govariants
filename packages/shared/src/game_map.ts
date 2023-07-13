@@ -10,6 +10,7 @@ import { PyramidGo } from "./variants/pyramid";
 import { ThueMorse } from "./variants/thue_morse";
 import { FreezeGo } from "./variants/freeze";
 import { Fractional } from "./variants/fractional";
+import { Keima } from "./variants/keima";
 import { OneColorGo } from "./variants/one_color";
 
 export const game_map: {
@@ -26,6 +27,7 @@ export const game_map: {
   "thue-morse": ThueMorse,
   freeze: FreezeGo,
   fractional: Fractional,
+  keima: Keima,
   "one color": OneColorGo,
 };
 

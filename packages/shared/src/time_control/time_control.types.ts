@@ -1,6 +1,7 @@
 export enum TimeControlType {
     Invalid = 0,
     Absolute = 1,
+    Fischer = 2,
     // unlimited time is configured by config.time_control = undefined
 }
 

@@ -1,39 +1,90 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { isDefined } from "@vueuse/core";
+import { ref, watch, watchEffect } from "vue";
 
 const props = defineProps<{
-    countsDown: boolean;
-    remainingTimeMS: number;
+  server_remaining_time_ms: number | null;
+  on_the_play_since: Date | string | null;
 }>();
 
-let t = ref(props.remainingTimeMS);
+const time = ref(props.server_remaining_time_ms ?? 0);
+const formattedTime = ref(
+  props.server_remaining_time_ms ? msToTime(props.server_remaining_time_ms) : ""
+);
+const isCountingDown = ref(false);
+let timerIndex: number | null = null;
 
-if (props.countsDown) {
-    const timerIndex = setInterval(() => {
-        if (t.value <= 0) {
-            clearInterval(timerIndex);
-        }
-        else {
-        t.value -= 1000;
-        }
-    }, 1000)
-}
+watch(time, (t) => {
+  if (t === null) {
+    formattedTime.value = "";
+  } else {
+    formattedTime.value = msToTime(t);
+  }
+});
+
+// ToDo: after reload or navigating away and back,
+// the timer does not count down anymore
+// I don't know how to fix it :(
+watch(props, (next) => {
+  if (timerIndex !== null) {
+    clearInterval(timerIndex);
+  }
+  time.value = props.server_remaining_time_ms ?? 0;
+
+  if (
+    isDefined(props.on_the_play_since) &&
+    props.server_remaining_time_ms !== null
+  ) {
+    isCountingDown.value = true;
+    const onThePlaySince: Date = new Date(props.on_the_play_since);
+    const now = new Date();
+    time.value -= now.getDate() - onThePlaySince.getDate();
+  } else {
+    isCountingDown.value = false;
+  }
+
+  if (isDefined(props.on_the_play_since)) {
+    timerIndex = setInterval(() => {
+      if (time.value <= 0 && timerIndex !== null) {
+        clearInterval(timerIndex);
+      } else {
+        time.value -= 1000;
+      }
+    }, 1000);
+  }
+});
+
+watchEffect((onCleanup) => {
+  onCleanup(() => {
+    if (timerIndex !== null) {
+      clearInterval(timerIndex);
+    }
+  });
+});
 
 function msToTime(ms: number): string {
-  //ToDo: improve, this is kinda horrible
   let msCopy = ms;
-  let days = Math.floor((msCopy / (1000 * 60 * 60 * 24)))
-  msCopy = msCopy - days * (1000 * 60 * 60 * 24);
-  let hours = Math.floor((msCopy / (1000 * 60 * 60)))
-  msCopy = msCopy - hours * (1000 * 60 * 60);
-  let minutes = Math.floor(msCopy / (1000 * 60));
-  msCopy = msCopy - minutes * (1000 * 60);
-  let seconds = Math.floor(msCopy / 1000);
 
-  return `${days.toString()}d : ${hours.toString()}h : ${minutes.toString()}m : ${seconds.toString()}s`;
+  const milliseconds = ms % 1000;
+  msCopy = (msCopy - milliseconds) / 1000;
+
+  const seconds = msCopy % 60;
+  msCopy = (msCopy - seconds) / 60;
+
+  const minutes = msCopy % 60;
+  msCopy = (msCopy - minutes) / 60;
+
+  const hours = msCopy % 24;
+  msCopy = (msCopy - hours) / 24;
+
+  const days = msCopy;
+
+  return `${days.toString()} days ${hours.toString()} hours ${minutes.toString()} minutes ${seconds.toString()} seconds`;
 }
 </script>
 
 <template>
-    {{ msToTime(t) }}
+  <div>
+    {{ formattedTime }}
+  </div>
 </template>

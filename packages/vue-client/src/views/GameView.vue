@@ -6,11 +6,10 @@ import {
 import * as requests from "../requests";
 import SeatComponent from "@/components/SeatComponent.vue";
 import { useCurrentUser } from "../stores/user";
-import type { User } from "@ogfcommunity/variants-shared";
+import type { ITimeControlConfig, User } from "@ogfcommunity/variants-shared";
 import { computed, reactive, ref, watchEffect } from "vue";
 import { board_map } from "@/board_map";
 import { socket } from "../requests";
-import Timer from "../components/Timer.vue";
 
 const props = defineProps<{ gameId: string }>();
 
@@ -126,6 +125,17 @@ watchEffect((onCleanup) => {
     socket.off(message);
   });
 });
+const extractMainTime = (game: GameResponse): number | null => {
+  if (
+    game.config &&
+    typeof game.config === "object" &&
+    "time_control" in game.config
+  ) {
+    const timeControlConfig = game.config.time_control as ITimeControlConfig;
+    return timeControlConfig.mainTimeMS;
+  }
+  return null;
+};
 </script>
 
 <template>
@@ -146,10 +156,13 @@ watchEffect((onCleanup) => {
         @leave="leave(idx)"
         @select="setPlayingAs(idx)"
         :selected="playing_as"
-      />
-      <Timer 
-        v-bind:remainingTimeMS="gameResponse.time_control?.remainingTimeMS[idx] ?? 0" 
-        v-bind:countsDown="!!gameResponse.time_control?.onThePlaySince[idx]"
+        :server_remaining_time_ms="
+          gameResponse.time_control?.remainingTimeMS[idx] ??
+          extractMainTime(gameResponse)
+        "
+        :on_the_play_since="
+          gameResponse.time_control?.onThePlaySince[idx] ?? null
+        "
       />
     </div>
   </div>

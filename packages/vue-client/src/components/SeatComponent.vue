@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import type { User } from "@ogfcommunity/variants-shared";
+import Timer from "../components/Timer.vue";
 
 defineProps<{
   user_id?: string;
   occupant?: User;
   player_n: number;
   selected?: number;
+  server_remaining_time_ms: number | null;
+  on_the_play_since: Date | string | null;
 }>();
 </script>
 
@@ -25,6 +28,10 @@ defineProps<{
         Leave Seat
       </button>
     </div>
+    <Timer
+      v-bind:server_remaining_time_ms="server_remaining_time_ms"
+      v-bind:on_the_play_since="on_the_play_since"
+    />
   </div>
 </template>
 

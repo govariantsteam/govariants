@@ -47,7 +47,7 @@ function resetTimer(): void {
     props.time_control?.remainingTimeMS !== null
   ) {
     isCountingDown.value = true;
-    const onThePlaySince: Date = new Date(props.time_control?.onThePlaySince);
+    const onThePlaySince: Date = new Date(props.time_control!.onThePlaySince);
     const now = new Date();
     time.value -= now.getTime() - onThePlaySince.getTime();
   } else {

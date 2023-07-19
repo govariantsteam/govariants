@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { BadukConfig } from "@ogfcommunity/variants-shared";
-import { ref, watch, type Ref } from "vue-demi";
 
 const props = defineProps<{ initialConfig: BadukConfig }>();
 const config = { ...props.initialConfig } as BadukConfig;

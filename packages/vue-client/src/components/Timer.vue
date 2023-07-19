@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { isDefined } from "@vueuse/core";
-import { ref, watch, watchEffect } from "vue";
+import {
+  onMounted,
+  onUnmounted,
+  ref,
+  watch,
+} from "vue";
 
 const props = defineProps<{
   server_remaining_time_ms: number | null;
@@ -22,10 +27,16 @@ watch(time, (t) => {
   }
 });
 
-// ToDo: after reload or navigating away and back,
-// the timer does not count down anymore
-// I don't know how to fix it :(
-watch(props, (next) => {
+onMounted(() => resetTimer());
+watch(props, () => resetTimer());
+
+onUnmounted(() => {
+  if (timerIndex !== null) {
+    clearInterval(timerIndex);
+  }
+});
+
+function resetTimer(): void {
   if (timerIndex !== null) {
     clearInterval(timerIndex);
   }
@@ -38,7 +49,7 @@ watch(props, (next) => {
     isCountingDown.value = true;
     const onThePlaySince: Date = new Date(props.on_the_play_since);
     const now = new Date();
-    time.value -= now.getDate() - onThePlaySince.getDate();
+    time.value -= now.getTime() - onThePlaySince.getTime();
   } else {
     isCountingDown.value = false;
   }
@@ -52,15 +63,7 @@ watch(props, (next) => {
       }
     }, 1000);
   }
-});
-
-watchEffect((onCleanup) => {
-  onCleanup(() => {
-    if (timerIndex !== null) {
-      clearInterval(timerIndex);
-    }
-  });
-});
+}
 
 function msToTime(ms: number): string {
   let msCopy = ms;

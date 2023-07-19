@@ -6,20 +6,20 @@ import {
   ref,
   watch,
 } from "vue";
+import type { IPerPlayerTimeControlBase } from "@ogfcommunity/variants-shared";
 
 const props = defineProps<{
-  server_remaining_time_ms: number | null;
-  on_the_play_since: Date | string | null;
+    time_control: IPerPlayerTimeControlBase | null;
 }>();
 
-const time = ref(props.server_remaining_time_ms ?? 0);
+const time = ref(props.time_control.remainingTimeMS ?? 0);
 const formattedTime = ref(
-  props.server_remaining_time_ms ? msToTime(props.server_remaining_time_ms) : ""
+    props.time_control.remainingTimeMS ? msToTime(props.time_control.remainingTimeMS) : ""
 );
 const isCountingDown = ref(false);
 let timerIndex: number | null = null;
 
-watch(time, (t) => {
+watch(time, (t: number) => {
   if (t === null) {
     formattedTime.value = "";
   } else {
@@ -40,21 +40,21 @@ function resetTimer(): void {
   if (timerIndex !== null) {
     clearInterval(timerIndex);
   }
-  time.value = props.server_remaining_time_ms ?? 0;
+  time.value = props.time_control.remainingTimeMS ?? 0;
 
   if (
-    isDefined(props.on_the_play_since) &&
-    props.server_remaining_time_ms !== null
+    isDefined(props.time_control.onThePlaySince) &&
+    props.time_control.remainingTimeMS !== null
   ) {
     isCountingDown.value = true;
-    const onThePlaySince: Date = new Date(props.on_the_play_since);
+    const onThePlaySince: Date = new Date(props.time_control.onThePlaySince);
     const now = new Date();
     time.value -= now.getTime() - onThePlaySince.getTime();
   } else {
     isCountingDown.value = false;
   }
 
-  if (isDefined(props.on_the_play_since)) {
+  if (isDefined(props.time_control.onThePlaySince)) {
     timerIndex = setInterval(() => {
       if (time.value <= 0 && timerIndex !== null) {
         clearInterval(timerIndex);

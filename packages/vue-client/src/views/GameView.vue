@@ -6,7 +6,7 @@ import {
 import * as requests from "../requests";
 import SeatComponent from "@/components/SeatComponent.vue";
 import { useCurrentUser } from "../stores/user";
-import type { ITimeControlConfig, User } from "@ogfcommunity/variants-shared";
+import type { ITimeControlConfig, User, IPerPlayerTimeControlBase, IConfigWithTimeControl } from "@ogfcommunity/variants-shared";
 import { computed, reactive, ref, watchEffect } from "vue";
 import { board_map } from "@/board_map";
 import { socket } from "../requests";
@@ -125,14 +125,14 @@ watchEffect((onCleanup) => {
     socket.off(message);
   });
 });
-const extractMainTime = (game: GameResponse): number | null => {
+const createTimeControlPreview = (game: GameResponse): IPerPlayerTimeControlBase | null => {
   if (
     game.config &&
     typeof game.config === "object" &&
     "time_control" in game.config
   ) {
-    const timeControlConfig = game.config.time_control as ITimeControlConfig;
-    return timeControlConfig.mainTimeMS;
+    const config = game.config as IConfigWithTimeControl;
+    return {remainingTimeMS: config.time_control.mainTimeMS, onThePlaySince: null};
   }
   return null;
 };
@@ -156,13 +156,7 @@ const extractMainTime = (game: GameResponse): number | null => {
         @leave="leave(idx)"
         @select="setPlayingAs(idx)"
         :selected="playing_as"
-        :server_remaining_time_ms="
-          gameResponse.time_control?.remainingTimeMS[idx] ??
-          extractMainTime(gameResponse)
-        "
-        :on_the_play_since="
-          gameResponse.time_control?.onThePlaySince[idx] ?? null
-        "
+        :time_control="gameResponse.time_control?.forPlayer[idx] ?? createTimeControlPreview(gameResponse)"
       />
     </div>
   </div>

@@ -18,12 +18,14 @@ export interface IConfigWithTimeControl {
     time_control: ITimeControlConfig;
 }
 
+export interface IPerPlayerTimeControlBase {
+    remainingTimeMS: number;
+    onThePlaySince: Date | null;
+}
+
 export interface ITimeControlBase {
     moveTimestamps: Date[];
-    remainingTimeMS: {
-        [player: number]: number;
-    };
-    onThePlaySince: {
-        [player: number]: Date | null;
-    };
+    forPlayer: {
+        [player: number]: IPerPlayerTimeControlBase
+    }
 }

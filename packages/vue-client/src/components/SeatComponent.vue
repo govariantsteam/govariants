@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { User } from "@ogfcommunity/variants-shared";
+import type { User, IPerPlayerTimeControlBase } from "@ogfcommunity/variants-shared";
 import Timer from "../components/Timer.vue";
 
 defineProps<{
@@ -7,8 +7,7 @@ defineProps<{
   occupant?: User;
   player_n: number;
   selected?: number;
-  server_remaining_time_ms: number | null;
-  on_the_play_since: Date | string | null;
+  time_control: IPerPlayerTimeControlBase | null;
 }>();
 </script>
 
@@ -29,8 +28,7 @@ defineProps<{
       </button>
     </div>
     <Timer
-      v-bind:server_remaining_time_ms="server_remaining_time_ms"
-      v-bind:on_the_play_since="on_the_play_since"
+      v-bind:time_control="time_control"
     />
   </div>
 </template>

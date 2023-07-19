@@ -21,8 +21,7 @@ export function ValidateTimeControlBase(time_control: unknown): time_control is 
       time_control &&
       typeof time_control === "object" &&
       "moveTimestamps" in time_control &&
-      "remainingTimeMS" in time_control &&
-      "onThePlaySince" in time_control
+      "forPlayer" in time_control
     );
 }
 
@@ -46,36 +45,40 @@ class TimeHandlerSequentialMoves implements ITimeHandler {
                 if (timeData === undefined) {
                     timeData = {
                         moveTimestamps: [],
-                        remainingTimeMS: {},
-                        onThePlaySince: {},
+                        forPlayer: {}
                     }
                 }
                 
 
-                if (timeData.remainingTimeMS[playerNr] === undefined)
+                if (timeData.forPlayer[playerNr] === undefined)
                 {
-                    timeData.remainingTimeMS[playerNr] = game.config.time_control.mainTimeMS;
+                    timeData.forPlayer[playerNr] = {
+                        remainingTimeMS: game.config.time_control.mainTimeMS, 
+                        onThePlaySince: undefined
+                    };
                 }
 
                 const nextPlayers = game_obj.nextToPlay();
 
-                if (timeData.onThePlaySince[playerNr] === null) {
+                if (timeData.forPlayer[playerNr] === null) {
                     console.error(`game with id ${game.id} has defect time control data`);
                     return;
                 }
+
+                const playerData = timeData.forPlayer[playerNr];
                 
                 const timestamp = new Date();
                 
                 timeData.moveTimestamps.push(timestamp);
-                if (timeData.onThePlaySince[playerNr] !== undefined) {
+                if (playerData.onThePlaySince !== undefined) {
                     // with this construction, time will not be substracted before the first move of a player
                     // which is good imho
-                    timeData.remainingTimeMS[playerNr] -= ((timestamp.getTime()) - timeData.onThePlaySince[playerNr].getTime());
+                    playerData.remainingTimeMS -= ((timestamp.getTime()) - playerData.onThePlaySince.getTime());
                 }
-                timeData.onThePlaySince[playerNr] = null;
+                playerData.onThePlaySince = null;
                 nextPlayers.forEach(player => {
-                    if (!timeData.onThePlaySince[player] && timeData.remainingTimeMS[player]) {
-                        timeData.onThePlaySince[player] = timestamp;
+                    if (timeData.forPlayer[player] && timeData.forPlayer[player].remainingTimeMS) {
+                        timeData.forPlayer[player].onThePlaySince = timestamp;
                     }
                 });
 

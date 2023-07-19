@@ -54,8 +54,8 @@ function resetTimer(): void {
     isCountingDown.value = false;
   }
 
-  if (isDefined(props.time_control?.onThePlaySince)) {
-    timerIndex = setInterval(() => {
+  if (isDefined(props.time_control?.onThePlaySince) && typeof window !== 'undefined') {
+    timerIndex = window.setInterval(() => {
       if (time.value <= 0 && timerIndex !== null) {
         clearInterval(timerIndex);
       } else {

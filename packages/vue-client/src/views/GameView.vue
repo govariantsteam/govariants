@@ -7,7 +7,6 @@ import * as requests from "../requests";
 import SeatComponent from "@/components/SeatComponent.vue";
 import { useCurrentUser } from "../stores/user";
 import type {
-  ITimeControlConfig,
   User,
   IPerPlayerTimeControlBase,
   IConfigWithTimeControl,

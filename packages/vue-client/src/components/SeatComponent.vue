@@ -3,7 +3,7 @@ import type {
   User,
   IPerPlayerTimeControlBase,
 } from "@ogfcommunity/variants-shared";
-import Timer from "../components/Timer.vue";
+import GameTimer from "../components/GameTimer.vue";
 
 defineProps<{
   user_id?: string;
@@ -30,7 +30,7 @@ defineProps<{
         Leave Seat
       </button>
     </div>
-    <Timer v-bind:time_control="time_control" />
+    <GameTimer v-bind:time_control="time_control" />
   </div>
 </template>
 

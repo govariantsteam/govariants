@@ -1,20 +1,17 @@
 <script setup lang="ts">
 import { isDefined } from "@vueuse/core";
-import {
-  onMounted,
-  onUnmounted,
-  ref,
-  watch,
-} from "vue";
+import { onMounted, onUnmounted, ref, watch } from "vue";
 import type { IPerPlayerTimeControlBase } from "@ogfcommunity/variants-shared";
 
 const props = defineProps<{
-    time_control: IPerPlayerTimeControlBase | null;
+  time_control: IPerPlayerTimeControlBase | null;
 }>();
 
 const time = ref(props.time_control?.remainingTimeMS ?? 0);
 const formattedTime = ref(
-    props.time_control?.remainingTimeMS ? msToTime(props.time_control?.remainingTimeMS) : ""
+  props.time_control?.remainingTimeMS
+    ? msToTime(props.time_control?.remainingTimeMS)
+    : ""
 );
 const isCountingDown = ref(false);
 let timerIndex: number | null = null;
@@ -54,7 +51,10 @@ function resetTimer(): void {
     isCountingDown.value = false;
   }
 
-  if (isDefined(props.time_control?.onThePlaySince) && typeof window !== 'undefined') {
+  if (
+    isDefined(props.time_control?.onThePlaySince) &&
+    typeof window !== "undefined"
+  ) {
     timerIndex = window.setInterval(() => {
       if (time.value <= 0 && timerIndex !== null) {
         clearInterval(timerIndex);

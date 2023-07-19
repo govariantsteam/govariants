@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import type { User, IPerPlayerTimeControlBase } from "@ogfcommunity/variants-shared";
+import type {
+  User,
+  IPerPlayerTimeControlBase,
+} from "@ogfcommunity/variants-shared";
 import Timer from "../components/Timer.vue";
 
 defineProps<{
@@ -27,9 +30,7 @@ defineProps<{
         Leave Seat
       </button>
     </div>
-    <Timer
-      v-bind:time_control="time_control"
-    />
+    <Timer v-bind:time_control="time_control" />
   </div>
 </template>
 

@@ -12,9 +12,9 @@ const props = defineProps<{
     time_control: IPerPlayerTimeControlBase | null;
 }>();
 
-const time = ref(props.time_control.remainingTimeMS ?? 0);
+const time = ref(props.time_control?.remainingTimeMS ?? 0);
 const formattedTime = ref(
-    props.time_control.remainingTimeMS ? msToTime(props.time_control.remainingTimeMS) : ""
+    props.time_control?.remainingTimeMS ? msToTime(props.time_control?.remainingTimeMS) : ""
 );
 const isCountingDown = ref(false);
 let timerIndex: number | null = null;
@@ -40,21 +40,21 @@ function resetTimer(): void {
   if (timerIndex !== null) {
     clearInterval(timerIndex);
   }
-  time.value = props.time_control.remainingTimeMS ?? 0;
+  time.value = props.time_control?.remainingTimeMS ?? 0;
 
   if (
-    isDefined(props.time_control.onThePlaySince) &&
-    props.time_control.remainingTimeMS !== null
+    isDefined(props.time_control?.onThePlaySince) &&
+    props.time_control?.remainingTimeMS !== null
   ) {
     isCountingDown.value = true;
-    const onThePlaySince: Date = new Date(props.time_control.onThePlaySince);
+    const onThePlaySince: Date = new Date(props.time_control?.onThePlaySince);
     const now = new Date();
     time.value -= now.getTime() - onThePlaySince.getTime();
   } else {
     isCountingDown.value = false;
   }
 
-  if (isDefined(props.time_control.onThePlaySince)) {
+  if (isDefined(props.time_control?.onThePlaySince)) {
     timerIndex = setInterval(() => {
       if (time.value <= 0 && timerIndex !== null) {
         clearInterval(timerIndex);

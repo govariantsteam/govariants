@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { isDefined } from "@vueuse/core";
-import { onMounted, onUnmounted, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import type { IPerPlayerTimeControlBase } from "@ogfcommunity/variants-shared";
+import { isDefined } from "@vueuse/core";
 
 const props = defineProps<{
   time_control: IPerPlayerTimeControlBase | null;
@@ -44,11 +44,12 @@ function resetTimer(): void {
   time.value = props.time_control?.remainingTimeMS ?? 0;
 
   if (
-    isDefined(props.time_control?.onThePlaySince) &&
-    props.time_control?.remainingTimeMS !== null
+    props.time_control &&
+    isDefined(props.time_control.onThePlaySince) &&
+    props.time_control.remainingTimeMS !== null
   ) {
     isCountingDown.value = true;
-    const onThePlaySince: Date = new Date(props.time_control!.onThePlaySince);
+    const onThePlaySince: Date = new Date(props.time_control.onThePlaySince);
     const now = new Date();
     time.value -= now.getTime() - onThePlaySince.getTime();
   } else {

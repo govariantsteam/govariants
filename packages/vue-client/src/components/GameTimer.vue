@@ -24,14 +24,18 @@ watch(time, (t: number) => {
   }
 });
 
-watch(props, (value, oldValue, onCleanup) => {
-  resetTimer();
-  onCleanup(() => {
-    if (timerIndex !== null) {
-      clearInterval(timerIndex);
-    }
-  })
-}, {immediate: true});
+watch(
+  props,
+  (value, oldValue, onCleanup) => {
+    resetTimer();
+    onCleanup(() => {
+      if (timerIndex !== null) {
+        clearInterval(timerIndex);
+      }
+    });
+  },
+  { immediate: true }
+);
 
 function resetTimer(): void {
   if (timerIndex !== null) {

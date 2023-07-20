@@ -11,7 +11,7 @@ const config: ITimeControlConfig = {
 };
 
 const mainTimeS = ref(300);
-watch (mainTimeS, value => config.mainTimeMS = value * 1000);
+watch(mainTimeS, (value) => (config.mainTimeMS = value * 1000));
 
 const emit = defineEmits<{
   (e: "configChanged", config: ITimeControlConfig | null): void;

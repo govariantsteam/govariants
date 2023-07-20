@@ -3,14 +3,21 @@ import { ref, type Ref, watch, computed } from "vue";
 import {
   getVariantList,
   getDefaultConfig,
+  type ITimeControlConfig,
 } from "@ogfcommunity/variants-shared";
 import * as requests from "@/requests";
 import router from "@/router";
 import { config_form_map } from "@/config_form_map";
+import TimeControlConfigForm from "./TimeControlConfigForm.vue";
+
+interface IConfigWithOptionalTimeControl {
+  time_control?: ITimeControlConfig;
+}
 
 const variants: string[] = getVariantList();
 const variant: Ref<string> = ref(variants.length ? variants[0] : "");
-let config: object;
+let config: IConfigWithOptionalTimeControl;
+const timeControlConfig: ITimeControlConfig | null = null;
 const configString: Ref<string> = ref("");
 const variantConfigForm = computed(() => config_form_map[variant.value]);
 watch(
@@ -23,6 +30,17 @@ watch(
 );
 
 const createGame = async () => {
+  if (
+    !config ||
+    typeof config !== "object" ||
+    (config.time_control !== undefined &&
+      typeof config.time_control.mainTimeMS !== "number")
+  ) {
+    console.log("game creation form is invalid");
+    return;
+  }
+  //ToDo: add form validation
+
   const game = await requests.post("/games", {
     variant: variant.value,
     config: config,
@@ -35,7 +53,21 @@ const parseConfigThenCreateGame = async () => {
   await createGame();
 };
 
-const setConfig = (newConfig: object) => (config = newConfig);
+const setConfig = (newConfig: object) => {
+  config = newConfig;
+  if (timeControlConfig !== null) {
+    config.time_control = timeControlConfig;
+  }
+};
+const setTimeControlConfig = (
+  newTimeControlConfig: ITimeControlConfig | null
+) => {
+  if (newTimeControlConfig !== null) {
+    config.time_control = newTimeControlConfig;
+  } else {
+    delete config["time_control"];
+  }
+};
 </script>
 
 <template>
@@ -56,10 +88,12 @@ const setConfig = (newConfig: object) => (config = newConfig);
         v-bind:initialConfig="getDefaultConfig(variant)"
         v-on:configChanged="setConfig"
       />
+      <TimeControlConfigForm v-on:config-changed="setTimeControlConfig" />
       <button v-on:click="createGame">Create Game</button>
     </template>
     <template v-else>
       <textarea v-model="configString"></textarea>
+      <TimeControlConfigForm v-on:config-changed="setTimeControlConfig" />
       <button v-on:click="parseConfigThenCreateGame">Create Game</button>
     </template>
   </div>

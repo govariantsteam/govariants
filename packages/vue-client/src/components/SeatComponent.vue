@@ -1,11 +1,16 @@
 <script setup lang="ts">
-import type { User } from "@ogfcommunity/variants-shared";
+import type {
+  User,
+  IPerPlayerTimeControlBase,
+} from "@ogfcommunity/variants-shared";
+import GameTimer from "../components/GameTimer.vue";
 
 defineProps<{
   user_id?: string;
   occupant?: User;
   player_n: number;
   selected?: number;
+  time_control: IPerPlayerTimeControlBase | null;
 }>();
 </script>
 
@@ -25,6 +30,7 @@ defineProps<{
         Leave Seat
       </button>
     </div>
+    <GameTimer v-bind:time_control="time_control" />
   </div>
 </template>
 

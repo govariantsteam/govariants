@@ -7,7 +7,11 @@ import {
 import * as requests from "../requests";
 import SeatComponent from "@/components/SeatComponent.vue";
 import { useCurrentUser } from "../stores/user";
-import type { User } from "@ogfcommunity/variants-shared";
+import type {
+  User,
+  IPerPlayerTimeControlBase,
+  IConfigWithTimeControl,
+} from "@ogfcommunity/variants-shared";
 import { computed, reactive, ref, watchEffect } from "vue";
 import { board_map } from "@/board_map";
 import { socket } from "../requests";
@@ -127,6 +131,22 @@ watchEffect((onCleanup) => {
     socket.off(message);
   });
 });
+const createTimeControlPreview = (
+  game: GameResponse
+): IPerPlayerTimeControlBase | null => {
+  if (
+    game.config &&
+    typeof game.config === "object" &&
+    "time_control" in game.config
+  ) {
+    const config = game.config as IConfigWithTimeControl;
+    return {
+      remainingTimeMS: config.time_control.mainTimeMS,
+      onThePlaySince: null,
+    };
+  }
+  return null;
+};
 </script>
 
 <template>
@@ -147,6 +167,10 @@ watchEffect((onCleanup) => {
         @leave="leave(idx)"
         @select="setPlayingAs(idx)"
         :selected="playing_as"
+        :time_control="
+          gameResponse.time_control?.forPlayer[idx] ??
+          createTimeControlPreview(gameResponse)
+        "
       />
     </div>
   </div>

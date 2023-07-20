@@ -10,6 +10,9 @@ const config: ITimeControlConfig = {
   mainTimeMS: 300000,
 };
 
+const mainTimeS = ref(300);
+watch (mainTimeS, value => config.mainTimeMS = value * 1000);
+
 const emit = defineEmits<{
   (e: "configChanged", config: ITimeControlConfig | null): void;
 }>();
@@ -35,8 +38,8 @@ watch(typeRef, (next) => {
       <!--<option :value="TimeControlType.Fischer">Fischer</option>   -->
     </select>
     <template v-if="typeRef !== null">
-      <label>Main Time</label>
-      <input type="number" v-model="config.mainTimeMS" />
+      <label>Main Time (s)</label>
+      <input type="number" v-model="mainTimeS" />
     </template>
     <!--
         <template v-if="typeRef === TimeControlType.Fischer">

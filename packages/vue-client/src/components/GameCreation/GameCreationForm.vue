@@ -88,13 +88,14 @@ const setTimeControlConfig = (
         v-bind:initialConfig="getDefaultConfig(variant)"
         v-on:configChanged="setConfig"
       />
+      <TimeControlConfigForm v-on:config-changed="setTimeControlConfig" />
       <button v-on:click="createGame">Create Game</button>
     </template>
     <template v-else>
       <textarea v-model="configString"></textarea>
+      <TimeControlConfigForm v-on:config-changed="setTimeControlConfig" />
       <button v-on:click="parseConfigThenCreateGame">Create Game</button>
     </template>
-    <TimeControlConfigForm v-on:config-changed="setTimeControlConfig" />
   </div>
 </template>
 

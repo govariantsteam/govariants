@@ -24,14 +24,14 @@ watch(time, (t: number) => {
   }
 });
 
-onMounted(() => resetTimer());
-watch(props, () => resetTimer());
-
-onUnmounted(() => {
-  if (timerIndex !== null) {
-    clearInterval(timerIndex);
-  }
-});
+watch(props, (value, oldValue, onCleanup) => {
+  resetTimer();
+  onCleanup(() => {
+    if (timerIndex !== null) {
+      clearInterval(timerIndex);
+    }
+  })
+}, {immediate: true});
 
 function resetTimer(): void {
   if (timerIndex !== null) {

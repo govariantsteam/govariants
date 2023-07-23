@@ -21,7 +21,7 @@ export interface AbstractAlternatingOnGridState {
 
 export abstract class AbstractAlternatingOnGrid<
   TConfig extends AbstractAlternatingOnGridConfig,
-  TState extends AbstractAlternatingOnGridState
+  TState extends AbstractAlternatingOnGridState,
 > extends AbstractGame<TConfig, TState> {
   protected board: Grid<Color>;
   protected next_to_play: 0 | 1 = 0;
@@ -30,7 +30,7 @@ export abstract class AbstractAlternatingOnGrid<
   constructor(config?: AbstractAlternatingOnGridConfig) {
     super(config as TConfig);
     this.board = new Grid<Color>(this.config.width, this.config.height).fill(
-      Color.EMPTY
+      Color.EMPTY,
     );
   }
 
@@ -69,12 +69,12 @@ export abstract class AbstractAlternatingOnGrid<
       const color = this.board.at(decoded_move);
       if (color === undefined) {
         throw Error(
-          `Move out of bounds. (move: ${decoded_move}, board dimensions: ${this.config.width}x${this.config.height}`
+          `Move out of bounds. (move: ${decoded_move}, board dimensions: ${this.config.width}x${this.config.height}`,
         );
       }
       if (color !== Color.EMPTY) {
         throw Error(
-          `Cannot place a stone on top of an existing stone. (${color} at (${x}, ${y}))`
+          `Cannot place a stone on top of an existing stone. (${color} at (${x}, ${y}))`,
         );
       }
 
@@ -111,7 +111,7 @@ export abstract class AbstractAlternatingOnGrid<
 
 export function isOutOfBounds(
   pos: CoordinateLike,
-  board: Grid<Color>
+  board: Grid<Color>,
 ): boolean {
   return board.at(pos) === undefined;
 }

@@ -70,7 +70,7 @@ export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
 
   protected override prepareForNextMove(
     move: string,
-    decoded_move?: Coordinate
+    decoded_move?: Coordinate,
   ): void {
     if (move == "pass" && this.last_move === "pass") {
       this.finalizeScore();
@@ -103,7 +103,7 @@ export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
 
     const black_points: number = board.reduce(
       count_color<Color>(Color.BLACK),
-      0
+      0,
     );
     const white_points: number =
       board.reduce(count_color<Color>(Color.WHITE), 0) + this.config.komi;

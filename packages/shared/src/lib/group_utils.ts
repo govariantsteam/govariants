@@ -45,7 +45,7 @@ export function getOuterBorder<K, V>(group: K[], graph: Fillable<K, V>) {
   const group_on_graph = graph.map(() => false);
   // mark "expanded" group on graph
   group.forEach((index) =>
-    graph.neighbors(index).forEach((index) => group_on_graph.set(index, true))
+    graph.neighbors(index).forEach((index) => group_on_graph.set(index, true)),
   );
   // unmark group
   group.forEach((index) => group_on_graph.set(index, false));
@@ -66,6 +66,6 @@ export function getInnerBorder<K, V>(group: K[], graph: Fillable<K, V>) {
   group.forEach((index) => group_on_graph.set(index, true));
 
   return group.filter((index) =>
-    group_on_graph.neighbors(index).some((index) => !group_on_graph.at(index))
+    group_on_graph.neighbors(index).some((index) => !group_on_graph.at(index)),
   );
 }

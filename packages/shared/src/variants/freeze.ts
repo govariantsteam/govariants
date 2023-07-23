@@ -23,7 +23,8 @@ export class FreezeGo extends Baduk {
     this.frozen = this.board
       .neighbors(Coordinate.fromSgfRepr(move))
       .some(
-        (pos) => this.board.at(pos) === opponent && is_in_atari(pos, this.board)
+        (pos) =>
+          this.board.at(pos) === opponent && is_in_atari(pos, this.board),
       );
   }
 
@@ -35,7 +36,7 @@ export class FreezeGo extends Baduk {
 function is_in_atari(pos: CoordinateLike, board: Grid<Color>) {
   const group = getGroup(pos, board);
   const num_liberties = getOuterBorder(group, board).filter(
-    (pos) => board.at(pos) === Color.EMPTY
+    (pos) => board.at(pos) === Color.EMPTY,
   ).length;
   return num_liberties === 1;
 }

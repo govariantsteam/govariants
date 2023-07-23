@@ -11,7 +11,7 @@ test("Knight can move", () => {
   game.playMove(0, "Nf3");
 
   expect(game.exportState().fen).toBe(
-    "rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2"
+    "rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2",
   );
 });
 
@@ -23,7 +23,7 @@ test("Bishop can move", () => {
   game.playMove(0, "Bc4");
 
   expect(game.exportState().fen).toEqual(
-    "rnbqkbnr/pppp1ppp/8/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR b KQkq - 1 2"
+    "rnbqkbnr/pppp1ppp/8/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR b KQkq - 1 2",
   );
 });
 
@@ -39,7 +39,7 @@ test("King's side castle", () => {
   game.playMove(0, "O-O");
 
   expect(game.exportState().fen).toEqual(
-    "r1bqkbnr/ppp2ppp/2np4/4p3/2B1P3/5N2/PPPP1PPP/RNBQ1RK1 b kq - 1 4"
+    "r1bqkbnr/ppp2ppp/2np4/4p3/2B1P3/5N2/PPPP1PPP/RNBQ1RK1 b kq - 1 4",
   );
 });
 
@@ -53,13 +53,13 @@ test("En Passant", () => {
 
   // en passant target is set to d6
   expect(game.exportState().fen).toBe(
-    "rnbqkbnr/ppp2ppp/4p3/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3"
+    "rnbqkbnr/ppp2ppp/4p3/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3",
   );
 
   // Capture the d5 pawn by en passant
   game.playMove(0, "exd6");
 
   expect(game.exportState().fen).toEqual(
-    "rnbqkbnr/ppp2ppp/3Pp3/8/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 3"
+    "rnbqkbnr/ppp2ppp/3Pp3/8/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 3",
   );
 });

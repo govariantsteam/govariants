@@ -8,7 +8,7 @@ export interface AbstractBadukStone<TChainType> {
 
 export class BadukIntersection<
   TChainType,
-  TStone extends AbstractBadukStone<TChainType>
+  TStone extends AbstractBadukStone<TChainType>,
 > extends Intersection {
   stone: TStone | null;
 

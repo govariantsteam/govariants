@@ -24,7 +24,7 @@ export function gamesCollection() {
  */
 export async function getGames(
   count: number,
-  offset: number
+  offset: number,
 ): Promise<GameResponse[]> {
   const games = gamesCollection()
     .find()
@@ -56,7 +56,7 @@ export async function getGame(id: string): Promise<GameResponse> {
 
 export async function createGame(
   variant: string,
-  config: object
+  config: object,
 ): Promise<GameResponse> {
   const game = {
     variant: variant,
@@ -79,7 +79,7 @@ export async function createGame(
 export async function playMove(
   game_id: string,
   moves: MovesType,
-  user_id: string
+  user_id: string,
 ) {
   const game = await getGame(game_id);
 
@@ -104,7 +104,7 @@ export async function playMove(
 
   if (expected_player.id !== user_id) {
     throw Error(
-      `Not the right user: expected ${expected_player.id}, got ${user_id}`
+      `Not the right user: expected ${expected_player.id}, got ${user_id}`,
     );
   }
 
@@ -134,7 +134,7 @@ async function updateSeat(
   game_id: string,
   seat: number,
   user_id: string,
-  new_user: User | undefined
+  new_user: User | undefined,
 ) {
   const game = await getGame(game_id);
 
@@ -153,7 +153,7 @@ async function updateSeat(
 
   await gamesCollection().updateOne(
     { _id: new ObjectId(game_id) },
-    { $set: { [`players.${seat}`]: new_user } }
+    { $set: { [`players.${seat}`]: new_user } },
   );
 
   return game.players;
@@ -166,7 +166,7 @@ export function takeSeat(game_id: string, seat: number, user: User) {
 export async function leaveSeat(
   game_id: string,
   seat: number,
-  user_id: string
+  user_id: string,
 ) {
   return updateSeat(game_id, seat, user_id, undefined);
 }
@@ -176,11 +176,11 @@ export async function leaveSeat(
 async function BACKFILL_addEmptyPlayersArray(game: GameResponse) {
   const game_id = game.id;
   const players = new Array<undefined>(
-    makeGameObject(game.variant, game.config).numPlayers()
+    makeGameObject(game.variant, game.config).numPlayers(),
   ).fill(null);
   await gamesCollection().updateOne(
     { _id: new ObjectId(game_id) },
-    { $set: { players } }
+    { $set: { players } },
   );
   return players;
 }

@@ -22,20 +22,20 @@ export interface IntersectionConstructor<TIntersection extends Intersection> {
 
 export function createBoard<TIntersection extends Intersection>(
   config: BoardConfig,
-  intersectionConstructor: IntersectionConstructor<TIntersection>
+  intersectionConstructor: IntersectionConstructor<TIntersection>,
 ): TIntersection[] {
   let intersections: TIntersection[];
   switch (config.type) {
     case "grid":
       intersections = createGridBoard<TIntersection>(
         config,
-        intersectionConstructor
+        intersectionConstructor,
       );
       break;
     case "polygonal":
       intersections = createRthBoard<TIntersection>(
         config,
-        intersectionConstructor
+        intersectionConstructor,
       );
       break;
   }
@@ -44,7 +44,7 @@ export function createBoard<TIntersection extends Intersection>(
 
 function createGridBoard<TIntersection extends Intersection>(
   config: GridBoardConfig,
-  intersectionConstructor: IntersectionConstructor<TIntersection>
+  intersectionConstructor: IntersectionConstructor<TIntersection>,
 ): TIntersection[] {
   const intersections: TIntersection[] = [];
   const array2D: TIntersection[][] = [];
@@ -72,27 +72,27 @@ function createGridBoard<TIntersection extends Intersection>(
 
 function createRthBoard<TIntersection extends Intersection>(
   config: RhombitrihexagonalBoardConfig,
-  intersectionConstructor: IntersectionConstructor<TIntersection>
+  intersectionConstructor: IntersectionConstructor<TIntersection>,
 ): TIntersection[] {
   return convertIntersections<TIntersection>(
     createPolygonalBoard(config.size),
-    intersectionConstructor
+    intersectionConstructor,
   );
 }
 
 function convertIntersections<TIntersection extends Intersection>(
   old: IntersectionOld[],
-  intersectionConstructor: IntersectionConstructor<TIntersection>
+  intersectionConstructor: IntersectionConstructor<TIntersection>,
 ): TIntersection[] {
   const intersections = new Map<TIntersection["id"], TIntersection>(
-    old.map((o) => [o.Identifier, new intersectionConstructor(o.Position)])
+    old.map((o) => [o.Identifier, new intersectionConstructor(o.Position)]),
   );
   old.forEach((i) =>
     i.Neighbours.forEach((n) =>
       intersections
         .get(i.Identifier)!
-        .connectTo(intersections.get(n.Identifier)!, false)
-    )
+        .connectTo(intersections.get(n.Identifier)!, false),
+    ),
   );
 
   return Array.from(intersections.values());

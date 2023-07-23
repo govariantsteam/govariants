@@ -1,6 +1,5 @@
 import type { Intersection } from "../intersection";
 
-export interface IBadukBoard
-{
-	Intersections: Intersection[];
+export interface IBadukBoard {
+  Intersections: Intersection[];
 }

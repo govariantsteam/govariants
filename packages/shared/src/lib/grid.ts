@@ -6,7 +6,10 @@ import { Coordinate, CoordinateLike } from "./coordinate";
  */
 export class Grid<T> {
   private arr: Array<T>;
-  constructor(public readonly width: number, public readonly height: number) {
+  constructor(
+    public readonly width: number,
+    public readonly height: number,
+  ) {
     if (width < 0) {
       throw new Error("Invalid array width");
     }
@@ -41,7 +44,7 @@ export class Grid<T> {
 
   map<S>(
     callbackfn: (value: T, index: Coordinate, grid: Grid<T>) => S,
-    thisArg?: any
+    thisArg?: any,
   ): Grid<S> {
     const ret = new Grid<S>(this.width, this.height);
     ret.arr = this.arr.map(
@@ -49,16 +52,16 @@ export class Grid<T> {
         callbackfn(
           value,
           flat_index_to_coordinate(flat_index, this.width),
-          this
+          this,
         ),
-      thisArg
+      thisArg,
     );
     return ret;
   }
 
   forEach(
     callbackfn: (value: T, index: Coordinate, grid: Grid<T>) => void,
-    thisArg?: any
+    thisArg?: any,
   ): void {
     this.arr.forEach((value: T, flat_index: number) => {
       callbackfn(value, flat_index_to_coordinate(flat_index, this.width), this);
@@ -125,9 +128,9 @@ export class Grid<T> {
       previousValue: OutT,
       currentValue: T,
       index: Coordinate,
-      array: Grid<T>
+      array: Grid<T>,
     ) => OutT,
-    initialValue: OutT
+    initialValue: OutT,
   ): OutT {
     return this.arr.reduce(
       (previousValue, currentValue, flat_index) =>
@@ -135,9 +138,9 @@ export class Grid<T> {
           previousValue,
           currentValue,
           flat_index_to_coordinate(flat_index, this.width),
-          this
+          this,
         ),
-      initialValue
+      initialValue,
     );
   }
 }
@@ -148,7 +151,7 @@ function flat_index_to_coordinate(index: number, width: number): Coordinate {
 
 function coordinate_to_flat_index(
   { x, y }: CoordinateLike,
-  width: number
+  width: number,
 ): number {
   return y * width + x;
 }
@@ -157,7 +160,7 @@ function coordinate_to_flat_index(
 function handleNegativeIndices(
   { x, y }: CoordinateLike,
   w: number,
-  h: number
+  h: number,
 ): Coordinate {
   // Backwards indexing
   if (x < 0) {

@@ -60,7 +60,7 @@ export class ParallelGo extends AbstractGame<
       const occupants = this.board.at(decoded_move);
       if (occupants === undefined) {
         throw Error(
-          `Move out of bounds. (move: ${decoded_move}, board dimensions: ${this.board.width}x${this.board.height}`
+          `Move out of bounds. (move: ${decoded_move}, board dimensions: ${this.board.width}x${this.board.height}`,
         );
       }
       if (occupants.length !== 0) {
@@ -100,7 +100,8 @@ export class ParallelGo extends AbstractGame<
     }
 
     this.removeGroupsIf(
-      ({ has_liberties, contains_staged }) => !has_liberties && !contains_staged
+      ({ has_liberties, contains_staged }) =>
+        !has_liberties && !contains_staged,
     );
     this.removeGroupsIf(({ has_liberties }) => !has_liberties);
 
@@ -119,7 +120,7 @@ export class ParallelGo extends AbstractGame<
 
   replaceMultiColoredStonesWith(arr: number[]) {
     this.board = this.board.map((intersection) =>
-      intersection.length > 1 ? [...arr] : intersection
+      intersection.length > 1 ? [...arr] : intersection,
     );
   }
 
@@ -135,7 +136,7 @@ export class ParallelGo extends AbstractGame<
   private getGroup(
     pos: Coordinate,
     color: number,
-    checked: Grid<{ [color: number]: boolean }>
+    checked: Grid<{ [color: number]: boolean }>,
   ): Group {
     if (this.isOutOfBounds(pos)) {
       return { stones: [], has_liberties: false, contains_staged: false };

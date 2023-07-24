@@ -11,7 +11,7 @@ class FractionalTestGame extends Fractional {
     super({ ...config, board: { type: "grid", width: 9, height: 9 } });
 
     this.firstCorner = this.intersections.find(
-      (i) => i.neighbours.length === 2
+      (i) => i.neighbours.length === 2,
     );
   }
 }
@@ -50,6 +50,6 @@ test("Surrounded merge stone", () => {
   const state = game.exportState();
   expect(state.intersections.filter((i) => i.stone).length).toBe(2);
   expect(
-    state.intersections.find((i) => i.id === Number(cornerId))?.stone
+    state.intersections.find((i) => i.id === Number(cornerId))?.stone,
   ).toBeNull();
 });

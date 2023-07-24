@@ -11,7 +11,7 @@ test("getOnlyMove", () => {
 
 test("getOnlyMove - more than one move", () => {
   expect(() => getOnlyMove({ 1: MOVE_STRING, 2: MOVE_STRING })).toThrow(
-    "More than one player: 1,2"
+    "More than one player: 1,2",
   );
 });
 

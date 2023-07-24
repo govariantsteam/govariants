@@ -3,7 +3,7 @@ import { Vector2D } from "./Vector2D";
 
 export function CreateCircularBoard(
   number_of_rings: number,
-  nodes_per_ring: number
+  nodes_per_ring: number,
 ): Intersection[] {
   const node_angle = (2 * Math.PI) / nodes_per_ring;
   const rings: Intersection[][] = [];
@@ -19,11 +19,11 @@ export function CreateCircularBoard(
           radius -= 0.2;
         }
         const intersection = new Intersection(
-          new Vector2D(radius * Math.sin(angle), radius * Math.cos(angle))
+          new Vector2D(radius * Math.sin(angle), radius * Math.cos(angle)),
         );
         intersection.Identifier = i * nodes_per_ring + x;
         return intersection;
-      })
+      }),
     );
     if (i !== 0) {
       for (let j = 0; j < nodes_per_ring; j++) {
@@ -36,14 +36,14 @@ export function CreateCircularBoard(
     rings[0][j].ConnectTo(rings[0][j - 1], true);
     rings[number_of_rings - 1][j].ConnectTo(
       rings[number_of_rings - 1][j - 1],
-      true
+      true,
     );
   }
 
   rings[0][nodes_per_ring - 1].ConnectTo(rings[0][0], true);
   rings[number_of_rings - 1][nodes_per_ring - 1].ConnectTo(
     rings[number_of_rings - 1][0],
-    true
+    true,
   );
 
   return rings.flat();

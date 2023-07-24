@@ -33,7 +33,7 @@ passport.use(
     } catch (err) {
       return callback(err);
     }
-  })
+  }),
 );
 
 // Initialize MongoDB
@@ -51,7 +51,7 @@ passport.use(
       user = await createUserWithSessionId(token);
     }
     return callback(null, user);
-  })
+  }),
 );
 
 passport.serializeUser<string>(function (user: UserResponse, callback) {
@@ -77,7 +77,7 @@ const app = express();
 app.use(
   bodyParser.urlencoded({
     extended: true,
-  })
+  }),
 );
 app.use(bodyParser.json()); // TODO: app.use(express.json()) instead? Difference?
 app.use(cors({ origin: LOCAL_ORIGIN, credentials: true })); // TODO: Is this still necessary with dev proxy?
@@ -92,7 +92,7 @@ app.use(
       secure: "auto", // TODO: See https://www.npmjs.com/package/express-session
     },
     store: MongoStore.create({ client: getDb() }),
-  })
+  }),
 );
 app.use(passport.initialize());
 app.use(passport.session());

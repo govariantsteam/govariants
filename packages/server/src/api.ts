@@ -32,7 +32,7 @@ router.get("/games/:gameId", async (req, res) => {
 router.get("/games", async (req, res) => {
   const games: GameResponse[] = await getGames(
     Number(req.query.count),
-    Number(req.query.offset)
+    Number(req.query.offset),
   );
   res.send(games || 0);
 });
@@ -65,7 +65,7 @@ router.post("/games/:gameId/sit/:seat", async (req, res) => {
   const players: User[] = await takeSeat(
     req.params.gameId,
     Number(req.params.seat),
-    user
+    user,
   );
 
   res.send(players);
@@ -78,7 +78,7 @@ router.post("/games/:gameId/leave/:seat", async (req, res) => {
   const players: User[] = await leaveSeat(
     req.params.gameId,
     Number(req.params.seat),
-    user_id
+    user_id,
   );
 
   res.send(players);
@@ -105,7 +105,7 @@ router.post("/register", async (req, res, next) => {
 
 function make_auth_cb(
   req: express.Request,
-  res: express.Response
+  res: express.Response,
 ): AuthenticateCallback {
   return (err: Error, user?: Express.User, info?: { message: string }) => {
     if (err) {

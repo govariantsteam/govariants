@@ -25,7 +25,7 @@ export class Keima extends Baduk {
       const prev = Coordinate.fromSgfRepr(this.last_move);
       if (!is_keima_shape(curr, prev)) {
         throw new Error(
-          "Second move must form a Keima (Knight's move) with the first move!"
+          "Second move must form a Keima (Knight's move) with the first move!",
         );
       }
     }

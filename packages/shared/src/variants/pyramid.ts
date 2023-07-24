@@ -11,7 +11,7 @@ export class PyramidGo extends Baduk {
     this.weights = new Grid(config.width, config.height)
       .fill(0)
       .map((_, { x, y }) =>
-        Math.min(x + 1, y + 1, config.width - x, config.height - y)
+        Math.min(x + 1, y + 1, config.width - x, config.height - y),
       );
   }
 
@@ -34,7 +34,7 @@ export class PyramidGo extends Baduk {
     if (this.score_board === undefined) return 0;
     return this.score_board
       .map((color, index) =>
-        color === c ? (this.weights.at(index) as number) : 0
+        color === c ? (this.weights.at(index) as number) : 0,
       )
       .reduce((x, y) => x + y, 0);
   }

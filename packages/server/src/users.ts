@@ -38,7 +38,7 @@ export async function getUserByName(username: string): Promise<PersistentUser> {
 }
 
 export async function getUserBySessionId(
-  id: string
+  id: string,
 ): Promise<GuestUser | undefined> {
   const db_user = (await usersCollection().findOne({
     token: { $eq: id },
@@ -75,7 +75,7 @@ function hashPassword(password: string): Promise<string> {
           if (error) reject(error);
           const keyString = derivedKey.toString("base64");
           resolve(`s$N${N}$r${r}$p${p}$${saltString}$${keyString}`);
-        }
+        },
       );
     });
   });
@@ -83,7 +83,7 @@ function hashPassword(password: string): Promise<string> {
 
 function comparePassword(
   password: string,
-  passwordHash: string
+  passwordHash: string,
 ): Promise<boolean> {
   const regex =
     /^s\$N(\d+)\$r(\d+)\$p(\d+)\$([a-zA-Z0-9+/]+=?=?)\$([a-zA-Z0-9+/]+)(=?=?)$/;
@@ -104,14 +104,14 @@ function comparePassword(
       (error, derivedKey) => {
         if (error) reject(error);
         resolve(keyString + keyPadding === derivedKey.toString("base64"));
-      }
+      },
     );
   });
 }
 
 export async function createUserWithUsernameAndPassword(
   username: string,
-  password: string
+  password: string,
 ): Promise<UserResponse> {
   const password_hash = await hashPassword(password);
 
@@ -127,7 +127,7 @@ export async function createUserWithUsernameAndPassword(
 
 export async function authenticateUser(
   username: string,
-  password: string
+  password: string,
 ): Promise<UserResponse | null> {
   const result = await getUserByName(username);
 
@@ -161,7 +161,7 @@ export async function getUser(id: string): Promise<UserResponse> {
 }
 
 function outwardFacingUser(
-  db_user: WithId<GuestUser | PersistentUser>
+  db_user: WithId<GuestUser | PersistentUser>,
 ): UserResponse {
   return {
     id: db_user._id.toString(),

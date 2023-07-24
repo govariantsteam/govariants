@@ -71,7 +71,7 @@ test("neighbors", () => {
     expect.arrayContaining([
       { x: 1, y: 0 },
       { x: 0, y: 1 },
-    ])
+    ]),
   );
   expect(g.neighbors({ x: 1, y: 1 })).toEqual(
     expect.arrayContaining([
@@ -79,7 +79,7 @@ test("neighbors", () => {
       { x: 1, y: 0 },
       { x: 1, y: 2 },
       { x: 2, y: 1 },
-    ])
+    ]),
   );
 });
 

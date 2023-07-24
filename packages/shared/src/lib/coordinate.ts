@@ -4,7 +4,10 @@ export interface CoordinateLike {
 }
 
 export class Coordinate implements CoordinateLike {
-  constructor(public readonly x: number, public readonly y: number) {}
+  constructor(
+    public readonly x: number,
+    public readonly y: number,
+  ) {}
 
   toSgfRepr(): string {
     return numberToSgfChar(this.x) + numberToSgfChar(this.y);

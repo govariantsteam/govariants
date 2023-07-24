@@ -8,7 +8,7 @@ import {
 
 function expectArraysToHaveSameElements(
   actual: unknown[],
-  expected: unknown[]
+  expected: unknown[],
 ) {
   expect(actual).toHaveLength(expected.length);
   expect(actual).toEqual(expect.arrayContaining(expected));

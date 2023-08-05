@@ -55,7 +55,6 @@ class TimeHandlerSequentialMoves implements ITimeHandler {
     game: GameResponse,
     game_obj: AbstractGame<unknown, unknown>,
     playerNr: number,
-    move: string,
   ): Promise<void> {
     if (!HasTimeControlConfig(game.config)) {
       console.log("has no time control config");
@@ -126,10 +125,10 @@ class TimeHandlerSequentialMoves implements ITimeHandler {
 
 class TimeHandlerParallelMoves implements ITimeHandler {
   handleMove(
-    game: GameResponse,
-    game_obj: AbstractGame<unknown, unknown>,
-    playerNr: number,
-    move: string,
+    _game: GameResponse,
+    _game_obj: AbstractGame<unknown, unknown>,
+    _playerNr: number,
+    _move: string,
   ): Promise<void> {
     console.log(
       "time control handler for parallel moves is not implemented yet",

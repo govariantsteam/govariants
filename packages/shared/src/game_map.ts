@@ -14,6 +14,7 @@ import { Keima } from "./variants/keima";
 import { OneColorGo } from "./variants/one_color";
 
 export const game_map: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [variant: string]: new (config?: any) => AbstractGame;
 } = {
   baduk: Baduk,

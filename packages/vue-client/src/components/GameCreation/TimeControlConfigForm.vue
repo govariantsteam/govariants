@@ -22,7 +22,7 @@ function emitConfigChange() {
 }
 
 const typeRef = ref(null);
-watch(typeRef, (next) => {
+watch(typeRef, () => {
   if (typeRef.value !== null) {
     config.type = typeRef.value;
   }

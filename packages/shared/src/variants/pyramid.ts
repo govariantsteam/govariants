@@ -1,7 +1,6 @@
 import { Baduk, BadukConfig } from "./baduk";
 import { Grid } from "../lib/grid";
 import { Color } from "../lib/abstractAlternatingOnGrid";
-import { Coordinate } from "../lib/coordinate";
 
 export class PyramidGo extends Baduk {
   private weights: Grid<number>;

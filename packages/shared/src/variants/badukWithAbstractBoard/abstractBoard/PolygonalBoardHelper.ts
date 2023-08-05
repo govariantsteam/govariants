@@ -449,10 +449,8 @@ export function CreatePolygonalBoard(size: number): Intersection[] {
     tileQueue = newTilesQueue;
   }
 
-  let completed = false;
   if (size % 2 === 0) {
     Tiles.forEach((tile) => tile.Complete());
-    completed = true;
   }
 
   const intersections: Intersection[] = [];

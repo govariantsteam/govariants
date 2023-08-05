@@ -116,10 +116,6 @@ export class Fractional extends AbstractBaduk<
     };
   }
 
-  importState(state: FractionalState): void {
-    throw new Error("Method not implemented.");
-  }
-
   nextToPlay(): number[] {
     return [...Array(this.config.players.length).keys()];
   }

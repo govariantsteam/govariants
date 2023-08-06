@@ -1,5 +1,4 @@
-import { Baduk } from "../baduk";
-import { Color } from "../../lib/abstractAlternatingOnGrid";
+import { Baduk, Color } from "../baduk";
 import { KoError } from "../../lib/ko_detector";
 
 const B = Color.BLACK;

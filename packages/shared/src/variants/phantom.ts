@@ -1,5 +1,4 @@
-import { Baduk, BadukState } from "./baduk";
-import { Color } from "../lib/abstractAlternatingOnGrid";
+import { Baduk, BadukState, Color } from "./baduk";
 import { Grid } from "../lib/grid";
 
 export class Phantom extends Baduk {

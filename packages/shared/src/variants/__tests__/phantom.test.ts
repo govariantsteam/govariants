@@ -1,5 +1,5 @@
 import { Phantom } from "../phantom";
-import { Color } from "../../lib/abstractAlternatingOnGrid";
+import { Color } from "../baduk";
 
 test("Play a game", () => {
   const game = new Phantom({ width: 4, height: 2, komi: 0.5 });

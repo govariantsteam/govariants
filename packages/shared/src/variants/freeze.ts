@@ -1,8 +1,7 @@
-import { Color } from "../lib/abstractAlternatingOnGrid";
 import { Coordinate, CoordinateLike } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
 import { getGroup, getOuterBorder } from "../lib/group_utils";
-import { Baduk, BadukState } from "./baduk";
+import { Baduk, BadukState, Color } from "./baduk";
 
 export interface FreezeGoState extends BadukState {
   frozen: boolean;
@@ -15,6 +14,9 @@ export class FreezeGo extends Baduk {
     const captures_before = this.captures[player as 0 | 1];
     super.playMove(player, move);
     const captures_after = this.captures[player as 0 | 1];
+
+    console.log("before, after", captures_before, captures_after);
+
     if (this.frozen && captures_before !== captures_after) {
       throw new Error("Cannot capture after opponent ataris");
     }

@@ -1,5 +1,5 @@
 import { ThueMorse } from "../thue_morse";
-import { Color } from "../../lib/abstractAlternatingOnGrid";
+import { Color } from "../baduk";
 
 const B = Color.BLACK;
 const _ = Color.EMPTY;

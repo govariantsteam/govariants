@@ -1,5 +1,4 @@
-import { Color } from "../lib/abstractAlternatingOnGrid";
-import { Baduk } from "./baduk";
+import { Baduk, Color } from "./baduk";
 import { Coordinate, CoordinateLike } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
 

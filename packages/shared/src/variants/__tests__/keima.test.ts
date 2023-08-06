@@ -1,5 +1,5 @@
 import { Keima } from "../keima";
-import { Color } from "../../lib/abstractAlternatingOnGrid";
+import { Color } from "../baduk";
 
 const B = Color.BLACK;
 const _ = Color.EMPTY;

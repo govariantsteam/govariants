@@ -1,5 +1,4 @@
-import { Baduk, BadukState } from "./baduk";
-import { Color } from "../lib/abstractAlternatingOnGrid";
+import { Baduk, BadukState, Color } from "./baduk";
 
 export class OneColorGo extends Baduk {
   exportState(): BadukState {

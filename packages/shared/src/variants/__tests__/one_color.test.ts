@@ -1,4 +1,4 @@
-import { Color } from "../../lib/abstractAlternatingOnGrid/abstractAlternatingOnGrid";
+import { Color } from "../baduk";
 import { OneColorGo } from "../one_color";
 
 const B = Color.BLACK;

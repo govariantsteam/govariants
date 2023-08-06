@@ -1,19 +1,24 @@
-import {
-  AbstractAlternatingOnGrid,
-  AbstractAlternatingOnGridConfig,
-  AbstractAlternatingOnGridState,
-  Color,
-} from "../lib/abstractAlternatingOnGrid";
 import { Coordinate, CoordinateLike } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
 import { getGroup, getOuterBorder } from "../lib/group_utils";
 import { SuperKoDetector } from "../lib/ko_detector";
+import { AbstractGame } from "../abstract_game";
 
-export interface BadukConfig extends AbstractAlternatingOnGridConfig {
+export enum Color {
+  EMPTY = 0,
+  BLACK = 1,
+  WHITE = 2,
+}
+
+export interface BadukConfig {
+  width: number;
+  height: number;
   komi: number;
 }
 
-export interface BadukState extends AbstractAlternatingOnGridState {
+export interface BadukState {
+  board: Color[][];
+  next_to_play: 0 | 1;
   captures: { 0: number; 1: number };
   last_move: string;
   score_board?: Color[][];
@@ -21,25 +26,80 @@ export interface BadukState extends AbstractAlternatingOnGridState {
 
 export type BadukMove = { 0: string } | { 1: string };
 
-export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
+export class Baduk extends AbstractGame<BadukConfig, BadukState> {
   protected captures = { 0: 0, 1: 0 };
   private ko_detector = new SuperKoDetector();
   protected score_board?: Grid<Color>;
+  protected board: Grid<Color>;
+  protected next_to_play: 0 | 1 = 0;
+  protected last_move = "";
 
   constructor(config?: BadukConfig) {
     super(config);
+    this.board = new Grid<Color>(this.config.width, this.config.height).fill(
+      Color.EMPTY,
+    );
   }
 
   override exportState(): BadukState {
     return {
-      ...super.exportState(),
-      ...(this.score_board && { score_board: this.score_board.to2DArray() }),
+      board: this.board.to2DArray(),
+      next_to_play: this.next_to_play,
+      last_move: this.last_move,
       captures: { 0: this.captures[0], 1: this.captures[1] },
+      ...(this.score_board && { score_board: this.score_board.to2DArray() }),
     };
   }
 
-  protected override playMoveInternal(move: Coordinate): void {
-    super.playMoveInternal(move);
+  override nextToPlay(): number[] {
+    return [this.next_to_play];
+  }
+
+  override playMove(player: number, move: string): void {
+    if (player != this.next_to_play) {
+      throw Error(`It's not player ${player}'s turn!`);
+    }
+
+    if (move === "resign") {
+      this.phase = "gameover";
+      this.result = this.next_to_play === 0 ? "W+R" : "B+R";
+      return;
+    }
+
+    if (move != "pass") {
+      const decoded_move = Coordinate.fromSgfRepr(move);
+      const { x, y } = decoded_move;
+      const color = this.board.at(decoded_move);
+      if (color === undefined) {
+        throw Error(
+          `Move out of bounds. (move: ${decoded_move}, board dimensions: ${this.config.width}x${this.config.height}`,
+        );
+      }
+      if (color !== Color.EMPTY) {
+        throw Error(
+          `Cannot place a stone on top of an existing stone. (${color} at (${x}, ${y}))`,
+        );
+      }
+
+      this.playMoveInternal(decoded_move);
+      this.postValidateMove(decoded_move);
+      this.prepareForNextMove(move);
+    } else {
+      this.prepareForNextMove(move);
+    }
+  }
+
+  override numPlayers(): number {
+    return 2;
+  }
+
+  override specialMoves() {
+    return { pass: "Pass", resign: "Resign" };
+  }
+
+  private playMoveInternal(move: Coordinate): void {
+    this.board.set(move, this.next_to_play === 0 ? Color.BLACK : Color.WHITE);
+
     const opponent_color = this.next_to_play === 0 ? Color.WHITE : Color.BLACK;
     this.board.neighbors(move).forEach((pos) => {
       const neighbor_color = this.board.at(pos);
@@ -54,7 +114,7 @@ export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
     });
   }
 
-  protected override postValidateMove(move: Coordinate): void {
+  protected postValidateMove(move: Coordinate): void {
     // Detect suicide
     if (!groupHasLiberties(getGroup(move, this.board), this.board)) {
       throw Error("Move is suicidal!");
@@ -67,14 +127,12 @@ export class Baduk extends AbstractAlternatingOnGrid<BadukConfig, BadukState> {
     });
   }
 
-  protected override prepareForNextMove(
-    move: string,
-    decoded_move?: Coordinate,
-  ): void {
+  private prepareForNextMove(move: string): void {
     if (move == "pass" && this.last_move === "pass") {
       this.finalizeScore();
     } else {
-      super.prepareForNextMove(move, decoded_move);
+      this.next_to_play = this.next_to_play === 0 ? 1 : 0;
+      this.last_move = move;
     }
   }
 

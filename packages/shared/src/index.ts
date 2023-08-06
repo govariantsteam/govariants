@@ -1,5 +1,4 @@
 export * from "./variants/baduk";
-export * from "./lib/abstractAlternatingOnGrid";
 export * from "./variants/phantom";
 export * from "./variants/capture";
 export * from "./variants/parallel";

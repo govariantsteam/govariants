@@ -44,7 +44,7 @@ export class Grid<T> {
 
   map<S>(
     callbackfn: (value: T, index: Coordinate, grid: Grid<T>) => S,
-    thisArg?: any,
+    thisArg?: this,
   ): Grid<S> {
     const ret = new Grid<S>(this.width, this.height);
     ret.arr = this.arr.map(
@@ -61,7 +61,7 @@ export class Grid<T> {
 
   forEach(
     callbackfn: (value: T, index: Coordinate, grid: Grid<T>) => void,
-    thisArg?: any,
+    thisArg?: this,
   ): void {
     this.arr.forEach((value: T, flat_index: number) => {
       callbackfn(value, flat_index_to_coordinate(flat_index, this.width), this);

@@ -2,7 +2,6 @@ import {
   AbstractAlternatingOnGrid,
   AbstractAlternatingOnGridConfig,
   AbstractAlternatingOnGridState,
-  isOutOfBounds,
   Color,
 } from "../lib/abstractAlternatingOnGrid";
 import { Coordinate, CoordinateLike } from "../lib/coordinate";

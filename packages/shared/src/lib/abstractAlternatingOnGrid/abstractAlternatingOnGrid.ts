@@ -87,15 +87,15 @@ export abstract class AbstractAlternatingOnGrid<
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  protected preValidateMove(move: string): void {}
+  protected preValidateMove(_move: string): void {}
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  protected postValidateMove(move: Coordinate): void {}
+  protected postValidateMove(_move: Coordinate): void {}
 
   protected playMoveInternal(move: Coordinate): void {
     this.board.set(move, this.next_to_play === 0 ? Color.BLACK : Color.WHITE);
   }
 
-  protected prepareForNextMove(move: string, decoded_move?: Coordinate): void {
+  protected prepareForNextMove(move: string, _decoded_move?: Coordinate): void {
     this.next_to_play = this.next_to_play === 0 ? 1 : 0;
     this.last_move = move;
   }

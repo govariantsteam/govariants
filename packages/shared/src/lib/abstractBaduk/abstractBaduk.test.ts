@@ -1,10 +1,9 @@
-import { MovesType } from "../utils";
 import { AbstractBaduk, AbstractBadukConfig } from "./abstractBaduk";
 import { BadukIntersection, AbstractBadukStone } from "./badukIntersection";
 
 type TestState = "test";
 
-type TestChainType = "a" | "e";
+type TestChainType = "a" | "b" | "c" | "d" | "e";
 type TestIntersection = BadukIntersection<
   TestChainType,
   AbstractBadukStone<TestChainType>
@@ -64,7 +63,7 @@ class AbstractBadukTestGame extends AbstractBaduk<
     return this.findChainsWithoutLiberties(this.center, types, new Map());
   }
 
-  playMove(player: number, move: string): void {
+  playMove(_player: number, _move: string): void {
     throw new Error("Not implemented");
   }
 
@@ -72,11 +71,11 @@ class AbstractBadukTestGame extends AbstractBaduk<
     return { board: { type: "grid", height: 19, width: 19 } };
   }
 
-  exportState(player?: number): TestState {
+  exportState(_player?: number): TestState {
     return "test";
   }
 
-  importState(state: TestState): void {
+  importState(_state: TestState): void {
     throw new Error("Not implemented");
   }
 

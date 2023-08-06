@@ -90,7 +90,6 @@ export class BadukWithAbstractBoard extends AbstractGame<
       );
     }
     const player_color = player === 0 ? Color.BLACK : Color.WHITE;
-    const opponent_color = player === 0 ? Color.WHITE : Color.BLACK;
     intersection.StoneState.Color = player_color;
 
     // Capture any opponent groups
@@ -99,7 +98,7 @@ export class BadukWithAbstractBoard extends AbstractGame<
         neighbour.StoneState.Color !== player_color &&
         !groupHasLiberties(neighbour, this.board)
       ) {
-        this.captures[player] += removeGroup(neighbour, this.board);
+        this.captures[player] += removeGroup(neighbour);
       }
     });
 
@@ -166,8 +165,8 @@ function groupHasLiberties(
  * Removes the group containing pos, and returns the number of stones removed
  * from the board.
  */
-function removeGroup(intersection: Intersection, board: IBadukBoard): number {
-  return floodFill(intersection, Color.EMPTY, board);
+function removeGroup(intersection: Intersection): number {
+  return floodFill(intersection, Color.EMPTY);
 }
 
 function isOutOfBounds(i: number, board: BadukBoardAbstract): boolean {
@@ -175,11 +174,7 @@ function isOutOfBounds(i: number, board: BadukBoardAbstract): boolean {
 }
 
 /** Fills area with the given color, and returns the number of spaces filled. */
-function floodFill(
-  intersection: Intersection,
-  target_color: Color,
-  board: IBadukBoard,
-): number {
+function floodFill(intersection: Intersection, target_color: Color): number {
   const starting_color = intersection.StoneState.Color;
   if (starting_color === target_color) {
     return 0;
@@ -199,9 +194,4 @@ function floodFill(
   }
 
   return helper(intersection);
-}
-
-/** Returns the number of occurrences for the given color */
-function countValueIn2dArray<T>(value: T, array: T[][]) {
-  return array.flat().filter((val) => val === value).length;
 }

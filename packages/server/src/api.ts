@@ -47,7 +47,7 @@ router.post("/games", async (req, res) => {
   return;
 });
 
-router.post("/games/:gameId/move", async (req, res, next) => {
+router.post("/games/:gameId/move", async (req, res) => {
   const move: MovesType = req.body;
   const user_id = (req.user as User)?.id;
 

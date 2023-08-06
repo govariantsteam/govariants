@@ -1,8 +1,5 @@
 import { ChessGame } from "../chess";
 
-// A 3-letter placeholder helps with board alignment
-const ___ = null;
-
 test("Knight can move", () => {
   const game = new ChessGame();
 

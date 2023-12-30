@@ -8,6 +8,7 @@ import {
 import { ObjectId, WithId, Document } from "mongodb";
 import { getDb } from "./db";
 import { io } from "./socket_io";
+import { getTimeoutService } from './index';
 import {
   HasTimeControlConfig,
   timeControlHandlerMap,
@@ -42,14 +43,14 @@ export async function getGame(id: string): Promise<GameResponse> {
 
   // TODO: db_game might be undefined if unknown ID is provided
 
-  console.log(db_game);
+  //console.log(db_game);
   const game = outwardFacingGame(db_game);
   // Legacy games don't have a players field
   // TODO: remove this code after doing proper db migration
   if (!game.players) {
     game.players = await BACKFILL_addEmptyPlayersArray(game);
   }
-  console.log(game);
+  //console.log(game);
 
   return game;
 }
@@ -115,8 +116,14 @@ export async function playMove(
     HasTimeControlConfig(game.config) &&
     ValidateTimeControlConfig(game.config.time_control)
   ) {
-    const timeHandler = new timeControlHandlerMap[game.variant]();
-    await timeHandler.handleMove(game, game_obj, move.player, move.move);
+
+    if (game_obj.result !== '') {
+      getTimeoutService().clearGameTimeouts(game.id);
+
+    } else {
+      const timeHandler = new timeControlHandlerMap[game.variant]();
+      await timeHandler.handleMove(game, game_obj, move.player, move.move);
+    }
   }
 
   gamesCollection()

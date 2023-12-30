@@ -18,6 +18,7 @@ import { Strategy as LocalStrategy } from "passport-local";
 import { UserResponse } from "@ogfcommunity/variants-shared";
 import { router as apiRouter } from "./api";
 import * as socket_io from "./socket_io";
+import { TimeoutService } from "./timeout";
 
 const LOCAL_ORIGIN = "http://localhost:3000";
 
@@ -130,3 +131,8 @@ const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
   console.log(`listening on *:${PORT}`);
 });
+
+const timeoutService = new TimeoutService();
+export function getTimeoutService(): TimeoutService {
+  return timeoutService;
+}

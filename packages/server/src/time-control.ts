@@ -7,6 +7,8 @@ import {
 } from "@ogfcommunity/variants-shared";
 import { gamesCollection } from "./games";
 import { AbstractGame, GameResponse } from "@ogfcommunity/variants-shared";
+import { TimeoutService } from './timeout';
+import { getTimeoutService } from './index';
 
 export function HasTimeControlConfig(
   game_config: unknown,
@@ -51,6 +53,11 @@ export interface ITimeHandler {
 }
 
 class TimeHandlerSequentialMoves implements ITimeHandler {
+  private _timeoutService: TimeoutService
+  constructor() {
+    this._timeoutService = getTimeoutService()
+  }
+
   async handleMove(
     game: GameResponse,
     game_obj: AbstractGame<unknown, unknown>,
@@ -98,12 +105,16 @@ class TimeHandlerSequentialMoves implements ITimeHandler {
             timestamp.getTime() - playerData.onThePlaySince.getTime();
         }
         playerData.onThePlaySince = null;
+        this._timeoutService.clearPlayerTimeout(game.id, playerNr);
+
         nextPlayers.forEach((player) => {
           if (
             timeData.forPlayer[player] &&
             timeData.forPlayer[player].remainingTimeMS
           ) {
             timeData.forPlayer[player].onThePlaySince = timestamp;
+
+            this._timeoutService.scheduleTimeout(game.id, player, timeData.forPlayer[player].remainingTimeMS)
           }
         });
 

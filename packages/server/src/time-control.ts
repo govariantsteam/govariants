@@ -120,7 +120,8 @@ class TimeHandlerSequentialMoves implements ITimeHandler {
         playerData.onThePlaySince = null;
         this._timeoutService.clearPlayerTimeout(game.id, playerNr);
 
-        const nextPlayers = game_obj.nextToPlay();
+        // filter out players who have not played any move yet
+        const nextPlayers = game_obj.nextToPlay().filter(playerNr => game.moves.some(move => playerNr in move));
         nextPlayers.forEach((player) => {
           timeControl.forPlayer[player].onThePlaySince = timestamp;
           this._timeoutService.scheduleTimeout(game.id, player, timeControl.forPlayer[player].remainingTimeMS)

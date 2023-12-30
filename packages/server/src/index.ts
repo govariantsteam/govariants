@@ -37,8 +37,13 @@ passport.use(
   }),
 );
 
+const timeoutService = new TimeoutService();
+export function getTimeoutService(): TimeoutService {
+  return timeoutService;
+}
+
 // Initialize MongoDB
-connectToDb().catch((e) => {
+connectToDb().then(() => timeoutService.initialize()).catch((e) => {
   console.log("Unable to connect to the database.");
   console.log(e);
 });
@@ -131,8 +136,3 @@ const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
   console.log(`listening on *:${PORT}`);
 });
-
-const timeoutService = new TimeoutService();
-export function getTimeoutService(): TimeoutService {
-  return timeoutService;
-}

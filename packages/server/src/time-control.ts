@@ -1,11 +1,10 @@
-import { ObjectId } from "mongodb";
 import {
   TimeControlType,
   ITimeControlBase,
   ITimeControlConfig,
   IConfigWithTimeControl,
+  makeGameObject,
 } from "@ogfcommunity/variants-shared";
-import { gamesCollection } from "./games";
 import { AbstractGame, GameResponse } from "@ogfcommunity/variants-shared";
 import { TimeoutService } from './timeout';
 import { getTimeoutService } from './index';
@@ -42,14 +41,25 @@ export function ValidateTimeControlBase(
   );
 }
 
+export function GetInitialTimeControl(variant: string, config: object): ITimeControlBase | null {
+  if (!HasTimeControlConfig(config)) return null;
+
+  const handler = new timeControlHandlerMap[variant]();
+  return handler.initialState(variant, config);
+}
+
 // validation of the config should happen before this is called
 export interface ITimeHandler {
+  initialState(variant: string, config: IConfigWithTimeControl): ITimeControlBase;
+
   handleMove(
     game: GameResponse,
     game_obj: AbstractGame<unknown, unknown>,
     playerNr: number,
     move: string,
-  ): Promise<void>;
+  ): ITimeControlBase;
+
+  getMsUntilTimeout(game: GameResponse, playerNr: number): number;
 }
 
 class TimeHandlerSequentialMoves implements ITimeHandler {
@@ -58,93 +68,133 @@ class TimeHandlerSequentialMoves implements ITimeHandler {
     this._timeoutService = getTimeoutService()
   }
 
-  async handleMove(
-    game: GameResponse,
-    game_obj: AbstractGame<unknown, unknown>,
-    playerNr: number,
-  ): Promise<void> {
-    if (!HasTimeControlConfig(game.config)) {
-      console.log("has no time control config");
+  initialState(variant: string, config: IConfigWithTimeControl): ITimeControlBase {
+    const numPlayers = makeGameObject(variant, config).numPlayers();
 
-      return;
+    const timeControl: ITimeControlBase = {
+      moveTimestamps: [],
+      forPlayer: {},
+    };
+
+    for (let i = 0; i < numPlayers; i++) {
+      timeControl.forPlayer[i] = {
+        remainingTimeMS: config.time_control.mainTimeMS,
+        onThePlaySince: null
+      }
     }
-
-    switch (game.config.time_control.type) {
+    
+    switch (config.time_control.type) {
       case TimeControlType.Absolute: {
-        let timeData: ITimeControlBase = game.time_control;
-        if (timeData === undefined) {
-          timeData = {
-            moveTimestamps: [],
-            forPlayer: {},
-          };
-        }
-
-        if (timeData.forPlayer[playerNr] === undefined) {
-          timeData.forPlayer[playerNr] = {
-            remainingTimeMS: game.config.time_control.mainTimeMS,
-            onThePlaySince: undefined,
-          };
-        }
-
-        const nextPlayers = game_obj.nextToPlay();
-
-        if (timeData.forPlayer[playerNr] === null) {
-          console.error(`game with id ${game.id} has defect time control data`);
-          return;
-        }
-
-        const playerData = timeData.forPlayer[playerNr];
-
-        const timestamp = new Date();
-
-        timeData.moveTimestamps.push(timestamp);
-        if (playerData.onThePlaySince !== undefined) {
-          // with this construction, time will not be substracted before the first move of a player
-          // which is good imho
-          playerData.remainingTimeMS -=
-            timestamp.getTime() - playerData.onThePlaySince.getTime();
-        }
-        playerData.onThePlaySince = null;
-        this._timeoutService.clearPlayerTimeout(game.id, playerNr);
-
-        nextPlayers.forEach((player) => {
-          if (
-            timeData.forPlayer[player] &&
-            timeData.forPlayer[player].remainingTimeMS
-          ) {
-            timeData.forPlayer[player].onThePlaySince = timestamp;
-
-            this._timeoutService.scheduleTimeout(game.id, player, timeData.forPlayer[player].remainingTimeMS)
-          }
-        });
-
-        await gamesCollection()
-          .updateOne(
-            { _id: new ObjectId(game.id) },
-            { $set: { time_control: timeData } },
-          )
-          .catch(console.log);
+        // nothing to do
         break;
       }
 
+      case TimeControlType.Fischer: {
+        // nothing to do
+        break;
+      }
+
+      default: {
+        console.error('received config with invalid time control type');
+      }
+    }
+
+    return timeControl
+  }
+
+  handleMove(
+    game: GameResponse,
+    game_obj: AbstractGame<unknown, unknown>,
+    playerNr: number,
+  ): ITimeControlBase {
+    const config = game.config as IConfigWithTimeControl;
+
+    switch (config.time_control.type) {
+
+      case TimeControlType.Absolute: {
+        const timeControl: ITimeControlBase = game.time_control;
+        const playerData = timeControl.forPlayer[playerNr];
+        const timestamp = new Date();
+
+        timeControl.moveTimestamps.push(timestamp);
+        playerData.onThePlaySince = null;
+        this._timeoutService.clearPlayerTimeout(game.id, playerNr);
+
+        const nextPlayers = game_obj.nextToPlay();
+        nextPlayers.forEach((player) => {
+          timeControl.forPlayer[player].onThePlaySince = timestamp;
+          this._timeoutService.scheduleTimeout(game.id, player, timeControl.forPlayer[player].remainingTimeMS)
+        });
+
+        return timeControl;
+      }
+
       case TimeControlType.Invalid:
+        throw Error(`game with id ${game.id} has invalid time control type`);
+    }
+  }
+
+  getMsUntilTimeout(game: GameResponse, playerNr: number): number | null {
+    if (!HasTimeControlConfig(game.config)) {
+      console.log("has no time control config");
+
+      return null;
+    }
+
+    switch (game.config.time_control.type) {
+      case TimeControlType.Absolute: 
+      case TimeControlType.Fischer: 
+        const times: ITimeControlBase = game.time_control;
+
+        if (times === undefined || times.forPlayer === undefined) {
+          // old game with no moves
+          return null;
+        }
+
+        const playerTime = times.forPlayer[playerNr]
+
+        if (playerTime === undefined || playerTime.onThePlaySince === null) {
+          // player has not played a move yet
+          // or player is not on the play
+          return null;
+        }
+
+        const timeoutTime = playerTime.onThePlaySince.getTime() + playerTime.remainingTimeMS;
+
+        return timeoutTime - new Date().getTime()
+
+      default: {
         console.error(`game with id ${game.id} has invalid time control type`);
         return;
+      }
     }
   }
 }
 
 class TimeHandlerParallelMoves implements ITimeHandler {
+
+  initialState(variant: string, config: IConfigWithTimeControl): ITimeControlBase {
+    throw Error(
+      "time control handler for parallel moves is not implemented yet",
+    );
+  }
+
   handleMove(
     _game: GameResponse,
     _game_obj: AbstractGame<unknown, unknown>,
     _playerNr: number,
     _move: string,
-  ): Promise<void> {
+  ): ITimeControlBase {
     console.log(
       "time control handler for parallel moves is not implemented yet",
     );
     return;
+  }
+
+  getMsUntilTimeout(game: GameResponse, playerNr: number): number {
+    throw Error(
+      "time control handler for parallel moves is not implemented yet",
+    );
   }
 }
 

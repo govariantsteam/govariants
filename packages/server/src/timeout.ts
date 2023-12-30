@@ -1,3 +1,9 @@
+import { getGamesWithTimeControl } from "./games";
+import {
+    makeGameObject,
+  } from "@ogfcommunity/variants-shared";
+import { timeControlHandlerMap } from "./time-control";
+
 type GameTimeouts = {
     // timeout for this player, or null
     // used to clear the timer
@@ -8,11 +14,22 @@ export class TimeoutService {
     private timeoutsByGame = new Map<string, GameTimeouts>();
 
     constructor() {
-        
     }
 
-    public initialize(): void {
+    public async initialize(): Promise<void> {
+        for (const game of (await getGamesWithTimeControl())) {
+            const game_object = makeGameObject(game.variant, game.config);
+            if (game_object.result !== '') {
+                // game is already finished
+                continue
+            }
 
+            const timeHandler = new timeControlHandlerMap[game.variant]()
+            for (const playerNr of game_object.nextToPlay()) {
+                const t = timeHandler.getMsUntilTimeout(game, playerNr)
+                this.scheduleTimeout(game.id, playerNr, t);
+            }
+        }
     }
 
     private setPlayerTimeout(gameId: string, playerNr: number, timeout: ReturnType<typeof setTimeout> | null): void {
@@ -33,7 +50,7 @@ export class TimeoutService {
     }
 
     public clearGameTimeouts(gameId: string): void {
-        let gameTimeouts = this.timeoutsByGame.get(gameId)
+        const gameTimeouts = this.timeoutsByGame.get(gameId)
 
         if (gameTimeouts !== undefined) {
             Object.values(gameTimeouts).filter(t => t !== null).forEach(clearTimeout);
@@ -46,9 +63,9 @@ export class TimeoutService {
     }
 
     public scheduleTimeout(gameId: string, playerNr: number, inTimeMs: number): void {
-        let timeout = setTimeout(() => {
+        const timeout = setTimeout(() => {
             // TODO
-            console.log(`player nr ${playerNr} timed out`)
+            console.log(`player nr ${playerNr} timed out in game ${gameId}`)
         }, inTimeMs);
 
         this.setPlayerTimeout(gameId, playerNr, timeout);

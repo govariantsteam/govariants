@@ -56,14 +56,14 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
   }
 
   override playMove(player: number, move: string): void {
-    if (player != this.next_to_play) {
-      throw Error(`It's not player ${player}'s turn!`);
-    }
-
     if (move === "resign") {
       this.phase = "gameover";
       this.result = this.next_to_play === 0 ? "W+R" : "B+R";
       return;
+    }
+
+    if (player != this.next_to_play) {
+      throw Error(`It's not player ${player}'s turn!`);
     }
 
     if (move != "pass") {

@@ -80,6 +80,13 @@ test("Resign a game", () => {
   expect(game.result).toBe("W+R");
 });
 
+test("Resign during opponent's turn", () => {
+  const game = new Baduk({ width: 19, height: 19, komi: 5.5 });
+  game.playMove(1, "resign");
+  expect(game.phase).toBe("gameover");
+  expect(game.result).toBe("B+R");
+});
+
 test("Scoring with open borders", () => {
   const game = new Baduk({ width: 5, height: 5, komi: 6.5 });
   game.playMove(0, "cb");

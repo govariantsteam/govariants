@@ -58,7 +58,7 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
   override playMove(player: number, move: string): void {
     if (move === "resign") {
       this.phase = "gameover";
-      this.result = this.next_to_play === 0 ? "W+R" : "B+R";
+      this.result = player === 0 ? "W+R" : "B+R";
       return;
     }
 

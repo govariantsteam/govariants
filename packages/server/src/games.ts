@@ -49,14 +49,14 @@ export async function getGame(id: string): Promise<GameResponse> {
 
   // TODO: db_game might be undefined if unknown ID is provided
 
-  console.log(db_game);
+  //console.log(db_game);
   const game = outwardFacingGame(db_game);
   // Legacy games don't have a players field
   // TODO: remove this code after doing proper db migration
   if (!game.players) {
     game.players = await BACKFILL_addEmptyPlayersArray(game);
   }
-  console.log(game);
+  //console.log(game);
 
   return game;
 }
@@ -102,13 +102,13 @@ export async function playMove(
     throw Error("Game is already finished.");
   }
 
-  const move = getOnlyMove(moves);
+  const { player: playerNr, move: new_move } = getOnlyMove(moves);
 
-  if (!game.players || game.players[move.player] == null) {
-    throw Error(`Seat ${move.player} not occupied!`);
+  if (!game.players || game.players[playerNr] == null) {
+    throw Error(`Seat ${playerNr} not occupied!`);
   }
 
-  const expected_player = game.players[move.player];
+  const expected_player = game.players[playerNr];
 
   if (expected_player.id !== user_id) {
     throw Error(
@@ -116,8 +116,7 @@ export async function playMove(
     );
   }
 
-  const { player, move: new_move } = getOnlyMove(moves);
-  game_obj.playMove(player, new_move);
+  game_obj.playMove(playerNr, new_move);
 
   let timeControl = game.time_control;
   if (
@@ -130,7 +129,7 @@ export async function playMove(
 
     } else {
       const timeHandler = new timeControlHandlerMap[game.variant]();
-      timeControl = timeHandler.handleMove(game, game_obj, move.player, move.move);
+      timeControl = timeHandler.handleMove(game, game_obj, playerNr, new_move);
     }
   }
 

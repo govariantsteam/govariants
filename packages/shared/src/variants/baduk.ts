@@ -66,6 +66,12 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
       return;
     }
 
+    if (move === "timeout") {
+      this.phase = "gameover"
+      this.result = player === 0 ? "W+T" : "B+T"
+      return;
+    }
+
     if (move != "pass") {
       const decoded_move = Coordinate.fromSgfRepr(move);
       const { x, y } = decoded_move;
@@ -94,7 +100,7 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
   }
 
   override specialMoves() {
-    return { pass: "Pass", resign: "Resign" };
+    return { pass: "Pass", resign: "Resign", timeout: "Timeout" };
   }
 
   private playMoveInternal(move: Coordinate): void {

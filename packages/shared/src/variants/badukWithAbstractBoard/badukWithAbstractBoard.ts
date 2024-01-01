@@ -76,6 +76,12 @@ export class BadukWithAbstractBoard extends AbstractGame<
       return;
     }
 
+    if (move === "timeout") {
+      this.phase = "gameover"
+      this.result = player === 0 ? "W+T" : "B+T"
+      return;
+    }
+
     const decoded_move = decodeMove(move);
     if (isOutOfBounds(decoded_move, this.board)) {
       throw Error(
@@ -120,7 +126,7 @@ export class BadukWithAbstractBoard extends AbstractGame<
   }
 
   specialMoves() {
-    return { pass: "Pass", resign: "Resign" };
+    return { pass: "Pass", resign: "Resign", timeout: "Timeout" };
   }
 
   defaultConfig(): BadukWithAbstractBoardConfig {

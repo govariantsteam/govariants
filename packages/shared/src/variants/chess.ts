@@ -10,6 +10,18 @@ export class ChessGame extends AbstractGame<object, ChessState> {
   private chess = new Chess();
 
   playMove(player: number, move: string): void {
+    if (move === "resign") {
+      this.phase = "gameover";
+      this.result = player === 0 ? "B+R" : "W+R";
+      return;
+    }
+
+    if (move === "timeout") {
+      this.phase = "gameover"
+      this.result = player === 0 ? "B+T" : "W+T";
+      return;
+    }
+
     if (player === 1 && "b" != this.chess.turn()) {
       throw Error("Not Black's turn");
     }

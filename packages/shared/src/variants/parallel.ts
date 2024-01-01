@@ -1,7 +1,7 @@
 import { AbstractGame } from "../abstract_game";
 import { Coordinate } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
-import { MovesType } from "../lib/utils";
+import { MovesType, Participation } from "../lib/utils";
 
 export interface ParallelGoConfig {
   width: number;
@@ -30,6 +30,8 @@ export class ParallelGo extends AbstractGame<
   private board: Grid<number[]>;
   private staged: MovesType = {};
   private last_round: MovesType = {};
+  private playerParticipation = this.initializeParticipation(this.config.num_players);
+  private numberOfRounds: number = 0;
 
   constructor(config?: ParallelGoConfig) {
     super(config);
@@ -51,7 +53,9 @@ export class ParallelGo extends AbstractGame<
   }
 
   nextToPlay(): number[] {
-    return [...Array(this.config.num_players).keys()];
+    return this.playerParticipation
+    .filter(x => x.dropOutAtRound === null || x.dropOutAtRound > this.numberOfRounds)
+    .map(p => p.playerNr)
   }
 
   playMove(player: number, move: string): void {
@@ -68,9 +72,24 @@ export class ParallelGo extends AbstractGame<
       }
     }
 
+    if (move === 'resign' || move === 'timeout') {
+      this.playerParticipation[player].dropOutAtRound = this.numberOfRounds;
+
+      if (this.nextToPlay().length < 2) {
+        this.phase = 'gameover';
+        // TODO: declare winner
+      }
+
+      return;
+    }
+
+    if (!this.nextToPlay().includes(player)) {
+      throw new Error('Not your turn')
+    }
+
     this.staged[player] = move;
 
-    if (Object.entries(this.staged).length !== this.numPlayers()) {
+    if (this.nextToPlay().some(playerNr => !(playerNr in this.staged))) {
       // Don't play moves until everybody has staged a move
       return;
     }
@@ -88,7 +107,7 @@ export class ParallelGo extends AbstractGame<
       const player = Number(player_str);
       this.board.at(decoded_move)?.push(player);
     });
-    if (num_passes === this.numPlayers()) {
+    if (num_passes === this.nextToPlay().length) {
       this.phase = "gameover";
     }
 
@@ -107,6 +126,8 @@ export class ParallelGo extends AbstractGame<
 
     this.last_round = this.staged;
     this.staged = {};
+    this.numberOfRounds++;
+    console.log(this.numberOfRounds)
   }
 
   numPlayers(): number {
@@ -115,7 +136,7 @@ export class ParallelGo extends AbstractGame<
 
   specialMoves() {
     // TODO: support resign
-    return { pass: "Pass" };
+    return { pass: "Pass", timeout: "Timeout" };
   }
 
   replaceMultiColoredStonesWith(arr: number[]) {
@@ -211,6 +232,14 @@ export class ParallelGo extends AbstractGame<
       }
       group.stones.forEach((pos) => this.board.set(pos, []));
     });
+  }
+
+  initializeParticipation(numPlayers: number): Participation[] {
+    const participation = new Array(numPlayers);
+    for (let i = 0; i < numPlayers; i++) {
+      participation[i] = {playerNr: i, dropOutAtRound: null};
+    }
+    return participation;
   }
 }
 

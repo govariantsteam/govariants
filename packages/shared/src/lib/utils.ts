@@ -16,3 +16,8 @@ export function getOnlyMove(moves: MovesType): {
   const player = Number(players[0]);
   return { player, move: moves[player] };
 }
+
+export type Participation = {
+  playerNr: number,
+  dropOutAtRound: number | null
+};

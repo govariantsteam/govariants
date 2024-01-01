@@ -48,18 +48,32 @@ function resetTimer(): void {
     isDefined(props.time_control.onThePlaySince) &&
     props.time_control.remainingTimeMS !== null
   ) {
-    isCountingDown.value = true;
-    const onThePlaySince: Date = new Date(props.time_control.onThePlaySince);
-    const now = new Date();
-    time.value -= now.getTime() - onThePlaySince.getTime();
+    // this is not ideal
+    if (
+      "stagedMoveAt" in props.time_control &&
+      props.time_control.stagedMoveAt !== null
+    ) {
+      isCountingDown.value = false;
+      const onThePlaySince = new Date(props.time_control.onThePlaySince);
+      const stagedMove = new Date(props.time_control.stagedMoveAt as Date);
+      time.value = Math.max(
+        0,
+        time.value - (stagedMove.getTime() - onThePlaySince.getTime())
+      );
+    } else {
+      isCountingDown.value = true;
+      const onThePlaySince: Date = new Date(props.time_control.onThePlaySince);
+      const now = new Date();
+      time.value = Math.max(
+        0,
+        time.value - (now.getTime() - onThePlaySince.getTime())
+      );
+    }
   } else {
     isCountingDown.value = false;
   }
 
-  if (
-    isDefined(props.time_control?.onThePlaySince) &&
-    typeof window !== "undefined"
-  ) {
+  if (isCountingDown.value && typeof window !== "undefined") {
     timerIndex = window.setInterval(() => {
       if (time.value <= 0 && timerIndex !== null) {
         clearInterval(timerIndex);

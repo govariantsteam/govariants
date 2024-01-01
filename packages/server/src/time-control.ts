@@ -10,6 +10,10 @@ import { AbstractGame, GameResponse } from "@ogfcommunity/variants-shared";
 import { TimeoutService } from './timeout';
 import { getTimeoutService } from './index';
 
+/**
+ * Validates whether game_config has type and 
+ * properties for being a config with time control
+ */
 export function HasTimeControlConfig(
   game_config: unknown,
 ): game_config is IConfigWithTimeControl {
@@ -20,6 +24,10 @@ export function HasTimeControlConfig(
   );
 }
 
+/**
+ * Validates whether time_control_config has type and 
+ * properties for being a time control config
+ */
 export function ValidateTimeControlConfig(
   time_control_config: unknown,
 ): time_control_config is ITimeControlConfig {
@@ -31,6 +39,10 @@ export function ValidateTimeControlConfig(
   );
 }
 
+/**
+ * Validates whether time_control has type and 
+ * properties for being a basic time control data object
+ */
 export function ValidateTimeControlBase(
   time_control: unknown,
 ): time_control is ITimeControlBase {
@@ -42,6 +54,10 @@ export function ValidateTimeControlBase(
   );
 }
 
+/**
+ * Returns the initial state of a time control data object
+ * for a new game, if it has time control at all
+ */
 export function GetInitialTimeControl(variant: string, config: object): ITimeControlBase | null {
   if (!HasTimeControlConfig(config)) return null;
 
@@ -51,8 +67,16 @@ export function GetInitialTimeControl(variant: string, config: object): ITimeCon
 
 // validation of the config should happen before this is called
 export interface ITimeHandler {
+
+  /**
+   * Returns the initial state of a time control data object
+   * that this handler works with
+   */
   initialState(variant: string, config: IConfigWithTimeControl): ITimeControlBase;
 
+  /**
+   * transition for the time control data when a move is played
+   */
   handleMove(
     game: GameResponse,
     game_obj: AbstractGame<unknown, unknown>,
@@ -60,6 +84,10 @@ export interface ITimeHandler {
     move: string,
   ): ITimeControlBase;
 
+  /**
+   * Returns the time in milliseconds until this player
+   * times out, provided no moves are played
+   */
   getMsUntilTimeout(game: GameResponse, playerNr: number): number;
 }
 

@@ -20,6 +20,9 @@ export class TimeoutService {
     constructor() {
     }
 
+    /**
+     * initializes timeout schedules
+     */
     public async initialize(): Promise<void> {
         // I would like to improve this by only querying unfinished games from db
         // but currently I think its not possible, because of the game result
@@ -51,6 +54,10 @@ export class TimeoutService {
         }
     }
 
+    /**
+     * stores a timeout-id or null for this player + game
+     * if an id was previously stored, the timeout is cleared
+     */
     private setPlayerTimeout(gameId: string, playerNr: number, timeout: ReturnType<typeof setTimeout> | null): void {
         let gameTimeouts = this.timeoutsByGame.get(gameId);
 
@@ -68,6 +75,9 @@ export class TimeoutService {
         gameTimeouts[playerNr] = timeout;
     }
 
+    /**
+     * clears the timeout-ids of this game
+     */
     public clearGameTimeouts(gameId: string): void {
         const gameTimeouts = this.timeoutsByGame.get(gameId)
 
@@ -81,6 +91,11 @@ export class TimeoutService {
         this.setPlayerTimeout(gameId, playerNr, null);
     }
 
+    /**
+     * schedules a timeout for this player + game
+     * timeout is resolved by adding a timeout move
+     * and applying the time control handler again
+     */
     public scheduleTimeout(gameId: string, playerNr: number, inTimeMs: number): void {
         const timeoutResolver = async () => {
             const game = await getGame(gameId)

@@ -64,26 +64,31 @@ export class Fractional extends AbstractBaduk<
       if (this.nextToPlay().length < 2) {
         this.phase = 'gameover';
         // TODO: declare winner
+
+        return;
+      }
+    } else {
+      // stage move
+
+      const move = this.decodeMove(p, m);
+      if (!move) {
+        throw new Error(`Couldn't decode move ${{ player: p, move: m }}`);
       }
 
-      return;
+      if (move.intersection.stone) {
+        throw new Error(
+          `There is already a stone at intersection ${move.intersection.id}`,
+        );
+      }
+
+      if (!this.nextToPlay().includes(p)) {
+        throw new Error('Not your turn')
+      }
+
+      this.stagedMoves[move.player.index] = move.intersection;
     }
 
-    const move = this.decodeMove(p, m);
-    if (!move) {
-      throw new Error(`Couldn't decode move ${{ player: p, move: m }}`);
-    }
-
-    if (move.intersection.stone) {
-      throw new Error(
-        `There is already a stone at intersection ${move.intersection.id}`,
-      );
-    }
-
-    this.stagedMoves[move.player.index] = move.intersection;
-
-    if (
-      this.stagedMoves.every(
+    if (this.stagedMoves.every(
         (stagedMove, playerNr): stagedMove is FractionalIntersection =>
           stagedMove !== null || !this.nextToPlay().includes(playerNr),
       )
@@ -94,7 +99,7 @@ export class Fractional extends AbstractBaduk<
 
       // place all moves and proceed to next round
       const playedIntersections = new Set<FractionalIntersection>();
-      this.stagedMoves.forEach((intersection, playerId) => {
+      this.stagedMoves.filter(x => x !== null).forEach((intersection, playerId) => {
         playedIntersections.add(intersection);
         const colors =
           intersection.stone?.colors ??

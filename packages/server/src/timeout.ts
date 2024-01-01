@@ -83,7 +83,6 @@ export class TimeoutService {
 
     public scheduleTimeout(gameId: string, playerNr: number, inTimeMs: number): void {
         const timeoutResolver = async () => {
-            console.log('timeout triggered')
             const game = await getGame(gameId)
 
             const timeoutMove: MovesType = {[playerNr]: 'timeout'};

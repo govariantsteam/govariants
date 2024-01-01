@@ -122,7 +122,8 @@ class TimeHandlerSequentialMoves implements ITimeHandler {
         const timestamp = new Date();
 
         timeControl.moveTimestamps.push(timestamp);
-        if (!playerData.onThePlaySince === null) {
+        
+        if (playerData.onThePlaySince !== null) {
           playerData.remainingTimeMS -= timestamp.getTime() - playerData.onThePlaySince.getTime();
         }
         playerData.onThePlaySince = null;

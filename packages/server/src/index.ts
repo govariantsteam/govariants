@@ -43,10 +43,12 @@ export function getTimeoutService(): TimeoutService {
 }
 
 // Initialize MongoDB
-connectToDb().then(() => timeoutService.initialize()).catch((e) => {
-  console.log("Unable to connect to the database.");
-  console.log(e);
-});
+connectToDb()
+  .then(() => timeoutService.initialize())
+  .catch((e) => {
+    console.log("Unable to connect to the database.");
+    console.log(e);
+  });
 
 passport.use(
   "guest",

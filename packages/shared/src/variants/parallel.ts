@@ -76,10 +76,11 @@ export class ParallelGo extends AbstractGame<
       this.playerParticipation[player].dropOutAtRound = this.numberOfRounds;
 
       if (this.nextToPlay().length < 2) {
-        this.phase = 'gameover';
         if (this.nextToPlay().length === 1) {
           this.result = `Player ${this.nextToPlay()[0]} wins!`;
         }
+        
+        this.phase = 'gameover';
         return
       }
     }

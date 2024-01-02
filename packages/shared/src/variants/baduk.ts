@@ -52,7 +52,7 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
   }
 
   override nextToPlay(): number[] {
-    return [this.next_to_play];
+    return this.phase === "gameover" ? [] : [this.next_to_play];
   }
 
   override playMove(player: number, move: string): void {

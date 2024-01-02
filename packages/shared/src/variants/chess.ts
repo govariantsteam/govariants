@@ -35,7 +35,7 @@ export class ChessGame extends AbstractGame<object, ChessState> {
     return { fen: this.chess.fen() };
   }
   nextToPlay(): number[] {
-    return [this.chess.turn() == "b" ? 1 : 0];
+    return this.phase === "gameover" ? [] : [this.chess.turn() == "b" ? 1 : 0];
   }
   numPlayers(): number {
     return 2;

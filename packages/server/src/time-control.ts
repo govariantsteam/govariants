@@ -12,7 +12,7 @@ import { getTimeoutService } from "./index";
 
 /**
  * Validates whether game_config has type and
- * properties for being a config with time control
+ * properties for being a config with time control.
  */
 export function HasTimeControlConfig(
   game_config: unknown,
@@ -26,7 +26,7 @@ export function HasTimeControlConfig(
 
 /**
  * Validates whether time_control_config has type and
- * properties for being a time control config
+ * properties for being a time control config.
  */
 export function ValidateTimeControlConfig(
   time_control_config: unknown,
@@ -41,7 +41,7 @@ export function ValidateTimeControlConfig(
 
 /**
  * Validates whether time_control has type and
- * properties for being a basic time control data object
+ * properties for being a basic time control data object.
  */
 export function ValidateTimeControlBase(
   time_control: unknown,
@@ -56,7 +56,7 @@ export function ValidateTimeControlBase(
 
 /**
  * Returns the initial state of a time control data object
- * for a new game, if it has time control at all
+ * for a new game, if it has time control at all.
  */
 export function GetInitialTimeControl(
   variant: string,
@@ -72,7 +72,7 @@ export function GetInitialTimeControl(
 export interface ITimeHandler {
   /**
    * Returns the initial state of a time control data object
-   * that this handler works with
+   * that this handler works with.
    */
   initialState(
     variant: string,
@@ -80,7 +80,9 @@ export interface ITimeHandler {
   ): ITimeControlBase;
 
   /**
-   * transition for the time control data when a move is played
+   * Transitions the time control data when a move is played.
+   * Schedules timeouts for next players, and cancels old 
+   * scheduled timeouts if necessary.
    */
   handleMove(
     game: GameResponse,
@@ -91,7 +93,7 @@ export interface ITimeHandler {
 
   /**
    * Returns the time in milliseconds until this player
-   * times out, provided no moves are played
+   * times out, provided no moves are played.
    */
   getMsUntilTimeout(game: GameResponse, playerNr: number): number;
 }
@@ -283,7 +285,13 @@ class TimeHandlerParallelMoves implements ITimeHandler {
           timeControl = this.initialState(game.variant, config);
         }
 
+        const playerTimeControl = timeControl.forPlayer[playerNr];
         const timestamp = new Date();
+
+        if (playerTimeControl.onThePlaySince !== null && 
+          timeControl.forPlayer[playerNr].remainingTimeMS <= timestamp.getTime() - playerTimeControl.onThePlaySince.getTime()) {
+          throw new Error("you can't change your move because it would reduce your remaining time to zero.")
+        }
 
         timeControl.moveTimestamps.push(timestamp);
         timeControl.forPlayer[playerNr].stagedMoveAt = timestamp;

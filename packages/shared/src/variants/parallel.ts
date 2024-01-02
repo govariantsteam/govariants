@@ -53,7 +53,7 @@ export class ParallelGo extends AbstractGame<
   }
 
   nextToPlay(): number[] {
-    return this.playerParticipation
+    return this.phase === "gameover" ? [] : this.playerParticipation
     .filter(x => x.dropOutAtRound === null || x.dropOutAtRound > this.numberOfRounds)
     .map(p => p.playerNr)
   }
@@ -77,7 +77,9 @@ export class ParallelGo extends AbstractGame<
 
       if (this.nextToPlay().length < 2) {
         this.phase = 'gameover';
-        // TODO: declare winner
+        if (this.nextToPlay().length === 1) {
+          this.result = `Player ${this.nextToPlay()[0]} wins!`;
+        }
         return
       }
     }

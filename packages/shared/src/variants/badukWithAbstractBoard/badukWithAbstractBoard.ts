@@ -52,7 +52,7 @@ export class BadukWithAbstractBoard extends AbstractGame<
   }
 
   nextToPlay(): number[] {
-    return [this.next_to_play];
+    return this.phase === "gameover" ? [] : [this.next_to_play];
   }
 
   playMove(player: number, move: string): void {

@@ -49,14 +49,12 @@ export async function getGame(id: string): Promise<GameResponse> {
 
   // TODO: db_game might be undefined if unknown ID is provided
 
-  //console.log(db_game);
   const game = outwardFacingGame(db_game);
   // Legacy games don't have a players field
   // TODO: remove this code after doing proper db migration
   if (!game.players) {
     game.players = await BACKFILL_addEmptyPlayersArray(game);
   }
-  //console.log(game);
 
   return game;
 }

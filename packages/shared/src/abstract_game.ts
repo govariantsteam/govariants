@@ -27,6 +27,7 @@ export abstract class AbstractGame<GameConfig = object, GameState = object> {
 
   /**
    * Returns the list of players that need to play a move the next round.
+   * Returns empty array when the game is finished.
    */
   abstract nextToPlay(): number[];
 

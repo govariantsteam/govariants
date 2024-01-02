@@ -17,8 +17,6 @@ type GameTimeouts = {
 export class TimeoutService {
   private timeoutsByGame = new Map<string, GameTimeouts>();
 
-  constructor() {}
-
   /**
    * initializes timeout schedules
    */
@@ -36,7 +34,7 @@ export class TimeoutService {
           game_object.playMove(player, move);
         });
 
-        if (game_object.result !== "") {
+        if (game_object.result !== "" || game_object.phase == "gameover") {
           continue;
         }
 
@@ -53,8 +51,8 @@ export class TimeoutService {
   }
 
   /**
-   * stores a timeout-id or null for this player + game
-   * if an id was previously stored, the timeout is cleared
+   * Stores a timeout-id or null for this player + game.
+   * If an id was previously stored, the corresponding timeout is cleared.
    */
   private setPlayerTimeout(
     gameId: string,
@@ -77,7 +75,7 @@ export class TimeoutService {
   }
 
   /**
-   * clears the timeout-ids of this game
+   * Clears the timeout-ids of this game.
    */
   public clearGameTimeouts(gameId: string): void {
     const gameTimeouts = this.timeoutsByGame.get(gameId);
@@ -95,9 +93,9 @@ export class TimeoutService {
   }
 
   /**
-   * schedules a timeout for this player + game
-   * timeout is resolved by adding a timeout move
-   * and applying the time control handler again
+   * Schedules a timeout for this player + game.
+   * Timeout is resolved by adding a timeout move
+   * and applying the time control handler again.
    */
   public scheduleTimeout(
     gameId: string,
@@ -114,22 +112,26 @@ export class TimeoutService {
       // this next part is somewhat duplicated from the playMove function
       // which I don't like. But for parallel variants and consistency (move timestamps),
       // the timeout move needs to be handled as well.
-      const game_object = makeGameObject(game.variant, game.config);
-      game.moves.forEach((moves) => {
-        const { player, move } = getOnlyMove(moves);
-        game_object.playMove(player, move);
-      });
-
-      if (game_object.result !== "") {
-        this.clearGameTimeouts(game.id);
-      } else {
-        const timeHandler = new timeControlHandlerMap[game.variant]();
-        timeControl = timeHandler.handleMove(
-          game,
-          game_object,
-          playerNr,
-          "timeout",
-        );
+      try {
+        const game_object = makeGameObject(game.variant, game.config);
+        game.moves.forEach((moves) => {
+          const { player, move } = getOnlyMove(moves);
+          game_object.playMove(player, move);
+        });
+  
+        if (game_object.result !== "" || game_object.phase === "gameover") {
+          this.clearGameTimeouts(game.id);
+        } else {
+          const timeHandler = new timeControlHandlerMap[game.variant]();
+          timeControl = timeHandler.handleMove(
+            game,
+            game_object,
+            playerNr,
+            "timeout",
+          );
+        }
+      } catch (error) {
+        console.error(error)
       }
 
       // TODO: improving the error handling would be great in future

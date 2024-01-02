@@ -4,7 +4,6 @@ import {
   AbstractBadukConfig,
 } from "../../lib/abstractBaduk/abstractBaduk";
 import { FractionalStone } from "./fractionalStone";
-import { Participation } from "../../lib/utils";
 
 export type Color =
   | "black"
@@ -49,8 +48,6 @@ export class Fractional extends AbstractBaduk<
   FractionalState
 > {
   private stagedMoves: (FractionalIntersection | null)[];
-  private playerParticipation = this.initializeParticipation(this.config.players.length);
-  private numberOfRounds: number = 0;
 
   constructor(config?: FractionalConfig) {
     super(config);
@@ -58,39 +55,23 @@ export class Fractional extends AbstractBaduk<
   }
 
   playMove(p: number, m: string): void {
-    if (m === 'resign' || m === 'timeout') {
-      this.playerParticipation[p].dropOutAtRound = this.numberOfRounds;
-
-      if (this.nextToPlay().length < 2) {
-        this.phase = 'gameover';
-        // TODO: declare winner
-
-        return;
-      }
-    } else {
-      // stage move
-
-      const move = this.decodeMove(p, m);
-      if (!move) {
-        throw new Error(`Couldn't decode move ${{ player: p, move: m }}`);
-      }
-
-      if (move.intersection.stone) {
-        throw new Error(
-          `There is already a stone at intersection ${move.intersection.id}`,
-        );
-      }
-
-      if (!this.nextToPlay().includes(p)) {
-        throw new Error('Not your turn')
-      }
-
-      this.stagedMoves[move.player.index] = move.intersection;
+    const move = this.decodeMove(p, m);
+    if (!move) {
+      throw new Error(`Couldn't decode move ${{ player: p, move: m }}`);
     }
 
-    if (this.stagedMoves.every(
-        (stagedMove, playerNr): stagedMove is FractionalIntersection =>
-          stagedMove !== null || !this.nextToPlay().includes(playerNr),
+    if (move.intersection.stone) {
+      throw new Error(
+        `There is already a stone at intersection ${move.intersection.id}`,
+      );
+    }
+
+    this.stagedMoves[move.player.index] = move.intersection;
+
+    if (
+      this.stagedMoves.every(
+        (stagedMove): stagedMove is FractionalIntersection =>
+          stagedMove !== null,
       )
     ) {
       this.intersections.forEach((intersection) => {
@@ -99,7 +80,7 @@ export class Fractional extends AbstractBaduk<
 
       // place all moves and proceed to next round
       const playedIntersections = new Set<FractionalIntersection>();
-      this.stagedMoves.filter(x => x !== null).forEach((intersection, playerId) => {
+      this.stagedMoves.forEach((intersection, playerId) => {
         playedIntersections.add(intersection);
         const colors =
           intersection.stone?.colors ??
@@ -114,7 +95,6 @@ export class Fractional extends AbstractBaduk<
       this.removeChains(false);
 
       this.stagedMoves = this.stagedMovesDefaults();
-      this.numberOfRounds++;
     }
   }
 
@@ -137,9 +117,7 @@ export class Fractional extends AbstractBaduk<
   }
 
   nextToPlay(): number[] {
-    return this.playerParticipation
-    .filter(x => x.dropOutAtRound === null || x.dropOutAtRound > this.numberOfRounds)
-    .map(p => p.playerNr)
+    return this.phase === "gameover" ? [] : [...Array(this.config.players.length).keys()];
   }
 
   numPlayers(): number {
@@ -184,13 +162,5 @@ export class Fractional extends AbstractBaduk<
     return new Array<FractionalIntersection | null>(this.numPlayers()).fill(
       null,
     );
-  }
-
-  initializeParticipation(numPlayers: number): Participation[] {
-    const participation = new Array(numPlayers);
-    for (let i = 0; i < numPlayers; i++) {
-      participation[i] = {playerNr: i, dropOutAtRound: null};
-    }
-    return participation;
   }
 }

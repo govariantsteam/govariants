@@ -20,7 +20,7 @@ import { router as apiRouter } from "./api";
 import * as socket_io from "./socket_io";
 import { TimeoutService } from "./timeout";
 
-const LOCAL_ORIGIN = "http://localhost:3000";
+const LOCAL_ORIGIN = "http://localhost:5173";
 
 passport.use(
   new LocalStrategy(async function (username, password, callback) {

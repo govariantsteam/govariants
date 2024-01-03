@@ -77,22 +77,22 @@ export class BadukWithAbstractBoard extends AbstractGame<
     }
 
     if (move === "timeout") {
-      this.phase = "gameover"
-      this.result = player === 0 ? "W+T" : "B+T"
+      this.phase = "gameover";
+      this.result = player === 0 ? "W+T" : "B+T";
       return;
     }
 
     const decoded_move = decodeMove(move);
     if (isOutOfBounds(decoded_move, this.board)) {
       throw Error(
-        `Move out of bounds. (move: ${decoded_move}, intersections: ${this.board.Intersections.length}`,
+        `Move out of bounds. (move: ${decoded_move}, intersections: ${this.board.Intersections.length}`
       );
     }
     const intersection = this.board.Intersections[decoded_move];
 
     if (intersection.StoneState.Color != Color.EMPTY) {
       throw Error(
-        `Cannot place a stone on top of an existing stone. (${intersection.StoneState.Color} at (${decoded_move}))`,
+        `Cannot place a stone on top of an existing stone. (${intersection.StoneState.Color} at (${decoded_move}))`
       );
     }
     const player_color = player === 0 ? Color.BLACK : Color.WHITE;
@@ -141,7 +141,7 @@ function decodeMove(move: string): number {
 /** Returns true if the group containing intersection has at least one liberty. */
 function groupHasLiberties(
   intersection: Intersection,
-  board: BadukBoardAbstract,
+  board: BadukBoardAbstract
 ) {
   const color = intersection.StoneState.Color;
   const visited: { [key: string]: boolean } = {};
@@ -195,7 +195,7 @@ function floodFill(intersection: Intersection, target_color: Color): number {
 
     return intersection.Neighbours.map(helper).reduce(
       (acc, val) => acc + val,
-      1,
+      1
     );
   }
 

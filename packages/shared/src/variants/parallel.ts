@@ -30,7 +30,9 @@ export class ParallelGo extends AbstractGame<
   private board: Grid<number[]>;
   private staged: MovesType = {};
   private last_round: MovesType = {};
-  private playerParticipation = this.initializeParticipation(this.config.num_players);
+  private playerParticipation = this.initializeParticipation(
+    this.config.num_players
+  );
   private numberOfRounds: number = 0;
 
   constructor(config?: ParallelGoConfig) {
@@ -53,9 +55,15 @@ export class ParallelGo extends AbstractGame<
   }
 
   nextToPlay(): number[] {
-    return this.phase === "gameover" ? [] : this.playerParticipation
-    .filter(x => x.dropOutAtRound === null || x.dropOutAtRound > this.numberOfRounds)
-    .map(p => p.playerNr)
+    return this.phase === "gameover"
+      ? []
+      : this.playerParticipation
+          .filter(
+            (x) =>
+              x.dropOutAtRound === null ||
+              x.dropOutAtRound > this.numberOfRounds
+          )
+          .map((p) => p.playerNr);
   }
 
   playMove(player: number, move: string): void {
@@ -64,7 +72,7 @@ export class ParallelGo extends AbstractGame<
       const occupants = this.board.at(decoded_move);
       if (occupants === undefined) {
         throw Error(
-          `Move out of bounds. (move: ${decoded_move}, board dimensions: ${this.board.width}x${this.board.height}`,
+          `Move out of bounds. (move: ${decoded_move}, board dimensions: ${this.board.width}x${this.board.height}`
         );
       }
       if (occupants.length !== 0) {
@@ -72,30 +80,28 @@ export class ParallelGo extends AbstractGame<
       }
     }
 
-    if (move === 'resign' || move === 'timeout') {
+    if (move === "resign" || move === "timeout") {
       this.playerParticipation[player].dropOutAtRound = this.numberOfRounds;
 
       if (this.nextToPlay().length < 2) {
         if (this.nextToPlay().length === 1) {
           this.result = `Player ${this.nextToPlay()[0]} wins!`;
         }
-        
-        this.phase = 'gameover';
-        return
+
+        this.phase = "gameover";
+        return;
       }
-    }
-    else
-    {
+    } else {
       // stage move
-      
+
       if (!this.nextToPlay().includes(player)) {
-        throw new Error('Not your turn')
+        throw new Error("Not your turn");
       }
-  
+
       this.staged[player] = move;
     }
 
-    if (this.nextToPlay().some(playerNr => !(playerNr in this.staged))) {
+    if (this.nextToPlay().some((playerNr) => !(playerNr in this.staged))) {
       // Don't play moves until everybody has staged a move
       return;
     }
@@ -125,8 +131,7 @@ export class ParallelGo extends AbstractGame<
     }
 
     this.removeGroupsIf(
-      ({ has_liberties, contains_staged }) =>
-        !has_liberties && !contains_staged,
+      ({ has_liberties, contains_staged }) => !has_liberties && !contains_staged
     );
     this.removeGroupsIf(({ has_liberties }) => !has_liberties);
 
@@ -146,7 +151,7 @@ export class ParallelGo extends AbstractGame<
 
   replaceMultiColoredStonesWith(arr: number[]) {
     this.board = this.board.map((intersection) =>
-      intersection.length > 1 ? [...arr] : intersection,
+      intersection.length > 1 ? [...arr] : intersection
     );
   }
 
@@ -162,7 +167,7 @@ export class ParallelGo extends AbstractGame<
   private getGroup(
     pos: Coordinate,
     color: number,
-    checked: Grid<{ [color: number]: boolean }>,
+    checked: Grid<{ [color: number]: boolean }>
   ): Group {
     if (this.isOutOfBounds(pos)) {
       return { stones: [], has_liberties: false, contains_staged: false };
@@ -242,7 +247,7 @@ export class ParallelGo extends AbstractGame<
   initializeParticipation(numPlayers: number): Participation[] {
     const participation = new Array(numPlayers);
     for (let i = 0; i < numPlayers; i++) {
-      participation[i] = {playerNr: i, dropOutAtRound: null};
+      participation[i] = { playerNr: i, dropOutAtRound: null };
     }
     return participation;
   }

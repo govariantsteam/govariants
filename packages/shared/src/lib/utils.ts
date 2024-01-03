@@ -18,6 +18,6 @@ export function getOnlyMove(moves: MovesType): {
 }
 
 export type Participation = {
-  playerNr: number,
-  dropOutAtRound: number | null
+  playerNr: number;
+  dropOutAtRound: number | null;
 };

@@ -32,11 +32,11 @@ export interface ITimeControlBase {
 
 export type PerPlayerTimeControlParallel = IPerPlayerTimeControlBase & {
   stagedMoveAt: Date | null;
-}
+};
 
 export type TimeControlParallel = {
   moveTimestamps: Date[];
   forPlayer: {
     [player: number]: PerPlayerTimeControlParallel;
   };
-}
+};

@@ -17,7 +17,7 @@ export class ChessGame extends AbstractGame<object, ChessState> {
     }
 
     if (move === "timeout") {
-      this.phase = "gameover"
+      this.phase = "gameover";
       this.result = player === 0 ? "B+T" : "W+T";
       return;
     }

@@ -81,7 +81,7 @@ export interface ITimeHandler {
 
   /**
    * Transitions the time control data when a move is played.
-   * Schedules timeouts for next players, and cancels old 
+   * Schedules timeouts for next players, and cancels old
    * scheduled timeouts if necessary.
    */
   handleMove(
@@ -288,9 +288,14 @@ class TimeHandlerParallelMoves implements ITimeHandler {
         const playerTimeControl = timeControl.forPlayer[playerNr];
         const timestamp = new Date();
 
-        if (playerTimeControl.onThePlaySince !== null && 
-          timeControl.forPlayer[playerNr].remainingTimeMS <= timestamp.getTime() - playerTimeControl.onThePlaySince.getTime()) {
-          throw new Error("you can't change your move because it would reduce your remaining time to zero.")
+        if (
+          playerTimeControl.onThePlaySince !== null &&
+          timeControl.forPlayer[playerNr].remainingTimeMS <=
+            timestamp.getTime() - playerTimeControl.onThePlaySince.getTime()
+        ) {
+          throw new Error(
+            "you can't change your move because it would reduce your remaining time to zero.",
+          );
         }
 
         timeControl.moveTimestamps.push(timestamp);

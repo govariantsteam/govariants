@@ -118,7 +118,7 @@ export class TimeoutService {
           const { player, move } = getOnlyMove(moves);
           game_object.playMove(player, move);
         });
-  
+
         if (game_object.result !== "" || game_object.phase === "gameover") {
           this.clearGameTimeouts(game.id);
         } else {
@@ -131,7 +131,7 @@ export class TimeoutService {
           );
         }
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
 
       // TODO: improving the error handling would be great in future

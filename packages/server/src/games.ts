@@ -8,7 +8,7 @@ import {
 import { ObjectId, WithId, Document } from "mongodb";
 import { getDb } from "./db";
 import { io } from "./socket_io";
-import { getTimeoutService } from './index';
+import { getTimeoutService } from "./index";
 import {
   GetInitialTimeControl,
   HasTimeControlConfig,
@@ -38,7 +38,9 @@ export async function getGames(
 }
 
 export async function getGamesWithTimeControl(): Promise<GameResponse[]> {
-const games = gamesCollection().find({ time_control: { $ne: null } }).toArray();
+  const games = gamesCollection()
+    .find({ time_control: { $ne: null } })
+    .toArray();
   return (await games).map(outwardFacingGame);
 }
 
@@ -67,7 +69,7 @@ export async function createGame(
     variant: variant,
     moves: [] as MovesType[],
     config: config,
-    time_control: GetInitialTimeControl(variant, config)
+    time_control: GetInitialTimeControl(variant, config),
   };
 
   const result = await gamesCollection().insertOne(game);
@@ -121,10 +123,8 @@ export async function playMove(
     HasTimeControlConfig(game.config) &&
     ValidateTimeControlConfig(game.config.time_control)
   ) {
-
-    if (game_obj.result !== '') {
+    if (game_obj.result !== "") {
       getTimeoutService().clearGameTimeouts(game.id);
-
     } else {
       const timeHandler = new timeControlHandlerMap[game.variant]();
       timeControl = timeHandler.handleMove(game, game_obj, playerNr, new_move);
@@ -132,7 +132,10 @@ export async function playMove(
   }
 
   gamesCollection()
-    .updateOne({ _id: new ObjectId(game_id) }, { $push: { moves: moves }, $set: { time_control: timeControl } })
+    .updateOne(
+      { _id: new ObjectId(game_id) },
+      { $push: { moves: moves }, $set: { time_control: timeControl } },
+    )
     .catch(console.log);
 
   game.moves.push(moves);

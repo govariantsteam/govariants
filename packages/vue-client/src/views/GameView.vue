@@ -179,16 +179,18 @@ const createTimeControlPreview = (
     </div>
   </div>
 
-  <div>
-    <span style="white-space: pre-line">
-      <span style="font-weight: 700">Variant:</span>
-      {{ gameResponse.variant ?? "" }}
-      <br />
-      <span v-if="variantDescriptionShort" style="font-weight: 700"
-        >Description:</span
-      >
-      {{ variantDescriptionShort }}
-    </span>
+  <div id="variant-info">
+    <div>
+      <span class="info-label">Variant:</span>
+      <span class="info-attribute">
+        {{ gameResponse.variant ?? "unknown" }}
+      </span>
+    </div>
+
+    <div>
+      <span class="info-label">Description:</span>
+      <span class="info-attribute">{{ variantDescriptionShort }}</span>
+    </div>
   </div>
 
   <div>
@@ -206,6 +208,11 @@ const createTimeControlPreview = (
 </template>
 
 <style scoped>
+.info-label {
+  font-weight: bold;
+  margin-right: 0.5em;
+}
+
 pre {
   text-align: left;
 }

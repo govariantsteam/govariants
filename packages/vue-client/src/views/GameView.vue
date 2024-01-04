@@ -15,6 +15,7 @@ import type {
 import { computed, reactive, ref, watchEffect } from "vue";
 import { board_map } from "@/board_map";
 import { socket } from "../requests";
+import { variant_short_description_map } from "../components/variant_descriptions/variant_description.consts";
 
 const props = defineProps<{ gameId: string }>();
 
@@ -48,6 +49,9 @@ const specialMoves = computed(() =>
     : makeGameObject(gameResponse.variant, gameResponse.config).specialMoves()
 );
 const variantGameView = computed(() => board_map[gameResponse.variant]);
+const variantDescriptionShort = computed(
+  () => variant_short_description_map[gameResponse.variant] ?? ""
+);
 watchEffect(async () => {
   // TODO: provide a cleanup function to cancel the request.
   Object.assign(gameResponse, await requests.get(`/games/${props.gameId}`));
@@ -174,6 +178,19 @@ const createTimeControlPreview = (
       />
     </div>
   </div>
+
+  <div>
+    <span style="white-space: pre-line">
+      <span style="font-weight: 700">Variant:</span>
+      {{ gameResponse.variant ?? "" }}
+      <br />
+      <span v-if="variantDescriptionShort" style="font-weight: 700"
+        >Description:</span
+      >
+      {{ variantDescriptionShort }}
+    </span>
+  </div>
+
   <div>
     <button
       v-for="(value, key) in specialMoves"

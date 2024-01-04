@@ -57,7 +57,7 @@ export class TimeoutService {
   private setPlayerTimeout(
     gameId: string,
     playerNr: number,
-    timeout: ReturnType<typeof setTimeout> | null
+    timeout: ReturnType<typeof setTimeout> | null,
   ): void {
     let gameTimeouts = this.timeoutsByGame.get(gameId);
 
@@ -100,7 +100,7 @@ export class TimeoutService {
   public scheduleTimeout(
     gameId: string,
     playerNr: number,
-    inTimeMs: number
+    inTimeMs: number,
   ): void {
     const timeoutResolver = async () => {
       const game = await getGame(gameId);
@@ -127,7 +127,7 @@ export class TimeoutService {
             game,
             game_object,
             playerNr,
-            "timeout"
+            "timeout",
           );
         }
       } catch (error) {
@@ -141,7 +141,7 @@ export class TimeoutService {
           {
             $push: { moves: timeoutMove },
             $set: { time_control: timeControl },
-          }
+          },
         )
         .catch(console.log);
 

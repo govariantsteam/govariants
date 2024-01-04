@@ -14,13 +14,13 @@ export const tetrisDescriptionShort =
 export const pyramidDescriptionShort =
   "Baduk with pyramid scoring\n Center is worth most points, edge the least";
 export const thueMorseDescriptionShort =
-  "Baduk with move order according to thue-morse sequence";
+  "Baduk with move order according to Thue-Morse sequence";
 export const freezeDescriptionShort =
   "Baduk but after an Atari, stones can't be captured";
 export const fractionalDescriptionShort =
   "Multiplayer Baduk with multicolored stones and parallel moves";
 export const keimaDescriptionShort =
-  "Baduk but players must play Keima (Knight's move) shapes";
+  "Baduk but players play two moves that must form a Keima (Knight's move) shape";
 export const oneColorDescriptionShort = "Baduk with obfuscated stone colors";
 
 export const variant_short_description_map: { [variant: string]: string } = {

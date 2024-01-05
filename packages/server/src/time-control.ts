@@ -3,20 +3,10 @@ import {
   TimeControlType,
   ITimeControlBase,
   ITimeControlConfig,
-  IConfigWithTimeControl,
+  HasTimeControlConfig,
 } from "@ogfcommunity/variants-shared";
 import { gamesCollection } from "./games";
 import { AbstractGame, GameResponse } from "@ogfcommunity/variants-shared";
-
-export function HasTimeControlConfig(
-  game_config: unknown,
-): game_config is IConfigWithTimeControl {
-  return (
-    game_config &&
-    typeof game_config == "object" &&
-    "time_control" in game_config
-  );
-}
 
 export function ValidateTimeControlConfig(
   time_control_config: unknown,

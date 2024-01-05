@@ -4,12 +4,12 @@ import {
   MovesType,
   User,
   getOnlyMove,
+  HasTimeControlConfig,
 } from "@ogfcommunity/variants-shared";
 import { ObjectId, WithId, Document } from "mongodb";
 import { getDb } from "./db";
 import { io } from "./socket_io";
 import {
-  HasTimeControlConfig,
   timeControlHandlerMap,
   ValidateTimeControlConfig,
 } from "./time-control";

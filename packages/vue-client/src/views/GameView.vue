@@ -15,6 +15,7 @@ import type {
 import { computed, reactive, ref, watchEffect } from "vue";
 import { board_map } from "@/board_map";
 import { socket } from "../requests";
+import { HasTimeControlConfig } from "../../../shared/src/time_control/time_control.utils";
 
 const props = defineProps<{ gameId: string }>();
 
@@ -134,11 +135,7 @@ watchEffect((onCleanup) => {
 const createTimeControlPreview = (
   game: GameResponse
 ): IPerPlayerTimeControlBase | null => {
-  if (
-    game.config &&
-    typeof game.config === "object" &&
-    "time_control" in game.config
-  ) {
+  if (HasTimeControlConfig(game.config)) {
     const config = game.config as IConfigWithTimeControl;
     return {
       remainingTimeMS: config.time_control.mainTimeMS,

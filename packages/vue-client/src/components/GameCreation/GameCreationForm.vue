@@ -41,13 +41,9 @@ const createGame = async () => {
   }
   //ToDo: add form validation
 
-  if (timeControlConfig !== null) {
-    config.time_control = timeControlConfig;
-  }
-
   const game = await requests.post("/games", {
     variant: variant.value,
-    config: config,
+    config: { ...config, time_control: timeControlConfig },
   });
   router.push({ name: "game", params: { gameId: game.id } });
 };

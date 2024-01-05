@@ -8,7 +8,9 @@ import {
 import { ObjectId, WithId, Document } from "mongodb";
 import { getDb } from "./db";
 import { io } from "./socket_io";
+import { getTimeoutService } from "./index";
 import {
+  GetInitialTimeControl,
   HasTimeControlConfig,
   timeControlHandlerMap,
   ValidateTimeControlConfig,
@@ -35,6 +37,13 @@ export async function getGames(
   return (await games).map(outwardFacingGame);
 }
 
+export async function getGamesWithTimeControl(): Promise<GameResponse[]> {
+  const games = gamesCollection()
+    .find({ time_control: { $ne: null } })
+    .toArray();
+  return (await games).map(outwardFacingGame);
+}
+
 export async function getGame(id: string): Promise<GameResponse> {
   const db_game = await gamesCollection().findOne({
     _id: new ObjectId(id),
@@ -42,14 +51,12 @@ export async function getGame(id: string): Promise<GameResponse> {
 
   // TODO: db_game might be undefined if unknown ID is provided
 
-  console.log(db_game);
   const game = outwardFacingGame(db_game);
   // Legacy games don't have a players field
   // TODO: remove this code after doing proper db migration
   if (!game.players) {
     game.players = await BACKFILL_addEmptyPlayersArray(game);
   }
-  console.log(game);
 
   return game;
 }
@@ -62,6 +69,7 @@ export async function createGame(
     variant: variant,
     moves: [] as MovesType[],
     config: config,
+    time_control: GetInitialTimeControl(variant, config),
   };
 
   const result = await gamesCollection().insertOne(game);
@@ -94,13 +102,13 @@ export async function playMove(
     throw Error("Game is already finished.");
   }
 
-  const move = getOnlyMove(moves);
+  const { player: playerNr, move: new_move } = getOnlyMove(moves);
 
-  if (!game.players || game.players[move.player] == null) {
-    throw Error(`Seat ${move.player} not occupied!`);
+  if (!game.players || game.players[playerNr] == null) {
+    throw Error(`Seat ${playerNr} not occupied!`);
   }
 
-  const expected_player = game.players[move.player];
+  const expected_player = game.players[playerNr];
 
   if (expected_player.id !== user_id) {
     throw Error(
@@ -108,19 +116,26 @@ export async function playMove(
     );
   }
 
-  const { player, move: new_move } = getOnlyMove(moves);
-  game_obj.playMove(player, new_move);
+  game_obj.playMove(playerNr, new_move);
 
+  let timeControl = game.time_control;
   if (
     HasTimeControlConfig(game.config) &&
     ValidateTimeControlConfig(game.config.time_control)
   ) {
-    const timeHandler = new timeControlHandlerMap[game.variant]();
-    await timeHandler.handleMove(game, game_obj, move.player, move.move);
+    if (game_obj.result !== "") {
+      getTimeoutService().clearGameTimeouts(game.id);
+    } else {
+      const timeHandler = new timeControlHandlerMap[game.variant]();
+      timeControl = timeHandler.handleMove(game, game_obj, playerNr, new_move);
+    }
   }
 
   gamesCollection()
-    .updateOne({ _id: new ObjectId(game_id) }, { $push: { moves: moves } })
+    .updateOne(
+      { _id: new ObjectId(game_id) },
+      { $push: { moves: moves }, $set: { time_control: timeControl } },
+    )
     .catch(console.log);
 
   game.moves.push(moves);

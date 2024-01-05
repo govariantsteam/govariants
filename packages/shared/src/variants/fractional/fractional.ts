@@ -117,7 +117,9 @@ export class Fractional extends AbstractBaduk<
   }
 
   nextToPlay(): number[] {
-    return [...Array(this.config.players.length).keys()];
+    return this.phase === "gameover"
+      ? []
+      : [...Array(this.config.players.length).keys()];
   }
 
   numPlayers(): number {

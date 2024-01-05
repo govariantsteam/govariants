@@ -52,7 +52,7 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
   }
 
   override nextToPlay(): number[] {
-    return [this.next_to_play];
+    return this.phase === "gameover" ? [] : [this.next_to_play];
   }
 
   override playMove(player: number, move: string): void {
@@ -63,6 +63,12 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
     if (move === "resign") {
       this.phase = "gameover";
       this.result = this.next_to_play === 0 ? "W+R" : "B+R";
+      return;
+    }
+
+    if (move === "timeout") {
+      this.phase = "gameover";
+      this.result = player === 0 ? "W+T" : "B+T";
       return;
     }
 
@@ -94,7 +100,7 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
   }
 
   override specialMoves() {
-    return { pass: "Pass", resign: "Resign" };
+    return { pass: "Pass", resign: "Resign", timeout: "Timeout" };
   }
 
   private playMoveInternal(move: Coordinate): void {

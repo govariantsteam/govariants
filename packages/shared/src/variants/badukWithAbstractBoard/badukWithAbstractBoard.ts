@@ -52,7 +52,7 @@ export class BadukWithAbstractBoard extends AbstractGame<
   }
 
   nextToPlay(): number[] {
-    return [this.next_to_play];
+    return this.phase === "gameover" ? [] : [this.next_to_play];
   }
 
   playMove(player: number, move: string): void {
@@ -73,6 +73,12 @@ export class BadukWithAbstractBoard extends AbstractGame<
     if (move === "resign") {
       this.phase = "gameover";
       this.result = this.next_to_play === 0 ? "B+R" : "W+R";
+      return;
+    }
+
+    if (move === "timeout") {
+      this.phase = "gameover";
+      this.result = player === 0 ? "W+T" : "B+T";
       return;
     }
 
@@ -120,7 +126,7 @@ export class BadukWithAbstractBoard extends AbstractGame<
   }
 
   specialMoves() {
-    return { pass: "Pass", resign: "Resign" };
+    return { pass: "Pass", resign: "Resign", timeout: "Timeout" };
   }
 
   defaultConfig(): BadukWithAbstractBoardConfig {

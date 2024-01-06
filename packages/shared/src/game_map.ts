@@ -43,13 +43,13 @@ class ConfigError extends Error {
 
 export function makeGameObject(
   variant: string,
-  config: unknown
+  config: unknown,
 ): AbstractGame<unknown, unknown> {
   try {
     return new game_map[variant](config);
   } catch (e) {
     throw new ConfigError(
-      `${e}, (variant: ${variant}, config: ${JSON.stringify(config)})`
+      `${e}, (variant: ${variant}, config: ${JSON.stringify(config)})`,
     );
   }
 }

@@ -37,7 +37,7 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
   constructor(config?: BadukConfig) {
     super(config);
     this.board = new Grid<Color>(this.config.width, this.config.height).fill(
-      Color.EMPTY
+      Color.EMPTY,
     );
   }
 
@@ -78,12 +78,12 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
       const color = this.board.at(decoded_move);
       if (color === undefined) {
         throw Error(
-          `Move out of bounds. (move: ${decoded_move}, board dimensions: ${this.config.width}x${this.config.height}`
+          `Move out of bounds. (move: ${decoded_move}, board dimensions: ${this.config.width}x${this.config.height}`,
         );
       }
       if (color !== Color.EMPTY) {
         throw Error(
-          `Cannot place a stone on top of an existing stone. (${color} at (${x}, ${y}))`
+          `Cannot place a stone on top of an existing stone. (${color} at (${x}, ${y}))`,
         );
       }
 
@@ -103,7 +103,7 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
     return { pass: "Pass", resign: "Resign", timeout: "Timeout" };
   }
 
-  protected playMoveInternal(move: Coordinate): void {
+  private playMoveInternal(move: Coordinate): void {
     this.board.set(move, this.next_to_play === 0 ? Color.BLACK : Color.WHITE);
 
     const opponent_color = this.next_to_play === 0 ? Color.WHITE : Color.BLACK;
@@ -166,7 +166,7 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
 
     const black_points: number = board.reduce(
       count_color<Color>(Color.BLACK),
-      0
+      0,
     );
     const white_points: number =
       board.reduce(count_color<Color>(Color.WHITE), 0) + this.config.komi;

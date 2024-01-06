@@ -54,7 +54,7 @@ export class DriftGo extends Baduk {
   private shift(coord: Coordinate): Coordinate {
     return new Coordinate(
       (coord.x - this.typedConfig.xShift) % this.board.width,
-      (coord.y - this.typedConfig.yShift) % this.board.height
+      (coord.y - this.typedConfig.yShift) % this.board.height,
     );
   }
 

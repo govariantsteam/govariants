@@ -12,6 +12,7 @@ import { FreezeGo } from "./variants/freeze";
 import { Fractional } from "./variants/fractional";
 import { Keima } from "./variants/keima";
 import { OneColorGo } from "./variants/one_color";
+import { DriftGo } from "./variants/drift";
 
 export const game_map: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -30,6 +31,7 @@ export const game_map: {
   fractional: Fractional,
   keima: Keima,
   "one color": OneColorGo,
+  drift: DriftGo,
 };
 
 class ConfigError extends Error {
@@ -41,13 +43,13 @@ class ConfigError extends Error {
 
 export function makeGameObject(
   variant: string,
-  config: unknown,
+  config: unknown
 ): AbstractGame<unknown, unknown> {
   try {
     return new game_map[variant](config);
   } catch (e) {
     throw new ConfigError(
-      `${e}, (variant: ${variant}, config: ${JSON.stringify(config)})`,
+      `${e}, (variant: ${variant}, config: ${JSON.stringify(config)})`
     );
   }
 }

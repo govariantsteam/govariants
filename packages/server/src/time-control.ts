@@ -8,6 +8,8 @@ import {
   HasTimeControlConfig,
 } from "@ogfcommunity/variants-shared";
 import { AbstractGame, GameResponse } from "@ogfcommunity/variants-shared";
+import { TimeoutService } from "./timeout";
+import { getTimeoutService } from "./index";
 
 /**
  * Validates whether time_control_config has type and

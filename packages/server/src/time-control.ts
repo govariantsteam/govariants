@@ -16,7 +16,7 @@ import { getTimeoutService } from "./index";
  * properties for being a time control config.
  */
 export function ValidateTimeControlConfig(
-  time_control_config: unknown
+  time_control_config: unknown,
 ): time_control_config is ITimeControlConfig {
   return (
     time_control_config &&
@@ -31,7 +31,7 @@ export function ValidateTimeControlConfig(
  * properties for being a basic time control data object.
  */
 export function ValidateTimeControlBase(
-  time_control: unknown
+  time_control: unknown,
 ): time_control is ITimeControlBase {
   return (
     time_control &&
@@ -47,7 +47,7 @@ export function ValidateTimeControlBase(
  */
 export function GetInitialTimeControl(
   variant: string,
-  config: object
+  config: object,
 ): ITimeControlBase | null {
   if (!HasTimeControlConfig(config)) return null;
 
@@ -63,7 +63,7 @@ export interface ITimeHandler {
    */
   initialState(
     variant: string,
-    config: IConfigWithTimeControl
+    config: IConfigWithTimeControl,
   ): ITimeControlBase;
 
   /**
@@ -75,7 +75,7 @@ export interface ITimeHandler {
     game: GameResponse,
     game_obj: AbstractGame<unknown, unknown>,
     playerNr: number,
-    move: string
+    move: string,
   ): ITimeControlBase;
 
   /**
@@ -93,7 +93,7 @@ class TimeHandlerSequentialMoves implements ITimeHandler {
 
   initialState(
     variant: string,
-    config: IConfigWithTimeControl
+    config: IConfigWithTimeControl,
   ): ITimeControlBase {
     const numPlayers = makeGameObject(variant, config).numPlayers();
 
@@ -131,7 +131,7 @@ class TimeHandlerSequentialMoves implements ITimeHandler {
   handleMove(
     game: GameResponse,
     game_obj: AbstractGame<unknown, unknown>,
-    playerNr: number
+    playerNr: number,
   ): ITimeControlBase {
     const config = game.config as IConfigWithTimeControl;
 
@@ -163,7 +163,7 @@ class TimeHandlerSequentialMoves implements ITimeHandler {
           this._timeoutService.scheduleTimeout(
             game.id,
             player,
-            timeControl.forPlayer[player].remainingTimeMS
+            timeControl.forPlayer[player].remainingTimeMS,
           );
         });
 
@@ -221,7 +221,7 @@ class TimeHandlerParallelMoves implements ITimeHandler {
 
   initialState(
     variant: string,
-    config: IConfigWithTimeControl
+    config: IConfigWithTimeControl,
   ): TimeControlParallel {
     const numPlayers = makeGameObject(variant, config).numPlayers();
 
@@ -261,7 +261,7 @@ class TimeHandlerParallelMoves implements ITimeHandler {
     game: GameResponse,
     game_obj: AbstractGame<unknown, unknown>,
     playerNr: number,
-    move: string
+    move: string,
   ): ITimeControlBase {
     const config = game.config as IConfigWithTimeControl;
 
@@ -285,7 +285,7 @@ class TimeHandlerParallelMoves implements ITimeHandler {
               timestamp.getTime() - playerTimeControl.onThePlaySince.getTime()
           ) {
             throw new Error(
-              "you can't change your move because it would reduce your remaining time to zero."
+              "you can't change your move because it would reduce your remaining time to zero.",
             );
           }
         }
@@ -303,7 +303,7 @@ class TimeHandlerParallelMoves implements ITimeHandler {
             .nextToPlay()
             .every(
               (player_nr) =>
-                timeControl.forPlayer[player_nr].stagedMoveAt !== null
+                timeControl.forPlayer[player_nr].stagedMoveAt !== null,
             )
         ) {
           for (const player_nr of game_obj.nextToPlay()) {
@@ -322,7 +322,7 @@ class TimeHandlerParallelMoves implements ITimeHandler {
             this._timeoutService.scheduleTimeout(
               game.id,
               player_nr,
-              timeControl.forPlayer[player_nr].remainingTimeMS
+              timeControl.forPlayer[player_nr].remainingTimeMS,
             );
             playerData.onThePlaySince = timestamp;
             playerData.stagedMoveAt = null;

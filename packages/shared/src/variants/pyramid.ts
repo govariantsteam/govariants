@@ -3,14 +3,16 @@ import { Grid } from "../lib/grid";
 
 export class PyramidGo extends Baduk {
   private weights: Grid<number>;
-  constructor(config: BadukConfig) {
+  constructor(config?: BadukConfig) {
     super(config);
 
-    this.weights = new Grid(config.width, config.height)
+    // Note: config may be undefined, but this.config is
+    // defined after the AbstractGame constructor is called.
+    const { width, height } = this.config;
+
+    this.weights = new Grid(width, height)
       .fill(0)
-      .map((_, { x, y }) =>
-        Math.min(x + 1, y + 1, config.width - x, config.height - y),
-      );
+      .map((_, { x, y }) => Math.min(x + 1, y + 1, width - x, height - y));
   }
 
   get result(): string {

@@ -1,4 +1,4 @@
-import { IConfigWithTimeControl } from "./time_control.types";
+import { type IConfigWithTimeControl } from "./time_control.types";
 
 export function HasTimeControlConfig(
   game_config: unknown,

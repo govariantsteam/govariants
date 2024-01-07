@@ -3,6 +3,7 @@ import {
   makeGameObject,
   type GameResponse,
   getOnlyMove,
+  HasTimeControlConfig,
 } from "@ogfcommunity/variants-shared";
 import * as requests from "../requests";
 import SeatComponent from "@/components/SeatComponent.vue";
@@ -138,11 +139,7 @@ watchEffect((onCleanup) => {
 const createTimeControlPreview = (
   game: GameResponse
 ): IPerPlayerTimeControlBase | null => {
-  if (
-    game.config &&
-    typeof game.config === "object" &&
-    "time_control" in game.config
-  ) {
+  if (HasTimeControlConfig(game.config)) {
     const config = game.config as IConfigWithTimeControl;
     return {
       remainingTimeMS: config.time_control.mainTimeMS,

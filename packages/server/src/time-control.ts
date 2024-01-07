@@ -5,24 +5,11 @@ import {
   IConfigWithTimeControl,
   makeGameObject,
   TimeControlParallel,
+  HasTimeControlConfig,
 } from "@ogfcommunity/variants-shared";
 import { AbstractGame, GameResponse } from "@ogfcommunity/variants-shared";
 import { TimeoutService } from "./timeout";
 import { getTimeoutService } from "./index";
-
-/**
- * Validates whether game_config has type and
- * properties for being a config with time control.
- */
-export function HasTimeControlConfig(
-  game_config: unknown,
-): game_config is IConfigWithTimeControl {
-  return (
-    game_config &&
-    typeof game_config == "object" &&
-    "time_control" in game_config
-  );
-}
 
 /**
  * Validates whether time_control_config has type and

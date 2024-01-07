@@ -3,6 +3,7 @@ import {
   makeGameObject,
   type GameResponse,
   getOnlyMove,
+  HasTimeControlConfig,
 } from "@ogfcommunity/variants-shared";
 import * as requests from "../requests";
 import SeatComponent from "@/components/SeatComponent.vue";
@@ -15,7 +16,6 @@ import type {
 import { computed, reactive, ref, watchEffect } from "vue";
 import { board_map } from "@/board_map";
 import { socket } from "../requests";
-import { HasTimeControlConfig } from "../../../shared/src/time_control/time_control.utils";
 import { variant_short_description_map } from "../components/variant_descriptions/variant_description.consts";
 
 const props = defineProps<{ gameId: string }>();

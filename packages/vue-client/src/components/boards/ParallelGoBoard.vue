@@ -10,7 +10,13 @@ function forEachMoveModifyStone(
 ) {
   Object.keys(moves).forEach((player_str) => {
     const player = Number(player_str);
-    const move = Coordinate.fromSgfRepr(moves[player]);
+    const move_str = moves[player];
+    if (move_str.length !== 2) {
+      // special moves like "pass" and "resign"
+      return;
+    }
+    const move = Coordinate.fromSgfRepr(move_str);
+
     const stone = board.at(move);
     if (stone) {
       fn(stone, player);

@@ -1,7 +1,11 @@
 import { type IConfigWithTimeControl } from "./time_control.types";
 
+/**
+ * Validates whether game_config has type and
+ * properties for being a config with time control.
+ */
 export function HasTimeControlConfig(
-  game_config: unknown,
+  game_config: unknown
 ): game_config is IConfigWithTimeControl {
   return (
     game_config !== undefined &&

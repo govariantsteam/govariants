@@ -18,8 +18,9 @@ import { Strategy as LocalStrategy } from "passport-local";
 import { UserResponse } from "@ogfcommunity/variants-shared";
 import { router as apiRouter } from "./api";
 import * as socket_io from "./socket_io";
+import { TimeoutService } from "./timeout";
 
-const LOCAL_ORIGIN = "http://localhost:3000";
+const LOCAL_ORIGIN = "http://localhost:5173";
 
 passport.use(
   new LocalStrategy(async function (username, password, callback) {
@@ -36,11 +37,18 @@ passport.use(
   }),
 );
 
+const timeoutService = new TimeoutService();
+export function getTimeoutService(): TimeoutService {
+  return timeoutService;
+}
+
 // Initialize MongoDB
-connectToDb().catch((e) => {
-  console.log("Unable to connect to the database.");
-  console.log(e);
-});
+connectToDb()
+  .then(() => timeoutService.initialize())
+  .catch((e) => {
+    console.log("Unable to connect to the database.");
+    console.log(e);
+  });
 
 passport.use(
   "guest",

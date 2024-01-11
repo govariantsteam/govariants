@@ -29,7 +29,7 @@ export abstract class AbstractBaduk<
     super(config);
     this.intersections = createBoard(
       this.config.board,
-      BadukIntersection<TChainType, TStone>
+      BadukIntersection<TChainType, TStone>,
     );
   }
 
@@ -61,8 +61,8 @@ export abstract class AbstractBaduk<
           (chainType) =>
             !(
               checkedIntersections.get(intersection.id) ?? new Set<TChainType>()
-            ).has(chainType)
-        )
+            ).has(chainType),
+        ),
       );
 
       if (!uncheckedChainTypes.size) {
@@ -73,7 +73,7 @@ export abstract class AbstractBaduk<
       this.findChainsWithoutLiberties(
         intersection,
         uncheckedChainTypes,
-        checkedNow
+        checkedNow,
       ).forEach((chain) => {
         if (chain) chainsWithoutLiberties.push(chain);
       });
@@ -87,27 +87,27 @@ export abstract class AbstractBaduk<
               checkedIntersections.set(intersectionId, defaultValue);
               return defaultValue;
             })()
-          ).add(chainType)
-        )
+          ).add(chainType),
+        ),
       );
     });
 
     chainsWithoutLiberties
       .filter((chain) =>
-        Array.from(chain).every((intersection) => !intersection.stone?.isNew)
+        Array.from(chain).every((intersection) => !intersection.stone?.isNew),
       )
       .forEach((chain) =>
-        chain.forEach((intersection) => (intersection.stone = null))
+        chain.forEach((intersection) => (intersection.stone = null)),
       );
 
     chainsWithoutLiberties
       .filter((chain) =>
         Array.from(chain).every((intersection) =>
-          intersection.neighbours.every((neighbour) => neighbour.stone)
-        )
+          intersection.neighbours.every((neighbour) => neighbour.stone),
+        ),
       )
       .forEach((chain) =>
-        chain.forEach((intersection) => (intersection.stone = null))
+        chain.forEach((intersection) => (intersection.stone = null)),
       );
 
     if (setNewToOld) {
@@ -129,12 +129,12 @@ export abstract class AbstractBaduk<
   findChainsWithoutLiberties(
     intersection: BadukIntersection<TChainType, TStone>,
     chainTypes: Set<TChainType>,
-    checked: Map<number, Set<TChainType>> = new Map()
+    checked: Map<number, Set<TChainType>> = new Map(),
   ): Map<TChainType, null | Set<BadukIntersection<TChainType, TStone>>> {
     if (intersection.stone === null) {
       // Liberty spotted
       return new Map(
-        Array.from(chainTypes).map((chainType) => [chainType, new Set()])
+        Array.from(chainTypes).map((chainType) => [chainType, new Set()]),
       );
     }
 
@@ -147,13 +147,13 @@ export abstract class AbstractBaduk<
       })();
 
     const uncheckedChainTypes = Array.from(
-      intersection.stone.getChainTypes()
+      intersection.stone.getChainTypes(),
     ).filter(
       (chainTypeOfStone) =>
         !checkedChainTypes.has(chainTypeOfStone) &&
         Array.from(chainTypes).some(
-          (chainTypeToCheck) => chainTypeOfStone === chainTypeToCheck
-        )
+          (chainTypeToCheck) => chainTypeOfStone === chainTypeToCheck,
+        ),
     );
 
     if (!uncheckedChainTypes.length) {
@@ -162,15 +162,15 @@ export abstract class AbstractBaduk<
     }
 
     Array.from(chainTypes).forEach((chainType) =>
-      checkedChainTypes.add(chainType)
+      checkedChainTypes.add(chainType),
     );
 
     const neighbouringResults = intersection.neighbours.map((neighbour) =>
       this.findChainsWithoutLiberties(
         neighbour,
         new Set(uncheckedChainTypes),
-        checked
-      )
+        checked,
+      ),
     );
 
     const r = new Map(
@@ -180,7 +180,7 @@ export abstract class AbstractBaduk<
           return [chainType, null];
         }
         const neighbouringChains = neighbouringResults.map(
-          (neighbouringResult) => neighbouringResult.get(chainType)
+          (neighbouringResult) => neighbouringResult.get(chainType),
         );
 
         if (neighbouringChains.some((chain) => chain?.size === 0)) {
@@ -193,11 +193,11 @@ export abstract class AbstractBaduk<
           new Set([
             intersection,
             ...neighbouringChains.flatMap((intersections) =>
-              intersections ? Array.from(intersections) : []
+              intersections ? Array.from(intersections) : [],
             ),
           ]),
         ];
-      })
+      }),
     );
 
     return r;

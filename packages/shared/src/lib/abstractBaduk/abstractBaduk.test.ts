@@ -35,7 +35,7 @@ class AbstractBadukTestGame extends AbstractBaduk<
     super({ board: { type: "grid", height: 3, width: 3 } });
 
     this.center = this.intersections.find(
-      (intersection) => intersection.neighbours.length === 4
+      (intersection) => intersection.neighbours.length === 4,
     )!;
     // console.log(this.center);
     this.center.neighbours.forEach((neighbour, index) => {
@@ -57,7 +57,7 @@ class AbstractBadukTestGame extends AbstractBaduk<
   }
 
   test(
-    types: Set<TestChainType>
+    types: Set<TestChainType>,
   ): Map<TestChainType, null | Set<TestIntersection>> {
     this.center.stone = new AbstractBadukTestStone(types);
     return this.findChainsWithoutLiberties(this.center, types, new Map());

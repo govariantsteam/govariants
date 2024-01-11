@@ -29,7 +29,7 @@ const DEFAULT_GAME: GameResponse = {
 
 // null <-> viewing the latest round
 // while viewing history of game, maybe we should prevent player from making a move (accidentally)
-let view_round: Ref<number | null> = ref(null);
+const view_round: Ref<number | null> = ref(null);
 const navigateRounds = (offset: number): void => {
   if (game.value.round === undefined) {
     // game not initialised

@@ -298,6 +298,8 @@ class TimeHandlerParallelMoves implements ITimeHandler {
         // I'm not sure if this will always work as intended
         // because this is the game object after the move has been played
         // whereas we actually need the players that are on the play in the round that the move belongs to
+        //
+        // TODO: fix this with round; compare current round with round at prev. move
         if (
           game_obj
             .nextToPlay()

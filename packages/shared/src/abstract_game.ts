@@ -70,6 +70,10 @@ export abstract class AbstractGame<GameConfig = object, GameState = object> {
 
   /**
    * Returns the current round number
+   *
+   * A Round can include multiple moves
+   * and represents a decision point in
+   * the game.
    */
   abstract get round(): number;
 }

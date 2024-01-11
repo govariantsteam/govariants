@@ -33,11 +33,12 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
   protected board: Grid<Color>;
   protected next_to_play: 0 | 1 = 0;
   protected last_move = "";
+  private _round = 0;
 
   constructor(config?: BadukConfig) {
     super(config);
     this.board = new Grid<Color>(this.config.width, this.config.height).fill(
-      Color.EMPTY,
+      Color.EMPTY
     );
   }
 
@@ -78,21 +79,20 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
       const color = this.board.at(decoded_move);
       if (color === undefined) {
         throw Error(
-          `Move out of bounds. (move: ${decoded_move}, board dimensions: ${this.config.width}x${this.config.height}`,
+          `Move out of bounds. (move: ${decoded_move}, board dimensions: ${this.config.width}x${this.config.height}`
         );
       }
       if (color !== Color.EMPTY) {
         throw Error(
-          `Cannot place a stone on top of an existing stone. (${color} at (${x}, ${y}))`,
+          `Cannot place a stone on top of an existing stone. (${color} at (${x}, ${y}))`
         );
       }
 
       this.playMoveInternal(decoded_move);
       this.postValidateMove(decoded_move);
-      this.prepareForNextMove(move);
-    } else {
-      this.prepareForNextMove(move);
     }
+    this.prepareForNextMove(move);
+    this._round += 1;
   }
 
   override numPlayers(): number {
@@ -101,6 +101,10 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
 
   override specialMoves() {
     return { pass: "Pass", resign: "Resign", timeout: "Timeout" };
+  }
+
+  get round(): number {
+    return this._round;
   }
 
   private playMoveInternal(move: Coordinate): void {
@@ -166,7 +170,7 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
 
     const black_points: number = board.reduce(
       count_color<Color>(Color.BLACK),
-      0,
+      0
     );
     const white_points: number =
       board.reduce(count_color<Color>(Color.WHITE), 0) + this.config.komi;

@@ -13,7 +13,7 @@ import type {
   IPerPlayerTimeControlBase,
   IConfigWithTimeControl,
 } from "@ogfcommunity/variants-shared";
-import { computed, reactive, ref, watchEffect } from "vue";
+import { computed, reactive, ref, watchEffect, type Ref } from "vue";
 import { board_map } from "@/board_map";
 import { socket } from "../requests";
 import { variant_short_description_map } from "../components/variant_descriptions/variant_description.consts";
@@ -26,22 +26,55 @@ const DEFAULT_GAME: GameResponse = {
   moves: [],
   config: {},
 };
+
+// null <-> viewing the latest round
+// while viewing history of game, maybe we should prevent player from making a move (accidentally)
+let view_round: Ref<number | null> = ref(null);
+const navigateRounds = (offset: number): void => {
+  if (game.value.round === undefined) {
+    // game not initialised
+    return;
+  }
+
+  const after_offset = (view_round.value ?? game.value.round) + offset;
+  const round_in_range = Math.min(game.value.round, Math.max(0, after_offset));
+
+  view_round.value =
+    round_in_range === game.value.round ? null : round_in_range;
+};
+
 const gameResponse: GameResponse = reactive(DEFAULT_GAME);
 const game = computed(() => {
   if (!gameResponse.variant) {
     return { result: null, state: null };
   }
   const game_obj = makeGameObject(gameResponse.variant, gameResponse.config);
+
+  let state: unknown = null;
   gameResponse.moves.forEach((m) => {
+    if (
+      view_round.value !== null &&
+      state === null &&
+      game_obj.round === view_round.value
+    ) {
+      // this works only if exportState returns an immutable object
+      // if that is not the case, we need to deepcopy here
+      state = game_obj.exportState(playing_as.value);
+    }
+
     const { player, move } = getOnlyMove(m);
     game_obj.playMove(player, move);
   });
   const result =
     game_obj.phase === "gameover" ? game_obj.result || "Game over" : null;
-  const state = game_obj.exportState(playing_as.value);
+
+  if (state === null) {
+    state = game_obj.exportState(playing_as.value);
+  }
   return {
     result,
     state,
+    round: game_obj.round,
   };
 });
 const specialMoves = computed(() =>
@@ -174,6 +207,26 @@ const createTimeControlPreview = (
         "
       />
     </div>
+
+    <div>
+      <button
+        v-for="(value, key) in specialMoves"
+        :key="key"
+        @click="makeMove(key as string)"
+      >
+        {{ value }}
+      </button>
+    </div>
+  </div>
+  <div class="nav-buttons">
+    <button @click="() => navigateRounds(-(game.round ?? 0))">
+      &lt;&lt;&lt;
+    </button>
+    <button @click="() => navigateRounds(-10)">&lt;&lt;</button>
+    <button @click="() => navigateRounds(-1)">&lt;</button>
+    <button @click="() => navigateRounds(1)">></button>
+    <button @click="() => navigateRounds(10)">>></button>
+    <button @click="() => navigateRounds(game.round ?? 0)">>>></button>
   </div>
 
   <div id="variant-info">
@@ -190,15 +243,6 @@ const createTimeControlPreview = (
     </div>
   </div>
 
-  <div>
-    <button
-      v-for="(value, key) in specialMoves"
-      :key="key"
-      @click="makeMove(key as string)"
-    >
-      {{ value }}
-    </button>
-  </div>
   <div v-if="game.result" style="font-weight: bold; font-size: 24pt">
     Result: {{ game.result }}
   </div>
@@ -212,6 +256,13 @@ const createTimeControlPreview = (
 
 pre {
   text-align: left;
+}
+
+.nav-buttons {
+  height: fit-content;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 @media (min-width: 664px) {

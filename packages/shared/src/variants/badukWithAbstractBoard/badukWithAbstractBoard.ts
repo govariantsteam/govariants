@@ -37,6 +37,7 @@ export class BadukWithAbstractBoard extends AbstractGame<
   private next_to_play: 0 | 1 = 0;
   private captures = { 0: 0, 1: 0 };
   private last_move = "";
+  private _round = 0;
 
   constructor(config?: BadukWithAbstractBoardConfig) {
     super(config);
@@ -67,6 +68,7 @@ export class BadukWithAbstractBoard extends AbstractGame<
       } else {
         this.last_move = move;
       }
+      this._round += 1;
       return;
     }
 
@@ -85,14 +87,14 @@ export class BadukWithAbstractBoard extends AbstractGame<
     const decoded_move = decodeMove(move);
     if (isOutOfBounds(decoded_move, this.board)) {
       throw Error(
-        `Move out of bounds. (move: ${decoded_move}, intersections: ${this.board.Intersections.length}`,
+        `Move out of bounds. (move: ${decoded_move}, intersections: ${this.board.Intersections.length}`
       );
     }
     const intersection = this.board.Intersections[decoded_move];
 
     if (intersection.StoneState.Color != Color.EMPTY) {
       throw Error(
-        `Cannot place a stone on top of an existing stone. (${intersection.StoneState.Color} at (${decoded_move}))`,
+        `Cannot place a stone on top of an existing stone. (${intersection.StoneState.Color} at (${decoded_move}))`
       );
     }
     const player_color = player === 0 ? Color.BLACK : Color.WHITE;
@@ -115,6 +117,7 @@ export class BadukWithAbstractBoard extends AbstractGame<
     }
 
     this.last_move = move;
+    this._round += 1;
   }
 
   numPlayers(): number {
@@ -132,6 +135,10 @@ export class BadukWithAbstractBoard extends AbstractGame<
   defaultConfig(): BadukWithAbstractBoardConfig {
     return { width: 4, height: 4, komi: 5.5, pattern: 2 };
   }
+
+  get round(): number {
+    return this._round;
+  }
 }
 
 function decodeMove(move: string): number {
@@ -141,7 +148,7 @@ function decodeMove(move: string): number {
 /** Returns true if the group containing intersection has at least one liberty. */
 function groupHasLiberties(
   intersection: Intersection,
-  board: BadukBoardAbstract,
+  board: BadukBoardAbstract
 ) {
   const color = intersection.StoneState.Color;
   const visited: { [key: string]: boolean } = {};
@@ -195,7 +202,7 @@ function floodFill(intersection: Intersection, target_color: Color): number {
 
     return intersection.Neighbours.map(helper).reduce(
       (acc, val) => acc + val,
-      1,
+      1
     );
   }
 

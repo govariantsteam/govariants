@@ -48,6 +48,7 @@ export class Fractional extends AbstractBaduk<
   FractionalState
 > {
   private stagedMoves: (FractionalIntersection | null)[];
+  private _round = 0;
 
   constructor(config?: FractionalConfig) {
     super(config);
@@ -62,7 +63,7 @@ export class Fractional extends AbstractBaduk<
 
     if (move.intersection.stone) {
       throw new Error(
-        `There is already a stone at intersection ${move.intersection.id}`,
+        `There is already a stone at intersection ${move.intersection.id}`
       );
     }
 
@@ -71,7 +72,7 @@ export class Fractional extends AbstractBaduk<
     if (
       this.stagedMoves.every(
         (stagedMove): stagedMove is FractionalIntersection =>
-          stagedMove !== null,
+          stagedMove !== null
       )
     ) {
       this.intersections.forEach((intersection) => {
@@ -95,6 +96,7 @@ export class Fractional extends AbstractBaduk<
       this.removeChains(false);
 
       this.stagedMoves = this.stagedMovesDefaults();
+      this._round += 1;
     }
   }
 
@@ -140,6 +142,10 @@ export class Fractional extends AbstractBaduk<
     };
   }
 
+  get round(): number {
+    return this._round;
+  }
+
   private getPlayerColors(id: number): Color[] {
     const player = this.config.players[id];
     const colors = [player.primaryColor];
@@ -153,7 +159,7 @@ export class Fractional extends AbstractBaduk<
   private decodeMove(p: number, m: string): FractionalMove | null {
     const player = this.config.players[p];
     const intersection = this.intersections.find(
-      (intersection) => intersection.id === Number.parseInt(m),
+      (intersection) => intersection.id === Number.parseInt(m)
     );
     return player && intersection
       ? { player: { ...player, index: p }, intersection }
@@ -162,7 +168,7 @@ export class Fractional extends AbstractBaduk<
 
   private stagedMovesDefaults(): (FractionalIntersection | null)[] {
     return new Array<FractionalIntersection | null>(this.numPlayers()).fill(
-      null,
+      null
     );
   }
 }

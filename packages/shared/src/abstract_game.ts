@@ -67,6 +67,11 @@ export abstract class AbstractGame<GameConfig = object, GameState = object> {
    * This is used in the game creation form.
    */
   abstract defaultConfig(): GameConfig;
+
+  /**
+   * Returns the current round number
+   */
+  abstract get round(): number;
 }
 
 export type GamePhase = "play" | "gameover";

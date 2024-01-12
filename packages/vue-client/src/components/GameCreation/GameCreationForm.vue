@@ -26,7 +26,7 @@ watch(
     config = getDefaultConfig(variant.value);
     configString.value = JSON.stringify(config, null, 2);
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const createGame = async () => {
@@ -57,7 +57,7 @@ const setConfig = (newConfig: object) => {
   config = newConfig;
 };
 const setTimeControlConfig = (
-  newTimeControlConfig: ITimeControlConfig | null
+  newTimeControlConfig: ITimeControlConfig | null,
 ) => {
   timeControlConfig = newTimeControlConfig;
 };

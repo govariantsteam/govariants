@@ -29,10 +29,10 @@ function intersectionClicked(identifier: number) {
 
 const viewBox = computed(() => {
   const xPositions = props.gamestate.board.Intersections.map(
-    (i) => i.Position.X
+    (i) => i.Position.X,
   );
   const yPositions = props.gamestate.board.Intersections.map(
-    (i) => i.Position.Y
+    (i) => i.Position.Y,
   );
   const minX = Math.min(...xPositions) - 1;
   const minY = Math.min(...yPositions) - 1;
@@ -57,7 +57,7 @@ const viewBox = computed(() => {
     >
       <line
         v-for="neighbour in intersection.Neighbours.filter(
-          (n) => n.Identifier < intersection.Identifier
+          (n) => n.Identifier < intersection.Identifier,
         )"
         :key="neighbour.Identifier"
         class="grid"

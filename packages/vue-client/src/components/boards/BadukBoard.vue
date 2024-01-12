@@ -20,7 +20,7 @@ const positions = new Array(height.value * width.value)
   .fill(null)
   .map(
     (_, index) =>
-      new Coordinate(index % width.value, Math.floor(index / width.value))
+      new Coordinate(index % width.value, Math.floor(index / width.value)),
   );
 
 function colorToClassString(color: Color): string {

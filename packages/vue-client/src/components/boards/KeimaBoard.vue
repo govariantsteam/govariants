@@ -55,7 +55,7 @@ const board = computed(() => {
 
   if (props.gamestate.keima) {
     getKeimaMoves(Coordinate.fromSgfRepr(props.gamestate.keima), grid).forEach(
-      (pos) => output_grid.set(pos, { colors: [], annotation: "CR" })
+      (pos) => output_grid.set(pos, { colors: [], annotation: "CR" }),
     );
   }
 

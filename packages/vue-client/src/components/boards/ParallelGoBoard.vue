@@ -6,7 +6,7 @@ type Stone = { colors: string[]; annotation?: "CR" };
 function forEachMoveModifyStone(
   moves: MovesType,
   board: Grid<Stone>,
-  fn: (stone: Stone, player: number) => void
+  fn: (stone: Stone, player: number) => void,
 ) {
   Object.keys(moves).forEach((player_str) => {
     const player = Number(player_str);
@@ -96,7 +96,7 @@ const board = computed(() => {
       (stone, player) => {
         stone.colors.push(distinct_colors[player]);
         stone.annotation = "CR";
-      }
+      },
     );
   } else {
     forEachMoveModifyStone(
@@ -104,7 +104,7 @@ const board = computed(() => {
       gboard_with_ko_stones,
       (stone) => {
         stone.annotation = "CR";
-      }
+      },
     );
   }
   return gboard_with_ko_stones.to2DArray();

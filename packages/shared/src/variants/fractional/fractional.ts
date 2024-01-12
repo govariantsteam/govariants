@@ -48,7 +48,6 @@ export class Fractional extends AbstractBaduk<
   FractionalState
 > {
   private stagedMoves: (FractionalIntersection | null)[];
-  private _round = 0;
 
   constructor(config?: FractionalConfig) {
     super(config);
@@ -96,7 +95,7 @@ export class Fractional extends AbstractBaduk<
       this.removeChains(false);
 
       this.stagedMoves = this.stagedMovesDefaults();
-      this._round += 1;
+      super.increaseRound();
     }
   }
 
@@ -140,10 +139,6 @@ export class Fractional extends AbstractBaduk<
       ],
       board: { type: "grid", width: 19, height: 19 },
     };
-  }
-
-  get round(): number {
-    return this._round;
   }
 
   private getPlayerColors(id: number): Color[] {

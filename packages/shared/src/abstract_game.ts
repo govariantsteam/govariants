@@ -9,6 +9,7 @@ export abstract class AbstractGame<GameConfig = object, GameState = object> {
   private phase_: GamePhase = "play";
   private result_ = "";
   protected readonly config: GameConfig;
+  private _round = 0;
 
   constructor(config?: GameConfig) {
     this.config = config ?? this.defaultConfig();
@@ -53,6 +54,11 @@ export abstract class AbstractGame<GameConfig = object, GameState = object> {
     this.result_ = res;
   }
 
+  /** Should be called when the game proceeds to the next round. */
+  protected increaseRound(): void {
+    this._round += 1;
+  }
+
   /**
    * Returns a list of moves that don't happen on the board. (e.g. pass, resign)
    * The mapping is from backend name ("pass") to pretty name ("Pass")
@@ -69,13 +75,12 @@ export abstract class AbstractGame<GameConfig = object, GameState = object> {
   abstract defaultConfig(): GameConfig;
 
   /**
-   * Returns the current round number
-   *
-   * A Round can include multiple moves
-   * and represents a decision point in
-   * the game.
+   * Returns the current round number. A Round can include multiple moves and
+   * represents a decision point in the game.
    */
-  abstract get round(): number;
+  public get round(): number {
+    return this._round;
+  }
 }
 
 export type GamePhase = "play" | "gameover";

@@ -8,7 +8,6 @@ export interface ChessState {
 export class ChessGame extends AbstractGame<object, ChessState> {
   // third-party chess object
   private chess = new Chess();
-  private _round = 0;
 
   playMove(player: number, move: string): void {
     if (move === "resign") {
@@ -30,7 +29,7 @@ export class ChessGame extends AbstractGame<object, ChessState> {
       throw Error("Not White's turn");
     }
     this.chess.move(move);
-    this._round += 1;
+    super.increaseRound();
   }
 
   exportState(): ChessState {
@@ -44,8 +43,5 @@ export class ChessGame extends AbstractGame<object, ChessState> {
   }
   defaultConfig(): object {
     return {};
-  }
-  get round(): number {
-    return this._round;
   }
 }

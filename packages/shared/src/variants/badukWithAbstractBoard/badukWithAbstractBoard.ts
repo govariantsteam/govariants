@@ -37,7 +37,6 @@ export class BadukWithAbstractBoard extends AbstractGame<
   private next_to_play: 0 | 1 = 0;
   private captures = { 0: 0, 1: 0 };
   private last_move = "";
-  private _round = 0;
 
   constructor(config?: BadukWithAbstractBoardConfig) {
     super(config);
@@ -68,7 +67,7 @@ export class BadukWithAbstractBoard extends AbstractGame<
       } else {
         this.last_move = move;
       }
-      this._round += 1;
+      super.increaseRound();
       return;
     }
 
@@ -117,7 +116,7 @@ export class BadukWithAbstractBoard extends AbstractGame<
     }
 
     this.last_move = move;
-    this._round += 1;
+    super.increaseRound();
   }
 
   numPlayers(): number {
@@ -134,10 +133,6 @@ export class BadukWithAbstractBoard extends AbstractGame<
 
   defaultConfig(): BadukWithAbstractBoardConfig {
     return { width: 4, height: 4, komi: 5.5, pattern: 2 };
-  }
-
-  get round(): number {
-    return this._round;
   }
 }
 

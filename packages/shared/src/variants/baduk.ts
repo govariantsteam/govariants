@@ -33,7 +33,6 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
   protected board: Grid<Color>;
   protected next_to_play: 0 | 1 = 0;
   protected last_move = "";
-  private _round = 0;
 
   constructor(config?: BadukConfig) {
     super(config);
@@ -92,7 +91,7 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
       this.postValidateMove(decoded_move);
     }
     this.prepareForNextMove(move);
-    this._round += 1;
+    super.increaseRound();
   }
 
   override numPlayers(): number {
@@ -101,10 +100,6 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
 
   override specialMoves() {
     return { pass: "Pass", resign: "Resign", timeout: "Timeout" };
-  }
-
-  get round(): number {
-    return this._round;
   }
 
   private playMoveInternal(move: Coordinate): void {

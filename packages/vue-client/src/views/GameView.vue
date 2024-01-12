@@ -57,9 +57,7 @@ const game = computed(() => {
       state === null &&
       game_obj.round === view_round.value
     ) {
-      // this works only if exportState returns an immutable object
-      // if that is not the case, we need to deepcopy here
-      state = game_obj.exportState(playing_as.value);
+      state = structuredClone(game_obj.exportState(playing_as.value));
     }
 
     const { player, move } = getOnlyMove(m);

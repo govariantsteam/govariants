@@ -86,10 +86,6 @@ class AbstractBadukTestGame extends AbstractBaduk<
   numPlayers(): number {
     return -Infinity;
   }
-
-  get round(): number {
-    return 0;
-  }
 }
 
 test("Test AbstractBaduk.findChainsWithoutLiberties()", () => {

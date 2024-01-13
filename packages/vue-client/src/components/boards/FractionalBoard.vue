@@ -91,7 +91,7 @@ const stagedMove = computed(() => props.gamestate.stagedMove);
           :colors="[...intersection.stone.colors]"
           :cx="intersection.position.X"
           :cy="intersection.position.Y"
-          :r="0.4"
+          :r="0.47"
         />
         <circle
           v-else
@@ -99,7 +99,7 @@ const stagedMove = computed(() => props.gamestate.stagedMove);
           v-on:click="intersectionClicked(intersection.id)"
           v-bind:cx="intersection.position.X"
           v-bind:cy="intersection.position.Y"
-          r="0.4"
+          r="0.47"
         />
       </g>
     </g>
@@ -108,7 +108,7 @@ const stagedMove = computed(() => props.gamestate.stagedMove);
       :colors="stagedMove.colors"
       :cx="stagedMove.intersection.position.X"
       :cy="stagedMove.intersection.position.Y"
-      :r="0.4"
+      :r="0.47"
     />
   </svg>
 </template>

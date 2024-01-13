@@ -33,7 +33,6 @@ export class ParallelGo extends AbstractGame<
   private playerParticipation = this.initializeParticipation(
     this.config.num_players,
   );
-  private numberOfRounds: number = 0;
 
   constructor(config?: ParallelGoConfig) {
     super(config);
@@ -59,9 +58,7 @@ export class ParallelGo extends AbstractGame<
       ? []
       : this.playerParticipation
           .filter(
-            (x) =>
-              x.dropOutAtRound === null ||
-              x.dropOutAtRound > this.numberOfRounds,
+            (x) => x.dropOutAtRound === null || x.dropOutAtRound > this.round,
           )
           .map((p) => p.playerNr);
   }
@@ -81,7 +78,7 @@ export class ParallelGo extends AbstractGame<
     }
 
     if (move === "resign" || move === "timeout") {
-      this.playerParticipation[player].dropOutAtRound = this.numberOfRounds;
+      this.playerParticipation[player].dropOutAtRound = this.round;
 
       if (this.nextToPlay().length < 2) {
         if (this.nextToPlay().length === 1) {
@@ -138,7 +135,7 @@ export class ParallelGo extends AbstractGame<
 
     this.last_round = this.staged;
     this.staged = {};
-    this.numberOfRounds++;
+    super.increaseRound();
   }
 
   numPlayers(): number {

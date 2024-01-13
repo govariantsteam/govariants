@@ -89,10 +89,9 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
 
       this.playMoveInternal(decoded_move);
       this.postValidateMove(decoded_move);
-      this.prepareForNextMove(move);
-    } else {
-      this.prepareForNextMove(move);
     }
+    this.prepareForNextMove(move);
+    super.increaseRound();
   }
 
   override numPlayers(): number {

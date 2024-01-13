@@ -67,6 +67,7 @@ export class BadukWithAbstractBoard extends AbstractGame<
       } else {
         this.last_move = move;
       }
+      super.increaseRound();
       return;
     }
 
@@ -115,6 +116,7 @@ export class BadukWithAbstractBoard extends AbstractGame<
     }
 
     this.last_move = move;
+    super.increaseRound();
   }
 
   numPlayers(): number {

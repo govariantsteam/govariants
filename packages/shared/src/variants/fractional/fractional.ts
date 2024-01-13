@@ -95,6 +95,7 @@ export class Fractional extends AbstractBaduk<
       this.removeChains(false);
 
       this.stagedMoves = this.stagedMovesDefaults();
+      super.increaseRound();
     }
   }
 

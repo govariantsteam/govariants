@@ -17,7 +17,7 @@ interface IConfigWithOptionalTimeControl {
 const variants: string[] = getVariantList();
 const variant: Ref<string> = ref(variants.length ? variants[0] : "");
 let config: IConfigWithOptionalTimeControl;
-const timeControlConfig: ITimeControlConfig | null = null;
+let timeControlConfig: ITimeControlConfig | null = null;
 const configString: Ref<string> = ref("");
 const variantConfigForm = computed(() => config_form_map[variant.value]);
 watch(
@@ -26,15 +26,15 @@ watch(
     config = getDefaultConfig(variant.value);
     configString.value = JSON.stringify(config, null, 2);
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const createGame = async () => {
   if (
     !config ||
     typeof config !== "object" ||
-    (config.time_control !== undefined &&
-      typeof config.time_control.mainTimeMS !== "number")
+    (timeControlConfig !== null &&
+      typeof timeControlConfig.mainTimeMS !== "number")
   ) {
     console.log("game creation form is invalid");
     return;
@@ -43,7 +43,7 @@ const createGame = async () => {
 
   const game = await requests.post("/games", {
     variant: variant.value,
-    config: config,
+    config: { ...config, time_control: timeControlConfig },
   });
   router.push({ name: "game", params: { gameId: game.id } });
 };
@@ -55,18 +55,11 @@ const parseConfigThenCreateGame = async () => {
 
 const setConfig = (newConfig: object) => {
   config = newConfig;
-  if (timeControlConfig !== null) {
-    config.time_control = timeControlConfig;
-  }
 };
 const setTimeControlConfig = (
-  newTimeControlConfig: ITimeControlConfig | null
+  newTimeControlConfig: ITimeControlConfig | null,
 ) => {
-  if (newTimeControlConfig !== null) {
-    config.time_control = newTimeControlConfig;
-  } else {
-    delete config["time_control"];
-  }
+  timeControlConfig = newTimeControlConfig;
 };
 </script>
 

@@ -84,7 +84,7 @@ function positionHovered(pos: Coordinate) {
     <g>
       <TaegeukStone
         v-for="pos in positions.filter(
-          (pos) => props.board[pos.y][pos.x] !== null
+          (pos) => props.board[pos.y][pos.x] !== null,
         )"
         :key="`${pos.x},${pos.y}`"
         :cx="pos.x"
@@ -96,7 +96,7 @@ function positionHovered(pos: Coordinate) {
     <g>
       <IntersectionAnnotation
         v-for="{ x, y } in positions.filter(
-          ({ x, y }) => props.board[y][x]?.annotation
+          ({ x, y }) => props.board[y][x]?.annotation,
         )"
         :key="`${x},${y}`"
         :cx="x"

@@ -29,6 +29,7 @@ export class ChessGame extends AbstractGame<object, ChessState> {
       throw Error("Not White's turn");
     }
     this.chess.move(move);
+    super.increaseRound();
   }
 
   exportState(): ChessState {

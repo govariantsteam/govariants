@@ -33,7 +33,7 @@ const boardRect = computed(
       width: xMax - xMin + 1,
       height: yMax - yMin + 1,
     };
-  }
+  },
 );
 
 const viewBox = computed(() => {
@@ -70,7 +70,7 @@ const stagedMove = computed(() => props.gamestate.stagedMove);
       >
         <line
           v-for="neighbour in intersection.neighbours.filter(
-            (n) => n.id < intersection.id
+            (n) => n.id < intersection.id,
           )"
           :key="neighbour.id"
           class="grid"

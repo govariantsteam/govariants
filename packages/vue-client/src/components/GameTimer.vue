@@ -11,7 +11,7 @@ const time = ref(props.time_control?.remainingTimeMS ?? 0);
 const formattedTime = ref(
   props.time_control?.remainingTimeMS
     ? msToTime(props.time_control?.remainingTimeMS)
-    : ""
+    : "",
 );
 const isCountingDown = ref(false);
 let timerIndex: number | null = null;
@@ -34,7 +34,7 @@ watch(
       }
     });
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 function resetTimer(): void {
@@ -58,7 +58,7 @@ function resetTimer(): void {
       const stagedMove = new Date(props.time_control.stagedMoveAt as Date);
       time.value = Math.max(
         0,
-        time.value - (stagedMove.getTime() - onThePlaySince.getTime())
+        time.value - (stagedMove.getTime() - onThePlaySince.getTime()),
       );
     } else {
       isCountingDown.value = true;
@@ -66,7 +66,7 @@ function resetTimer(): void {
       const now = new Date();
       time.value = Math.max(
         0,
-        time.value - (now.getTime() - onThePlaySince.getTime())
+        time.value - (now.getTime() - onThePlaySince.getTime()),
       );
     }
   } else {

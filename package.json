@@ -19,5 +19,9 @@
     "packages": [
       "packages/*"
     ]
+  },
+  "prettier": {
+    "trailingComma": "all",
+    "endOfLine": "lf"
   }
 }

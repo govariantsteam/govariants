@@ -78,11 +78,11 @@ const game = computed(() => {
 const specialMoves = computed(() =>
   !gameResponse.variant || !gameResponse.config
     ? {}
-    : makeGameObject(gameResponse.variant, gameResponse.config).specialMoves()
+    : makeGameObject(gameResponse.variant, gameResponse.config).specialMoves(),
 );
 const variantGameView = computed(() => board_map[gameResponse.variant]);
 const variantDescriptionShort = computed(
-  () => variant_short_description_map[gameResponse.variant] ?? ""
+  () => variant_short_description_map[gameResponse.variant] ?? "",
 );
 watchEffect(async () => {
   // TODO: provide a cleanup function to cancel the request.
@@ -90,7 +90,7 @@ watchEffect(async () => {
 
   const userSeats = gameResponse.players
     ?.map((playerUser: User | undefined, index: number) =>
-      playerUser && playerUser?.id === user.value?.id ? index : null
+      playerUser && playerUser?.id === user.value?.id ? index : null,
     )
     .filter((index: number | null): index is number => index !== null);
   if (userSeats?.length === 1) {
@@ -168,7 +168,7 @@ watchEffect((onCleanup) => {
   });
 });
 const createTimeControlPreview = (
-  game: GameResponse
+  game: GameResponse,
 ): IPerPlayerTimeControlBase | null => {
   if (HasTimeControlConfig(game.config)) {
     const config = game.config as IConfigWithTimeControl;

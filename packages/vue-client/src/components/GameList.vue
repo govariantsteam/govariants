@@ -8,7 +8,7 @@ const countOptions = [10, 15, 25, 50];
 const count = ref(countOptions[0]);
 const offset = ref(0);
 const url = computed(
-  () => `/api/games?count=${count.value ?? 0}&offset=${offset.value ?? 0}`
+  () => `/api/games?count=${count.value ?? 0}&offset=${offset.value ?? 0}`,
 );
 const { data: games } = await useFetch(url, { refetch: true })
   .get()

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DriftGoConfig } from "@ogfcommunity/variants-shared";
+import type { DriftGoConfig } from "@ogfcommunity/variants-shared";
 
 const props = defineProps<{ initialConfig: DriftGoConfig }>();
 const config = { ...props.initialConfig } as DriftGoConfig;

@@ -14,7 +14,6 @@ export const useStore = defineStore("user", {
   actions: {
     async update() {
       this.user = await requests.get("/checkLogin");
-      console.log(this.user);
     },
 
     async guestLogin() {

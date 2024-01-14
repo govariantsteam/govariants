@@ -15,8 +15,6 @@ export class FreezeGo extends Baduk {
     super.playMove(player, move);
     const captures_after = this.captures[player as 0 | 1];
 
-    console.log("before, after", captures_before, captures_after);
-
     if (this.frozen && captures_before !== captures_after) {
       throw new Error("Cannot capture after opponent ataris");
     }

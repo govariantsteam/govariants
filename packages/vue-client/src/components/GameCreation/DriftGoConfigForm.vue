@@ -8,8 +8,6 @@ const emit = defineEmits<{
   (e: "configChanged", config: DriftGoConfig): void;
 }>();
 
-console.log(props.initialConfig);
-
 function emitConfigChange() {
   emit("configChanged", config);
 }

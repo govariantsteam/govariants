@@ -1,11 +1,14 @@
-import { DriftGoConfig } from '../../../../shared/dist/variants/drift';
 <script setup lang="ts">
+import { DriftGoConfig } from "@ogfcommunity/variants-shared";
+
 const props = defineProps<{ initialConfig: DriftGoConfig }>();
 const config = { ...props.initialConfig } as DriftGoConfig;
 
 const emit = defineEmits<{
   (e: "configChanged", config: DriftGoConfig): void;
 }>();
+
+console.log(props.initialConfig);
 
 function emitConfigChange() {
   emit("configChanged", config);
@@ -21,7 +24,7 @@ function emitConfigChange() {
     <label>Komi</label>
     <input type="number" step="0.5" v-model="config.komi" />
     <label>X-Shift</label>
-    <input type="number" step="1" v-model="config.yShift" />
+    <input type="number" step="1" v-model="config.xShift" />
     <label>Y-Shift</label>
     <input type="number" step="1" v-model="config.yShift" />
   </form>

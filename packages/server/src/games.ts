@@ -23,13 +23,15 @@ export function gamesCollection() {
 /**
  * @param count number of games to return (default = 10, max = 100)
  * @param offset number of games to skip (default = 0)
+ * @param user_id filter for games where this user has taken a seat
  */
 export async function getGames(
   count: number,
   offset: number,
+  user_id: string | undefined,
 ): Promise<GameResponse[]> {
   const games = gamesCollection()
-    .find()
+    .find(!user_id ? {} : { "players.id": user_id })
     .sort({ _id: -1 })
     .skip(offset || 0)
     .limit(Math.min(count || 10, 100))
@@ -88,7 +90,7 @@ export async function playMove(
   game_id: string,
   moves: MovesType,
   user_id: string,
-) {
+): Promise<GameResponse> {
   const game = await getGame(game_id);
 
   // Verify that moves are legal

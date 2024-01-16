@@ -3,12 +3,18 @@ import { ref, computed } from "vue";
 import { useFetch } from "@vueuse/core";
 import type { GameResponse } from "@ogfcommunity/variants-shared";
 import GameListItem from "@/components/GameListItem.vue";
+import { useCurrentUser } from "../stores/user";
 
 const countOptions = [10, 15, 25, 50];
 const count = ref(countOptions[0]);
 const offset = ref(0);
+const onlyMyGames = ref(false);
+const user = useCurrentUser();
 const url = computed(
-  () => `/api/games?count=${count.value ?? 0}&offset=${offset.value ?? 0}`,
+  () =>
+    `/api/games?count=${count.value ?? 0}&offset=${offset.value ?? 0}${
+      !(user.value && onlyMyGames.value) ? "" : `&user_id=${user.value.id}`
+    }`,
 );
 const { data: games } = await useFetch(url, { refetch: true })
   .get()
@@ -25,6 +31,10 @@ const next = () => {
 </script>
 
 <template>
+  <div v-if="user" class="myGamesToggle">
+    <label for="onlyMyGamesToggle">Show only my games </label>
+    <input id="onlyMyGamesToggle" type="checkbox" v-model="onlyMyGames" />
+  </div>
   <ul>
     <template v-for="game in games" :key="game.id">
       <GameListItem :game="game" />
@@ -46,5 +56,13 @@ const next = () => {
 <style scoped>
 ul {
   padding: 0;
+}
+.myGamesToggle {
+  label {
+    cursor: pointer;
+  }
+  input {
+    cursor: pointer;
+  }
 }
 </style>

@@ -33,6 +33,7 @@ router.get("/games", async (req, res) => {
   const games: GameResponse[] = await getGames(
     Number(req.query.count),
     Number(req.query.offset),
+    req.query.user_id ? String(req.query.user_id) : undefined,
   );
   res.send(games || 0);
 });

@@ -23,4 +23,5 @@ export const board_map: {
   fractional: FractionalBoard,
   keima: KeimaBoard,
   "one color": Baduk,
+  drift: Baduk,
 };

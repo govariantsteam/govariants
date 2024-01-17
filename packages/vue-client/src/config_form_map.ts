@@ -2,6 +2,7 @@ import type { Component } from "vue";
 import BadukConfigForm from "@/components/GameCreation/BadukConfigForm.vue";
 import BadukWithAbstractBoardConfigForm from "@/components/GameCreation/BadukWithAbstractBoardConfigForm.vue";
 import ParalleGoConfigForm from "@/components/GameCreation/ParallelGoConfigForm.vue";
+import DriftGoConfigFormVue from "./components/GameCreation/DriftGoConfigForm.vue";
 
 export const config_form_map: {
   [variant: string]: Component<{ initialConfig: object }>;
@@ -17,4 +18,5 @@ export const config_form_map: {
   freeze: BadukConfigForm,
   keima: BadukConfigForm,
   "one color": BadukConfigForm,
+  drift: DriftGoConfigFormVue,
 };

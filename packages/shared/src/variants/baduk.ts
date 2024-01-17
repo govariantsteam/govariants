@@ -132,7 +132,7 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
     });
   }
 
-  private prepareForNextMove(move: string): void {
+  protected prepareForNextMove(move: string): void {
     if (move == "pass" && this.last_move === "pass") {
       this.finalizeScore();
     } else {
@@ -188,7 +188,7 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
 }
 
 /** Returns true if the group containing (x, y) has at least one liberty. */
-function groupHasLiberties(group: CoordinateLike[], board: Grid<Color>) {
+export function groupHasLiberties(group: CoordinateLike[], board: Grid<Color>) {
   const outer_border = getOuterBorder(group, board);
   const border_colors = outer_border.map((pos) => board.at(pos));
   return border_colors.includes(Color.EMPTY);

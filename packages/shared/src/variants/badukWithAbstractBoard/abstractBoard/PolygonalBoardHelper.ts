@@ -96,6 +96,67 @@ class PolygonalTile {
     }
   }
 
+  ConnectTowards(tile: PolygonalTile, direction: number) {
+    switch (direction) {
+      case 0:
+        this.ConnectToRight(tile, false);
+        return;
+      case 1:
+        this.ConnectToTopRight(tile, false);
+        return;
+      case 2:
+        this.ConnectToTopLeft(tile, false);
+        return;
+      case 3:
+        this.ConnectToLeft(tile, false);
+        return;
+      case 4:
+        this.ConnectToBottomLeft(tile, false);
+        return;
+      case 5:
+        this.ConnectToBottomRight(tile, false);
+        return;
+      default:
+        throw new Error("direction out of range");
+    }
+  }
+
+  IsConnectedTowards(tile: PolygonalTile, direction: number): boolean {
+    return this.NeighbourTiles[direction] === tile;
+  }
+
+  EnsureFullConnectionTo(tile: PolygonalTile, direction: number) {
+    let addedAnyConnection = false;
+
+    if (!this.IsConnectedTowards(tile, direction)) {
+      this.ConnectTowards(tile, direction);
+      addedAnyConnection = true;
+    }
+
+    const backwardsDirection = (direction + 3) % 6;
+    if (!tile.IsConnectedTowards(this, backwardsDirection)) {
+      tile.ConnectTowards(this, backwardsDirection);
+      addedAnyConnection = true;
+    }
+
+    if (!addedAnyConnection) {
+      return;
+    }
+
+    const nextClockWise = (direction + 5) % 6;
+    const previousClockWise = (direction + 1) % 6;
+
+    let neighbour = this.NeighbourTiles[nextClockWise];
+    if (neighbour !== null) {
+      neighbour.EnsureFullConnectionTo(tile, previousClockWise);
+    }
+
+    neighbour = this.NeighbourTiles[previousClockWise];
+    if (neighbour !== null) {
+      neighbour.EnsureFullConnectionTo(tile, nextClockWise);
+    }
+  }
+
   ConnectToTopRight(tile: PolygonalTile, bothSides: boolean) {
     this.NeighbourTiles[1] = tile;
 
@@ -349,16 +410,8 @@ export function CreatePolygonalBoard(size: number): Intersection[] {
           tile.ReferencePoint.Add(TileShiftRight),
         );
         Tiles.push(newTile);
-        tile.ConnectToRight(newTile, true);
+        tile.EnsureFullConnectionTo(newTile, 0);
         newTilesQueue.push(newTile);
-
-        if (tile.NeighbourTiles[1] != null) {
-          newTile.ConnectToTopLeft(tile.NeighbourTiles[1], true);
-        }
-
-        if (tile.NeighbourTiles[5] != null) {
-          newTile.ConnectToBottomLeft(tile.NeighbourTiles[5], true);
-        }
       }
 
       if (tile.NeighbourTiles[1] == null) {
@@ -366,16 +419,8 @@ export function CreatePolygonalBoard(size: number): Intersection[] {
           tile.ReferencePoint.Substract(TileShiftBottomLeft),
         );
         Tiles.push(newTile);
-        tile.ConnectToTopRight(newTile, true);
+        tile.EnsureFullConnectionTo(newTile, 1);
         newTilesQueue.push(newTile);
-
-        if (tile.NeighbourTiles[2] != null) {
-          newTile.ConnectToLeft(tile.NeighbourTiles[2], true);
-        }
-
-        if (tile.NeighbourTiles[0] != null) {
-          newTile.ConnectToBottomRight(tile.NeighbourTiles[0], true);
-        }
       }
 
       if (tile.NeighbourTiles[2] == null) {
@@ -383,16 +428,8 @@ export function CreatePolygonalBoard(size: number): Intersection[] {
           tile.ReferencePoint.Substract(TileShiftBottomRight),
         );
         Tiles.push(newTile);
-        tile.ConnectToTopLeft(newTile, true);
+        tile.EnsureFullConnectionTo(newTile, 2);
         newTilesQueue.push(newTile);
-
-        if (tile.NeighbourTiles[3] != null) {
-          newTile.ConnectToBottomLeft(tile.NeighbourTiles[3], true);
-        }
-
-        if (tile.NeighbourTiles[1] != null) {
-          newTile.ConnectToRight(tile.NeighbourTiles[1], true);
-        }
       }
 
       if (tile.NeighbourTiles[3] == null) {
@@ -400,16 +437,8 @@ export function CreatePolygonalBoard(size: number): Intersection[] {
           tile.ReferencePoint.Substract(TileShiftRight),
         );
         Tiles.push(newTile);
-        tile.ConnectToLeft(newTile, true);
+        tile.EnsureFullConnectionTo(newTile, 3);
         newTilesQueue.push(newTile);
-
-        if (tile.NeighbourTiles[4] != null) {
-          newTile.ConnectToBottomRight(tile.NeighbourTiles[4], true);
-        }
-
-        if (tile.NeighbourTiles[2] != null) {
-          newTile.ConnectToTopRight(tile.NeighbourTiles[2], true);
-        }
       }
 
       if (tile.NeighbourTiles[4] == null) {
@@ -417,16 +446,8 @@ export function CreatePolygonalBoard(size: number): Intersection[] {
           tile.ReferencePoint.Add(TileShiftBottomLeft),
         );
         Tiles.push(newTile);
-        tile.ConnectToBottomLeft(newTile, true);
+        tile.EnsureFullConnectionTo(newTile, 4);
         newTilesQueue.push(newTile);
-
-        if (tile.NeighbourTiles[5] != null) {
-          newTile.ConnectToRight(tile.NeighbourTiles[5], true);
-        }
-
-        if (tile.NeighbourTiles[3] != null) {
-          newTile.ConnectToTopLeft(tile.NeighbourTiles[3], true);
-        }
       }
 
       if (tile.NeighbourTiles[5] == null) {
@@ -434,16 +455,8 @@ export function CreatePolygonalBoard(size: number): Intersection[] {
           tile.ReferencePoint.Add(TileShiftBottomRight),
         );
         Tiles.push(newTile);
-        tile.ConnectToBottomRight(newTile, true);
+        tile.EnsureFullConnectionTo(newTile, 5);
         newTilesQueue.push(newTile);
-
-        if (tile.NeighbourTiles[0] != null) {
-          newTile.ConnectToTopRight(tile.NeighbourTiles[0], true);
-        }
-
-        if (tile.NeighbourTiles[4] != null) {
-          newTile.ConnectToLeft(tile.NeighbourTiles[4], true);
-        }
       }
     }
     tileQueue = newTilesQueue;

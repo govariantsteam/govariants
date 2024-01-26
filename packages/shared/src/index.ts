@@ -17,3 +17,4 @@ export {
   FractionalState,
 } from "./variants/fractional";
 export { KeimaState } from "./variants/keima";
+export * from "./variants/drift";

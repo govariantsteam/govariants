@@ -40,6 +40,7 @@ nav {
     display: flex;
     align-items: center;
     text-decoration: none;
+    color: var(--color-text);
 
     &.router-link-exact-active {
       background-color: var(--color-primary-transparent);
@@ -63,6 +64,7 @@ nav {
     font-family: inherit;
     text-wrap: nowrap;
     cursor: pointer;
+    color: var(--color-text);
 
     &:hover {
       transition: 0.4s;

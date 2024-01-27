@@ -19,3 +19,8 @@ export interface UserResponse {
   login_type: "guest" | "persistent";
   username?: string;
 }
+
+export type GamesFilter = {
+  user_id: string | null;
+  variant: string | null;
+};

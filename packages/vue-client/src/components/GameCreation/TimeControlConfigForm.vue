@@ -31,7 +31,7 @@ watch(typeRef, () => {
 
 <template>
   <form @change="emitConfigChange" class="config-form-column">
-    <label>Time Control</label>
+    <h3>Time Control</h3>
     <select v-model="typeRef">
       <option :value="null">Unlimited Time</option>
       <option :value="TimeControlType.Absolute">Absolute</option>
@@ -52,6 +52,9 @@ watch(typeRef, () => {
 
 <style>
 input {
+  width: fit-content;
+}
+select {
   width: fit-content;
 }
 </style>

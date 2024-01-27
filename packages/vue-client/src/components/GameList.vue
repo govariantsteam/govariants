@@ -1,20 +1,16 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, type Ref } from "vue";
 import { useFetch } from "@vueuse/core";
-import type { GameResponse } from "@ogfcommunity/variants-shared";
+import type { GameResponse, GamesFilter } from "@ogfcommunity/variants-shared";
 import GameListItem from "@/components/GameListItem.vue";
-import { useCurrentUser } from "../stores/user";
+import GamesFilterForm from "@/components/GamesFilterForm.vue";
 
 const countOptions = [10, 15, 25, 50];
 const count = ref(countOptions[0]);
 const offset = ref(0);
-const onlyMyGames = ref(false);
-const user = useCurrentUser();
+const filter: Ref<GamesFilter> = ref({ user_id: null, variant: null });
 const url = computed(
-  () =>
-    `/api/games?count=${count.value ?? 0}&offset=${offset.value ?? 0}${
-      !(user.value && onlyMyGames.value) ? "" : `&user_id=${user.value.id}`
-    }`,
+  () => `/api/games?count=${count.value ?? 0}&offset=${offset.value ?? 0}`,
 );
 const { data: games } = await useFetch(url, { refetch: true })
   .get()
@@ -28,13 +24,14 @@ const previous = () => {
 const next = () => {
   offset.value += count.value;
 };
+function setFilter(gamesFilter: GamesFilter) {
+  filter.value = gamesFilter;
+}
 </script>
 
 <template>
-  <div v-if="user" class="myGamesToggle">
-    <label for="onlyMyGamesToggle">Show only my games </label>
-    <input id="onlyMyGamesToggle" type="checkbox" v-model="onlyMyGames" />
-  </div>
+  <GamesFilterForm v-on:filter-change="setFilter"></GamesFilterForm>
+  <hr />
   <ul>
     <template v-for="game in games" :key="game.id">
       <GameListItem :game="game" />
@@ -56,13 +53,5 @@ const next = () => {
 <style scoped>
 ul {
   padding: 0;
-}
-.myGamesToggle {
-  label {
-    cursor: pointer;
-  }
-  input {
-    cursor: pointer;
-  }
 }
 </style>

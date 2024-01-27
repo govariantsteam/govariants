@@ -44,3 +44,8 @@ a,
   display: flex;
   flex-direction: column;
 }
+
+.labelledContainer {
+  display: flex;
+  flex-direction: column;
+}

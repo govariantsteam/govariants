@@ -67,14 +67,16 @@ const setTimeControlConfig = (
   <div className="game-creation-form">
     <h3>Create a game</h3>
     <div>
-      <label>Variant:</label>
-      <select v-model="variant">
-        <option v-for="variant in variants" :key="variant">
-          {{ variant }}
-        </option>
-      </select>
+      <div class="labelledContainer">
+        <label>Variant</label>
+        <select v-model="variant">
+          <option v-for="variant in variants" :key="variant">
+            {{ variant }}
+          </option>
+        </select>
+      </div>
     </div>
-    <label>Config: </label>
+    <h3>Config</h3>
     <template v-if="variantConfigForm">
       <component
         v-bind:is="variantConfigForm"
@@ -97,5 +99,8 @@ textarea {
   width: 300px;
   height: 150px;
   display: block;
+}
+.game-creation-form {
+  margin-bottom: 0.5rem;
 }
 </style>

@@ -12,7 +12,7 @@ function emitFilter() {
 }
 
 const variants: string[] = getVariantList();
-const selectedVariant: Ref<string | null> = ref(null);
+const selectedVariant: Ref<string | ""> = ref("");
 const user = useCurrentUser();
 const onlyMyGames = ref(false);
 
@@ -26,16 +26,14 @@ const filter = computed(() => {
 </script>
 
 <template>
+  <h3>Games filter</h3>
   <form @change="emitFilter" class="gamesFilterForm">
-    <div class="labelledContainer">
-      <label>Variant filter</label>
-      <select v-model="selectedVariant">
-        <option value="null">All variants</option>
-        <option v-for="variant in variants" :key="variant">
-          {{ variant }}
-        </option>
-      </select>
-    </div>
+    <select v-model="selectedVariant">
+      <option value="">All variants</option>
+      <option v-for="variant in variants" :key="variant">
+        {{ variant }}
+      </option>
+    </select>
 
     <div v-if="user" class="myGamesToggle">
       <label for="onlyMyGamesToggle">games that I play </label>
@@ -47,8 +45,7 @@ const filter = computed(() => {
 <style>
 .gamesFilterForm {
   display: flex;
-  flex-direction: row;
-  gap: 0.5rem;
+  flex-direction: column;
   margin-bottom: 0.5rem;
 }
 .myGamesToggle {

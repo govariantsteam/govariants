@@ -1,16 +1,22 @@
 <script setup lang="ts">
 import { ref, computed, type Ref } from "vue";
 import { useFetch } from "@vueuse/core";
-import type { GameResponse, GamesFilter } from "@ogfcommunity/variants-shared";
+import {
+  type GameResponse,
+  type GamesFilter,
+  gamesFilterToUrlParams,
+} from "@ogfcommunity/variants-shared";
 import GameListItem from "@/components/GameListItem.vue";
 import GamesFilterForm from "@/components/GamesFilterForm.vue";
 
 const countOptions = [10, 15, 25, 50];
 const count = ref(countOptions[0]);
 const offset = ref(0);
-const filter: Ref<GamesFilter> = ref({ user_id: null, variant: null });
+const filter: Ref<GamesFilter> = ref({ user_id: null, variant: "" });
 const url = computed(
-  () => `/api/games?count=${count.value ?? 0}&offset=${offset.value ?? 0}`,
+  () =>
+    `/api/games?count=${count.value ?? 0}&offset=${offset.value ?? 0}` +
+    gamesFilterToUrlParams(filter.value),
 );
 const { data: games } = await useFetch(url, { refetch: true })
   .get()

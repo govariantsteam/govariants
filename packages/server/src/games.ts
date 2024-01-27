@@ -28,10 +28,19 @@ export function gamesCollection() {
 export async function getGames(
   count: number,
   offset: number,
-  user_id: string | undefined,
+  user_id: string | null,
+  variant: string | null,
 ): Promise<GameResponse[]> {
+  let dbFilter: Record<string, any> = {};
+  if (user_id) {
+    dbFilter["players.id"] = user_id;
+  }
+  if (variant) {
+    dbFilter["variant"] = variant;
+  }
+
   const games = gamesCollection()
-    .find(!user_id ? {} : { "players.id": user_id })
+    .find(dbFilter)
     .sort({ _id: -1 })
     .skip(offset || 0)
     .limit(Math.min(count || 10, 100))

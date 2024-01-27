@@ -22,6 +22,17 @@
   --vt-c-text-light-2: rgba(60, 60, 60, 0.66);
   --vt-c-text-dark-1: var(--vt-c-white);
   --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
+
+  --vt-c-primary-light: hsla(160, 100%, 37%, 1);
+  --vt-c-primary-dark: hsla(160, 100%, 37%, 1);
+
+  --vt-c-primary-light-transparent: hsla(160, 100%, 37%, 0.3);
+  --vt-c-primary-dark-transparent: hsla(160, 100%, 37%, 0.3);
+
+  --vt-c-warn-light: rgb(220, 92, 92);
+  --vt-c-warn-light-transparent: rgba(220, 92, 92, 0.3);
+  --vt-c-warn-dark: rgb(220, 92, 92);
+  --vt-c-warn-dark-transparent: rgba(220, 92, 92, 0.3);
 }
 
 /* semantic color variables for this project */
@@ -37,6 +48,11 @@
 
   --color-heading: var(--vt-c-text-light-1);
   --color-text: var(--vt-c-text-light-1);
+
+  --color-primary: var(--vt-c-primary-light);
+  --color-primary-transparent: var(--vt-c-primary-light-transparent);
+  --color-warn: var(--vt-c-warn-light);
+  --color-warn-transparent: var(--vt-c-warn-light-transparent);
 
   --section-gap: 160px;
 }
@@ -54,6 +70,11 @@
 
     --color-heading: var(--vt-c-text-dark-1);
     --color-text: var(--vt-c-text-dark-2);
+
+    --color-primary: var(--vt-c-primary-dark);
+    --color-primary-transparent: var(--vt-c-primary-dark-transparent);
+    --color-warn: var(--vt-c-warn-dark);
+    --color-warn-transparent: var(--vt-c-warn-dark-transparent);
   }
 }
 

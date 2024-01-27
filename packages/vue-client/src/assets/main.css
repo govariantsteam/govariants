@@ -11,12 +11,12 @@ nav {
   width: 100%;
   text-align: left;
   font-size: 1rem;
-  padding: 1rem 1rem;
   position: sticky;
   top: 0;
   z-index: 999;
   background-color: var(--color-background-soft);
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   box-shadow: 0px 0px 5px var(--color-shadow);
   margin-bottom: 5px;
@@ -24,14 +24,50 @@ nav {
   div {
     display: flex;
     align-items: center;
-    gap: 1rem;
   }
+
   .navLogo {
     width: 2rem;
     height: 2rem;
   }
-  input {
-    height: fit-content;
+
+  .navElement {
+    padding: 0.6rem 1.2rem;
+    height: 100%;
+  }
+
+  a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+
+    &.router-link-exact-active {
+      background-color: var(--color-primary-transparent);
+    }
+
+    &:hover {
+      transition: 0.4s;
+      background-color: var(--color-primary-transparent);
+    }
+
+    &:visited {
+      color: var(--color-text);
+    }
+  }
+
+  button {
+    border: none;
+    background-color: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    font-family: inherit;
+    text-wrap: nowrap;
+    cursor: pointer;
+
+    &:hover {
+      transition: 0.4s;
+      background-color: var(--color-warn-transparent);
+    }
   }
 }
 
@@ -52,19 +88,6 @@ nav {
   .pageWrapper {
     display: flex;
     place-items: center;
-  }
-}
-
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-}
-
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
   }
 }
 

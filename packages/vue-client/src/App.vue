@@ -6,12 +6,12 @@ import UserNav from "./components/UserNav.vue";
 <template>
   <nav>
     <div>
-      <RouterLink to="/"><img class="navLogo" src="/favicon.ico" /></RouterLink>
-      <RouterLink to="/about">About</RouterLink>
+      <RouterLink class="navElement" to="/"
+        ><img class="navLogo" src="/favicon.ico"
+      /></RouterLink>
+      <RouterLink class="navElement" to="/about">About</RouterLink>
     </div>
-    <div>
-      <UserNav />
-    </div>
+    <UserNav />
   </nav>
   <div class="pageWrapper">
     <Suspense><RouterView /></Suspense>
@@ -27,23 +27,6 @@ header {
 .logo {
   display: block;
   margin: 0 auto 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: flex;
-  align-items: center;
-}
-
-nav a:first-of-type {
-  border: 0;
 }
 
 @media (min-width: 1024px) {

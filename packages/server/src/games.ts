@@ -6,7 +6,7 @@ import {
   getOnlyMove,
   HasTimeControlConfig,
 } from "@ogfcommunity/variants-shared";
-import { ObjectId, WithId, Document } from "mongodb";
+import { ObjectId, WithId, Document, Filter } from "mongodb";
 import { getDb } from "./db";
 import { io } from "./socket_io";
 import { getTimeoutService } from "./index";
@@ -31,7 +31,7 @@ export async function getGames(
   user_id: string | null,
   variant: string | null,
 ): Promise<GameResponse[]> {
-  let dbFilter: Record<string, any> = {};
+  const dbFilter: Filter<Document> = {};
   if (user_id) {
     dbFilter["players.id"] = user_id;
   }

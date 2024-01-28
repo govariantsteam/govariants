@@ -26,7 +26,7 @@ const filter = computed(() => {
 </script>
 
 <template>
-  <h3>Games filter</h3>
+  <h3>Filter games</h3>
   <form @change="emitFilter" class="gamesFilterForm">
     <select v-model="selectedVariant">
       <option value="">All variants</option>
@@ -45,7 +45,9 @@ const filter = computed(() => {
 <style>
 .gamesFilterForm {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  gap: 0.5rem;
+  flex-wrap: wrap;
   margin-bottom: 0.5rem;
 }
 .myGamesToggle {

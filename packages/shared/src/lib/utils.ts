@@ -27,7 +27,7 @@ export type Participation = {
 export function gamesFilterToUrlParams(filter: GamesFilter): string {
   return (
     (filter.user_id ? `&user_id=${encodeURIComponent(filter.user_id)}` : "") +
-    (filter.variant === "" || filter.variant === null
+    (filter.variant === "" || filter.variant === undefined
       ? ""
       : `&variant=${encodeURIComponent(filter.variant)}`)
   );

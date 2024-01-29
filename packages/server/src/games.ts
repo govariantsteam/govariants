@@ -5,6 +5,7 @@ import {
   User,
   getOnlyMove,
   HasTimeControlConfig,
+  GamesFilter,
 } from "@ogfcommunity/variants-shared";
 import { ObjectId, WithId, Document, Filter } from "mongodb";
 import { getDb } from "./db";
@@ -23,20 +24,19 @@ export function gamesCollection() {
 /**
  * @param count number of games to return (default = 10, max = 100)
  * @param offset number of games to skip (default = 0)
- * @param user_id filter for games where this user has taken a seat
+ * @param filter filter settings for the query
  */
 export async function getGames(
   count: number,
   offset: number,
-  user_id: string | null,
-  variant: string | null,
+  filter?: GamesFilter,
 ): Promise<GameResponse[]> {
   const dbFilter: Filter<Document> = {};
-  if (user_id) {
-    dbFilter["players.id"] = user_id;
+  if (filter && filter.user_id) {
+    dbFilter["players.id"] = filter.user_id;
   }
-  if (variant) {
-    dbFilter["variant"] = variant;
+  if (filter && filter.variant) {
+    dbFilter["variant"] = filter.variant;
   }
 
   const games = gamesCollection()

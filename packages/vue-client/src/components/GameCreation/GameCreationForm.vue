@@ -67,7 +67,7 @@ const setTimeControlConfig = (
   <div className="game-creation-form">
     <h3>Create a game</h3>
     <div>
-      <div class="labelledContainer">
+      <div class="col">
         <label>Variant</label>
         <select v-model="variant">
           <option v-for="variant in variants" :key="variant">

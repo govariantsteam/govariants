@@ -12,13 +12,13 @@ function emitFilter() {
 }
 
 const variants: string[] = getVariantList();
-const selectedVariant: Ref<string | ""> = ref("");
+const selectedVariant: Ref<string> = ref("");
 const user = useCurrentUser();
 const onlyMyGames = ref(false);
 
 const filter = computed(() => {
   const gamesFilter: GamesFilter = {
-    user_id: onlyMyGames.value ? user.value?.id ?? null : null,
+    user_id: onlyMyGames.value ? user.value?.id : undefined,
     variant: selectedVariant.value,
   };
   return gamesFilter;

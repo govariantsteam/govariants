@@ -21,6 +21,6 @@ export interface UserResponse {
 }
 
 export type GamesFilter = {
-  user_id: string | null;
-  variant: string | null;
+  user_id?: string;
+  variant?: string;
 };

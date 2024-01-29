@@ -16,6 +16,7 @@ import {
 } from "./users";
 import {
   GameResponse,
+  GamesFilter,
   MovesType,
   User,
   UserResponse,
@@ -30,11 +31,15 @@ router.get("/games/:gameId", async (req, res) => {
 });
 
 router.get("/games", async (req, res) => {
+  const filter: GamesFilter = {
+    user_id: req.query.user_id?.toString(),
+    variant: req.query.variant?.toString(),
+  };
+
   const games: GameResponse[] = await getGames(
     Number(req.query.count),
     Number(req.query.offset),
-    req.query.user_id ? String(req.query.user_id) : null,
-    req.query.variant ? String(req.query.variant) : null,
+    filter,
   );
   res.send(games || 0);
 });

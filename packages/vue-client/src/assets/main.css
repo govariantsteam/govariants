@@ -45,7 +45,7 @@ a,
   flex-direction: column;
 }
 
-.labelledContainer {
+.col {
   display: flex;
   flex-direction: column;
 }

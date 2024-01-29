@@ -98,7 +98,7 @@ app.use(
     cookie: {
       sameSite: "strict",
       secure: "auto", // TODO: See https://www.npmjs.com/package/express-session,
-      maxAge: 86_400_000 * 120, // 120 days
+      maxAge: 86_400_000 * 180, // 180 days
     },
     store: MongoStore.create({ client: getDb() }),
   }),

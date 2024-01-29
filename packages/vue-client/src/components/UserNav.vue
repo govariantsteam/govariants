@@ -11,7 +11,11 @@ store.update();
   <template v-else>
     <!-- TODO: make this a link to the user's profile? -->
     <RouterLink class="navElement" to="/">{{ user.username }}</RouterLink>
-    <button class="navElement" v-on:click="store.logout()" click="Log out">
+    <button
+      class="navElement logoutButton"
+      v-on:click="store.logout()"
+      click="Log out"
+    >
       Log out
     </button>
   </template>

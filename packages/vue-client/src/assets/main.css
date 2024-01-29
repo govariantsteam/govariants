@@ -67,8 +67,19 @@ button.navElement {
   cursor: pointer;
   color: var(--color-text);
 
-  &:hover {
-    transition: 0.4s;
-    background-color: var(--color-warn-transparent);
+  &.logoutButton {
+    &:hover {
+      transition: 0.4s;
+      background-color: var(--color-warn-transparent);
+    }
+  }
+}
+
+a,
+.green {
+  color: var(--color-primary);
+
+  &:visited {
+    color: var(--color-primary-shade);
   }
 }

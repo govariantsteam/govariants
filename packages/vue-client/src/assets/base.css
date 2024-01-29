@@ -23,8 +23,10 @@
   --vt-c-text-dark-1: var(--vt-c-white);
   --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
 
-  --vt-c-primary-light: hsla(160, 100%, 37%, 1);
-  --vt-c-primary-dark: hsla(160, 100%, 37%, 1);
+  --vt-c-primary-light: rgb(0, 189, 126);
+  --vt-c-primary-dark: rgb(0, 189, 126);
+  --vt-c-primary-light-2: rgb(0, 107, 71);
+  --vt-c-primary-dark-2: rgb(0, 255, 170);
 
   --vt-c-primary-light-transparent: hsla(160, 100%, 37%, 0.3);
   --vt-c-primary-dark-transparent: hsla(160, 100%, 37%, 0.3);
@@ -50,6 +52,7 @@
   --color-text: var(--vt-c-text-light-1);
 
   --color-primary: var(--vt-c-primary-light);
+  --color-primary-shade: var(--vt-c-primary-light-2);
   --color-primary-transparent: var(--vt-c-primary-light-transparent);
   --color-warn: var(--vt-c-warn-light);
   --color-warn-transparent: var(--vt-c-warn-light-transparent);
@@ -72,6 +75,7 @@
     --color-text: var(--vt-c-text-dark-2);
 
     --color-primary: var(--vt-c-primary-dark);
+    --color-primary-shade: var(--vt-c-primary-dark-2);
     --color-primary-transparent: var(--vt-c-primary-dark-transparent);
     --color-warn: var(--vt-c-warn-dark);
     --color-warn-transparent: var(--vt-c-warn-dark-transparent);

@@ -11,7 +11,9 @@ import UserNav from "./components/UserNav.vue";
       /></RouterLink>
       <RouterLink class="navElement" to="/about">About</RouterLink>
     </div>
-    <UserNav />
+    <div>
+      <UserNav />
+    </div>
   </nav>
   <div class="pageWrapper">
     <Suspense><RouterView /></Suspense>
@@ -19,6 +21,31 @@ import UserNav from "./components/UserNav.vue";
 </template>
 
 <style scoped>
+nav {
+  width: 100%;
+  text-align: left;
+  font-size: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  background-color: var(--color-background-soft);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  box-shadow: 0px 0px 5px var(--color-shadow);
+  margin-bottom: 5px;
+
+  div {
+    display: flex;
+    align-items: center;
+  }
+
+  .navLogo {
+    width: 2rem;
+    height: 2rem;
+  }
+}
+
 header {
   line-height: 1.5;
   max-height: 100vh;

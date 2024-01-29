@@ -7,72 +7,6 @@
   height: 100%;
 }
 
-nav {
-  width: 100%;
-  text-align: left;
-  font-size: 1rem;
-  position: sticky;
-  top: 0;
-  z-index: 999;
-  background-color: var(--color-background-soft);
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  box-shadow: 0px 0px 5px var(--color-shadow);
-  margin-bottom: 5px;
-
-  div {
-    display: flex;
-    align-items: center;
-  }
-
-  .navLogo {
-    width: 2rem;
-    height: 2rem;
-  }
-
-  .navElement {
-    padding: 0.6rem 1.2rem;
-    height: 100%;
-  }
-
-  a {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    color: var(--color-text);
-
-    &.router-link-exact-active {
-      background-color: var(--color-primary-transparent);
-    }
-
-    &:hover {
-      transition: 0.4s;
-      background-color: var(--color-primary-transparent);
-    }
-
-    &:visited {
-      color: var(--color-text);
-    }
-  }
-
-  button {
-    border: none;
-    background-color: inherit;
-    font-size: inherit;
-    font-weight: inherit;
-    font-family: inherit;
-    text-wrap: nowrap;
-    cursor: pointer;
-    color: var(--color-text);
-
-    &:hover {
-      transition: 0.4s;
-      background-color: var(--color-warn-transparent);
-    }
-  }
-}
-
 .pageWrapper {
   max-width: 1280px;
   margin: 0 auto;
@@ -88,12 +22,53 @@ nav {
 
 @media (min-width: 1024px) {
   .pageWrapper {
-    display: flex;
-    place-items: center;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
   }
 }
 
 .config-form-column {
   display: flex;
   flex-direction: column;
+}
+
+.navElement {
+  padding: 0.6rem 1.2rem;
+  height: 100%;
+}
+
+a.navElement {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--color-text);
+
+  &.router-link-exact-active {
+    background-color: var(--color-primary-transparent);
+  }
+
+  &:hover {
+    transition: 0.4s;
+    background-color: var(--color-primary-transparent);
+  }
+
+  &:visited {
+    color: var(--color-text);
+  }
+}
+
+button.navElement {
+  border: none;
+  background-color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  font-family: inherit;
+  text-wrap: nowrap;
+  cursor: pointer;
+  color: var(--color-text);
+
+  &:hover {
+    transition: 0.4s;
+    background-color: var(--color-warn-transparent);
+  }
 }

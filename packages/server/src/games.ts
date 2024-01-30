@@ -5,8 +5,9 @@ import {
   User,
   getOnlyMove,
   HasTimeControlConfig,
+  GamesFilter,
 } from "@ogfcommunity/variants-shared";
-import { ObjectId, WithId, Document } from "mongodb";
+import { ObjectId, WithId, Document, Filter } from "mongodb";
 import { getDb } from "./db";
 import { io } from "./socket_io";
 import { getTimeoutService } from "./index";
@@ -23,13 +24,23 @@ export function gamesCollection() {
 /**
  * @param count number of games to return (default = 10, max = 100)
  * @param offset number of games to skip (default = 0)
+ * @param filter filter settings for the query
  */
 export async function getGames(
   count: number,
   offset: number,
+  filter?: GamesFilter,
 ): Promise<GameResponse[]> {
+  const dbFilter: Filter<Document> = {};
+  if (filter && filter.user_id) {
+    dbFilter["players.id"] = filter.user_id;
+  }
+  if (filter && filter.variant) {
+    dbFilter["variant"] = filter.variant;
+  }
+
   const games = gamesCollection()
-    .find()
+    .find(dbFilter)
     .sort({ _id: -1 })
     .skip(offset || 0)
     .limit(Math.min(count || 10, 100))
@@ -88,7 +99,7 @@ export async function playMove(
   game_id: string,
   moves: MovesType,
   user_id: string,
-) {
+): Promise<GameResponse> {
   const game = await getGame(game_id);
 
   // Verify that moves are legal

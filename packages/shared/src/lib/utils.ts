@@ -1,3 +1,5 @@
+import { GamesFilter } from "../api_types";
+
 export interface MovesType {
   [player: number]: string;
 }
@@ -21,3 +23,12 @@ export type Participation = {
   playerNr: number;
   dropOutAtRound: number | null;
 };
+
+export function gamesFilterToUrlParams(filter: GamesFilter): string {
+  return (
+    (filter.user_id ? `&user_id=${encodeURIComponent(filter.user_id)}` : "") +
+    (filter.variant === "" || filter.variant === undefined
+      ? ""
+      : `&variant=${encodeURIComponent(filter.variant)}`)
+  );
+}

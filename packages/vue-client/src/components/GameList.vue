@@ -1,14 +1,22 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, type Ref } from "vue";
 import { useFetch } from "@vueuse/core";
-import type { GameResponse } from "@ogfcommunity/variants-shared";
+import {
+  type GameResponse,
+  type GamesFilter,
+  gamesFilterToUrlParams,
+} from "@ogfcommunity/variants-shared";
 import GameListItem from "@/components/GameListItem.vue";
+import GamesFilterForm from "@/components/GamesFilterForm.vue";
 
 const countOptions = [10, 15, 25, 50];
 const count = ref(countOptions[0]);
 const offset = ref(0);
+const filter: Ref<GamesFilter> = ref({});
 const url = computed(
-  () => `/api/games?count=${count.value ?? 0}&offset=${offset.value ?? 0}`,
+  () =>
+    `/api/games?count=${count.value ?? 0}&offset=${offset.value ?? 0}` +
+    gamesFilterToUrlParams(filter.value),
 );
 const { data: games } = await useFetch(url, { refetch: true })
   .get()
@@ -22,9 +30,14 @@ const previous = () => {
 const next = () => {
   offset.value += count.value;
 };
+function setFilter(gamesFilter: GamesFilter) {
+  filter.value = gamesFilter;
+}
 </script>
 
 <template>
+  <GamesFilterForm v-on:filter-change="setFilter"></GamesFilterForm>
+  <hr />
   <ul>
     <template v-for="game in games" :key="game.id">
       <GameListItem :game="game" />

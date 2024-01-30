@@ -83,3 +83,8 @@ a,
     color: var(--color-primary-shade);
   }
 }
+
+.col {
+  display: flex;
+  flex-direction: column;
+}

@@ -1,48 +1,87 @@
 @import "./base.css";
 
 #app {
+  font-weight: normal;
+  display: grid;
+  grid-template-rows: max-content 1fr;
+  height: 100%;
+}
+
+.pageWrapper {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
-
-  font-weight: normal;
+  padding: 0 2rem;
 }
 
 @media (max-width: 540px) {
-  #app {
-    padding: 0.2rem;
-  }
-}
-
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-}
-
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
+  .pageWrapper {
+    padding-left: 0.2rem;
+    padding-right: 0.2rem;
   }
 }
 
 @media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
+  .pageWrapper {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
   }
 }
 
 .config-form-column {
   display: flex;
   flex-direction: column;
+}
+
+.navElement {
+  padding: 0.6rem 1.2rem;
+  height: 100%;
+}
+
+a.navElement {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--color-text);
+
+  &.router-link-exact-active {
+    background-color: var(--color-primary-transparent);
+  }
+
+  &:hover {
+    transition: 0.4s;
+    background-color: var(--color-primary-transparent);
+  }
+
+  &:visited {
+    color: var(--color-text);
+  }
+}
+
+button.navElement {
+  border: none;
+  background-color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  font-family: inherit;
+  text-wrap: nowrap;
+  cursor: pointer;
+  color: var(--color-text);
+
+  &.logoutButton {
+    &:hover {
+      transition: 0.4s;
+      background-color: var(--color-warn-transparent);
+    }
+  }
+}
+
+a,
+.green {
+  color: var(--color-primary);
+
+  &:visited {
+    color: var(--color-primary-shade);
+  }
 }
 
 .col {

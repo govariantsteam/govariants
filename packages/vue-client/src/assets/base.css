@@ -15,10 +15,26 @@
   --vt-c-divider-dark-1: rgba(84, 84, 84, 0.65);
   --vt-c-divider-dark-2: rgba(84, 84, 84, 0.48);
 
+  --vt-c-shadow-light: rgb(128, 128, 128);
+  --vt-c-shadow-dark: rgb(128, 128, 128);
+
   --vt-c-text-light-1: var(--vt-c-indigo);
   --vt-c-text-light-2: rgba(60, 60, 60, 0.66);
   --vt-c-text-dark-1: var(--vt-c-white);
   --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
+
+  --vt-c-primary-light: rgb(0, 189, 126);
+  --vt-c-primary-dark: rgb(0, 189, 126);
+  --vt-c-primary-light-2: rgb(0, 107, 71);
+  --vt-c-primary-dark-2: rgb(0, 255, 170);
+
+  --vt-c-primary-light-transparent: hsla(160, 100%, 37%, 0.3);
+  --vt-c-primary-dark-transparent: hsla(160, 100%, 37%, 0.3);
+
+  --vt-c-warn-light: rgb(220, 92, 92);
+  --vt-c-warn-light-transparent: rgba(220, 92, 92, 0.3);
+  --vt-c-warn-dark: rgb(220, 92, 92);
+  --vt-c-warn-dark-transparent: rgba(220, 92, 92, 0.3);
 }
 
 /* semantic color variables for this project */
@@ -30,8 +46,16 @@
   --color-border: var(--vt-c-divider-light-2);
   --color-border-hover: var(--vt-c-divider-light-1);
 
+  --color-shadow: var(--vt-c-shadow-light);
+
   --color-heading: var(--vt-c-text-light-1);
   --color-text: var(--vt-c-text-light-1);
+
+  --color-primary: var(--vt-c-primary-light);
+  --color-primary-shade: var(--vt-c-primary-light-2);
+  --color-primary-transparent: var(--vt-c-primary-light-transparent);
+  --color-warn: var(--vt-c-warn-light);
+  --color-warn-transparent: var(--vt-c-warn-light-transparent);
 
   --section-gap: 160px;
 }
@@ -45,8 +69,16 @@
     --color-border: var(--vt-c-divider-dark-2);
     --color-border-hover: var(--vt-c-divider-dark-1);
 
+    --color-shadow: var(--vt-c-shadow-dark);
+
     --color-heading: var(--vt-c-text-dark-1);
     --color-text: var(--vt-c-text-dark-2);
+
+    --color-primary: var(--vt-c-primary-dark);
+    --color-primary-shade: var(--vt-c-primary-dark-2);
+    --color-primary-transparent: var(--vt-c-primary-dark-transparent);
+    --color-warn: var(--vt-c-warn-dark);
+    --color-warn-transparent: var(--vt-c-warn-dark-transparent);
   }
 }
 
@@ -65,8 +97,9 @@ body {
   background: var(--color-background);
   transition: color 0.5s, background-color 0.5s;
   line-height: 1.6;
-  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
-    Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
   font-size: 15px;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;

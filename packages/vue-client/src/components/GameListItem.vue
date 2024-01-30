@@ -54,6 +54,10 @@ li.game-list-item {
   margin-top: -15px;
 }
 
+a {
+  text-decoration: none;
+}
+
 .board {
   width: 100%;
   padding: 0;

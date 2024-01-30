@@ -4,16 +4,48 @@ import UserNav from "./components/UserNav.vue";
 </script>
 
 <template>
-  <Suspense><RouterView /></Suspense>
-
   <nav>
-    <RouterLink to="/">Home</RouterLink>
-    <RouterLink to="/about">About</RouterLink>
-    <UserNav />
+    <div>
+      <RouterLink class="navElement" to="/"
+        ><img class="navLogo" src="/favicon.ico"
+      /></RouterLink>
+      <RouterLink class="navElement" to="/about">About</RouterLink>
+    </div>
+    <div>
+      <UserNav />
+    </div>
   </nav>
+  <div class="pageWrapper">
+    <Suspense><RouterView /></Suspense>
+  </div>
 </template>
 
 <style scoped>
+nav {
+  width: 100%;
+  text-align: left;
+  font-size: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  background-color: var(--color-background-soft);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  box-shadow: 0px 0px 5px var(--color-shadow);
+  margin-bottom: 5px;
+
+  div {
+    display: flex;
+    align-items: center;
+  }
+
+  .navLogo {
+    width: 2rem;
+    height: 2rem;
+  }
+}
+
 header {
   line-height: 1.5;
   max-height: 100vh;
@@ -22,31 +54,6 @@ header {
 .logo {
   display: block;
   margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
 }
 
 @media (min-width: 1024px) {
@@ -64,15 +71,6 @@ nav a:first-of-type {
     display: flex;
     place-items: flex-start;
     flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
   }
 }
 </style>

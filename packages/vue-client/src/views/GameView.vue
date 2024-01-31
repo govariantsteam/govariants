@@ -73,6 +73,7 @@ const game = computed(() => {
     result,
     state,
     round: game_obj.round,
+    next_to_play: game_obj.nextToPlay(),
   };
 });
 const specialMoves = computed(() =>
@@ -203,6 +204,7 @@ const createTimeControlPreview = (
           gameResponse.time_control?.forPlayer[idx] ??
           createTimeControlPreview(gameResponse)
         "
+        :is_players_turn="game.next_to_play?.includes(idx) ?? false"
       />
     </div>
 
@@ -214,6 +216,17 @@ const createTimeControlPreview = (
       >
         {{ value }}
       </button>
+    </div>
+    <div v-if="game.next_to_play?.length" class="players-to-move-container">
+      <span v-if="game.next_to_play?.length === 1" class="info-label"
+        >Player to move:</span
+      >
+      <span v-else class="info-label">Players to move:</span>
+      <ul>
+        <li v-for="value in game.next_to_play ?? []" :key="value">
+          Player {{ value }}
+        </li>
+      </ul>
     </div>
   </div>
   <div class="nav-buttons">
@@ -266,6 +279,16 @@ pre {
 @media (min-width: 664px) {
   .board {
     width: 600px;
+  }
+}
+
+.players-to-move-container {
+  margin: 10px 0;
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
   }
 }
 </style>

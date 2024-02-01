@@ -217,18 +217,22 @@ const createTimeControlPreview = (
         {{ value }}
       </button>
     </div>
+
     <div v-if="game.next_to_play?.length" class="players-to-move-container">
-      <span v-if="game.next_to_play?.length === 1" class="info-label"
-        >Player to move:</span
-      >
-      <span v-else class="info-label">Players to move:</span>
-      <ul>
-        <li v-for="value in game.next_to_play" :key="value">
-          Player {{ value }}
-        </li>
-      </ul>
+      <div v-if="game.next_to_play?.length === 1" class="info-label">
+        Player {{ game.next_to_play[0] }} to move
+      </div>
+      <div v-else>
+        <span class="info-label">Players to move:</span>
+        <ul>
+          <li v-for="value in game.next_to_play" :key="value">
+            Player {{ value }}
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
+
   <div class="nav-buttons">
     <button @click="() => navigateRounds(-(game.round ?? 0))">
       &lt;&lt;&lt;
@@ -275,16 +279,25 @@ pre {
   flex-direction: row;
   justify-content: space-between;
 }
+.seat-list {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  column-gap: 20px;
+}
 
 @media (min-width: 664px) {
   .board {
     width: 600px;
   }
+  .seat-list {
+    max-height: 600px;
+  }
 }
 
 .players-to-move-container {
-  margin: 10px 0;
-
+  margin: 5px 0;
   ul {
     list-style: none;
     margin: 0;

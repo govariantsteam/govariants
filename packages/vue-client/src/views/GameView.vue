@@ -223,7 +223,7 @@ const createTimeControlPreview = (
       >
       <span v-else class="info-label">Players to move:</span>
       <ul>
-        <li v-for="value in game.next_to_play ?? []" :key="value">
+        <li v-for="value in game.next_to_play" :key="value">
           Player {{ value }}
         </li>
       </ul>

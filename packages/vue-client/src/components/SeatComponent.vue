@@ -17,9 +17,8 @@ defineProps<{
 
 <template>
   <div
-    v-bind:class="`seat ${selected === player_n ? 'selected' : ''} ${
-      is_players_turn ? 'to-move' : ''
-    }`"
+    class="seat"
+    :class="{ selected: selected === player_n, 'to-move': is_players_turn }"
     @click="$emit('select')"
   >
     <p class="seat-number">{{ player_n }}</p>

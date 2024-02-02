@@ -145,6 +145,11 @@ function makeMove(move_str: string) {
     return;
   }
 
+  if (view_round.value !== null) {
+    alert("Can't play moves while viewing previous round.");
+    return;
+  }
+
   move[playing_as.value] = move_str;
   requests
     .post(`/games/${gameResponse.id}/move`, move)
@@ -182,13 +187,46 @@ const createTimeControlPreview = (
 </script>
 
 <template>
-  <component
-    v-if="variantGameView && game.state"
-    v-bind:is="variantGameView"
-    v-bind:gamestate="game.state"
-    v-bind:config="gameResponse.config"
-    v-on:move="makeMove"
-  />
+  <div>
+    <component
+      v-if="variantGameView && game.state"
+      v-bind:is="variantGameView"
+      v-bind:gamestate="game.state"
+      v-bind:config="gameResponse.config"
+      v-on:move="makeMove"
+    />
+    <div class="round-nav-buttons">
+      <div class="left-container">
+        <button @click="() => navigateRounds(-(game.round ?? 0))">
+          &lt;&lt;&lt;
+        </button>
+        <button @click="() => navigateRounds(-10)">&lt;&lt;</button>
+        <button @click="() => navigateRounds(-1)">&lt;</button>
+      </div>
+      <span>
+        {{ view_round ?? game.round ?? "" }} / {{ game.round ?? "" }}</span
+      >
+      <div class="right-container">
+        <button @click="() => navigateRounds(1)">></button>
+        <button @click="() => navigateRounds(10)">>></button>
+        <button @click="() => navigateRounds(game.round ?? 0)">>>></button>
+      </div>
+    </div>
+
+    <div id="variant-info">
+      <div>
+        <span class="info-label">Variant:</span>
+        <span class="info-attribute">
+          {{ gameResponse.variant ?? "unknown" }}
+        </span>
+      </div>
+
+      <div>
+        <span class="info-label">Description:</span>
+        <span class="info-attribute">{{ variantDescriptionShort }}</span>
+      </div>
+    </div>
+  </div>
   <div className="seat-list">
     <div v-for="(player, idx) in gameResponse.players" :key="idx">
       <SeatComponent
@@ -216,30 +254,6 @@ const createTimeControlPreview = (
       </button>
     </div>
   </div>
-  <div class="nav-buttons">
-    <button @click="() => navigateRounds(-(game.round ?? 0))">
-      &lt;&lt;&lt;
-    </button>
-    <button @click="() => navigateRounds(-10)">&lt;&lt;</button>
-    <button @click="() => navigateRounds(-1)">&lt;</button>
-    <button @click="() => navigateRounds(1)">></button>
-    <button @click="() => navigateRounds(10)">>></button>
-    <button @click="() => navigateRounds(game.round ?? 0)">>>></button>
-  </div>
-
-  <div id="variant-info">
-    <div>
-      <span class="info-label">Variant:</span>
-      <span class="info-attribute">
-        {{ gameResponse.variant ?? "unknown" }}
-      </span>
-    </div>
-
-    <div>
-      <span class="info-label">Description:</span>
-      <span class="info-attribute">{{ variantDescriptionShort }}</span>
-    </div>
-  </div>
 
   <div v-if="game.result" style="font-weight: bold; font-size: 24pt">
     Result: {{ game.result }}
@@ -256,16 +270,29 @@ pre {
   text-align: left;
 }
 
-.nav-buttons {
+.round-nav-buttons {
   height: fit-content;
   display: flex;
   flex-direction: row;
+  width: inherit;
+  max-width: var(--board-side-length);
   justify-content: space-between;
+  .left-container {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+  }
+  .right-container {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+  }
 }
 
 @media (min-width: 664px) {
   .board {
-    width: 600px;
+    width: var(--board-side-length);
+    height: var(--board-side-length);
   }
 }
 </style>

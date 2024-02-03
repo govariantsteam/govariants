@@ -35,6 +35,11 @@
   --vt-c-warn-light-transparent: rgba(220, 92, 92, 0.3);
   --vt-c-warn-dark: rgb(220, 92, 92);
   --vt-c-warn-dark-transparent: rgba(220, 92, 92, 0.3);
+
+  --c-selected-seat-light: deepskyblue;
+  --c-selected-seat-dark: deepskyblue;
+
+  --to-move-shadow-width: 5px;
 }
 
 /* semantic color variables for this project */
@@ -56,6 +61,8 @@
   --color-primary-transparent: var(--vt-c-primary-light-transparent);
   --color-warn: var(--vt-c-warn-light);
   --color-warn-transparent: var(--vt-c-warn-light-transparent);
+
+  --color-selected-seat: var(--c-selected-seat-light);
 
   --section-gap: 160px;
   --board-side-length: 600px;
@@ -80,6 +87,8 @@
     --color-primary-transparent: var(--vt-c-primary-dark-transparent);
     --color-warn: var(--vt-c-warn-dark);
     --color-warn-transparent: var(--vt-c-warn-dark-transparent);
+
+    --color-selected-seat: var(--c-selected-seat-dark);
   }
 }
 

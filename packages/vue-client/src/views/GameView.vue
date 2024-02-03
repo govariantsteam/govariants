@@ -73,6 +73,7 @@ const game = computed(() => {
     result,
     state,
     round: game_obj.round,
+    next_to_play: game_obj.nextToPlay(),
   };
 });
 const specialMoves = computed(() =>
@@ -241,6 +242,7 @@ const createTimeControlPreview = (
           gameResponse.time_control?.forPlayer[idx] ??
           createTimeControlPreview(gameResponse)
         "
+        :is_players_turn="game.next_to_play?.includes(idx) ?? false"
       />
     </div>
 
@@ -252,6 +254,20 @@ const createTimeControlPreview = (
       >
         {{ value }}
       </button>
+    </div>
+
+    <div v-if="game.next_to_play?.length" class="players-to-move-container">
+      <div v-if="game.next_to_play?.length === 1" class="info-label">
+        Player {{ game.next_to_play[0] }} to move
+      </div>
+      <div v-else>
+        <span class="info-label">Players to move:</span>
+        <ul>
+          <li v-for="value in game.next_to_play" :key="value">
+            Player {{ value }}
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 
@@ -288,11 +304,31 @@ pre {
     gap: 10px;
   }
 }
+.seat-list {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  column-gap: 20px;
+}
 
 @media (min-width: 664px) {
   .board {
     width: var(--board-side-length);
     height: var(--board-side-length);
   }
+  .seat-list {
+    max-height: var(--board-side-length);
+  }
+}
+
+.players-to-move-container {
+  margin: 5px 0;
+}
+
+.players-to-move-container ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 </style>

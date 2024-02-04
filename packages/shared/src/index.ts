@@ -9,6 +9,7 @@ export * from "./lib/grid";
 export * from "./lib/coordinate";
 export * from "./time_control";
 export * from "./lib/utils";
+export * from "./lib/hoshi";
 export { FreezeGoState } from "./variants/freeze";
 export {
   Color as FractionalColor,

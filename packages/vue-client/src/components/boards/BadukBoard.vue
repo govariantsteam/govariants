@@ -4,6 +4,7 @@ import {
   Coordinate,
   type BadukConfig,
   type BadukState,
+  getHoshi,
 } from "@ogfcommunity/variants-shared";
 import { toRefs } from "vue";
 
@@ -74,6 +75,14 @@ function positionClicked(pos: Coordinate) {
         v-bind:x2="width - 1"
         v-bind:y1="y - 1"
         v-bind:y2="y - 1"
+      />
+
+      <circle
+        v-for="{ x, y } in getHoshi(width, height)"
+        :key="`${x},${y}`"
+        :cx="x"
+        :cy="y"
+        r="0.12"
       />
     </g>
     <g>

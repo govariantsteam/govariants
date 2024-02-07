@@ -2,8 +2,6 @@
 
 #app {
   font-weight: normal;
-  display: grid;
-  grid-template-rows: max-content 1fr;
   height: 100%;
 }
 

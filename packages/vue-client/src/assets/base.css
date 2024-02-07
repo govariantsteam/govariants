@@ -65,6 +65,7 @@
   --color-selected-seat: var(--c-selected-seat-light);
 
   --section-gap: 160px;
+  --board-side-length: 600px;
 }
 
 @media (prefers-color-scheme: dark) {

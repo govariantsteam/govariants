@@ -96,12 +96,28 @@ function msToTime(ms: number): string {
   const minutes = msCopy % 60;
   msCopy = (msCopy - minutes) / 60;
 
+  if (msCopy < 1) {
+    return `${minutes.toLocaleString(undefined, {
+      minimumIntegerDigits: 2,
+    })}:${seconds.toLocaleString(undefined, { minimumIntegerDigits: 2 })}`;
+  }
+
   const hours = msCopy % 24;
   msCopy = (msCopy - hours) / 24;
 
+  if (msCopy < 1) {
+    return `${hours.toLocaleString(undefined, {
+      style: "unit",
+      unit: "hour",
+    })}`;
+  }
+
   const days = msCopy;
 
-  return `${days.toString()} days ${hours.toString()} hours ${minutes.toString()} minutes ${seconds.toString()} seconds`;
+  return `${days.toLocaleString(undefined, {
+    style: "unit",
+    unit: "day",
+  })}`;
 }
 </script>
 

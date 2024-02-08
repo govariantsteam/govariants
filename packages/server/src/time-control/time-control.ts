@@ -45,11 +45,13 @@ export function GetInitialTimeControl(
   variant: string,
   config: object,
 ): ITimeControlBase | null {
-  const timeHandlerConstructor = timeControlHandlerMap[variant];
+  if (
+    !HasTimeControlConfig(config) ||
+    !Object.keys(timeControlHandlerMap).includes(variant)
+  )
+    return null;
 
-  if (!HasTimeControlConfig(config) || !timeHandlerConstructor) return null;
-
-  return new timeHandlerConstructor().initialState(variant, config);
+  return new timeControlHandlerMap[variant]().initialState(variant, config);
 }
 
 // validation of the config should happen before this is called

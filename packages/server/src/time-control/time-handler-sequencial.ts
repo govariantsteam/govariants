@@ -84,9 +84,8 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
         const nextPlayers = game_obj
           .nextToPlay()
           .filter(
-            (playerNr) =>
-              game.moves.some((move) => playerNr in move) ||
-              playerNr === playerNr,
+            (player) =>
+              game.moves.some((move) => player in move) || player === playerNr,
           );
         nextPlayers.forEach((player) => {
           timeControl.forPlayer[player].onThePlaySince = timestamp;

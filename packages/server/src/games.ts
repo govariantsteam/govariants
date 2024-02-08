@@ -139,10 +139,8 @@ export async function playMove(
     if (game_obj.phase === "gameover") {
       getTimeoutService().clearGameTimeouts(game.id);
     } else {
-      const timeHandlerConstructor = timeControlHandlerMap[game.variant];
-
-      if (timeHandlerConstructor) {
-        const timeHandler = new timeHandlerConstructor();
+      if (Object.keys(timeControlHandlerMap).includes(game.variant)) {
+        const timeHandler = new timeControlHandlerMap[game.variant]();
         timeControl = timeHandler.handleMove(
           game,
           game_obj,

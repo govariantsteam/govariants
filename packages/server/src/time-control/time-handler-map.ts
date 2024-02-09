@@ -1,5 +1,5 @@
 import { ITimeHandler } from "./time-control";
-import { TimeHandlerSequentialMoves } from "./time-handler-sequencial";
+import { TimeHandlerSequentialMoves } from "./time-handler-sequential";
 import { TimeHandlerParallelMoves } from "./time-handler-parallel";
 
 export const timeControlHandlerMap: {

@@ -1,12 +1,12 @@
-import { gamesCollection, getGame, getGamesWithTimeControl } from "./games";
+import { gamesCollection, getGame, getGamesWithTimeControl } from "../games";
 import {
   MovesType,
   getOnlyMove,
   makeGameObject,
 } from "@ogfcommunity/variants-shared";
-import { timeControlHandlerMap } from "./time-control";
+import { timeControlHandlerMap } from "./time-handler-map";
 import { ObjectId } from "mongodb";
-import { io } from "./socket_io";
+import { io } from "../socket_io";
 
 type GameTimeouts = {
   // timeout for this player, or null
@@ -104,9 +104,6 @@ export class TimeoutService {
   ): void {
     const timeoutResolver = async () => {
       const game = await getGame(gameId);
-
-      const timeoutMove: MovesType = { [playerNr]: "timeout" };
-      game.moves.push(timeoutMove);
       let timeControl = game.time_control;
 
       // this next part is somewhat duplicated from the playMove function
@@ -114,12 +111,18 @@ export class TimeoutService {
       // the timeout move needs to be handled as well.
       try {
         const game_object = makeGameObject(game.variant, game.config);
+
         game.moves.forEach((moves) => {
           const { player, move } = getOnlyMove(moves);
           game_object.playMove(player, move);
         });
 
-        if (game_object.result !== "" || game_object.phase === "gameover") {
+        // play timeout move and find out whether this ends the round
+        const previousRound = game_object.round;
+        game_object.playMove(playerNr, "timeout");
+        const isRoundTransition = previousRound !== game_object.round;
+
+        if (game_object.phase === "gameover") {
           this.clearGameTimeouts(game.id);
         } else {
           const timeHandler = new timeControlHandlerMap[game.variant]();
@@ -128,11 +131,14 @@ export class TimeoutService {
             game_object,
             playerNr,
             "timeout",
+            isRoundTransition,
           );
         }
       } catch (error) {
         console.error(error);
       }
+
+      const timeoutMove: MovesType = { [playerNr]: "timeout" };
 
       // TODO: improving the error handling would be great in future
       await gamesCollection()

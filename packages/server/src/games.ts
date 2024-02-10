@@ -13,9 +13,9 @@ import { io } from "./socket_io";
 import { getTimeoutService } from "./index";
 import {
   GetInitialTimeControl,
-  timeControlHandlerMap,
   ValidateTimeControlConfig,
-} from "./time-control";
+} from "./time-control/time-control";
+import { timeControlHandlerMap } from "./time-control/time-handler-map";
 
 export function gamesCollection() {
   return getDb().db().collection("games");
@@ -127,18 +127,28 @@ export async function playMove(
     );
   }
 
+  const previousRound = game_obj.round;
   game_obj.playMove(playerNr, new_move);
+  const isRoundTransition = previousRound !== game_obj.round;
 
   let timeControl = game.time_control;
   if (
     HasTimeControlConfig(game.config) &&
     ValidateTimeControlConfig(game.config.time_control)
   ) {
-    if (game_obj.result !== "") {
+    if (game_obj.phase === "gameover") {
       getTimeoutService().clearGameTimeouts(game.id);
     } else {
-      const timeHandler = new timeControlHandlerMap[game.variant]();
-      timeControl = timeHandler.handleMove(game, game_obj, playerNr, new_move);
+      if (Object.keys(timeControlHandlerMap).includes(game.variant)) {
+        const timeHandler = new timeControlHandlerMap[game.variant]();
+        timeControl = timeHandler.handleMove(
+          game,
+          game_obj,
+          playerNr,
+          new_move,
+          isRoundTransition,
+        );
+      }
     }
   }
 

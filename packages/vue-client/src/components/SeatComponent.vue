@@ -24,17 +24,22 @@ defineProps<{
     <p class="seat-number">{{ player_n }}</p>
 
     <div v-if="occupant == null">
-      <button v-if="user_id" @click.stop="$emit('sit')">Take Seat</button>
+      <div class="timer-and-button">
+        <GameTimer v-bind:time_control="time_control" />
+        <button v-if="user_id" @click.stop="$emit('sit')">Take Seat</button>
+      </div>
     </div>
     <div v-else>
       <p class="seat-username">
         {{ occupant.username ?? `guest (...${occupant.id.slice(-6)})` }}
       </p>
-      <button v-if="occupant.id === user_id" @click.stop="$emit('leave')">
-        Leave Seat
-      </button>
+      <div class="timer-and-button">
+        <GameTimer v-bind:time_control="time_control" />
+        <button v-if="occupant.id === user_id" @click.stop="$emit('leave')">
+          Leave Seat
+        </button>
+      </div>
     </div>
-    <GameTimer v-bind:time_control="time_control" />
   </div>
 </template>
 
@@ -72,5 +77,12 @@ defineProps<{
 
 .seat.to-move .seat-username {
   font-weight: bold;
+}
+
+.timer-and-button {
+  display: inline-block;
+  button {
+    margin-left: 0.5rem;
+  }
 }
 </style>

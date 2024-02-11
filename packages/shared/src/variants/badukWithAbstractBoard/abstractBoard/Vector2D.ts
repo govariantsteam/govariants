@@ -15,6 +15,10 @@ export class Vector2D {
     return new Vector2D(this.X - v.X, this.Y - v.Y);
   }
 
+  Multiply(n: number): Vector2D {
+    return new Vector2D(this.X * n, this.Y * n);
+  }
+
   Export(): Vector2D {
     return new Vector2D(this.X, this.Y);
   }

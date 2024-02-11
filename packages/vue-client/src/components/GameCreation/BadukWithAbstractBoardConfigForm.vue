@@ -55,6 +55,7 @@ watch(patternRef, () => {
       <option :value="BoardPattern.Rectangular">Rectangular</option>
       <option :value="BoardPattern.Polygonal">Polygonal</option>
       <option :value="BoardPattern.Circular">Circular</option>
+      <option :value="BoardPattern.Trihexagonal">Trihexagonal</option>
     </select>
     <template v-if="patternRef === BoardPattern.Rectangular">
       <label>Width</label>
@@ -62,7 +63,12 @@ watch(patternRef, () => {
       <label>Height</label>
       <input type="number" min="1" v-model="heightRef" />
     </template>
-    <template v-if="patternRef === BoardPattern.Polygonal">
+    <template
+      v-if="
+        patternRef === BoardPattern.Polygonal ||
+        patternRef === BoardPattern.Trihexagonal
+      "
+    >
       <label>Size</label>
       <input type="number" min="1" v-model="sizeRef" />
     </template>

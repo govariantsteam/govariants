@@ -67,10 +67,10 @@ export class TrihexagonalBoardHelper {
       })
       .to2DArray()
       .flat()
-      .filter((value) => value !== null)
+      .filter((value): value is Intersection => value !== null)
       .map((intersection, index) => {
-        intersection!.Identifier = index;
-        return intersection!;
+        intersection.Identifier = index;
+        return intersection;
       });
   }
 }

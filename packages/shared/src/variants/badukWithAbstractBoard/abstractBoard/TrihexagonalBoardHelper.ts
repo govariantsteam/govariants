@@ -9,8 +9,8 @@ export class TrihexagonalBoardHelper {
   constructor() {
     this.x_base_vector = new Vector2D(1, 0);
     this.y_base_vector = new Vector2D(
-      Math.sin(Math.PI / 6),
-      Math.cos(Math.PI / 6),
+      Math.cos(Math.PI / 3),
+      Math.sin(Math.PI / 3),
     );
   }
 
@@ -40,7 +40,7 @@ export class TrihexagonalBoardHelper {
 
     return new Grid<null>(_size, _size)
       .fill(null)
-      .map<Intersection | null>((value, index, grid) =>
+      .map<Intersection | null>((_value, index, _grid) =>
         ((index.x + x_shift_pattern) * 4 - (index.y + y_shift_pattern)) % 7 ===
           0 || index.x + index.y >= _size
           ? null

@@ -9,10 +9,10 @@ export class Intersection {
   neighbours: this[];
   position: Vector2D;
 
-  constructor(v: Vector2D) {
+  constructor(v: Vector2D, id: number) {
     this.position = v;
     this.neighbours = [];
-    this.id = 0;
+    this.id = id;
   }
 
   connectTo(intersection: this, bothSides: boolean) {
@@ -29,8 +29,7 @@ export class Intersection {
   export(): Intersection {
     // TODO: How to export? Why is it needed?
     // TODO: Polymorphic this as return type? Can't construct new this(), right?
-    const intersection = new Intersection(this.position.Export());
-    intersection.id = this.id;
+    const intersection = new Intersection(this.position.Export(), this.id);
     //ToDo: How to export Neighbours?
     return intersection;
   }

@@ -5,6 +5,7 @@ import { Intersection } from "./intersection";
 import { CreatePolygonalBoard } from "./PolygonalBoardHelper";
 import { CreateCircularBoard } from "./CircularBoardHelper";
 import { Vector2D } from "./Vector2D";
+import { TrihexagonalBoardHelper } from "./TrihexagonalBoardHelper";
 
 export class BadukBoardAbstract implements IBadukBoard {
   Intersections: Intersection[];
@@ -43,6 +44,14 @@ export class BadukBoardAbstract implements IBadukBoard {
       case BoardPattern.Circular:
         this.Array2D = null;
         this.Intersections = CreateCircularBoard(conf.height, conf.width);
+        return;
+      case BoardPattern.Trihexagonal:
+        this.Array2D = null;
+        this.Intersections =
+          new TrihexagonalBoardHelper().CreateTrihexagonalBoard(
+            Math.min(conf.height, conf.width),
+          );
+
         return;
       default:
         throw new Error("unknown board pattern");

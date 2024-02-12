@@ -1,4 +1,4 @@
-import { Coordinate, CoordinateLike } from "./coordinate";
+import { Coordinate, type CoordinateLike } from "./coordinate";
 
 /**
  * A 2D analog to the native JavaScript array.  As much as possible,

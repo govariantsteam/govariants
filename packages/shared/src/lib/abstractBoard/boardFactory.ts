@@ -87,13 +87,14 @@ function convertIntersections<TIntersection extends Intersection>(
   const intersections = new Map<TIntersection["id"], TIntersection>(
     old.map((o) => [o.Identifier, new intersectionConstructor(o.Position)]),
   );
-  old.forEach((i) =>
+  old.forEach((i) => {
+    const newIntersection = intersections.get(i.Identifier)!;
+    newIntersection.id = i.Identifier;
+
     i.Neighbours.forEach((n) =>
-      intersections
-        .get(i.Identifier)!
-        .connectTo(intersections.get(n.Identifier)!, false),
-    ),
-  );
+      newIntersection.connectTo(intersections.get(n.Identifier)!, false),
+    );
+  });
 
   return Array.from(intersections.values());
 }

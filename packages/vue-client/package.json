@@ -13,7 +13,8 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
     "lint:check": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "gen-favicon": "rimraf public/favicon.ico && icon-gen --ico -i public/logo.svg -o public --ico-name favicon"
   },
   "dependencies": {
     "@ogfcommunity/variants-shared": "1.0.0",
@@ -39,9 +40,11 @@
     "eslint": "^8.44.0",
     "eslint-plugin-cypress": "^2.13.3",
     "eslint-plugin-vue": "^9.15.1",
+    "icon-gen": "^4.0.0",
     "jsdom": "^22.1.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.8.8",
+    "rimraf": "^5.0.5",
     "start-server-and-test": "^2.0.0",
     "typescript": "^5.1.6",
     "vite": "^4.3.9",

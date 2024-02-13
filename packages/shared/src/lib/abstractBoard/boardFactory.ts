@@ -17,7 +17,7 @@ export interface RhombitrihexagonalBoardConfig {
 }
 
 export interface IntersectionConstructor<TIntersection extends Intersection> {
-  new (vector: Vector2D): TIntersection;
+  new (vector: Vector2D, id: number): TIntersection;
 }
 
 export function createBoard<TIntersection extends Intersection>(
@@ -52,8 +52,8 @@ function createGridBoard<TIntersection extends Intersection>(
   for (let y = 0; y < config.height; y++) {
     array2D.push(new Array<TIntersection>());
     for (let x = 0; x < config.width; x++) {
-      const intersection = new intersectionConstructor(new Vector2D(x, y));
-      intersection.id = y * config.width + x;
+      const id = y * config.width + x;
+      const intersection = new intersectionConstructor(new Vector2D(x, y), id);
 
       intersections.push(intersection);
       array2D[y].push(intersection);
@@ -85,7 +85,10 @@ function convertIntersections<TIntersection extends Intersection>(
   intersectionConstructor: IntersectionConstructor<TIntersection>,
 ): TIntersection[] {
   const intersections = new Map<TIntersection["id"], TIntersection>(
-    old.map((o) => [o.Identifier, new intersectionConstructor(o.Position)]),
+    old.map((o) => [
+      o.Identifier,
+      new intersectionConstructor(o.Position, o.Identifier),
+    ]),
   );
   old.forEach((i) =>
     i.Neighbours.forEach((n) =>

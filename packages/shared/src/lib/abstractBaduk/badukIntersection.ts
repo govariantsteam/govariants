@@ -12,8 +12,8 @@ export class BadukIntersection<
 > extends Intersection {
   stone: TStone | null;
 
-  constructor(v: Vector2D) {
-    super(v);
+  constructor(v: Vector2D, id: number) {
+    super(v, id);
     this.stone = null;
   }
 }

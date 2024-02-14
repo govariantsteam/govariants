@@ -102,7 +102,7 @@ export async function playMove(
 ): Promise<GameResponse> {
   const game = await getGame(game_id);
 
-  const { player: playerNr, move: new_move } = getOnlyMove(moves);
+  const { player: playerNr, move: _new_move } = getOnlyMove(moves);
 
   if (!game.players || game.players[playerNr] == null) {
     throw Error(`Seat ${playerNr} not occupied!`);

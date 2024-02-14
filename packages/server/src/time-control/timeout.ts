@@ -1,17 +1,10 @@
-import {
-  gamesCollection,
-  getGame,
-  getGamesWithTimeControl,
-  handleMoveAndTime,
-} from "../games";
+import { getGame, getGamesWithTimeControl, handleMoveAndTime } from "../games";
 import {
   MovesType,
   getOnlyMove,
   makeGameObject,
 } from "@ogfcommunity/variants-shared";
 import { timeControlHandlerMap } from "./time-handler-map";
-import { ObjectId } from "mongodb";
-import { io } from "../socket_io";
 
 type GameTimeouts = {
   // timeout for this player, or null

@@ -102,17 +102,6 @@ export async function playMove(
 ): Promise<GameResponse> {
   const game = await getGame(game_id);
 
-  // Verify that moves are legal
-  const game_obj = makeGameObject(game.variant, game.config);
-  game.moves.forEach((moves) => {
-    const { player, move } = getOnlyMove(moves);
-    game_obj.playMove(player, move);
-  });
-
-  if (game_obj.result !== "") {
-    throw Error("Game is already finished.");
-  }
-
   const { player: playerNr, move: new_move } = getOnlyMove(moves);
 
   if (!game.players || game.players[playerNr] == null) {
@@ -126,6 +115,27 @@ export async function playMove(
       `Not the right user: expected ${expected_player.id}, got ${user_id}`,
     );
   }
+
+  return await handleMoveAndTime(game_id, moves, game);
+}
+
+export async function handleMoveAndTime(
+  game_id: string,
+  moves: MovesType,
+  game: GameResponse,
+): Promise<GameResponse> {
+  // Verify that moves are legal
+  const game_obj = makeGameObject(game.variant, game.config);
+  game.moves.forEach((moves) => {
+    const { player, move } = getOnlyMove(moves);
+    game_obj.playMove(player, move);
+  });
+
+  if (game_obj.result !== "") {
+    throw Error("Game is already finished.");
+  }
+
+  const { player: playerNr, move: new_move } = getOnlyMove(moves);
 
   const previousRound = game_obj.round;
   game_obj.playMove(playerNr, new_move);

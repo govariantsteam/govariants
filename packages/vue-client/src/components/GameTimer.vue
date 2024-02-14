@@ -15,6 +15,7 @@ const formattedTime = ref(
 );
 const isCountingDown = ref(false);
 let timerIndex: number | null = null;
+let lastUpdated: Date;
 
 watch(time, (t: number) => {
   if (t === null) {
@@ -74,11 +75,14 @@ function resetTimer(): void {
   }
 
   if (isCountingDown.value && typeof window !== "undefined") {
+    lastUpdated = new Date();
     timerIndex = window.setInterval(() => {
       if (time.value <= 0 && timerIndex !== null) {
         clearInterval(timerIndex);
       } else {
-        time.value -= 1000;
+        const timeStamp = new Date();
+        time.value -= timeStamp.getTime() - lastUpdated.getTime();
+        lastUpdated = timeStamp;
       }
     }, 1000);
   }

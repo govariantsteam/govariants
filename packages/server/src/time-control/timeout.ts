@@ -1,4 +1,9 @@
-import { gamesCollection, getGame, getGamesWithTimeControl } from "../games";
+import {
+  gamesCollection,
+  getGame,
+  getGamesWithTimeControl,
+  handleMoveAndTime,
+} from "../games";
 import {
   MovesType,
   getOnlyMove,
@@ -103,55 +108,15 @@ export class TimeoutService {
     inTimeMs: number,
   ): void {
     const timeoutResolver = async () => {
+      const timeoutMove: MovesType = { [playerNr]: "timeout" };
+
       const game = await getGame(gameId);
-      let timeControl = game.time_control;
 
-      // this next part is somewhat duplicated from the playMove function
-      // which I don't like. But for parallel variants and consistency (move timestamps),
-      // the timeout move needs to be handled as well.
       try {
-        const game_object = makeGameObject(game.variant, game.config);
-
-        game.moves.forEach((moves) => {
-          const { player, move } = getOnlyMove(moves);
-          game_object.playMove(player, move);
-        });
-
-        // play timeout move and find out whether this ends the round
-        const previousRound = game_object.round;
-        game_object.playMove(playerNr, "timeout");
-        const isRoundTransition = previousRound !== game_object.round;
-
-        if (game_object.phase === "gameover") {
-          this.clearGameTimeouts(game.id);
-        } else {
-          const timeHandler = new timeControlHandlerMap[game.variant]();
-          timeControl = timeHandler.handleMove(
-            game,
-            game_object,
-            playerNr,
-            "timeout",
-            isRoundTransition,
-          );
-        }
+        await handleMoveAndTime(gameId, timeoutMove, game);
       } catch (error) {
         console.error(error);
       }
-
-      const timeoutMove: MovesType = { [playerNr]: "timeout" };
-
-      // TODO: improving the error handling would be great in future
-      await gamesCollection()
-        .updateOne(
-          { _id: new ObjectId(gameId) },
-          {
-            $push: { moves: timeoutMove },
-            $set: { time_control: timeControl },
-          },
-        )
-        .catch(console.log);
-
-      io().emit(`game/${gameId}`, game);
     };
 
     const timeout = setTimeout(timeoutResolver, inTimeMs);

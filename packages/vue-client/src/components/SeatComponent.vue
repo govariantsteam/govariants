@@ -81,7 +81,7 @@ defineProps<{
 
 .timer-and-button {
   display: inline-block;
-  button {
+  :is(button) {
     margin-left: 0.5rem;
   }
 }

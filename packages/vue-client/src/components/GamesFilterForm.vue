@@ -51,10 +51,10 @@ const filter = computed(() => {
   margin-bottom: 0.5rem;
 }
 .myGamesToggle {
-  label {
+  :is(label) {
     cursor: pointer;
   }
-  input {
+  :is(input) {
     cursor: pointer;
   }
 }

@@ -35,7 +35,7 @@ nav {
   box-shadow: 0px 0px 5px var(--color-shadow);
   margin-bottom: 5px;
 
-  div {
+  :is(div) {
     display: flex;
     align-items: center;
   }

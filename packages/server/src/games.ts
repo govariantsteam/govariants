@@ -64,8 +64,6 @@ export async function getGame(id: string): Promise<GameResponse> {
     throw new Error("Game not found");
   }
 
-  // TODO: db_game might be undefined if unknown ID is provided
-
   const game = outwardFacingGame(db_game);
   // Legacy games don't have a players field
   // TODO: remove this code after doing proper db migration

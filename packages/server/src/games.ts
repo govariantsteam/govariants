@@ -60,6 +60,10 @@ export async function getGame(id: string): Promise<GameResponse> {
     _id: new ObjectId(id),
   });
 
+  if (!db_game) {
+    throw new Error("Game not found");
+  }
+
   // TODO: db_game might be undefined if unknown ID is provided
 
   const game = outwardFacingGame(db_game);

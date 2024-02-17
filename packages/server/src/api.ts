@@ -26,8 +26,13 @@ export const router = express.Router();
 
 // Set up express routes
 router.get("/games/:gameId", async (req, res) => {
-  const game: GameResponse = await getGame(req.params.gameId);
-  res.send(game);
+  try {
+    const game: GameResponse = await getGame(req.params.gameId);
+    res.send(game);
+  } catch (e) {
+    res.status(500);
+    res.json(e.message);
+  }
 });
 
 router.get("/games", async (req, res) => {

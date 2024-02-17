@@ -87,7 +87,10 @@ const variantDescriptionShort = computed(
 );
 watchEffect(async () => {
   // TODO: provide a cleanup function to cancel the request.
-  Object.assign(gameResponse, await requests.get(`/games/${props.gameId}`));
+  await requests
+    .get(`/games/${props.gameId}`)
+    .then((result) => Object.assign(gameResponse, result))
+    .catch(alert);
 
   const userSeats = gameResponse.players
     ?.map((playerUser: User | undefined, index: number) =>

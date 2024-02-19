@@ -4,7 +4,7 @@ import {
   type ITimeControlConfig,
   type IFischerConfig,
 } from "@ogfcommunity/variants-shared/src/time_control";
-import { ref, watch } from "vue";
+import { ref } from "vue";
 
 const typeRef = ref(null);
 const mainTimeS = ref(300);

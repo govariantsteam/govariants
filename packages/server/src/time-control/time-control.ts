@@ -9,9 +9,7 @@ import {
 import { AbstractGame, GameResponse } from "@ogfcommunity/variants-shared";
 import { timeControlHandlerMap } from "./time-handler-map";
 
-// this is unused, but I'd like to keep it here
-// to alert if the property is renamed
-const type: keyof ITimeControlConfig = "type";
+const _type: keyof ITimeControlConfig = "type";
 const mainTimeMs: keyof ITimeControlConfig = "mainTimeMS";
 /**
  * Validates whether time_control_config has type and

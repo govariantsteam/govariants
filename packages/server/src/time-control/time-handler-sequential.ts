@@ -70,7 +70,7 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
     }
 
     // mutates its input
-    var transition: (playerTimeControl: IPerPlayerTimeControlBase) => void;
+    let transition: (playerTimeControl: IPerPlayerTimeControlBase) => void;
 
     switch (config.time_control.type) {
       case TimeControlType.Absolute: {
@@ -152,7 +152,7 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
     // mutates its input
     transition: (playerTimeControl: IPerPlayerTimeControlBase) => void,
   ): ITimeControlBase {
-    let timeControl = game.time_control;
+    const timeControl = game.time_control;
     const playerData = timeControl.forPlayer[playerNr];
 
     timeControl.moveTimestamps.push(timestamp);

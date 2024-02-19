@@ -1,10 +1,8 @@
 import {
   AbstractGame,
   GameResponse,
-  HasTimeControlConfig,
   IConfigWithTimeControl,
   IFischerConfig,
-  IPerPlayerTimeControlBase,
   ITimeControlBase,
   PerPlayerTimeControlParallel,
   TimeControlParallel,
@@ -14,7 +12,6 @@ import {
 import { getTimeoutService } from "..";
 import { TimeoutService } from "./timeout";
 import { ITimeHandler } from "./time-control";
-import config from "../../../shared/jest.config";
 
 export class TimeHandlerParallelMoves implements ITimeHandler {
   private _timeoutService: TimeoutService;
@@ -77,7 +74,7 @@ export class TimeHandlerParallelMoves implements ITimeHandler {
     }
 
     // mutates its input
-    var transition: (playerTimeControl: PerPlayerTimeControlParallel) => void;
+    let transition: (playerTimeControl: PerPlayerTimeControlParallel) => void;
 
     switch (config.time_control.type) {
       case TimeControlType.Absolute: {
@@ -169,7 +166,7 @@ export class TimeHandlerParallelMoves implements ITimeHandler {
     // mutates its input
     transition: (playerTimeControl: PerPlayerTimeControlParallel) => void,
   ): ITimeControlBase {
-    let timeControl = game.time_control as TimeControlParallel;
+    const timeControl = game.time_control as TimeControlParallel;
 
     const playerData = timeControl.forPlayer[playerNr];
 

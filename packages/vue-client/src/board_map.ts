@@ -6,6 +6,7 @@ import ChessBoard from "@/components/boards/ChessBoard.vue";
 import FractionalBoard from "@/components/boards/FractionalBoard.vue";
 import KeimaBoard from "@/components/boards/KeimaBoard.vue";
 import type { Component } from "vue";
+import QuantumBoard from "@/components/boards/QuantumBoard.vue";
 
 export const board_map: {
   [variant: string]: Component<{ config: unknown; gamestate: unknown }>;
@@ -24,4 +25,5 @@ export const board_map: {
   keima: KeimaBoard,
   "one color": Baduk,
   drift: Baduk,
+  quantum: QuantumBoard,
 };

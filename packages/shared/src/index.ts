@@ -2,6 +2,7 @@ export * from "./variants/baduk";
 export * from "./variants/phantom";
 export * from "./variants/capture";
 export * from "./variants/parallel";
+export * from "./variants/quantum";
 export * from "./abstract_game";
 export * from "./game_map";
 export * from "./api_types";

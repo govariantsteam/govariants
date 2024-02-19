@@ -66,7 +66,6 @@ router.post("/games/:gameId/move", async (req, res) => {
   try {
     res.send(await playMove(req.params.gameId, move, user_id));
   } catch (e) {
-    console.error(e);
     res.status(500);
     res.json(e.message);
   }

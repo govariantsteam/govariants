@@ -1,8 +1,9 @@
 import {
   AbstractGame,
   GameResponse,
-  HasTimeControlConfig,
   IConfigWithTimeControl,
+  IFischerConfig,
+  IPerPlayerTimeControlBase,
   ITimeControlBase,
   TimeControlType,
   makeGameObject,
@@ -60,58 +61,60 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
     playerNr: number,
   ): ITimeControlBase {
     const config = game.config as IConfigWithTimeControl;
+    const timestamp = new Date();
+
+    // could happen for old games
+    // TODO: remove? maybe after db migration?
+    if (game.time_control === undefined) {
+      game.time_control = this.initialState(game.variant, config);
+    }
+
+    // mutates its input
+    var transition: (playerTimeControl: IPerPlayerTimeControlBase) => void;
 
     switch (config.time_control.type) {
       case TimeControlType.Absolute: {
-        let timeControl = game.time_control;
-        // could happen for old games
-        if (timeControl === undefined) {
-          timeControl = this.initialState(game.variant, config);
-        }
-        const playerData = timeControl.forPlayer[playerNr];
-        const timestamp = new Date();
-
-        timeControl.moveTimestamps.push(timestamp);
-
-        if (playerData.onThePlaySince !== null) {
+        transition = (playerData) => {
           playerData.remainingTimeMS -=
             timestamp.getTime() - playerData.onThePlaySince.getTime();
-        }
-        playerData.onThePlaySince = null;
-        this._timeoutService.clearPlayerTimeout(game.id, playerNr);
+        };
+        break;
+      }
 
-        // time control starts only after the first move of player
-        const nextPlayers = game_obj
-          .nextToPlay()
-          .filter(
-            (player) =>
-              game.moves.some((move) => player in move) || player === playerNr,
-          );
-        nextPlayers.forEach((player) => {
-          timeControl.forPlayer[player].onThePlaySince = timestamp;
-          this._timeoutService.scheduleTimeout(
-            game.id,
-            player,
-            timeControl.forPlayer[player].remainingTimeMS,
-          );
-        });
+      case TimeControlType.Fischer: {
+        // TODO: how to avoid type cast, typeguard?
+        const fischerConfig = config.time_control as IFischerConfig;
+        transition = (playerData) => {
+          const uncapped =
+            playerData.remainingTimeMS +
+            fischerConfig.incrementMS -
+            (timestamp.getTime() - playerData.onThePlaySince.getTime());
 
-        return timeControl;
+          playerData.remainingTimeMS =
+            fischerConfig.maxTimeMS === null
+              ? uncapped
+              : Math.min(uncapped, fischerConfig.maxTimeMS);
+        };
+        break;
       }
 
       case TimeControlType.Invalid:
         throw Error(`game with id ${game.id} has invalid time control type`);
     }
+
+    return this.TimeTransitionBase(
+      game,
+      game_obj,
+      playerNr,
+      timestamp,
+      transition,
+    );
   }
 
   getMsUntilTimeout(game: GameResponse, playerNr: number): number | null {
-    if (!HasTimeControlConfig(game.config)) {
-      console.log("has no time control config");
+    const config = game.config as IConfigWithTimeControl;
 
-      return null;
-    }
-
-    switch (game.config.time_control.type) {
+    switch (config.time_control.type) {
       case TimeControlType.Absolute:
       case TimeControlType.Fischer: {
         const times: ITimeControlBase = game.time_control;
@@ -139,5 +142,43 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
         return;
       }
     }
+  }
+
+  private TimeTransitionBase(
+    game: GameResponse,
+    game_obj: AbstractGame<unknown, unknown>,
+    playerNr: number,
+    timestamp: Date,
+    // mutates its input
+    transition: (playerTimeControl: IPerPlayerTimeControlBase) => void,
+  ): ITimeControlBase {
+    let timeControl = game.time_control;
+    const playerData = timeControl.forPlayer[playerNr];
+
+    timeControl.moveTimestamps.push(timestamp);
+
+    if (playerData.onThePlaySince !== null) {
+      transition(playerData);
+    }
+    playerData.onThePlaySince = null;
+    this._timeoutService.clearPlayerTimeout(game.id, playerNr);
+
+    // time control starts only after the first move of player
+    const nextPlayers = game_obj
+      .nextToPlay()
+      .filter(
+        (player) =>
+          game.moves.some((move) => player in move) || player === playerNr,
+      );
+    nextPlayers.forEach((player) => {
+      timeControl.forPlayer[player].onThePlaySince = timestamp;
+      this._timeoutService.scheduleTimeout(
+        game.id,
+        player,
+        this.getMsUntilTimeout(game, player),
+      );
+    });
+
+    return timeControl;
   }
 }

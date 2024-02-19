@@ -37,7 +37,11 @@ export class TimeoutService {
         }
 
         const timeHandler = new timeControlHandlerMap[game.variant]();
-        for (const playerNr of game_object.nextToPlay()) {
+        const playersWithTimeout = game_object
+          .nextToPlay()
+          .filter((player) => game.moves.some((move) => player in move));
+
+        for (const playerNr of playersWithTimeout) {
           const t = timeHandler.getMsUntilTimeout(game, playerNr);
           this.scheduleTimeout(game.id, playerNr, t);
         }

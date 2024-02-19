@@ -13,6 +13,7 @@ import { Fractional } from "./variants/fractional";
 import { Keima } from "./variants/keima";
 import { OneColorGo } from "./variants/one_color";
 import { DriftGo } from "./variants/drift";
+import { QuantumGo } from "./variants/quantum";
 
 export const game_map: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -32,6 +33,7 @@ export const game_map: {
   keima: Keima,
   "one color": OneColorGo,
   drift: DriftGo,
+  quantum: QuantumGo,
 };
 
 class ConfigError extends Error {

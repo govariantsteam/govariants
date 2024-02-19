@@ -19,4 +19,5 @@ export const config_form_map: {
   keima: BadukConfigForm,
   "one color": BadukConfigForm,
   drift: DriftGoConfigFormVue,
+  quantum: BadukConfigForm,
 };

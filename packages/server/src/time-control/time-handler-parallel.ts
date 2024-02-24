@@ -12,11 +12,15 @@ import {
 import { getTimeoutService } from "..";
 import { TimeoutService } from "./timeout";
 import { ITimeHandler } from "./time-control";
+import { Clock, IClock } from "./clock";
 
 export class TimeHandlerParallelMoves implements ITimeHandler {
   private _timeoutService: TimeoutService;
-  constructor() {
+  private _clock: IClock;
+
+  constructor(clock?: IClock) {
     this._timeoutService = getTimeoutService();
+    this._clock = clock ?? new Clock();
   }
 
   initialState(
@@ -65,7 +69,7 @@ export class TimeHandlerParallelMoves implements ITimeHandler {
     isRoundTransition: boolean,
   ): ITimeControlBase {
     const config = game.config as IConfigWithTimeControl;
-    const timestamp = new Date();
+    const timestamp = this._clock.getTimestamp();
 
     // could happen for old games
     // TODO: remove? maybe after db migration?
@@ -146,7 +150,7 @@ export class TimeHandlerParallelMoves implements ITimeHandler {
         const timeoutTime =
           playerTime.onThePlaySince.getTime() + playerTime.remainingTimeMS;
 
-        return timeoutTime - new Date().getTime();
+        return timeoutTime - this._clock.getTimestamp().getTime();
       }
 
       default: {

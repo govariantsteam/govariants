@@ -11,11 +11,15 @@ import {
 import { getTimeoutService } from "..";
 import { TimeoutService } from "./timeout";
 import { ITimeHandler } from "./time-control";
+import { Clock, IClock } from "./clock";
 
 export class TimeHandlerSequentialMoves implements ITimeHandler {
   private _timeoutService: TimeoutService;
-  constructor() {
+  private _clock: IClock;
+
+  constructor(clock?: IClock) {
     this._timeoutService = getTimeoutService();
+    this._clock = clock ?? new Clock();
   }
 
   initialState(
@@ -61,7 +65,7 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
     playerNr: number,
   ): ITimeControlBase {
     const config = game.config as IConfigWithTimeControl;
-    const timestamp = new Date();
+    const timestamp = this._clock.getTimestamp();
 
     // could happen for old games
     // TODO: remove? maybe after db migration?
@@ -135,7 +139,7 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
         const timeoutTime =
           playerTime.onThePlaySince.getTime() + playerTime.remainingTimeMS;
 
-        return timeoutTime - new Date().getTime();
+        return timeoutTime - this._clock.getTimestamp().getTime();
       }
       default: {
         console.error(`game with id ${game.id} has invalid time control type`);

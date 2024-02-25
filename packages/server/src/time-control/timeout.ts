@@ -12,7 +12,13 @@ type GameTimeouts = {
   [player: number]: ReturnType<typeof setTimeout> | null;
 };
 
-export class TimeoutService {
+export interface ITimeoutService {
+  clearGameTimeouts(gameId: string): void;
+  clearPlayerTimeout(gameId: string, playerNr: number): void;
+  scheduleTimeout(gameId: string, playerNr: number, inTimeMs: number): void;
+}
+
+export class TimeoutService implements ITimeoutService {
   private timeoutsByGame = new Map<string, GameTimeouts>();
 
   /**
@@ -119,4 +125,11 @@ export class TimeoutService {
     const timeout = setTimeout(timeoutResolver, inTimeMs);
     this.setPlayerTimeout(gameId, playerNr, timeout);
   }
+}
+
+// dummy service for test cases
+export class TestTimeoutService implements ITimeoutService {
+  clearGameTimeouts(gameId: string): void {}
+  clearPlayerTimeout(gameId: string, playerNr: number): void {}
+  scheduleTimeout(gameId: string, playerNr: number, inTimeMs: number): void {}
 }

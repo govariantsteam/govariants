@@ -12,11 +12,11 @@ export class TestClock implements IClock {
   private _time: Date;
 
   constructor(time: Date) {
-    this._time = time;
+    this._time = new Date(time);
   }
 
   setTimestamp(time: Date): void {
-    this._time = time;
+    this._time = new Date(time);
   }
 
   getTimestamp(): Date {

@@ -31,7 +31,6 @@ test("Sequential Moves Time Handler Test", () => {
   const game = makeGameObject(variant, config);
 
   const start = new Date(0, 0);
-  let seconds = 0;
   const clock = new TestClock(start);
   const timeoutService = new TestTimeoutService();
   const handler = new TimeHandlerSequentialMoves(clock, timeoutService);
@@ -52,19 +51,19 @@ test("Sequential Moves Time Handler Test", () => {
   const time1 = timeControl.forPlayer[0].remainingTimeMS;
 
   const seconds2 = 20;
-  clock.setTimestamp(new Date(0, 0, 0, 0, 0, 20));
+  clock.setTimestamp(new Date(0, 0, 0, 0, 0, seconds2));
   timeControl = handler.handleMove(gameResponse, game, 1);
   const time2 = timeControl.forPlayer[1].remainingTimeMS;
 
   // time control should start here
 
   const seconds3 = 24;
-  clock.setTimestamp(new Date(0, 0, 0, 0, 0, 24));
+  clock.setTimestamp(new Date(0, 0, 0, 0, 0, seconds3));
   timeControl = handler.handleMove(gameResponse, game, 0);
   const time3 = timeControl.forPlayer[0].remainingTimeMS;
 
   const seconds4 = 30;
-  clock.setTimestamp(new Date(0, 0, 0, 0, 0, 30));
+  clock.setTimestamp(new Date(0, 0, 0, 0, 0, seconds4));
   timeControl = handler.handleMove(gameResponse, game, 1);
   const time4 = timeControl.forPlayer[1].remainingTimeMS;
 
@@ -72,6 +71,8 @@ test("Sequential Moves Time Handler Test", () => {
   gameResponse.time_control = timeControl;
   clock.setTimestamp(new Date(0, 0, 0, 0, 0, seconds5));
   const time5 = handler.getMsUntilTimeout(gameResponse, 1);
+
+  // assertions
 
   expect(time1).toEqual(mainTimeMS);
   expect(time2).toEqual(mainTimeMS);

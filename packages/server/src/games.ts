@@ -6,6 +6,8 @@ import {
   getOnlyMove,
   HasTimeControlConfig,
   GamesFilter,
+  GameStateResponse,
+  AbstractGame,
 } from "@ogfcommunity/variants-shared";
 import { ObjectId, WithId, Document, Filter } from "mongodb";
 import { getDb } from "./db";
@@ -74,6 +76,31 @@ export async function getGame(id: string): Promise<GameResponse> {
   return game;
 }
 
+function playAllMoves(
+  game_obj: AbstractGame<unknown, unknown>,
+  moves: Array<MovesType>,
+) {
+  moves.forEach((moves) => {
+    const { player, move } = getOnlyMove(moves);
+    game_obj.playMove(player, move);
+  });
+}
+
+export async function getGameState(id: string): Promise<GameStateResponse> {
+  const game = await getGame(id);
+
+  const game_obj = makeGameObject(game.variant, game.config);
+  playAllMoves(game_obj, game.moves);
+
+  return {
+    variant_state: game_obj.exportState(),
+    next_to_play: game_obj.nextToPlay(),
+    phase: game_obj.phase,
+    result: game_obj.result,
+    round: game_obj.round,
+  };
+}
+
 export async function createGame(
   variant: string,
   config: object,
@@ -128,10 +155,7 @@ export async function handleMoveAndTime(
 ): Promise<GameResponse> {
   // Verify that moves are legal
   const game_obj = makeGameObject(game.variant, game.config);
-  game.moves.forEach((moves) => {
-    const { player, move } = getOnlyMove(moves);
-    game_obj.playMove(player, move);
-  });
+  playAllMoves(game_obj, game.moves);
 
   if (game_obj.result !== "") {
     throw Error("Game is already finished.");

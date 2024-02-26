@@ -1,3 +1,4 @@
+import { GamePhase } from "./abstract_game";
 import { MovesType } from "./lib/utils";
 import { ITimeControlBase } from "./time_control/time_control.types";
 
@@ -12,6 +13,14 @@ export interface GameResponse {
   config: unknown;
   players?: Array<User | undefined>;
   time_control?: ITimeControlBase;
+}
+
+export interface GameStateResponse {
+  variant_state: unknown; // output of exportState()
+  next_to_play: number[];
+  phase: GamePhase;
+  result: string;
+  round: number;
 }
 
 export interface UserResponse {

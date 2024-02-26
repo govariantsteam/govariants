@@ -7,6 +7,7 @@ import {
   playMove,
   takeSeat,
   leaveSeat,
+  getGameState,
 } from "./games";
 import {
   checkUsername,
@@ -16,6 +17,7 @@ import {
 } from "./users";
 import {
   GameResponse,
+  GameStateResponse,
   GamesFilter,
   MovesType,
   User,
@@ -26,9 +28,20 @@ export const router = express.Router();
 
 // Set up express routes
 router.get("/games/:gameId", async (req, res) => {
+  // Deprecated API - this leaks info for hidden info games
   try {
     const game: GameResponse = await getGame(req.params.gameId);
     res.send(game);
+  } catch (e) {
+    res.status(500);
+    res.json(e.message);
+  }
+});
+
+router.get("/games/:gameId/state", async (req, res) => {
+  try {
+    const state: GameStateResponse = await getGameState(req.params.gameId);
+    res.send(state);
   } catch (e) {
     res.status(500);
     res.json(e.message);

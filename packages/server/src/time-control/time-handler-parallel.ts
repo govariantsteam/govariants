@@ -18,8 +18,8 @@ export class TimeHandlerParallelMoves implements ITimeHandler {
   private _timeoutService: ITimeoutService;
   private _clock: IClock;
 
-  constructor(clock?: IClock, timeoutService?: ITimeoutService) {
-    this._timeoutService = timeoutService ?? getTimeoutService();
+  constructor(clock?: IClock) {
+    this._timeoutService = getTimeoutService();
     this._clock = clock ?? new Clock();
   }
 

@@ -4,7 +4,7 @@
   "scripts": {
     "start": "nodemon ./src/index.ts",
     "launch": "tsc && node ./dist/index.js",
-    "test": "jest",
+    "test": "jest --detectOpenHandles",
     "lint": "eslint --fix ./src && prettier --write ./src",
     "lint:check": "eslint ./src && prettier --check ./src"
   },

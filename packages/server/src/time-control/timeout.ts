@@ -129,7 +129,11 @@ export class TimeoutService implements ITimeoutService {
 
 // dummy service for test cases
 export class TestTimeoutService implements ITimeoutService {
-  clearGameTimeouts(gameId: string): void {}
-  clearPlayerTimeout(gameId: string, playerNr: number): void {}
-  scheduleTimeout(gameId: string, playerNr: number, inTimeMs: number): void {}
+  clearGameTimeouts(_gameId: string): void {}
+  clearPlayerTimeout(_gameId: string, _playerNr: number): void {}
+  scheduleTimeout(
+    _gameId: string,
+    _playerNr: number,
+    _inTimeMs: number,
+  ): void {}
 }

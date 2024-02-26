@@ -17,7 +17,7 @@ describe("Sequential Time Control Tests", () => {
     const mainTimeMS = 60_000;
     const incrementMS = 5_000;
     const maxTimeMS = 61_000;
-    var timeControlConfig: IFischerConfig = {
+    const timeControlConfig: IFischerConfig = {
       type: TimeControlType.Fischer,
       mainTimeMS: mainTimeMS,
       incrementMS: incrementMS,
@@ -82,7 +82,6 @@ describe("Sequential Time Control Tests", () => {
     const time4 = gameResponse.time_control.forPlayer[1].remainingTimeMS;
 
     const seconds5 = 40;
-    gameResponse.time_control = gameResponse.time_control;
     clock.setTimestamp(new Date(0, 0, 0, 0, 0, seconds5));
     const time5 = new TimeHandlerSequentialMoves(clock).getMsUntilTimeout(
       gameResponse,

@@ -37,8 +37,7 @@ export function getTimeoutService(): ITimeoutService {
   return testingWithJest ? new TestTimeoutService() : timeoutService;
 }
 
-if (testingWithJest) {
-} else {
+if (!testingWithJest) {
   passport.use(
     new LocalStrategy(async function (username, password, callback) {
       try {

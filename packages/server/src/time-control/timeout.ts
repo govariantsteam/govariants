@@ -5,6 +5,7 @@ import {
   makeGameObject,
 } from "@ogfcommunity/variants-shared";
 import { timeControlHandlerMap } from "./time-handler-map";
+import { Clock } from "./clock";
 
 type GameTimeouts = {
   // timeout for this player, or null
@@ -42,7 +43,10 @@ export class TimeoutService implements ITimeoutService {
           continue;
         }
 
-        const timeHandler = new timeControlHandlerMap[game.variant]();
+        const timeHandler = new timeControlHandlerMap[game.variant](
+          new Clock(),
+          this,
+        );
         const playersWithTimeout = game_object
           .nextToPlay()
           .filter((player) => game.moves.some((move) => player in move));
@@ -125,15 +129,4 @@ export class TimeoutService implements ITimeoutService {
     const timeout = setTimeout(timeoutResolver, inTimeMs);
     this.setPlayerTimeout(gameId, playerNr, timeout);
   }
-}
-
-// dummy service for test cases
-export class TestTimeoutService implements ITimeoutService {
-  clearGameTimeouts(_gameId: string): void {}
-  clearPlayerTimeout(_gameId: string, _playerNr: number): void {}
-  scheduleTimeout(
-    _gameId: string,
-    _playerNr: number,
-    _inTimeMs: number,
-  ): void {}
 }

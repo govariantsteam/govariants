@@ -9,11 +9,10 @@ import {
 } from "@ogfcommunity/variants-shared";
 import { TestClock } from "../clock";
 import { TimeHandlerSequentialMoves } from "../time-handler-sequential";
+import { TestTimeoutService } from "../mocks/timeout-service.mock";
 
 describe("Sequential Time Control Tests", () => {
   test("Capped Fischer", () => {
-    jest.mock("../timeout");
-
     const mainTimeMS = 60_000;
     const incrementMS = 5_000;
     const maxTimeMS = 61_000;
@@ -42,10 +41,10 @@ describe("Sequential Time Control Tests", () => {
       moves: [],
       variant: variant,
       players: [{ id: "" }, { id: "" }],
-      time_control: new TimeHandlerSequentialMoves(clock).initialState(
-        variant,
-        config,
-      ),
+      time_control: new TimeHandlerSequentialMoves(
+        clock,
+        new TestTimeoutService(),
+      ).initialState(variant, config),
     };
 
     const mockPlayMove = (
@@ -56,11 +55,10 @@ describe("Sequential Time Control Tests", () => {
       clock.setTimestamp(new Date(0, 0, 0, 0, 0, seconds));
       gameResponse.moves.push({ [player]: move });
       game.playMove(player, move);
-      return new TimeHandlerSequentialMoves(clock).handleMove(
-        gameResponse,
-        game,
-        player,
-      );
+      return new TimeHandlerSequentialMoves(
+        clock,
+        new TestTimeoutService(),
+      ).handleMove(gameResponse, game, player);
     };
 
     const seconds1 = 10;
@@ -83,10 +81,10 @@ describe("Sequential Time Control Tests", () => {
 
     const seconds5 = 40;
     clock.setTimestamp(new Date(0, 0, 0, 0, 0, seconds5));
-    const time5 = new TimeHandlerSequentialMoves(clock).getMsUntilTimeout(
-      gameResponse,
-      0,
-    );
+    const time5 = new TimeHandlerSequentialMoves(
+      clock,
+      new TestTimeoutService(),
+    ).getMsUntilTimeout(gameResponse, 0);
 
     // assertions
 

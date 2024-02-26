@@ -9,18 +9,17 @@ import {
   TimeControlType,
   makeGameObject,
 } from "@ogfcommunity/variants-shared";
-import { getTimeoutService } from "..";
 import { ITimeoutService } from "./timeout";
 import { ITimeHandler } from "./time-control";
-import { Clock, IClock } from "./clock";
+import { IClock } from "./clock";
 
 export class TimeHandlerParallelMoves implements ITimeHandler {
   private _timeoutService: ITimeoutService;
   private _clock: IClock;
 
-  constructor(clock?: IClock) {
-    this._timeoutService = getTimeoutService();
-    this._clock = clock ?? new Clock();
+  constructor(clock: IClock, timeoutService: ITimeoutService) {
+    this._timeoutService = timeoutService;
+    this._clock = clock;
   }
 
   initialState(

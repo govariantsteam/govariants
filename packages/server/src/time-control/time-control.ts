@@ -8,6 +8,8 @@ import {
 } from "@ogfcommunity/variants-shared";
 import { AbstractGame, GameResponse } from "@ogfcommunity/variants-shared";
 import { timeControlHandlerMap } from "./time-handler-map";
+import { Clock } from "./clock";
+import { getTimeoutService } from "..";
 
 const _type: keyof ITimeControlConfig = "type";
 const mainTimeMs: keyof ITimeControlConfig = "mainTimeMS";
@@ -71,7 +73,10 @@ export function GetInitialTimeControl(
   )
     return null;
 
-  return new timeControlHandlerMap[variant]().initialState(variant, config);
+  return new timeControlHandlerMap[variant](
+    new Clock(),
+    getTimeoutService(),
+  ).initialState(variant, config);
 }
 
 // validation of the config should happen before this is called

@@ -171,9 +171,14 @@ watchEffect((onCleanup) => {
   socket.on(message, (data) => {
     Object.assign(gameResponse, data);
   });
+  const seatsMessage = `game/${props.gameId}/seats`;
+  socket.on(seatsMessage, (data) => {
+    gameResponse.players = data;
+  });
 
   onCleanup(() => {
     socket.off(message);
+    socket.off(seatsMessage);
   });
 });
 const createTimeControlPreview = (

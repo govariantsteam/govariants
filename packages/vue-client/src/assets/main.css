@@ -40,6 +40,11 @@
 
 .navElement {
   padding: 0rem 1.2rem;
+  gap: 0.5rem;
+
+  .icon {
+    font-size: 1rem;
+  }
 }
 
 .navLogo {
@@ -83,7 +88,7 @@ button.navElement {
     }
   }
 
-  &.navHamburgerMenuButton {
+  &.navHamburgerContainer {
     &:hover {
       transition: 0.4s;
       background-color: var(--color-primary-transparent);

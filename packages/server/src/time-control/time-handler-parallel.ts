@@ -1,21 +1,25 @@
 import {
   AbstractGame,
   GameResponse,
-  HasTimeControlConfig,
   IConfigWithTimeControl,
+  IFischerConfig,
   ITimeControlBase,
+  PerPlayerTimeControlParallel,
   TimeControlParallel,
   TimeControlType,
   makeGameObject,
 } from "@ogfcommunity/variants-shared";
-import { getTimeoutService } from "..";
-import { TimeoutService } from "./timeout";
+import { ITimeoutService } from "./timeout";
 import { ITimeHandler } from "./time-control";
+import { IClock } from "./clock";
 
 export class TimeHandlerParallelMoves implements ITimeHandler {
-  private _timeoutService: TimeoutService;
-  constructor() {
-    this._timeoutService = getTimeoutService();
+  private _timeoutService: ITimeoutService;
+  private _clock: IClock;
+
+  constructor(clock: IClock, timeoutService: ITimeoutService) {
+    this._timeoutService = timeoutService;
+    this._clock = clock;
   }
 
   initialState(
@@ -64,75 +68,62 @@ export class TimeHandlerParallelMoves implements ITimeHandler {
     isRoundTransition: boolean,
   ): ITimeControlBase {
     const config = game.config as IConfigWithTimeControl;
+    const timestamp = this._clock.getTimestamp();
+
+    // could happen for old games
+    // TODO: remove? maybe after db migration?
+    if (game.time_control === undefined) {
+      game.time_control = this.initialState(game.variant, config);
+    }
+
+    // mutates its input
+    let transition: (playerTimeControl: PerPlayerTimeControlParallel) => void;
 
     switch (config.time_control.type) {
       case TimeControlType.Absolute: {
-        let timeControl = game.time_control as TimeControlParallel;
-        // could happen for old games
-        if (timeControl === undefined) {
-          timeControl = this.initialState(game.variant, config);
-        }
+        transition = (playerData) => {
+          playerData.remainingTimeMS -=
+            playerData.stagedMoveAt.getTime() -
+            playerData.onThePlaySince.getTime();
+        };
+        break;
+      }
+      case TimeControlType.Fischer: {
+        const fischerConfig = config.time_control as IFischerConfig;
+        transition = (playerData) => {
+          const uncapped =
+            playerData.remainingTimeMS +
+            fischerConfig.incrementMS -
+            (playerData.stagedMoveAt.getTime() -
+              playerData.onThePlaySince.getTime());
 
-        const playerTimeControl = timeControl.forPlayer[playerNr];
-        const timestamp = new Date();
-
-        if (!(move === "resign") && !(move === "timeout")) {
-          timeControl.forPlayer[playerNr].stagedMoveAt = timestamp;
-
-          if (
-            playerTimeControl.onThePlaySince !== null &&
-            timeControl.forPlayer[playerNr].remainingTimeMS <=
-              timestamp.getTime() - playerTimeControl.onThePlaySince.getTime()
-          ) {
-            throw new Error(
-              "you can't change your move because it would reduce your remaining time to zero.",
-            );
-          }
-        }
-
-        timeControl.moveTimestamps.push(timestamp);
-        this._timeoutService.clearPlayerTimeout(game.id, playerNr);
-
-        if (isRoundTransition) {
-          for (const player_nr of game_obj.nextToPlay()) {
-            const playerData = timeControl.forPlayer[player_nr];
-
-            // time control starts only after first move of player
-            if (
-              game.moves.filter((move) => player_nr in move).length >
-              (player_nr === playerNr ? 0 : 1)
-            ) {
-              playerData.remainingTimeMS -=
-                playerData.stagedMoveAt.getTime() -
-                playerData.onThePlaySince.getTime();
-            }
-
-            this._timeoutService.scheduleTimeout(
-              game.id,
-              player_nr,
-              timeControl.forPlayer[player_nr].remainingTimeMS,
-            );
-            playerData.onThePlaySince = timestamp;
-            playerData.stagedMoveAt = null;
-          }
-        }
-
-        return timeControl;
+          playerData.remainingTimeMS =
+            fischerConfig.maxTimeMS === null
+              ? uncapped
+              : Math.min(uncapped, fischerConfig.maxTimeMS);
+        };
+        break;
       }
 
       case TimeControlType.Invalid:
         throw Error(`game with id ${game.id} has invalid time control type`);
     }
+
+    return this.TransitionBase(
+      game,
+      game_obj,
+      playerNr,
+      move,
+      timestamp,
+      isRoundTransition,
+      transition,
+    );
   }
 
   getMsUntilTimeout(game: GameResponse, playerNr: number): number {
-    if (!HasTimeControlConfig(game.config)) {
-      console.log("has no time control config");
+    const config = game.config as IConfigWithTimeControl;
 
-      return null;
-    }
-
-    switch (game.config.time_control.type) {
+    switch (config.time_control.type) {
       case TimeControlType.Absolute:
       case TimeControlType.Fischer: {
         const times: TimeControlParallel =
@@ -158,7 +149,7 @@ export class TimeHandlerParallelMoves implements ITimeHandler {
         const timeoutTime =
           playerTime.onThePlaySince.getTime() + playerTime.remainingTimeMS;
 
-        return timeoutTime - new Date().getTime();
+        return timeoutTime - this._clock.getTimestamp().getTime();
       }
 
       default: {
@@ -166,5 +157,83 @@ export class TimeHandlerParallelMoves implements ITimeHandler {
         return;
       }
     }
+  }
+
+  private TransitionBase(
+    game: GameResponse,
+    game_obj: AbstractGame<unknown, unknown>,
+    playerNr: number,
+    move: string,
+    timestamp: Date,
+    isRoundTransition: boolean,
+    // mutates its input
+    transition: (playerTimeControl: PerPlayerTimeControlParallel) => void,
+  ): ITimeControlBase {
+    const timeControl = game.time_control as TimeControlParallel;
+
+    const playerData = timeControl.forPlayer[playerNr];
+
+    if (!(move === "resign") && !(move === "timeout")) {
+      playerData.stagedMoveAt = timestamp;
+
+      // TODO: for now this should work, but I should think about this when adding
+      // other time controls like Byo-Yomi and such.
+      if (
+        playerData.onThePlaySince !== null &&
+        timeControl.forPlayer[playerNr].remainingTimeMS <=
+          timestamp.getTime() - playerData.onThePlaySince.getTime()
+      ) {
+        throw new Error(
+          "you can't change your move because it would reduce your remaining time to zero.",
+        );
+      }
+    } else {
+      // player dropped out
+      playerData.remainingTimeMS = 0;
+      playerData.onThePlaySince = null;
+      playerData.stagedMoveAt = null;
+    }
+
+    timeControl.moveTimestamps.push(timestamp);
+    this._timeoutService.clearPlayerTimeout(game.id, playerNr);
+
+    if (isRoundTransition) {
+      // update times for this round
+      for (const player of Object.keys(timeControl.forPlayer).map(Number)) {
+        const playerData = timeControl.forPlayer[player];
+
+        // time control starts only after first move of player
+        if (
+          playerData.onThePlaySince !== null &&
+          (player === playerNr || game.moves.some((move) => player in move))
+        ) {
+          transition(timeControl.forPlayer[player]);
+        }
+
+        // reset
+        playerData.onThePlaySince = null;
+        playerData.stagedMoveAt = null;
+      }
+
+      // time control starts only after the first move of player
+      const nextPlayers = game_obj
+        .nextToPlay()
+        .filter(
+          (player) =>
+            game.moves.some((move) => player in move) || player === playerNr,
+        );
+
+      nextPlayers.forEach((player) => {
+        timeControl.forPlayer[player].onThePlaySince = timestamp;
+
+        this._timeoutService.scheduleTimeout(
+          game.id,
+          player,
+          this.getMsUntilTimeout(game, player),
+        );
+      });
+    }
+
+    return timeControl;
   }
 }

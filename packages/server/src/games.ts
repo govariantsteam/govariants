@@ -16,6 +16,7 @@ import {
   ValidateTimeControlConfig,
 } from "./time-control/time-control";
 import { timeControlHandlerMap } from "./time-control/time-handler-map";
+import { Clock } from "./time-control/clock";
 
 export function gamesCollection() {
   return getDb().db().collection("games");
@@ -152,7 +153,10 @@ export async function handleMoveAndTime(
       getTimeoutService().clearGameTimeouts(game.id);
     } else {
       if (Object.keys(timeControlHandlerMap).includes(game.variant)) {
-        const timeHandler = new timeControlHandlerMap[game.variant]();
+        const timeHandler = new timeControlHandlerMap[game.variant](
+          new Clock(),
+          getTimeoutService(),
+        );
         timeControl = timeHandler.handleMove(
           game,
           game_obj,

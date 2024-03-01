@@ -18,9 +18,14 @@ import { Strategy as LocalStrategy } from "passport-local";
 import { UserResponse } from "@ogfcommunity/variants-shared";
 import { router as apiRouter } from "./api";
 import * as socket_io from "./socket_io";
-import { TimeoutService } from "./time-control/timeout";
+import { ITimeoutService, TimeoutService } from "./time-control/timeout";
 
 const LOCAL_ORIGIN = "http://127.0.0.1:5173";
+
+const timeoutService = new TimeoutService();
+export function getTimeoutService(): ITimeoutService {
+  return timeoutService;
+}
 
 passport.use(
   new LocalStrategy(async function (username, password, callback) {
@@ -36,11 +41,6 @@ passport.use(
     }
   }),
 );
-
-const timeoutService = new TimeoutService();
-export function getTimeoutService(): TimeoutService {
-  return timeoutService;
-}
 
 // Initialize MongoDB
 connectToDb()

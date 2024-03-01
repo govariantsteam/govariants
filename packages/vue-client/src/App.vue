@@ -17,7 +17,7 @@ const closeMenuFn = (event: MouseEvent) => {
   document.removeEventListener("click", closeMenuFn);
 };
 
-const openMenuFn = (event: MouseEvent) => {
+const toggleMenuFn = (event: MouseEvent) => {
   if (is_menu_closed.value) {
     event.stopPropagation();
     is_menu_closed.value = false;
@@ -33,7 +33,7 @@ const openMenuFn = (event: MouseEvent) => {
     <RouterLink class="navLogo" to="/"
       ><img class="navLogoImg" src="/favicon.ico"
     /></RouterLink>
-    <button class="navHamburgerContainer navElement" @click="openMenuFn">
+    <button class="navHamburgerContainer navElement" @click="toggleMenuFn">
       <font-awesome-icon icon="fa-solid fa-bars" class="navHamburgerMenu" />
     </button>
     <div class="navContent" v-bind:class="{ closedMenu: is_menu_closed }">

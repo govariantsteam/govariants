@@ -4,10 +4,10 @@ import { storeToRefs } from "pinia";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
-import { faArrowRightToBracket } from "@fortawesome/free-solid-svg-icons";
-import { faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
+import { faRightToBracket } from "@fortawesome/free-solid-svg-icons";
+import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 
-library.add(faUser, faArrowRightToBracket, faArrowRightFromBracket);
+library.add(faUser, faRightToBracket, faRightFromBracket);
 const store = useStore();
 const { user } = storeToRefs(store);
 store.update();
@@ -15,10 +15,8 @@ store.update();
 
 <template>
   <RouterLink class="navElement" v-if="!user" to="/login"
-    ><font-awesome-icon
-      icon="fa-solid fa-arrow-right-to-bracket"
-      class="icon"
-    />Log in</RouterLink
+    ><font-awesome-icon icon="fa-solid fa-right-to-bracket" class="icon" />Log
+    in</RouterLink
   >
   <template v-else>
     <!-- TODO: make this a link to the user's profile? -->
@@ -32,10 +30,7 @@ store.update();
       v-on:click="store.logout()"
       click="Log out"
     >
-      <font-awesome-icon
-        icon="fa-solid fa-arrow-right-from-bracket"
-        class="icon"
-      />
+      <font-awesome-icon icon="fa-solid fa-right-from-bracket" class="icon" />
       Log out
     </button>
   </template>

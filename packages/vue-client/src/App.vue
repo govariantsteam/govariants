@@ -1,6 +1,25 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
 import UserNav from "./components/UserNav.vue";
+import { ref } from "vue";
+
+const is_menu_closed = ref(true);
+
+const closeMenuFn = (event: MouseEvent) => {
+  event.stopPropagation();
+  is_menu_closed.value = true;
+  document.removeEventListener("click", closeMenuFn);
+};
+
+const openMenuFn = (event: MouseEvent) => {
+  if (is_menu_closed.value) {
+    event.stopPropagation();
+    is_menu_closed.value = false;
+    document.addEventListener("click", closeMenuFn);
+  } else {
+    closeMenuFn(event);
+  }
+};
 </script>
 
 <template>
@@ -8,8 +27,10 @@ import UserNav from "./components/UserNav.vue";
     <RouterLink class="navLogo" to="/"
       ><img class="navLogoImg" src="/favicon.ico"
     /></RouterLink>
-    <button class="navElement navHamburgerMenuButton">Menu</button>
-    <div class="navContent" v-bind:class="{ closedMenu: false }">
+    <button class="navElement navHamburgerMenuButton" @click="openMenuFn">
+      Menu
+    </button>
+    <div class="navContent" v-bind:class="{ closedMenu: is_menu_closed }">
       <div>
         <RouterLink class="navElement" to="/">Home</RouterLink>
         <RouterLink class="navElement" to="/about">About</RouterLink>
@@ -50,8 +71,8 @@ nav {
   }
 
   .navLogoImg {
-    width: calc(var(--navbar-height) * 0.85);
-    height: calc(var(--navbar-height) * 0.85);
+    width: calc(var(--navbar-height) * 0.8);
+    height: calc(var(--navbar-height) * 0.8);
   }
 }
 
@@ -69,7 +90,7 @@ nav {
     left: 0;
     background-color: var(--color-background-soft);
     box-shadow: 0px 5px 5px -5px var(--color-shadow);
-    width: 100vw;
+    width: 100%;
 
     div {
       flex-direction: column;
@@ -81,8 +102,10 @@ nav {
   }
 
   .closedMenu {
-    opacity: 0;
-    height: 0;
+    display: none;
+    * {
+      display: none !important;
+    }
   }
 }
 </style>

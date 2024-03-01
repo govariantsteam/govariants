@@ -536,6 +536,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@csstools/selector-specificity@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "@csstools/selector-specificity@npm:3.0.2"
+  peerDependencies:
+    postcss-selector-parser: ^6.0.13
+  checksum: af3cc9282b600170b7de0fed2106830ab353359bd11f66cf71259419c9bddf8f0773c3a6e513cd9f66fd7e4920a1786a7c288723cbb3ae207974c1e7de26293e
+  languageName: node
+  linkType: hard
+
 "@cypress/request@npm:^2.88.10":
   version: 2.88.11
   resolution: "@cypress/request@npm:2.88.11"
@@ -1458,6 +1467,8 @@ __metadata:
     jsdom: ^22.1.0
     npm-run-all: ^4.1.5
     pinia: ^2.1.4
+    postcss: ^8.4.35
+    postcss-nesting: ^12.0.4
     prettier: ^2.8.8
     rimraf: ^5.0.5
     socket.io-client: ^4.7.1
@@ -7972,6 +7983,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"postcss-nesting@npm:^12.0.4":
+  version: 12.0.4
+  resolution: "postcss-nesting@npm:12.0.4"
+  dependencies:
+    "@csstools/selector-specificity": ^3.0.2
+    postcss-selector-parser: ^6.0.13
+  peerDependencies:
+    postcss: ^8.4
+  checksum: fcf625e7a2eb94367fcbe31ee3af05e481bd495fc6744e3ec527a9001a5c7d2b388915e238278ad48e8e15adc9453c2ddf3c5cb6657102c4db8aaac515a4a71a
+  languageName: node
+  linkType: hard
+
+"postcss-selector-parser@npm:^6.0.13":
+  version: 6.0.15
+  resolution: "postcss-selector-parser@npm:6.0.15"
+  dependencies:
+    cssesc: ^3.0.0
+    util-deprecate: ^1.0.2
+  checksum: 57decb94152111004f15e27b9c61131eb50ee10a3288e7fcf424cebbb4aba82c2817517ae718f8b5d704ee9e02a638d4a2acff8f47685c295a33ecee4fd31055
+  languageName: node
+  linkType: hard
+
 "postcss-selector-parser@npm:^6.0.9":
   version: 6.0.11
   resolution: "postcss-selector-parser@npm:6.0.11"
@@ -8004,7 +8037,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.4.27":
+"postcss@npm:^8.4.27, postcss@npm:^8.4.35":
   version: 8.4.35
   resolution: "postcss@npm:8.4.35"
   dependencies:

@@ -21,6 +21,7 @@ import {
   User,
   UserResponse,
 } from "@ogfcommunity/variants-shared";
+import { io } from "./socket_io";
 
 export const router = express.Router();
 
@@ -74,13 +75,19 @@ router.post("/games/:gameId/move", async (req, res) => {
 router.post("/games/:gameId/sit/:seat", async (req, res) => {
   const user = req.user as User | undefined;
 
-  const players: User[] = await takeSeat(
-    req.params.gameId,
-    Number(req.params.seat),
-    user,
-  );
+  try {
+    const players: User[] = await takeSeat(
+      req.params.gameId,
+      Number(req.params.seat),
+      user,
+    );
 
-  res.send(players);
+    io().emit(`game/${req.params.gameId}/seats`, players);
+    res.send(players);
+  } catch (e) {
+    res.status(409);
+    res.json(e.message);
+  }
 });
 
 router.post("/games/:gameId/leave/:seat", async (req, res) => {
@@ -93,6 +100,7 @@ router.post("/games/:gameId/leave/:seat", async (req, res) => {
     user_id,
   );
 
+  io().emit(`game/${req.params.gameId}/seats`, players);
   res.send(players);
 });
 

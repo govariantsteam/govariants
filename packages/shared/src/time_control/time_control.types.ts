@@ -5,13 +5,13 @@ export enum TimeControlType {
   // unlimited time is configured by config.time_control = undefined
 }
 
-export interface IWithConfig<TConfig> {
-  config: TConfig;
-}
-
 export interface ITimeControlConfig {
   type: TimeControlType;
   mainTimeMS: number;
+}
+export interface IFischerConfig extends ITimeControlConfig {
+  incrementMS: number;
+  maxTimeMS: number | null;
 }
 
 export interface IConfigWithTimeControl {
@@ -22,21 +22,18 @@ export interface IPerPlayerTimeControlBase {
   remainingTimeMS: number;
   onThePlaySince: Date | null;
 }
-
-export interface ITimeControlBase {
-  moveTimestamps: Date[];
-  forPlayer: {
-    [player: number]: IPerPlayerTimeControlBase;
-  };
-}
-
 export type PerPlayerTimeControlParallel = IPerPlayerTimeControlBase & {
   stagedMoveAt: Date | null;
 };
 
-export type TimeControlParallel = {
+export interface GenericTimeControl<TPerPlayer> {
   moveTimestamps: Date[];
   forPlayer: {
-    [player: number]: PerPlayerTimeControlParallel;
+    [player: number]: TPerPlayer;
   };
-};
+}
+
+export interface ITimeControlBase
+  extends GenericTimeControl<IPerPlayerTimeControlBase> {}
+export type TimeControlParallel =
+  GenericTimeControl<PerPlayerTimeControlParallel>;

@@ -4,7 +4,7 @@
   "scripts": {
     "start": "nodemon ./src/index.ts",
     "launch": "tsc && node ./dist/index.js",
-    "test": "echo \"No tests in packages/server.\"",
+    "test": "jest",
     "lint": "eslint --fix ./src && prettier --write ./src",
     "lint:check": "eslint ./src && prettier --check ./src"
   },
@@ -31,9 +31,12 @@
     "typescript": "^5.1.6"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.2",
     "@typescript-eslint/eslint-plugin": "^6.1.0",
     "@typescript-eslint/parser": "^6.1.0",
     "eslint": "^8.44.0",
-    "prettier": "^3.0.0"
+    "jest": "^29.6.0",
+    "prettier": "^3.0.0",
+    "ts-jest": "^29.1.1"
   }
 }

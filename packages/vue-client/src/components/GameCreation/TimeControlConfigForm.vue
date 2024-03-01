@@ -2,31 +2,46 @@
 import {
   TimeControlType,
   type ITimeControlConfig,
+  type IFischerConfig,
 } from "@ogfcommunity/variants-shared/src/time_control";
-import { ref, watch } from "vue";
+import { ref } from "vue";
 
-const config: ITimeControlConfig = {
-  type: TimeControlType.Absolute,
-  mainTimeMS: 300000,
-};
-
+const typeRef = ref(null);
 const mainTimeS = ref(300);
-watch(mainTimeS, (value) => (config.mainTimeMS = value * 1000));
+const fischerIncrementS = ref(20);
+const fischerMaxS = ref(600);
+const fischerCapped = ref(true);
 
 const emit = defineEmits<{
   (e: "configChanged", config: ITimeControlConfig | null): void;
 }>();
 
 function emitConfigChange() {
-  emit("configChanged", typeRef.value === null ? null : config);
-}
+  let emitConfig: ITimeControlConfig | IFischerConfig | null = null;
 
-const typeRef = ref(null);
-watch(typeRef, () => {
   if (typeRef.value !== null) {
-    config.type = typeRef.value;
+    switch (typeRef.value) {
+      case TimeControlType.Absolute: {
+        emitConfig = {
+          type: TimeControlType.Absolute,
+          mainTimeMS: mainTimeS.value * 1000,
+        };
+        break;
+      }
+      case TimeControlType.Fischer: {
+        emitConfig = {
+          type: TimeControlType.Fischer,
+          mainTimeMS: mainTimeS.value * 1000,
+          incrementMS: fischerIncrementS.value * 1000,
+          maxTimeMS: fischerCapped.value ? fischerMaxS.value * 1000 : null,
+        };
+        break;
+      }
+    }
   }
-});
+
+  emit("configChanged", emitConfig);
+}
 </script>
 
 <template>
@@ -35,18 +50,21 @@ watch(typeRef, () => {
     <select v-model="typeRef">
       <option :value="null">Unlimited Time</option>
       <option :value="TimeControlType.Absolute">Absolute</option>
-      <!--<option :value="TimeControlType.Fischer">Fischer</option>   -->
+      <option :value="TimeControlType.Fischer">Fischer</option>
     </select>
     <template v-if="typeRef !== null">
       <label>Main Time (s)</label>
       <input type="number" v-model="mainTimeS" />
     </template>
-    <!--
-        <template v-if="typeRef === TimeControlType.Fischer">
-            <label>Increment</label>
-            <input type="number" />
-        </template>
-        -->
+    <template v-if="typeRef === TimeControlType.Fischer">
+      <label>Increment</label>
+      <input type="number" v-model="fischerIncrementS" />
+      <div class="fischerCappedToggle">
+        <label for="cappedToggle">Max</label>
+        <input id="cappedToggle" type="checkbox" v-model="fischerCapped" />
+      </div>
+      <input v-if="fischerCapped" type="number" v-model="fischerMaxS" />
+    </template>
   </form>
 </template>
 
@@ -56,5 +74,17 @@ input {
 }
 select {
   width: fit-content;
+}
+.fischerCappedToggle {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+
+  label {
+    cursor: pointer;
+  }
+  input {
+    cursor: pointer;
+  }
 }
 </style>

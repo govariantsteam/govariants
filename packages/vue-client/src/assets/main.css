@@ -30,9 +30,13 @@
   flex-direction: column;
 }
 
-.navElement {
-  padding: 0.6rem 1.2rem;
-  height: 100%;
+.navElement,
+.navLogo {
+  padding: 0rem 1.2rem;
+  height: var(--navbar-height);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
 }
 
 a.navElement {
@@ -69,6 +73,13 @@ button.navElement {
     &:hover {
       transition: 0.4s;
       background-color: var(--color-warn-transparent);
+    }
+  }
+
+  &.navHamburgerMenuButton {
+    &:hover {
+      transition: 0.4s;
+      background-color: var(--color-primary-transparent);
     }
   }
 }

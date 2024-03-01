@@ -5,14 +5,18 @@ import UserNav from "./components/UserNav.vue";
 
 <template>
   <nav>
-    <div>
-      <RouterLink class="navElement" to="/"
-        ><img class="navLogo" src="/favicon.ico"
-      /></RouterLink>
-      <RouterLink class="navElement" to="/about">About</RouterLink>
-    </div>
-    <div>
-      <UserNav />
+    <RouterLink class="navLogo" to="/"
+      ><img class="navLogoImg" src="/favicon.ico"
+    /></RouterLink>
+    <button class="navElement navHamburgerMenuButton">Menu</button>
+    <div class="navContent" v-bind:class="{ closedMenu: false }">
+      <div>
+        <RouterLink class="navElement" to="/">Home</RouterLink>
+        <RouterLink class="navElement" to="/about">About</RouterLink>
+      </div>
+      <div>
+        <UserNav />
+      </div>
     </div>
   </nav>
   <div class="pageWrapper">
@@ -23,6 +27,7 @@ import UserNav from "./components/UserNav.vue";
 <style scoped>
 nav {
   width: 100%;
+  height: var(--navbar-height);
   text-align: left;
   font-size: 1rem;
   position: sticky;
@@ -30,20 +35,28 @@ nav {
   z-index: 999;
   background-color: var(--color-background-soft);
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: start;
   box-shadow: 0px 0px 5px var(--color-shadow);
   margin-bottom: 5px;
 
-  div {
+  .navContent {
     display: flex;
-    align-items: center;
+    justify-content: space-between;
+    flex-grow: 1;
+
+    div {
+      display: flex;
+    }
   }
 
-  .navLogo {
-    width: 2rem;
-    height: 2rem;
+  .navLogoImg {
+    width: calc(var(--navbar-height) * 0.85);
+    height: calc(var(--navbar-height) * 0.85);
   }
+}
+
+.navHamburgerMenuButton {
+  display: none;
 }
 
 header {
@@ -71,6 +84,33 @@ header {
     display: flex;
     place-items: flex-start;
     flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 768px) {
+  .navContent {
+    flex-direction: column;
+    z-index: 1000;
+    opacity: 1;
+    position: absolute;
+    top: var(--navbar-height);
+    left: 0;
+    background-color: var(--color-background-soft);
+    box-shadow: 0px 5px 5px -5px var(--color-shadow);
+    width: 100vw;
+
+    div {
+      flex-direction: column;
+    }
+  }
+
+  .navHamburgerMenuButton {
+    display: flex;
+  }
+
+  .closedMenu {
+    opacity: 0;
+    height: 0;
   }
 }
 </style>

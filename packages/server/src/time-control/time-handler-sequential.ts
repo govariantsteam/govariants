@@ -85,7 +85,6 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
       }
 
       case TimeControlType.Fischer: {
-        // TODO: how to avoid type cast, typeguard?
         const fischerConfig = config.time_control as IFischerConfig;
         transition = (playerData) => {
           const uncapped =

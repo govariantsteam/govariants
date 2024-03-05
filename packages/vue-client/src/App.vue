@@ -1,18 +1,59 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
 import UserNav from "./components/UserNav.vue";
+import { ref } from "vue";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { faHouse } from "@fortawesome/free-solid-svg-icons";
+import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
+
+library.add(faBars, faHouse, faCircleInfo);
+const is_menu_closed = ref(true);
+
+const closeMenuFn = (event: MouseEvent) => {
+  event.stopPropagation();
+  is_menu_closed.value = true;
+  document.removeEventListener("click", closeMenuFn);
+};
+
+const toggleMenuFn = (event: MouseEvent) => {
+  if (is_menu_closed.value) {
+    event.stopPropagation();
+    is_menu_closed.value = false;
+    document.addEventListener("click", closeMenuFn);
+  } else {
+    closeMenuFn(event);
+  }
+};
 </script>
 
 <template>
   <nav>
-    <div>
-      <RouterLink class="navElement" to="/"
-        ><img class="navLogo" src="/favicon.ico"
-      /></RouterLink>
-      <RouterLink class="navElement" to="/about">About</RouterLink>
-    </div>
-    <div>
-      <UserNav />
+    <RouterLink class="navLogo" to="/"
+      ><img class="navLogoImg" src="/favicon.ico"
+    /></RouterLink>
+    <button class="navHamburgerContainer navElement" @click="toggleMenuFn">
+      <font-awesome-icon icon="fa-solid fa-bars" class="navHamburgerMenu" />
+    </button>
+    <div class="navContent" v-bind:class="{ closedMenu: is_menu_closed }">
+      <div>
+        <RouterLink class="navElement" to="/"
+          ><font-awesome-icon
+            icon="fa-solid fa-house"
+            class="icon"
+          />Home</RouterLink
+        >
+        <RouterLink class="navElement" to="/about"
+          ><font-awesome-icon
+            icon="fa-solid fa-circle-info"
+            class="icon"
+          />About</RouterLink
+        >
+      </div>
+      <div>
+        <UserNav />
+      </div>
     </div>
   </nav>
   <div class="pageWrapper">
@@ -23,6 +64,7 @@ import UserNav from "./components/UserNav.vue";
 <style scoped>
 nav {
   width: 100%;
+  height: var(--navbar-height);
   text-align: left;
   font-size: 1rem;
   position: sticky;
@@ -30,47 +72,68 @@ nav {
   z-index: 999;
   background-color: var(--color-background-soft);
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: flex-start;
+  align-items: center;
   box-shadow: 0px 0px 5px var(--color-shadow);
   margin-bottom: 5px;
 
-  div {
-    display: flex;
-    align-items: center;
+  .navLogoImg {
+    width: calc(var(--navbar-height) * 0.8);
+    height: calc(var(--navbar-height) * 0.8);
   }
 
-  .navLogo {
-    width: 2rem;
-    height: 2rem;
+  .navHamburgerContainer {
+    display: none;
+    .navHamburgerMenu {
+      height: calc(var(--navbar-height) * 0.8);
+      display: none;
+    }
+  }
+
+  .navContent {
+    display: flex;
+    justify-content: space-between;
+    flex-grow: 1;
+
+    div {
+      display: flex;
+    }
   }
 }
 
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
+@media (max-width: 768px) {
+  nav {
+    justify-content: space-between;
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
+    .navHamburgerContainer {
+      display: flex;
+      .navHamburgerMenu {
+        display: flex;
+      }
+    }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
+    .navContent {
+      flex-direction: column;
+      z-index: 1000;
+      opacity: 1;
+      position: absolute;
+      top: var(--navbar-height);
+      left: 0;
+      background-color: var(--color-background-soft);
+      box-shadow: 0px 5px 5px -5px var(--color-shadow);
+      width: 100%;
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
+      div {
+        flex-direction: column;
+      }
 
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
+      &.closedMenu {
+        display: none;
+        * {
+          display: none;
+        }
+      }
+    }
   }
 }
 </style>

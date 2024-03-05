@@ -17,6 +17,11 @@
     "gen-favicon": "rimraf public/favicon.ico && icon-gen --ico -i public/logo.svg -o public --ico-name favicon"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.5.1",
+    "@fortawesome/free-brands-svg-icons": "^6.5.1",
+    "@fortawesome/free-regular-svg-icons": "^6.5.1",
+    "@fortawesome/free-solid-svg-icons": "^6.5.1",
+    "@fortawesome/vue-fontawesome": "latest-3",
     "@ogfcommunity/variants-shared": "1.0.0",
     "@vueuse/core": "^10.2.1",
     "chessground": "^8.3.12",

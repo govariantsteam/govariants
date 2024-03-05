@@ -66,6 +66,7 @@
 
   --section-gap: 160px;
   --board-side-length: 600px;
+  --navbar-height: 50px;
 }
 
 @media (prefers-color-scheme: dark) {

@@ -30,9 +30,25 @@
   flex-direction: column;
 }
 
+.navElement,
+.navLogo {
+  height: var(--navbar-height);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
 .navElement {
-  padding: 0.6rem 1.2rem;
-  height: 100%;
+  padding: 0rem 1.2rem;
+  gap: 0.5rem;
+
+  .icon {
+    font-size: 1rem;
+  }
+}
+
+.navLogo {
+  padding: calc(var(--navbar-height) * 0.2);
 }
 
 a.navElement {
@@ -69,6 +85,13 @@ button.navElement {
     &:hover {
       transition: 0.4s;
       background-color: var(--color-warn-transparent);
+    }
+  }
+
+  &.navHamburgerContainer {
+    &:hover {
+      transition: 0.4s;
+      background-color: var(--color-primary-transparent);
     }
   }
 }

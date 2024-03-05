@@ -1,23 +1,27 @@
 import { AbstractGame } from "../abstract_game";
-import { CoordinateLike } from "../lib/coordinate";
-import { Color } from "./baduk";
-import { Grid } from "../lib/grid";
-
-export interface QuantumGoConfig {
-  width: number;
-  height: number;
-}
+import { Coordinate } from "../lib/coordinate";
+import { Baduk, BadukConfig, Color } from "./baduk";
 
 export interface QuantumGoState {
   // length=2
   // two go boards
   boards: Color[][][];
-  // these are the quantum entangled go stones.
-  // Perhaps we need something more complex to represent which stone these are entangled to...
-  quantum_stones: CoordinateLike[];
+  // each element is a pair of coordinates.  The first stone is on board[0]
+  // and the second stone is on board[2]
+  quantum_stones: (string | null)[][];
 }
 
-export class QuantumGo extends AbstractGame<object, QuantumGoState> {
+export class QuantumGo extends AbstractGame<BadukConfig, QuantumGoState> {
+  subgames: Baduk[];
+  quantum_stones: (Coordinate | null)[][];
+
+  constructor(config: BadukConfig) {
+    super(config);
+
+    this.subgames = [new Baduk(config), new Baduk(config)];
+    this.quantum_stones = [];
+  }
+
   playMove(player: number, move: string): void {
     if (move === "resign") {
       this.phase = "gameover";
@@ -31,27 +35,47 @@ export class QuantumGo extends AbstractGame<object, QuantumGoState> {
       return;
     }
 
-    // TODO: implement actual move logic
+    const pos = Coordinate.fromSgfRepr(move);
+    if (!this.subgames[0].board.isInBounds(pos)) {
+      throw "Out of bounds!";
+    }
+
+    if (this.round === 0) {
+      if (player !== 0) {
+        throw new Error("Black must place the second quantum stone.");
+      }
+      this.subgames[0].board.set(pos, Color.BLACK);
+      this.subgames[1].board.set(pos, Color.WHITE);
+      this.quantum_stones = [
+        [pos, null],
+        [null, pos],
+      ];
+    }
+
+    if (this.round === 1) {
+      if (player !== 1) {
+        throw new Error("White must place the second quantum stone.");
+      }
+      if (this.subgames[0].board.at(pos) !== Color.EMPTY) {
+        throw new Error("There is already a stone placed here!");
+      }
+      this.subgames[0].board.set(pos, Color.WHITE);
+      this.subgames[1].board.set(pos, Color.BLACK);
+      this.quantum_stones[0][1] = pos;
+      this.quantum_stones[1][0] = pos;
+    }
+
+    // TODO: implement further game logic
 
     super.increaseRound();
   }
 
   exportState(): QuantumGoState {
-    // TODO: return a real state
-
-    // For now, let's put a quantum stone at the 3-4 (小目) point...
-    const fake_boards = [
-      new Grid<Color>(9, 9).fill(Color.EMPTY),
-      new Grid<Color>(9, 9).fill(Color.EMPTY),
-    ];
-    const three_four = { x: 2, y: 3 };
-    fake_boards[0].set(three_four, Color.BLACK);
-    fake_boards[1].set(three_four, Color.WHITE);
-    const quantum_stones = [three_four];
-
     return {
-      boards: fake_boards.map((g) => g.to2DArray()),
-      quantum_stones,
+      boards: this.subgames.map((subgame) => subgame.exportState().board),
+      quantum_stones: this.quantum_stones.map((pair) =>
+        pair.map((pos) => (pos ? pos.toSgfRepr() : null)),
+      ),
     };
   }
   nextToPlay(): number[] {
@@ -60,7 +84,7 @@ export class QuantumGo extends AbstractGame<object, QuantumGoState> {
   numPlayers(): number {
     return 2;
   }
-  defaultConfig(): object {
+  defaultConfig(): BadukConfig {
     return { width: 9, height: 9, komi: 7.5 };
   }
 }

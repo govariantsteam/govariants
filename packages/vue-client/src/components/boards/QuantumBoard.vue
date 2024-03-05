@@ -6,14 +6,14 @@ import { Color, type CoordinateLike } from "@ogfcommunity/variants-shared";
 import MulticolorGridBoard from "./MulticolorGridBoard.vue";
 import {
   Coordinate,
-  type QuantumGoConfig,
   type QuantumGoState,
+  type BadukConfig,
 } from "@ogfcommunity/variants-shared";
 import { Grid } from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
 
 const props = defineProps<{
-  config: QuantumGoConfig;
+  config: BadukConfig;
   gamestate: QuantumGoState;
 }>();
 
@@ -53,13 +53,19 @@ function board_with_quantum_stones(
 const board_0 = computed(() => {
   return board_with_quantum_stones(
     props.gamestate.boards[0],
-    props.gamestate.quantum_stones,
+    props.gamestate.quantum_stones
+      .map((pair) => pair[0])
+      .filter((pos): pos is string => pos != null)
+      .map((pos) => Coordinate.fromSgfRepr(pos)),
   );
 });
 const board_1 = computed(() => {
   return board_with_quantum_stones(
     props.gamestate.boards[1],
-    props.gamestate.quantum_stones,
+    props.gamestate.quantum_stones
+      .map((pair) => pair[1])
+      .filter((pos): pos is string => pos != null)
+      .map((pos) => Coordinate.fromSgfRepr(pos)),
   );
 });
 </script>

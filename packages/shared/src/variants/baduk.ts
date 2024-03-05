@@ -30,7 +30,7 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
   protected captures = { 0: 0, 1: 0 };
   private ko_detector = new SuperKoDetector();
   protected score_board?: Grid<Color>;
-  protected board: Grid<Color>;
+  public board: Grid<Color>;
   protected next_to_play: 0 | 1 = 0;
   protected last_move = "";
 

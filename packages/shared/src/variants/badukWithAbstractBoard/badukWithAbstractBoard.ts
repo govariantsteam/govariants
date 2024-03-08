@@ -15,6 +15,7 @@ export enum BoardPattern {
   Polygonal = 2,
   Circular = 3,
   Trihexagonal = 4,
+  Sierpinsky = 5,
 }
 
 export interface BadukWithAbstractBoardConfig {

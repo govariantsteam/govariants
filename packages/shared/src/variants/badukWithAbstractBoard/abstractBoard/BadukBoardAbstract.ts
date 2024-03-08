@@ -6,6 +6,7 @@ import { CreatePolygonalBoard } from "./PolygonalBoardHelper";
 import { CreateCircularBoard } from "./CircularBoardHelper";
 import { Vector2D } from "./Vector2D";
 import { TrihexagonalBoardHelper } from "./TrihexagonalBoardHelper";
+import { createSierpinskyBoard } from "./SierpinskyBoard";
 
 export class BadukBoardAbstract implements IBadukBoard {
   Intersections: Intersection[];
@@ -51,6 +52,13 @@ export class BadukBoardAbstract implements IBadukBoard {
           new TrihexagonalBoardHelper().CreateTrihexagonalBoard(
             Math.min(conf.height, conf.width),
           );
+
+        return;
+      case BoardPattern.Sierpinsky:
+        this.Array2D = null;
+        this.Intersections = createSierpinskyBoard(
+          Math.min(conf.height, conf.width),
+        );
 
         return;
       default:

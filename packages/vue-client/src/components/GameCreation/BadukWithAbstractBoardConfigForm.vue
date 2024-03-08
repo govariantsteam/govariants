@@ -67,12 +67,15 @@ watch(patternRef, () => {
     <template
       v-if="
         patternRef === BoardPattern.Polygonal ||
-        patternRef === BoardPattern.Trihexagonal ||
-        patternRef === BoardPattern.Sierpinsky
+        patternRef === BoardPattern.Trihexagonal
       "
     >
       <label>Size</label>
       <input type="number" min="1" v-model="sizeRef" />
+    </template>
+    <template v-if="patternRef === BoardPattern.Sierpinsky">
+      <label>Size</label>
+      <input type="number" min="1" max="4" v-model="sizeRef" />
     </template>
     <template v-if="patternRef === BoardPattern.Circular">
       <label>Nodes per Ring</label>

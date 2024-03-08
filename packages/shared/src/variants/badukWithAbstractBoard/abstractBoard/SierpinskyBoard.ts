@@ -23,7 +23,12 @@ export function createSierpinskyBoard(depth: number): Intersection[] {
   sierpinskyTriangle.connectLeftCorner(leftCorner);
   sierpinskyTriangle.connectRightCorner(rightCorner);
 
-  return sierpinskyTriangle.flatten().map((intersection, index) => {
+  return [
+    topCorner,
+    leftCorner,
+    rightCorner,
+    ...sierpinskyTriangle.flatten(),
+  ].map((intersection, index) => {
     intersection.Identifier = index;
     return intersection;
   });

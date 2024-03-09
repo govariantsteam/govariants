@@ -48,7 +48,7 @@ const createGame = async () => {
     "width" in config &&
     "height" in config &&
     config.pattern === BoardPattern.Sierpinsky &&
-    Math.min(Number(config.width), Number(config.height)) > 4
+    Math.min(Number(config.width), Number(config.height)) > 6
   ) {
     alert("board size is too big");
     return;

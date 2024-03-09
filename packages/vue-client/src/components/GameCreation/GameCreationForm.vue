@@ -9,6 +9,7 @@ import * as requests from "@/requests";
 import router from "@/router";
 import { config_form_map } from "@/config_form_map";
 import TimeControlConfigForm from "./TimeControlConfigForm.vue";
+import { BoardPattern } from "@ogfcommunity/variants-shared/src/variants/badukWithAbstractBoard";
 
 interface IConfigWithOptionalTimeControl {
   time_control?: ITimeControlConfig;
@@ -40,6 +41,18 @@ const createGame = async () => {
     return;
   }
   //ToDo: add form validation
+
+  // TODO: improve on the type checking here, add backend validation
+  if (
+    "pattern" in config &&
+    "width" in config &&
+    "height" in config &&
+    config.pattern === BoardPattern.Sierpinsky &&
+    Math.min(Number(config.width), Number(config.height)) > 6
+  ) {
+    alert("board size is too big");
+    return;
+  }
 
   const game = await requests.post("/games", {
     variant: variant.value,

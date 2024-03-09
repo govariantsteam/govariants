@@ -56,6 +56,7 @@ watch(patternRef, () => {
       <option :value="BoardPattern.Polygonal">Polygonal</option>
       <option :value="BoardPattern.Circular">Circular</option>
       <option :value="BoardPattern.Trihexagonal">Trihexagonal</option>
+      <option :value="BoardPattern.Sierpinsky">Sierpinsky Triangle</option>
     </select>
     <template v-if="patternRef === BoardPattern.Rectangular">
       <label>Width</label>
@@ -71,6 +72,10 @@ watch(patternRef, () => {
     >
       <label>Size</label>
       <input type="number" min="1" v-model="sizeRef" />
+    </template>
+    <template v-if="patternRef === BoardPattern.Sierpinsky">
+      <label>Size</label>
+      <input type="number" min="1" max="6" v-model="sizeRef" />
     </template>
     <template v-if="patternRef === BoardPattern.Circular">
       <label>Nodes per Ring</label>

@@ -4,7 +4,7 @@ import { Intersection } from "./intersection";
 export function createSierpinskyBoard(depth: number): Intersection[] {
   const sideLength = Math.pow(2, depth + 1);
 
-  var middleIntersections = [0, 1, 2].map(
+  const middleIntersections = [0, 1, 2].map(
     (number) =>
       new Intersection(
         new Vector2D(

@@ -13,7 +13,7 @@ import type {
   IPerPlayerTimeControlBase,
   IConfigWithTimeControl,
 } from "@ogfcommunity/variants-shared";
-import { computed, reactive, ref, watchEffect, type Ref } from "vue";
+import { computed, reactive, ref, watchEffect, watch, type Ref } from "vue";
 import { board_map } from "@/board_map";
 import { socket } from "../requests";
 import { variant_short_description_map } from "../components/variant_descriptions/variant_description.consts";
@@ -31,6 +31,10 @@ const DEFAULT_GAME: GameResponse = {
 // while viewing history of game, maybe we should prevent player from making a move (accidentally)
 const view_round: Ref<number | null> = ref(null);
 const navigateRounds = (offset: number): void => {
+  if (resetMoveToSubmit()) {
+    return;
+  }
+
   if (game.value.round === undefined) {
     // game not initialised
     return;
@@ -141,9 +145,17 @@ const setPlayingAs = (seat: number) => {
   }
 };
 
-function makeMove(move_str: string) {
-  const move: { [player: number]: string } = {};
+const moveToSubmit = ref<{ [player: number]: string } | null>(null);
+const useSubmitButton = ref<boolean>(
+  (
+    localStorage?.getItem("settings.useSubmitButton") ?? "false"
+  ).toLowerCase() === "true",
+);
+watch(useSubmitButton, () => {
+  localStorage?.setItem("settings.useSubmitButton", `${useSubmitButton.value}`);
+});
 
+function makeMove(move_str: string) {
   if (playing_as.value === undefined) {
     alert("No player selected. Click one of your seats to play a move.");
     return;
@@ -154,7 +166,25 @@ function makeMove(move_str: string) {
     return;
   }
 
+  const move: { [player: number]: string } = {};
   move[playing_as.value] = move_str;
+
+  if (!useSubmitButton.value) {
+    submitMove(move);
+  } else {
+    const isDifferentMove =
+      !moveToSubmit.value || moveToSubmit.value[playing_as.value] !== move_str;
+
+    resetMoveToSubmit();
+
+    if (isDifferentMove) {
+      gameResponse.moves.push(move);
+      moveToSubmit.value = move;
+    }
+  }
+}
+
+function submitMove(move: { [player: number]: string }) {
   requests
     .post(`/games/${gameResponse.id}/move`, move)
     .then((res: GameResponse) => {
@@ -163,6 +193,14 @@ function makeMove(move_str: string) {
     .catch(alert);
 }
 
+function resetMoveToSubmit(): boolean {
+  if (!moveToSubmit.value) return false;
+  gameResponse.moves.pop();
+  moveToSubmit.value = null;
+  return true;
+}
+watch([useSubmitButton, playing_as], () => resetMoveToSubmit());
+
 watchEffect((onCleanup) => {
   if (!props.gameId) {
     return;
@@ -170,6 +208,7 @@ watchEffect((onCleanup) => {
   const message = `game/${props.gameId}`;
   socket.on(message, (data) => {
     Object.assign(gameResponse, data);
+    moveToSubmit.value = null;
   });
   const seatsMessage = `game/${props.gameId}/seats`;
   socket.on(seatsMessage, (data) => {
@@ -181,6 +220,7 @@ watchEffect((onCleanup) => {
     socket.off(seatsMessage);
   });
 });
+
 const createTimeControlPreview = (
   game: GameResponse,
 ): IPerPlayerTimeControlBase | null => {
@@ -220,6 +260,19 @@ const createTimeControlPreview = (
         <button @click="() => navigateRounds(10)">>></button>
         <button @click="() => navigateRounds(game.round ?? 0)">>>></button>
       </div>
+    </div>
+
+    <div>
+      <label>
+        <input type="checkbox" v-model="useSubmitButton" />
+        <span>Use Submit button</span>
+      </label>
+      <button
+        v-if="useSubmitButton && moveToSubmit"
+        @click="submitMove(moveToSubmit)"
+      >
+        Submit
+      </button>
     </div>
 
     <div id="variant-info">

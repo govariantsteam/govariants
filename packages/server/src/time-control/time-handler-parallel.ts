@@ -173,7 +173,11 @@ export class TimeHandlerParallelMoves implements ITimeHandler {
 
     const playerData = timeControl.forPlayer[playerNr];
 
-    if (!(move === "resign") && !(move === "timeout")) {
+    if (move === "resign" || move === "timeout") {
+      playerData.remainingTimeMS = 0;
+      playerData.onThePlaySince = null;
+      playerData.stagedMoveAt = null;
+    } else {
       playerData.stagedMoveAt = timestamp;
 
       // TODO: for now this should work, but I should think about this when adding
@@ -187,11 +191,6 @@ export class TimeHandlerParallelMoves implements ITimeHandler {
           "you can't change your move because it would reduce your remaining time to zero.",
         );
       }
-    } else {
-      // player dropped out
-      playerData.remainingTimeMS = 0;
-      playerData.onThePlaySince = null;
-      playerData.stagedMoveAt = null;
     }
 
     timeControl.moveTimestamps.push(timestamp);

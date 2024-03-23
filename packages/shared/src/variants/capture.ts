@@ -12,4 +12,8 @@ export class Capture extends Baduk {
       this.result = "W+Capture";
     }
   }
+
+  override specialMoves(): { [key: string]: string } {
+    return { resign: "Resign" };
+  }
 }

@@ -144,7 +144,7 @@ export class ParallelGo extends AbstractGame<
 
   specialMoves() {
     // TODO: support resign
-    return { pass: "Pass", timeout: "Timeout" };
+    return { pass: "Pass" };
   }
 
   replaceMultiColoredStonesWith(arr: number[]) {

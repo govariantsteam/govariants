@@ -62,6 +62,7 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
     game: GameResponse,
     game_obj: AbstractGame<unknown, unknown>,
     playerNr: number,
+    move: string,
   ): ITimeControlBase {
     const config = game.config as IConfigWithTimeControl;
     const timestamp = this._clock.getTimestamp();
@@ -108,6 +109,7 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
       game,
       game_obj,
       playerNr,
+      move,
       timestamp,
       transition,
     );
@@ -150,6 +152,7 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
     game: GameResponse,
     game_obj: AbstractGame<unknown, unknown>,
     playerNr: number,
+    move: string,
     timestamp: Date,
     // mutates its input
     transition: (playerTimeControl: IPerPlayerTimeControlBase) => void,
@@ -159,10 +162,15 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
 
     timeControl.moveTimestamps.push(timestamp);
 
+    if (move === "resign" || move === "timeout") {
+      playerData.remainingTimeMS = 0;
+      playerData.onThePlaySince = null;
+    }
+
     if (playerData.onThePlaySince !== null) {
       transition(playerData);
+      playerData.onThePlaySince = null;
     }
-    playerData.onThePlaySince = null;
     this._timeoutService.clearPlayerTimeout(game.id, playerNr);
 
     // time control starts only after the first move of player

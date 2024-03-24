@@ -164,3 +164,46 @@ test("Capture non-quantum stone", () => {
     ["eb", "ba"],
   ]);
 });
+
+test("Two passes ends the game", () => {
+  const game = new QuantumGo({ width: 4, height: 2, komi: 0.5 });
+
+  game.playMove(0, "ba");
+  game.playMove(1, "ca");
+  game.playMove(0, "bb");
+  game.playMove(1, "cb");
+
+  // . {B}{W} .     . {W} {B} .
+  // .  B  W  .     .  B   W  .
+
+  game.playMove(0, "pass");
+  game.playMove(1, "pass");
+
+  // next to play should be empty in order for time control to work
+  expect(game.nextToPlay()).toEqual([]);
+  // Board is symmetrical, so White wins by komi
+  expect(game.result).toBe("W+0.5");
+  const state = game.exportState();
+  // TODO: add visual indicator of scored area
+  // expect(state.score_boards).toBe([
+  //   [
+  //     [B, B, W, W],
+  //     [B, B, W, W],
+  //   ],
+  //   [
+  //     // No borders weren't filled, so only stones count
+  //     [_, W, B, _],
+  //     [_, B, W, _],
+  //   ],
+  // ]);
+  expect(state.boards).toEqual([
+    [
+      [_, B, W, _],
+      [_, B, W, _],
+    ],
+    [
+      [_, W, B, _],
+      [_, B, W, _],
+    ],
+  ]);
+});

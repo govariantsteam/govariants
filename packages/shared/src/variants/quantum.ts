@@ -28,6 +28,10 @@ class QuantumSubgame {
     this.badukGame = new Baduk(config);
   }
 
+  pass(player: number) {
+    this.badukGame.playMove(player, "pass");
+  }
+
   play(player: number, move: string): MoveInfo {
     const subgame = this.badukGame;
     const prevBoard = copyBoard(subgame);
@@ -103,11 +107,34 @@ export class QuantumGo extends AbstractGame<BadukConfig, QuantumGoState> {
       return;
     }
 
+    if (move === "pass") {
+      if (this.subgames.length === 0) {
+        throw new Error(
+          "Please, don't pass during the quantum stone placement phase",
+        );
+      }
+      this.subgames.forEach((game) => game.pass(player));
+      if (this.subgames[0].badukGame.phase === "gameover") {
+        this.phase = "gameover";
+        const getResult = (board: number) =>
+          this.subgames[board].badukGame.numeric_result ?? 0;
+        const numeric_result = getResult(0) + getResult(1) - this.config.komi;
+        if (numeric_result < 0) {
+          this.result = `W+${-numeric_result}`;
+        } else if (numeric_result > 0) {
+          this.result = `B+${numeric_result}`;
+        } else {
+          this.result = "Tie";
+        }
+      }
+      return;
+    }
+
     const pos = Coordinate.fromSgfRepr(move);
     // TODO: add a Dimensions class (#216) and look at that instead of
     // building a grid for no reason
     if (!new Grid(this.config.width, this.config.height).isInBounds(pos)) {
-      throw "Out of bounds!";
+      throw new Error("Out of bounds!");
     }
 
     switch (this.round) {
@@ -123,8 +150,10 @@ export class QuantumGo extends AbstractGame<BadukConfig, QuantumGoState> {
           throw new Error("White must place the second quantum stone.");
         }
         this.subgames = [
-          new QuantumSubgame(this.config),
-          new QuantumSubgame(this.config),
+          // komi is 0 so that it's easier to use the result of the subgames to
+          // build our final score
+          new QuantumSubgame({ ...this.config, komi: 0 }),
+          new QuantumSubgame({ ...this.config, komi: 0 }),
         ];
         // We can assume this is non-null because it is filled in the first round.
         const first = this.first_quantum_stone!;
@@ -183,6 +212,9 @@ export class QuantumGo extends AbstractGame<BadukConfig, QuantumGoState> {
     };
   }
   nextToPlay(): number[] {
+    if (this.phase === "gameover") {
+      return [];
+    }
     return [this.round % 2];
   }
   numPlayers(): number {

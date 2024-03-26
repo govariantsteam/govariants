@@ -30,9 +30,11 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
   protected captures = { 0: 0, 1: 0 };
   private ko_detector = new SuperKoDetector();
   protected score_board?: Grid<Color>;
-  protected board: Grid<Color>;
+  public board: Grid<Color>;
   protected next_to_play: 0 | 1 = 0;
   protected last_move = "";
+  /** after game ends, this is black points - white points */
+  public numeric_result?: number;
 
   constructor(config?: BadukConfig) {
     super(config);
@@ -171,6 +173,7 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
       board.reduce(count_color<Color>(Color.WHITE), 0) + this.config.komi;
 
     const diff = black_points - white_points;
+    this.numeric_result = diff;
     if (diff < 0) {
       this.result = `W+${-diff}`;
     } else if (diff > 0) {

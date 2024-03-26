@@ -174,9 +174,11 @@ export class TimeHandlerParallelMoves implements ITimeHandler {
     const playerData = timeControl.forPlayer[playerNr];
 
     if (move === "resign" || move === "timeout") {
-      playerData.remainingTimeMS = 0;
       playerData.onThePlaySince = null;
       playerData.stagedMoveAt = null;
+      if (move === "timeout") {
+        playerData.remainingTimeMS = 0;
+      }
     } else {
       playerData.stagedMoveAt = timestamp;
 

@@ -79,6 +79,11 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
     switch (config.time_control.type) {
       case TimeControlType.Absolute: {
         transition = (playerData) => {
+          if (move === "timeout") {
+            playerData.remainingTimeMS = 0;
+            return;
+          }
+
           playerData.remainingTimeMS -=
             timestamp.getTime() - playerData.onThePlaySince.getTime();
         };
@@ -88,6 +93,11 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
       case TimeControlType.Fischer: {
         const fischerConfig = config.time_control as IFischerConfig;
         transition = (playerData) => {
+          if (move === "timeout") {
+            playerData.remainingTimeMS = 0;
+            return;
+          }
+
           const uncapped =
             playerData.remainingTimeMS +
             fischerConfig.incrementMS -
@@ -161,11 +171,6 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
     const playerData = timeControl.forPlayer[playerNr];
 
     timeControl.moveTimestamps.push(timestamp);
-
-    if (move === "resign" || move === "timeout") {
-      playerData.remainingTimeMS = 0;
-      playerData.onThePlaySince = null;
-    }
 
     if (playerData.onThePlaySince !== null) {
       transition(playerData);

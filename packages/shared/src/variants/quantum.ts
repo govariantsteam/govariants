@@ -223,6 +223,10 @@ export class QuantumGo extends AbstractGame<BadukConfig, QuantumGoState> {
   defaultConfig(): BadukConfig {
     return { width: 9, height: 9, komi: 7.5 };
   }
+
+  specialMoves(): { [key: string]: string } {
+    return new Baduk().specialMoves();
+  }
 }
 
 /** based on two board states, determine which stones were captured */

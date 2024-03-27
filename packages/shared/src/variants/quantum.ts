@@ -7,9 +7,8 @@ export interface QuantumGoState {
   // length=2
   // two go boards
   boards: Color[][][];
-  // each element is a pair of coordinates.  The first stone is on board[0]
-  // and the second stone is on board[2]
-  quantum_stones: (string | null)[][];
+  // length=0..2, in order of initial placement
+  quantum_stones: string[];
 }
 
 interface MoveInfo {
@@ -86,7 +85,7 @@ class QuantumSubgame {
 
 export class QuantumGo extends AbstractGame<BadukConfig, QuantumGoState> {
   subgames: QuantumSubgame[];
-  first_quantum_stone?: Coordinate;
+  quantum_stones: Coordinate[] = [];
 
   constructor(config: BadukConfig) {
     super(config);
@@ -142,21 +141,22 @@ export class QuantumGo extends AbstractGame<BadukConfig, QuantumGoState> {
         if (player !== 0) {
           throw new Error("Black must place the first quantum stone.");
         }
-        this.first_quantum_stone = pos;
+        this.quantum_stones.push(pos);
         break;
       }
       case 1: {
         if (player !== 1) {
           throw new Error("White must place the second quantum stone.");
         }
+        this.quantum_stones.push(pos);
         this.subgames = [
           // komi is 0 so that it's easier to use the result of the subgames to
           // build our final score
           new QuantumSubgame({ ...this.config, komi: 0 }),
           new QuantumSubgame({ ...this.config, komi: 0 }),
         ];
-        // We can assume this is non-null because it is filled in the first round.
-        const first = this.first_quantum_stone!;
+        // We can assume this exists because it is filled in the first round.
+        const first = this.quantum_stones[0];
         this.subgames[0].addQuantumStone(first, pos, Color.BLACK);
         this.subgames[0].addQuantumStone(pos, first, Color.WHITE);
         this.subgames[1].addQuantumStone(pos, first, Color.BLACK);
@@ -190,25 +190,19 @@ export class QuantumGo extends AbstractGame<BadukConfig, QuantumGoState> {
         }
         return board.to2DArray();
       };
-      const pos = this.first_quantum_stone?.toSgfRepr() ?? null;
-
+      const first = this.quantum_stones[0];
       return {
         boards: [
-          makeBoardWithStone(this.first_quantum_stone, Color.BLACK),
-          makeBoardWithStone(this.first_quantum_stone, Color.WHITE),
+          makeBoardWithStone(first, Color.BLACK),
+          makeBoardWithStone(first, Color.WHITE),
         ],
-        quantum_stones: [
-          [pos, null],
-          [null, pos],
-        ],
+        quantum_stones: this.quantum_stones.map((pos) => pos.toSgfRepr()),
       };
     }
 
     return {
       boards: this.subgames.map((game) => game.badukGame.board.to2DArray()),
-      quantum_stones: this.subgames[0].quantumMappings.map((mapping) =>
-        mapping.map((pos) => pos.toSgfRepr()),
-      ),
+      quantum_stones: this.quantum_stones.map((pos) => pos.toSgfRepr()),
     };
   }
   nextToPlay(): number[] {

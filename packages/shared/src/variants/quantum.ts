@@ -189,6 +189,9 @@ export class QuantumGo extends AbstractGame<BadukConfig, QuantumGoState> {
     return { width: 9, height: 9, komi: 7.5 };
   }
 
+  specialMoves(): { [key: string]: string } {
+    return new Baduk().specialMoves();
+    
   /* returns position on the other board */
   mappedCapture(pos: Coordinate): Coordinate {
     const idx = this.quantum_stones.findIndex((qpos) => qpos.equals(pos));

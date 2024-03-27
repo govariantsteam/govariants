@@ -65,14 +65,14 @@ const board_1 = computed(() => {
 </script>
 
 <template>
-  <div style="width: 50%; height: 50%; display: inline-block">
+  <div style="width: 50%; height: 100%; display: inline-block">
     <MulticolorGridBoard
       :board="board_0"
       :config="props.config"
       @click="positionClicked"
     />
   </div>
-  <div style="width: 50%; height: 50%; display: inline-block">
+  <div style="width: 50%; height: 100%; display: inline-block">
     <MulticolorGridBoard
       :board="board_1"
       :config="props.config"

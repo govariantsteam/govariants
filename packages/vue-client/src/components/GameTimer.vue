@@ -9,7 +9,7 @@ const props = defineProps<{
 
 const time = ref(props.time_control?.remainingTimeMS ?? 0);
 const formattedTime = ref(
-  props.time_control?.remainingTimeMS
+  isDefined(props.time_control?.remainingTimeMS)
     ? msToTime(props.time_control?.remainingTimeMS)
     : "",
 );

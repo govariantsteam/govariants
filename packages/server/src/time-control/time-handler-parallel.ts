@@ -198,8 +198,7 @@ export class TimeHandlerParallelMoves implements ITimeHandler {
     timeControl.moveTimestamps.push(timestamp);
     this._timeoutService.clearPlayerTimeout(game.id, playerNr);
 
-    if (isRoundTransition) {
-      // update times for this round
+    if (isRoundTransition || game_obj.phase == "gameover") {
       for (const player of Object.keys(timeControl.forPlayer).map(Number)) {
         const playerData = timeControl.forPlayer[player];
 

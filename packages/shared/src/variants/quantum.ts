@@ -11,17 +11,9 @@ export interface QuantumGoState {
   quantum_stones: string[];
 }
 
-interface MoveInfo {
-  captures: Coordinate[];
-  quantum_mapped_captures: Coordinate[];
-}
-
 /** helper class to make interactions with the Baduk instances easier */
-class QuantumSubgame {
+class BadukHelper {
   public badukGame: Baduk;
-  // only holds the "quantum" stones
-  // [ this , other ]
-  public quantumMappings: Coordinate[][] = [];
 
   constructor(config: BadukConfig) {
     this.badukGame = new Baduk(config);
@@ -31,29 +23,13 @@ class QuantumSubgame {
     this.badukGame.playMove(player, "pass");
   }
 
-  play(player: number, move: string): MoveInfo {
+  play(player: number, move: string): Coordinate[] {
     const subgame = this.badukGame;
     const prevBoard = copyBoard(subgame);
     subgame.playMove(player, move);
     const captures = deduceCaptures(prevBoard, subgame.board);
 
-    const quantumMappedCaptures = captures.map(
-      this.removeEntangledMapping.bind(this),
-    );
-    return { captures, quantum_mapped_captures: quantumMappedCaptures };
-  }
-
-  addQuantumStone(
-    thisBoardPos: Coordinate,
-    otherBoardPos: Coordinate,
-    color: Color,
-  ) {
-    if (this.badukGame.board.at(thisBoardPos) !== Color.EMPTY) {
-      throw new Error("There is already a stone placed here!");
-    }
-
-    this.badukGame.board.set(thisBoardPos, color);
-    this.quantumMappings.push([thisBoardPos, otherBoardPos]);
+    return captures;
   }
 
   clear(group: Coordinate[]) {
@@ -61,36 +37,14 @@ class QuantumSubgame {
       this.badukGame.board.set(pos, Color.EMPTY);
     }
   }
-
-  /** Finds the entangled coordinate, and removes the Quantum mapping
-   * if necessary.
-   * @returns the coordinate of the entangled stone on the other board
-   */
-  private removeEntangledMapping(pos: Coordinate): Coordinate {
-    // Quantum stones
-    for (let i = 0; i < this.quantumMappings.length; i++) {
-      const mapping = this.quantumMappings[i];
-      if (mapping[0].equals(pos)) {
-        // remove the element from the array
-        this.quantumMappings.splice(i, 1);
-        // return the corresponding coordinate from the other board
-        return mapping[1];
-      }
-    }
-
-    // Normal stones
-    return pos;
-  }
 }
 
 export class QuantumGo extends AbstractGame<BadukConfig, QuantumGoState> {
-  subgames: QuantumSubgame[];
+  subgames: BadukHelper[] = [];
   quantum_stones: Coordinate[] = [];
 
   constructor(config: BadukConfig) {
     super(config);
-
-    this.subgames = [];
   }
 
   playMove(player: number, move: string): void {
@@ -152,20 +106,37 @@ export class QuantumGo extends AbstractGame<BadukConfig, QuantumGoState> {
         this.subgames = [
           // komi is 0 so that it's easier to use the result of the subgames to
           // build our final score
-          new QuantumSubgame({ ...this.config, komi: 0 }),
-          new QuantumSubgame({ ...this.config, komi: 0 }),
+          new BadukHelper({ ...this.config, komi: 0 }),
+          new BadukHelper({ ...this.config, komi: 0 }),
         ];
         // We can assume this exists because it is filled in the first round.
-        const first = this.quantum_stones[0];
-        this.subgames[0].addQuantumStone(first, pos, Color.BLACK);
-        this.subgames[0].addQuantumStone(pos, first, Color.WHITE);
-        this.subgames[1].addQuantumStone(pos, first, Color.BLACK);
-        this.subgames[1].addQuantumStone(first, pos, Color.WHITE);
+        const first = this.quantum_stones[0].toSgfRepr();
+        // move 0
+        this.subgames[0].play(0, first);
+        this.subgames[1].play(0, move);
+        // move 1
+        this.subgames[0].play(1, move);
+        this.subgames[1].play(1, first);
         break;
       }
       default: {
-        const quantum_captures = this.subgames.map(
-          (game) => game.play(player, move).quantum_mapped_captures,
+        let moves: [Coordinate, Coordinate];
+        if (this.quantum_stones.find((stone) => stone.equals(pos))) {
+          switch (player) {
+            case 0:
+              moves = [this.quantum_stones[0], this.quantum_stones[1]];
+              break;
+            case 1:
+              moves = [this.quantum_stones[1], this.quantum_stones[0]];
+              break;
+          }
+        } else {
+          moves = [pos, pos];
+        }
+        const quantum_captures = this.subgames.map((game, idx) =>
+          game
+            .play(player, moves[idx].toSgfRepr())
+            .map(this.mappedCapture.bind(this)),
         );
         this.subgames[0].clear(quantum_captures[1]);
         this.subgames[1].clear(quantum_captures[0]);
@@ -216,6 +187,21 @@ export class QuantumGo extends AbstractGame<BadukConfig, QuantumGoState> {
   }
   defaultConfig(): BadukConfig {
     return { width: 9, height: 9, komi: 7.5 };
+  }
+
+  /* returns position on the other board */
+  mappedCapture(pos: Coordinate): Coordinate {
+    const idx = this.quantum_stones.findIndex((qpos) => qpos.equals(pos));
+    switch (idx) {
+      case -1:
+        // not quantum
+        return pos;
+      case 0:
+        return this.quantum_stones[1];
+      case 1:
+        return this.quantum_stones[0];
+    }
+    throw new Error("Error finding mapped capture.");
   }
 }
 

@@ -1,5 +1,6 @@
 import { QuantumGo } from "../quantum";
 import { Color } from "../baduk";
+import { Grid } from "../../lib/grid";
 
 const W = Color.WHITE;
 const B = Color.BLACK;
@@ -191,4 +192,47 @@ test("Two passes ends the game", () => {
       [_, B, W, _],
     ],
   ]);
+});
+
+test("Placing a stone in a captured quantum position", () => {
+  const game = new QuantumGo({ width: 9, height: 9, komi: 0.5 });
+
+  // https://www.govariants.com/game/660248dd5e01aefcbd63df6a
+
+  //  W . . . . . W .{.}
+  //  B . . . . . . W .
+  //  B . . . . . . . W
+  //  B . . . . . . . .
+  //  . . . . W . . . .
+  //  . . . . . . . . .
+  //  . . . . . . . . .
+  //  . . . . . . . . .
+  // {.}. . . . . . . .
+
+  const moves = [
+    [0, "ia"],
+    [1, "ai"],
+    [0, "ha"],
+    [1, "ee"],
+    [0, "ib"],
+    [1, "aa"],
+    [0, "ab"],
+    [1, "ga"],
+    [0, "ac"],
+    [1, "hb"],
+    [0, "ad"],
+    [1, "ic"],
+    [0, "ia"], // black stone in the corner
+  ] as const;
+
+  moves.forEach((move) => game.playMove(move[0], move[1]));
+
+  const boards = game.exportState().boards.map(Grid.from2DArray);
+  expect(boards[0].at({ x: 8, y: 0 })).toBe(Color.BLACK);
+  expect(boards[0].at({ x: 0, y: 8 })).toBe(Color.EMPTY);
+  expect(boards[1].at({ x: 8, y: 0 })).toBe(Color.EMPTY);
+  // Quantum stones live together
+  expect(boards[1].at({ x: 0, y: 8 })).toBe(Color.BLACK);
+
+  expect(game.exportState().quantum_stones).toEqual(["ia", "ai"]);
 });

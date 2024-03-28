@@ -100,8 +100,8 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
     return 2;
   }
 
-  override specialMoves() {
-    return { pass: "Pass", resign: "Resign", timeout: "Timeout" };
+  override specialMoves(): { [key: string]: string } {
+    return { pass: "Pass", resign: "Resign" };
   }
 
   private playMoveInternal(move: Coordinate): void {

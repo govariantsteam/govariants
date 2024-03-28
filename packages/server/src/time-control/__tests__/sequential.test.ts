@@ -58,7 +58,7 @@ describe("Sequential Time Control Tests", () => {
       return new TimeHandlerSequentialMoves(
         clock,
         new TestTimeoutService(),
-      ).handleMove(gameResponse, game, player);
+      ).handleMove(gameResponse, game, player, move);
     };
 
     const seconds1 = 10;

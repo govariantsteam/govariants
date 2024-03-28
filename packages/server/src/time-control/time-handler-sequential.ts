@@ -62,6 +62,7 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
     game: GameResponse,
     game_obj: AbstractGame<unknown, unknown>,
     playerNr: number,
+    move: string,
   ): ITimeControlBase {
     const config = game.config as IConfigWithTimeControl;
     const timestamp = this._clock.getTimestamp();
@@ -78,6 +79,11 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
     switch (config.time_control.type) {
       case TimeControlType.Absolute: {
         transition = (playerData) => {
+          if (move === "timeout") {
+            playerData.remainingTimeMS = 0;
+            return;
+          }
+
           playerData.remainingTimeMS -=
             timestamp.getTime() - playerData.onThePlaySince.getTime();
         };
@@ -87,6 +93,11 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
       case TimeControlType.Fischer: {
         const fischerConfig = config.time_control as IFischerConfig;
         transition = (playerData) => {
+          if (move === "timeout") {
+            playerData.remainingTimeMS = 0;
+            return;
+          }
+
           const uncapped =
             playerData.remainingTimeMS +
             fischerConfig.incrementMS -
@@ -108,6 +119,7 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
       game,
       game_obj,
       playerNr,
+      move,
       timestamp,
       transition,
     );
@@ -150,6 +162,7 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
     game: GameResponse,
     game_obj: AbstractGame<unknown, unknown>,
     playerNr: number,
+    move: string,
     timestamp: Date,
     // mutates its input
     transition: (playerTimeControl: IPerPlayerTimeControlBase) => void,
@@ -161,8 +174,8 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
 
     if (playerData.onThePlaySince !== null) {
       transition(playerData);
+      playerData.onThePlaySince = null;
     }
-    playerData.onThePlaySince = null;
     this._timeoutService.clearPlayerTimeout(game.id, playerNr);
 
     // time control starts only after the first move of player

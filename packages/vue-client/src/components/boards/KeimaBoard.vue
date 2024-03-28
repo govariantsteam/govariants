@@ -10,7 +10,9 @@ function getKeimaMoves({ x, y }: Coordinate, board: Grid<Color>): Coordinate[] {
     new Coordinate(x + 2, y - 1),
     new Coordinate(x - 2, y - 1),
   ];
-  return moves.filter((pos) => board.at(pos) === Color.EMPTY);
+  return moves
+    .filter((pos) => board.isInBounds(pos))
+    .filter((pos) => board.at(pos) === Color.EMPTY);
 }
 </script>
 

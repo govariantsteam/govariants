@@ -64,7 +64,7 @@ export class ParallelGo extends AbstractGame<
   }
 
   playMove(player: number, move: string): void {
-    if (!Object.keys(this.specialMoves()).includes(move)) {
+    if (!Object.keys(this.specialMoves()).includes(move) && move != "timeout") {
       const decoded_move = Coordinate.fromSgfRepr(move);
       const occupants = this.board.at(decoded_move);
       if (occupants === undefined) {
@@ -144,7 +144,7 @@ export class ParallelGo extends AbstractGame<
 
   specialMoves() {
     // TODO: support resign
-    return { pass: "Pass", timeout: "Timeout" };
+    return { pass: "Pass" };
   }
 
   replaceMultiColoredStonesWith(arr: number[]) {

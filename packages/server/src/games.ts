@@ -151,20 +151,19 @@ export async function handleMoveAndTime(
   ) {
     if (game_obj.phase === "gameover") {
       getTimeoutService().clearGameTimeouts(game.id);
-    } else {
-      if (Object.keys(timeControlHandlerMap).includes(game.variant)) {
-        const timeHandler = new timeControlHandlerMap[game.variant](
-          new Clock(),
-          getTimeoutService(),
-        );
-        timeControl = timeHandler.handleMove(
-          game,
-          game_obj,
-          playerNr,
-          new_move,
-          isRoundTransition,
-        );
-      }
+    }
+    if (Object.keys(timeControlHandlerMap).includes(game.variant)) {
+      const timeHandler = new timeControlHandlerMap[game.variant](
+        new Clock(),
+        getTimeoutService(),
+      );
+      timeControl = timeHandler.handleMove(
+        game,
+        game_obj,
+        playerNr,
+        new_move,
+        isRoundTransition,
+      );
     }
   }
 

@@ -130,7 +130,7 @@ export class BadukWithAbstractBoard extends AbstractGame<
   }
 
   specialMoves() {
-    return { pass: "Pass", resign: "Resign", timeout: "Timeout" };
+    return { pass: "Pass", resign: "Resign" };
   }
 
   defaultConfig(): BadukWithAbstractBoardConfig {

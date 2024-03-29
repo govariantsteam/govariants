@@ -5,17 +5,17 @@ import {
 } from "./time_control.types";
 import { msToTime } from "./time_control.utils";
 
-interface TimeControlSystem<ConfigT, StateT> {
+export interface TimeControlSystem<ConfigT, StateT> {
   initialState(config: ConfigT): StateT;
   /** Return an updated state to reflect the elapsed time */
   elapse(elapsedMS: number, state: StateT, config: ConfigT): StateT;
   /** Renew period time in systems like Byo-Yomi or Simple. */
   renew(state: StateT, config: ConfigT): StateT;
   msUntilTimeout(state: StateT, config: ConfigT): number;
-  toString(state: StateT): string;
+  timeString(state: StateT): string;
 }
 
-interface IBasicTimeState {
+export interface IBasicTimeState {
   remainingTimeMS: number;
 }
 
@@ -45,7 +45,7 @@ export class FischerSystem
     return state.remainingTimeMS;
   }
 
-  toString(state: IBasicTimeState): string {
+  timeString(state: IBasicTimeState): string {
     return msToTime(state.remainingTimeMS);
   }
 }
@@ -67,17 +67,17 @@ export class AbsoluteSystem
     return state.remainingTimeMS;
   }
 
-  representation(state: IBasicTimeState): string {
+  timeString(state: IBasicTimeState): string {
     return msToTime(state.remainingTimeMS);
   }
 }
 
-interface IByoYomiConfig extends ITimeControlConfig {
+export interface IByoYomiConfig extends ITimeControlConfig {
   type: TimeControlType.ByoYomi;
   numPeriods: number;
   periodTimeMS: number;
 }
-interface IByoYomiState {
+export interface IByoYomiState {
   mainTimeRemainingMS: number;
   periodsRemaining: number;
   periodTimeRemainingMS: number;
@@ -138,7 +138,7 @@ export class ByoYomiSystem
   //   1) move this function into the vue-client package
   //   2) enable rich text output (see Vue's v-html directive)
   // But plain JS strings are easy to work with and test, so keeping it for the first pass.
-  toString(state: IByoYomiState): string {
+  timeString(state: IByoYomiState): string {
     const periodTimeString = `${msToTime(state.periodTimeRemainingMS)} (${
       state.periodsRemaining
     })`;
@@ -170,17 +170,17 @@ export class SimpleSystem
     return state.remainingTimeMS;
   }
 
-  toString(state: IBasicTimeState): string {
+  timeString(state: IBasicTimeState): string {
     return msToTime(state.remainingTimeMS);
   }
 }
 
-interface ICanadianTimeState {
+export interface ICanadianTimeState {
   mainTimeRemainingMS: number;
   periodTimeRemainingMS: number;
   renewalCountdown: number;
 }
-interface ICanadianTimeConfig extends ITimeControlConfig {
+export interface ICanadianTimeConfig extends ITimeControlConfig {
   type: TimeControlType.Canadian;
   numPeriods: number;
   periodTimeMS: number;
@@ -232,7 +232,7 @@ export class CanadianSystem
     return state.mainTimeRemainingMS + state.periodTimeRemainingMS;
   }
 
-  toString(state: ICanadianTimeState): string {
+  timeString(state: ICanadianTimeState): string {
     const periodTimeString = `${msToTime(state.periodTimeRemainingMS)}/${
       state.renewalCountdown
     }`;

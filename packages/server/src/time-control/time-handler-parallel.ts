@@ -7,11 +7,11 @@ import {
   PerPlayerTimeControlParallel,
   TimeControlParallel,
   TimeControlType,
-  makeGameObject,
 } from "@ogfcommunity/variants-shared";
 import { ITimeoutService } from "./timeout";
 import { ITimeHandler } from "./time-control";
 import { IClock } from "./clock";
+import { initialState } from "./time-handler-utils";
 
 export class TimeHandlerParallelMoves implements ITimeHandler {
   private _timeoutService: ITimeoutService;
@@ -26,38 +26,10 @@ export class TimeHandlerParallelMoves implements ITimeHandler {
     variant: string,
     config: IConfigWithTimeControl,
   ): TimeControlParallel {
-    const numPlayers = makeGameObject(variant, config).numPlayers();
-
-    const timeControl: TimeControlParallel = {
-      moveTimestamps: [],
-      forPlayer: {},
-    };
-
-    for (let i = 0; i < numPlayers; i++) {
-      timeControl.forPlayer[i] = {
-        remainingTimeMS: config.time_control.mainTimeMS,
-        onThePlaySince: null,
-        stagedMoveAt: null,
-      };
-    }
-
-    switch (config.time_control.type) {
-      case TimeControlType.Absolute: {
-        // nothing to do
-        break;
-      }
-
-      case TimeControlType.Fischer: {
-        // nothing to do
-        break;
-      }
-
-      default: {
-        console.error("received config with invalid time control type");
-      }
-    }
-
-    return timeControl;
+    return initialState(variant, config, (perPlayerBase) => ({
+      ...perPlayerBase,
+      stagedMoveAt: null,
+    }));
   }
 
   handleMove(

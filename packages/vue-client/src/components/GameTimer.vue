@@ -9,9 +9,7 @@ const props = defineProps<{
 
 const time = ref(props.time_control.remainingTimeMS);
 const formattedTime = computed(() => msToTime(time.value));
-const isCountingDown = ref(false);
 let timerIndex: number | null = null;
-let lastUpdated: Date;
 
 watch(
   props,
@@ -31,12 +29,8 @@ function resetTimer(): void {
     clearInterval(timerIndex);
   }
   time.value = props.time_control.remainingTimeMS;
-  isCountingDown.value = false;
 
-  if (
-    isDefined(props.time_control.onThePlaySince) &&
-    props.time_control.remainingTimeMS !== null
-  ) {
+  if (isDefined(props.time_control.onThePlaySince) && time.value !== null) {
     let elapsed;
     const onThePlaySince = new Date(props.time_control.onThePlaySince);
     // this is not ideal
@@ -47,24 +41,20 @@ function resetTimer(): void {
       const stagedMove = new Date(props.time_control.stagedMoveAt as Date);
       elapsed = stagedMove.getTime() - onThePlaySince.getTime();
     } else {
-      isCountingDown.value = true;
       const now = new Date();
       elapsed = now.getTime() - onThePlaySince.getTime();
+
+      timerIndex = window.setInterval(() => {
+        if (time.value <= 0 && timerIndex !== null) {
+          clearInterval(timerIndex);
+        } else {
+          const timeStamp = new Date();
+          const elapsed = timeStamp.getTime() - onThePlaySince.getTime();
+          time.value = props.time_control.remainingTimeMS - elapsed;
+        }
+      }, 1000);
     }
     time.value = Math.max(0, time.value - elapsed);
-  }
-
-  if (isCountingDown.value && typeof window !== "undefined") {
-    lastUpdated = new Date();
-    timerIndex = window.setInterval(() => {
-      if (time.value <= 0 && timerIndex !== null) {
-        clearInterval(timerIndex);
-      } else {
-        const timeStamp = new Date();
-        time.value -= timeStamp.getTime() - lastUpdated.getTime();
-        lastUpdated = timeStamp;
-      }
-    }, 1000);
   }
 }
 

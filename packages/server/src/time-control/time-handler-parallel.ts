@@ -2,7 +2,6 @@ import {
   AbstractGame,
   GameResponse,
   IConfigWithTimeControl,
-  IFischerConfig,
   ITimeControlBase,
   PerPlayerTimeControlParallel,
   TimeControlParallel,
@@ -11,7 +10,7 @@ import {
 import { ITimeoutService } from "./timeout";
 import { ITimeHandler } from "./time-control";
 import { IClock } from "./clock";
-import { initialState } from "./time-handler-utils";
+import { initialState, makeTransition } from "./time-handler-utils";
 
 export class TimeHandlerParallelMoves implements ITimeHandler {
   private _timeoutService: ITimeoutService;
@@ -49,37 +48,13 @@ export class TimeHandlerParallelMoves implements ITimeHandler {
     }
 
     // mutates its input
-    let transition: (playerTimeControl: PerPlayerTimeControlParallel) => void;
-
-    switch (config.time_control.type) {
-      case TimeControlType.Absolute: {
-        transition = (playerData) => {
-          playerData.remainingTimeMS -=
-            playerData.stagedMoveAt.getTime() -
-            playerData.onThePlaySince.getTime();
-        };
-        break;
-      }
-      case TimeControlType.Fischer: {
-        const fischerConfig = config.time_control as IFischerConfig;
-        transition = (playerData) => {
-          const uncapped =
-            playerData.remainingTimeMS +
-            fischerConfig.incrementMS -
-            (playerData.stagedMoveAt.getTime() -
-              playerData.onThePlaySince.getTime());
-
-          playerData.remainingTimeMS =
-            fischerConfig.maxTimeMS === null
-              ? uncapped
-              : Math.min(uncapped, fischerConfig.maxTimeMS);
-        };
-        break;
-      }
-
-      case TimeControlType.Invalid:
-        throw Error(`game with id ${game.id} has invalid time control type`);
-    }
+    const transition = makeTransition<PerPlayerTimeControlParallel>(
+      (playerData) =>
+        playerData.stagedMoveAt.getTime() - playerData.onThePlaySince.getTime(),
+      config,
+      move,
+      game.id,
+    );
 
     return this.TransitionBase(
       game,

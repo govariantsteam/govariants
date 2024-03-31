@@ -31,34 +31,27 @@ function resetTimer(): void {
     clearInterval(timerIndex);
   }
   time.value = props.time_control.remainingTimeMS;
+  isCountingDown.value = false;
 
   if (
     isDefined(props.time_control.onThePlaySince) &&
     props.time_control.remainingTimeMS !== null
   ) {
+    let elapsed;
+    const onThePlaySince = new Date(props.time_control.onThePlaySince);
     // this is not ideal
     if (
       "stagedMoveAt" in props.time_control &&
       props.time_control.stagedMoveAt !== null
     ) {
-      isCountingDown.value = false;
-      const onThePlaySince = new Date(props.time_control.onThePlaySince);
       const stagedMove = new Date(props.time_control.stagedMoveAt as Date);
-      time.value = Math.max(
-        0,
-        time.value - (stagedMove.getTime() - onThePlaySince.getTime()),
-      );
+      elapsed = stagedMove.getTime() - onThePlaySince.getTime();
     } else {
       isCountingDown.value = true;
-      const onThePlaySince: Date = new Date(props.time_control.onThePlaySince);
       const now = new Date();
-      time.value = Math.max(
-        0,
-        time.value - (now.getTime() - onThePlaySince.getTime()),
-      );
+      elapsed = now.getTime() - onThePlaySince.getTime();
     }
-  } else {
-    isCountingDown.value = false;
+    time.value = Math.max(0, time.value - elapsed);
   }
 
   if (isCountingDown.value && typeof window !== "undefined") {

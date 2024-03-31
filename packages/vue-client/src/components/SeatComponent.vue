@@ -25,7 +25,7 @@ defineProps<{
 
     <div v-if="occupant == null">
       <div class="timer-and-button">
-        <GameTimer v-bind:time_control="time_control" />
+        <GameTimer v-if="time_control" v-bind:time_control="time_control" />
         <button v-if="user_id" @click.stop="$emit('sit')">Take Seat</button>
       </div>
     </div>
@@ -34,7 +34,7 @@ defineProps<{
         {{ occupant.username ?? `guest (...${occupant.id.slice(-6)})` }}
       </p>
       <div class="timer-and-button">
-        <GameTimer v-bind:time_control="time_control" />
+        <GameTimer v-if="time_control" v-bind:time_control="time_control" />
         <button v-if="occupant.id === user_id" @click.stop="$emit('leave')">
           Leave Seat
         </button>

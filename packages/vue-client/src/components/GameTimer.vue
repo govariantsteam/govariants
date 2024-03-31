@@ -1,33 +1,21 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import type { IPerPlayerTimeControlBase } from "@ogfcommunity/variants-shared";
 import { isDefined } from "@vueuse/core";
 
 const props = defineProps<{
-  time_control: IPerPlayerTimeControlBase | null;
+  time_control: IPerPlayerTimeControlBase;
 }>();
 
-const time = ref(props.time_control?.remainingTimeMS ?? 0);
-const formattedTime = ref(
-  isDefined(props.time_control?.remainingTimeMS)
-    ? msToTime(props.time_control!.remainingTimeMS)
-    : "",
-);
+const time = ref(props.time_control.remainingTimeMS);
+const formattedTime = computed(() => msToTime(time.value));
 const isCountingDown = ref(false);
 let timerIndex: number | null = null;
 let lastUpdated: Date;
 
-watch(time, (t: number) => {
-  if (t === null) {
-    formattedTime.value = "";
-  } else {
-    formattedTime.value = msToTime(t);
-  }
-});
-
 watch(
   props,
-  (value, oldValue, onCleanup) => {
+  (_value, _oldValue, onCleanup) => {
     resetTimer();
     onCleanup(() => {
       if (timerIndex !== null) {
@@ -42,10 +30,9 @@ function resetTimer(): void {
   if (timerIndex !== null) {
     clearInterval(timerIndex);
   }
-  time.value = props.time_control?.remainingTimeMS ?? 0;
+  time.value = props.time_control.remainingTimeMS;
 
   if (
-    props.time_control &&
     isDefined(props.time_control.onThePlaySince) &&
     props.time_control.remainingTimeMS !== null
   ) {

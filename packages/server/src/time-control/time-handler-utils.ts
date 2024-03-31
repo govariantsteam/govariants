@@ -1,6 +1,7 @@
 import {
   GenericTimeControl,
   IConfigWithTimeControl,
+  IFischerConfig,
   IPerPlayerTimeControlBase,
   ITimeControlBase,
   TimeControlType,
@@ -54,4 +55,47 @@ export function initialState(
   }
 
   return timeControl;
+}
+
+export function makeTransition<T extends IPerPlayerTimeControlBase>(
+  getElapsedMS: (playerData: T) => number,
+  config: IConfigWithTimeControl,
+  move: string,
+  game_id: string,
+): (playerData: T) => void {
+  switch (config.time_control.type) {
+    case TimeControlType.Absolute: {
+      return (playerData) => {
+        if (move === "timeout") {
+          playerData.remainingTimeMS = 0;
+          return;
+        }
+
+        playerData.remainingTimeMS -= getElapsedMS(playerData);
+      };
+    }
+
+    case TimeControlType.Fischer: {
+      const fischerConfig = config.time_control as IFischerConfig;
+      return (playerData) => {
+        if (move === "timeout") {
+          playerData.remainingTimeMS = 0;
+          return;
+        }
+
+        const uncapped =
+          playerData.remainingTimeMS +
+          fischerConfig.incrementMS -
+          getElapsedMS(playerData);
+
+        playerData.remainingTimeMS =
+          fischerConfig.maxTimeMS === null
+            ? uncapped
+            : Math.min(uncapped, fischerConfig.maxTimeMS);
+      };
+    }
+
+    case TimeControlType.Invalid:
+      throw Error(`game with id ${game_id} has invalid time control type`);
+  }
 }

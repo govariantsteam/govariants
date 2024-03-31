@@ -2,7 +2,6 @@ import {
   AbstractGame,
   GameResponse,
   IConfigWithTimeControl,
-  IFischerConfig,
   IPerPlayerTimeControlBase,
   ITimeControlBase,
   TimeControlType,
@@ -10,7 +9,7 @@ import {
 import { ITimeoutService } from "./timeout";
 import { ITimeHandler } from "./time-control";
 import { IClock } from "./clock";
-import { initialState } from "./time-handler-utils";
+import { initialState, makeTransition } from "./time-handler-utils";
 
 export class TimeHandlerSequentialMoves implements ITimeHandler {
   private _timeoutService: ITimeoutService;
@@ -44,46 +43,12 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
     }
 
     // mutates its input
-    let transition: (playerTimeControl: IPerPlayerTimeControlBase) => void;
-
-    switch (config.time_control.type) {
-      case TimeControlType.Absolute: {
-        transition = (playerData) => {
-          if (move === "timeout") {
-            playerData.remainingTimeMS = 0;
-            return;
-          }
-
-          playerData.remainingTimeMS -=
-            timestamp.getTime() - playerData.onThePlaySince.getTime();
-        };
-        break;
-      }
-
-      case TimeControlType.Fischer: {
-        const fischerConfig = config.time_control as IFischerConfig;
-        transition = (playerData) => {
-          if (move === "timeout") {
-            playerData.remainingTimeMS = 0;
-            return;
-          }
-
-          const uncapped =
-            playerData.remainingTimeMS +
-            fischerConfig.incrementMS -
-            (timestamp.getTime() - playerData.onThePlaySince.getTime());
-
-          playerData.remainingTimeMS =
-            fischerConfig.maxTimeMS === null
-              ? uncapped
-              : Math.min(uncapped, fischerConfig.maxTimeMS);
-        };
-        break;
-      }
-
-      case TimeControlType.Invalid:
-        throw Error(`game with id ${game.id} has invalid time control type`);
-    }
+    const transition = makeTransition(
+      (playerData) => timestamp.getTime() - playerData.onThePlaySince.getTime(),
+      config,
+      move,
+      game.id,
+    );
 
     return this.TimeTransitionBase(
       game,

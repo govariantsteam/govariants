@@ -5,12 +5,15 @@ import {
   ITimeControlBase,
   PerPlayerTimeControlParallel,
   TimeControlParallel,
-  TimeControlType,
 } from "@ogfcommunity/variants-shared";
 import { ITimeoutService } from "./timeout";
 import { ITimeHandler } from "./time-control";
 import { IClock } from "./clock";
-import { initialState, makeTransition } from "./time-handler-utils";
+import {
+  getMsUntilTimeout,
+  initialState,
+  makeTransition,
+} from "./time-handler-utils";
 
 export class TimeHandlerParallelMoves implements ITimeHandler {
   private _timeoutService: ITimeoutService;
@@ -68,42 +71,17 @@ export class TimeHandlerParallelMoves implements ITimeHandler {
   }
 
   getMsUntilTimeout(game: GameResponse, playerNr: number): number {
-    const config = game.config as IConfigWithTimeControl;
-
-    switch (config.time_control.type) {
-      case TimeControlType.Absolute:
-      case TimeControlType.Fischer: {
-        const times: TimeControlParallel =
-          game.time_control as TimeControlParallel;
-
-        if (times === undefined || times.forPlayer === undefined) {
-          // old game with no moves
-          return null;
-        }
-
-        const playerTime = times.forPlayer[playerNr];
-
-        if (playerTime === undefined || playerTime.onThePlaySince === null) {
-          // player has not played a move yet
-          // or player is not on the play
-          return null;
-        }
-
-        if (playerTime.stagedMoveAt !== null) {
-          return null;
-        }
-
-        const timeoutTime =
-          playerTime.onThePlaySince.getTime() + playerTime.remainingTimeMS;
-
-        return timeoutTime - this._clock.getTimestamp().getTime();
-      }
-
-      default: {
-        console.error(`game with id ${game.id} has invalid time control type`);
-        return;
-      }
+    if (
+      (game.time_control as TimeControlParallel)?.forPlayer[playerNr]
+        .stagedMoveAt !== null
+    ) {
+      return null;
     }
+    return getMsUntilTimeout(
+      game,
+      playerNr,
+      this._clock.getTimestamp().getTime(),
+    );
   }
 
   private TransitionBase(

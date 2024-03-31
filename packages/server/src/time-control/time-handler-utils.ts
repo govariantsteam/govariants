@@ -1,4 +1,5 @@
 import {
+  GameResponse,
   GenericTimeControl,
   IConfigWithTimeControl,
   IFischerConfig,
@@ -97,5 +98,42 @@ export function makeTransition<T extends IPerPlayerTimeControlBase>(
 
     case TimeControlType.Invalid:
       throw Error(`game with id ${game_id} has invalid time control type`);
+  }
+}
+
+export function getMsUntilTimeout(
+  game: GameResponse,
+  playerNr: number,
+  timeMS: number,
+): number | null {
+  const config = game.config as IConfigWithTimeControl;
+
+  switch (config.time_control.type) {
+    case TimeControlType.Absolute:
+    case TimeControlType.Fischer: {
+      const times: ITimeControlBase = game.time_control;
+
+      if (times === undefined || times.forPlayer === undefined) {
+        // old game with no moves
+        return null;
+      }
+
+      const playerTime = times.forPlayer[playerNr];
+
+      if (playerTime === undefined || playerTime.onThePlaySince === null) {
+        // player has not played a move yet
+        // or player is not on the play
+        return null;
+      }
+
+      const timeoutTime =
+        playerTime.onThePlaySince.getTime() + playerTime.remainingTimeMS;
+
+      return timeoutTime - timeMS;
+    }
+    default: {
+      console.error(`game with id ${game.id} has invalid time control type`);
+      return;
+    }
   }
 }

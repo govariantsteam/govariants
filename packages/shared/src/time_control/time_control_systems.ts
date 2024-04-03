@@ -5,7 +5,7 @@ import {
 } from "./time_control.types";
 import { msToTime } from "./time_control.utils";
 
-export interface TimeControlSystem<ConfigT, StateT> {
+export interface TimeControl<ConfigT, StateT> {
   initialState(config: ConfigT): StateT;
   /** Return an updated state to reflect the elapsed time */
   elapse(elapsedMS: number, state: StateT, config: ConfigT): StateT;
@@ -19,8 +19,8 @@ export interface IBasicTimeState {
   remainingTimeMS: number;
 }
 
-export class FischerSystem
-  implements TimeControlSystem<IFischerConfig, IBasicTimeState>
+class FischerTimeControl
+  implements TimeControl<IFischerConfig, IBasicTimeState>
 {
   initialState(config: IFischerConfig): IBasicTimeState {
     return { remainingTimeMS: config.mainTimeMS };
@@ -50,8 +50,8 @@ export class FischerSystem
   }
 }
 
-export class AbsoluteSystem
-  implements TimeControlSystem<ITimeControlConfig, IBasicTimeState>
+class AbsoluteTimeControl
+  implements TimeControl<ITimeControlConfig, IBasicTimeState>
 {
   initialState(config: ITimeControlConfig): IBasicTimeState {
     return { remainingTimeMS: config.mainTimeMS };
@@ -83,9 +83,7 @@ export interface IByoYomiState {
   periodTimeRemainingMS: number;
 }
 
-export class ByoYomiSystem
-  implements TimeControlSystem<IByoYomiConfig, IByoYomiState>
-{
+class ByoYomiTimeControl implements TimeControl<IByoYomiConfig, IByoYomiState> {
   initialState(config: IByoYomiConfig): IByoYomiState {
     return {
       mainTimeRemainingMS: config.mainTimeMS,
@@ -149,8 +147,8 @@ export class ByoYomiSystem
   }
 }
 
-export class SimpleSystem
-  implements TimeControlSystem<ITimeControlConfig, IBasicTimeState>
+class SimpleTimeControl
+  implements TimeControl<ITimeControlConfig, IBasicTimeState>
 {
   initialState(config: ITimeControlConfig) {
     return {
@@ -186,8 +184,8 @@ export interface ICanadianTimeConfig extends ITimeControlConfig {
   periodTimeMS: number;
 }
 
-export class CanadianSystem
-  implements TimeControlSystem<ICanadianTimeConfig, ICanadianTimeState>
+class CanadianTimeControl
+  implements TimeControl<ICanadianTimeConfig, ICanadianTimeState>
 {
   initialState(config: ICanadianTimeConfig) {
     return {
@@ -247,3 +245,14 @@ export class CanadianSystem
 function nullRenewal<T>(state: T) {
   return { ...state };
 }
+
+export const timeControlMap: ReadonlyMap<
+  TimeControlType,
+  TimeControl<unknown, unknown>
+> = new Map<TimeControlType, TimeControl<unknown, unknown>>([
+  [TimeControlType.Absolute, new AbsoluteTimeControl()],
+  [TimeControlType.ByoYomi, new ByoYomiTimeControl()],
+  [TimeControlType.Canadian, new CanadianTimeControl()],
+  [TimeControlType.Fischer, new FischerTimeControl()],
+  [TimeControlType.Simple, new SimpleTimeControl()],
+]);

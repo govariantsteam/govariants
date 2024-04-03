@@ -1,25 +1,21 @@
 import {
   IFischerConfig,
   ITimeControlConfig,
-  TimeControlType,
+  TimeControlType as TC,
 } from "../time_control.types";
 import {
-  AbsoluteSystem,
-  ByoYomiSystem,
-  CanadianSystem,
-  FischerSystem,
   IBasicTimeState,
   IByoYomiConfig,
   IByoYomiState,
   ICanadianTimeConfig,
   ICanadianTimeState,
-  SimpleSystem,
-  TimeControlSystem,
+  TimeControl,
+  timeControlMap,
 } from "../time_control_systems";
 
 describe("Fischer", () => {
   const fischerConfig = {
-    type: TimeControlType.Fischer,
+    type: TC.Fischer,
     mainTimeMS: 600000, // 10 minutes
     incrementMS: 5000, // 5 seconds increment
     maxTimeMS: 1200000, // 20 minutes maximum time
@@ -27,8 +23,10 @@ describe("Fischer", () => {
 
   // FischerSystem doesn't hold its own state, so we can re-use the same
   // object in all the tests.
-  const fischerSystem: TimeControlSystem<IFischerConfig, IBasicTimeState> =
-    new FischerSystem();
+  const fischerSystem = timeControlMap.get(TC.Fischer) as TimeControl<
+    IFischerConfig,
+    IBasicTimeState
+  >;
 
   test("initialState returns the correct initial state", () => {
     const initialState = fischerSystem.initialState(fischerConfig);
@@ -92,7 +90,7 @@ describe("Fischer", () => {
 
 describe("Byo-Yomi", () => {
   const byoYomiConfig = {
-    type: TimeControlType.ByoYomi,
+    type: TC.ByoYomi,
     mainTimeMS: 600000, // 10 minutes
     numPeriods: 3, // 3 periods
     periodTimeMS: 30000, // 30 seconds per period
@@ -100,8 +98,10 @@ describe("Byo-Yomi", () => {
 
   // ByoYomiSystem doesn't hold its own state, so we can re-use the same
   // object in all the tests.
-  const byoYomiSystem: TimeControlSystem<IByoYomiConfig, IByoYomiState> =
-    new ByoYomiSystem();
+  const byoYomiSystem = timeControlMap.get(TC.ByoYomi) as TimeControl<
+    IByoYomiConfig,
+    IByoYomiState
+  >;
 
   test("initialState returns the correct initial state", () => {
     const initialState = byoYomiSystem.initialState(byoYomiConfig);
@@ -172,12 +172,14 @@ describe("Byo-Yomi", () => {
 
 describe("AbsoluteSystem", () => {
   const absoluteConfig = {
-    type: TimeControlType.Absolute,
+    type: TC.Absolute,
     mainTimeMS: 600000, // 10 minutes
   };
 
-  const absoluteSystem: TimeControlSystem<ITimeControlConfig, IBasicTimeState> =
-    new AbsoluteSystem();
+  const absoluteSystem = timeControlMap.get(TC.Absolute) as TimeControl<
+    ITimeControlConfig,
+    IBasicTimeState
+  >;
 
   test("initialState returns the correct initial state", () => {
     const initialState = absoluteSystem.initialState(absoluteConfig);
@@ -223,16 +225,16 @@ describe("AbsoluteSystem", () => {
 
 describe("CanadianSystem", () => {
   const canadianConfig = {
-    type: TimeControlType.Canadian,
+    type: TC.Canadian,
     mainTimeMS: 600000, // 10 minutes
     numPeriods: 3, // 3 periods in a block
     periodTimeMS: 30000, // 30 seconds of period time
   } as const;
 
-  const canadianSystem: TimeControlSystem<
+  const canadianSystem = timeControlMap.get(TC.Canadian) as TimeControl<
     ICanadianTimeConfig,
     ICanadianTimeState
-  > = new CanadianSystem();
+  >;
 
   test("initialState returns the correct initial state", () => {
     const initialState = canadianSystem.initialState(canadianConfig);
@@ -311,12 +313,14 @@ describe("CanadianSystem", () => {
 
 describe("SimpleSystem", () => {
   const simpleConfig = {
-    type: TimeControlType.Simple,
+    type: TC.Simple,
     mainTimeMS: 30000, // 30 seconds
   };
 
-  const simpleSystem: TimeControlSystem<ITimeControlConfig, IBasicTimeState> =
-    new SimpleSystem();
+  const simpleSystem = timeControlMap.get(TC.Simple) as TimeControl<
+    ITimeControlConfig,
+    IBasicTimeState
+  >;
 
   test("initialState returns the correct initial state", () => {
     const initialState = simpleSystem.initialState(simpleConfig);

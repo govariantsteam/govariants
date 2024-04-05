@@ -1,3 +1,4 @@
+import { BoardPattern } from "../abstractBoard/boardFactory";
 import { AbstractBaduk, AbstractBadukConfig } from "./abstractBaduk";
 import { BadukIntersection, AbstractBadukStone } from "./badukIntersection";
 
@@ -32,7 +33,7 @@ class AbstractBadukTestGame extends AbstractBaduk<
   center: TestIntersection;
 
   constructor() {
-    super({ board: { type: "grid", height: 3, width: 3 } });
+    super({ board: { type: BoardPattern.Grid, height: 3, width: 3 } });
 
     this.center = this.intersections.find(
       (intersection) => intersection.neighbours.length === 4,
@@ -68,7 +69,7 @@ class AbstractBadukTestGame extends AbstractBaduk<
   }
 
   defaultConfig(): AbstractBadukConfig {
-    return { board: { type: "grid", height: 19, width: 19 } };
+    return { board: { type: BoardPattern.Grid, height: 19, width: 19 } };
   }
 
   exportState(_player?: number): TestState {

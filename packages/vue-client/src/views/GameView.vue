@@ -4,6 +4,7 @@ import {
   type GameResponse,
   getOnlyMove,
   HasTimeControlConfig,
+  timeControlMap,
 } from "@ogfcommunity/variants-shared";
 import * as requests from "../requests";
 import SeatComponent from "@/components/SeatComponent.vue";
@@ -185,9 +186,13 @@ const createTimeControlPreview = (
   game: GameResponse,
 ): IPerPlayerTimeControlBase | null => {
   if (HasTimeControlConfig(game.config)) {
-    const config = game.config as IConfigWithTimeControl;
+    const config = (game.config as IConfigWithTimeControl).time_control;
+    const clock = timeControlMap.get(config.type);
+    if (!clock) {
+      throw new Error(`Invalid time control: ${config.type}`);
+    }
     return {
-      remainingTimeMS: config.time_control.mainTimeMS,
+      clockState: clock.initialState(config),
       onThePlaySince: null,
     };
   }
@@ -250,6 +255,7 @@ const createTimeControlPreview = (
           gameResponse.time_control?.forPlayer[idx] ??
           createTimeControlPreview(gameResponse)
         "
+        :time_config="(gameResponse.config as IConfigWithTimeControl).time_control"
         :is_players_turn="game.next_to_play?.includes(idx) ?? false"
       />
     </div>

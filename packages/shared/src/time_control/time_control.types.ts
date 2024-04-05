@@ -23,7 +23,7 @@ export interface IConfigWithTimeControl {
 }
 
 export interface IPerPlayerTimeControlBase {
-  remainingTimeMS: number;
+  clockState: object;
   onThePlaySince: Date | null;
 }
 export type PerPlayerTimeControlParallel = IPerPlayerTimeControlBase & {

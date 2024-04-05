@@ -71,6 +71,20 @@ export async function getGame(id: string): Promise<GameResponse> {
   if (!game.players) {
     game.players = await BACKFILL_addEmptyPlayersArray(game);
   }
+  const playerClocks = Object.values(game.time_control?.forPlayer ?? {});
+  // bpj 2024-04-04: changed playerClock.remainingTimeMS to playerClock.clockState
+  // in order to support more complex clock states such as byo-yomi
+  if (game.time_control && playerClocks.some((tc) => tc.clockState == null)) {
+    playerClocks.forEach((tc) => {
+      if (tc.clockState) return;
+
+      if ("remainingTimeMS" in tc) {
+        // This is the state for Fischer and Absolute, the only supported
+        // time controls at the time of this change.
+        tc.clockState = { remainingTimeMS: tc.remainingTimeMS };
+      }
+    });
+  }
 
   return game;
 }

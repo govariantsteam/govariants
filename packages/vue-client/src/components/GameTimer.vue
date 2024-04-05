@@ -2,16 +2,31 @@
 import { ref, watch, computed } from "vue";
 import {
   type IPerPlayerTimeControlBase,
-  msToTime,
+  timeControlMap,
 } from "@ogfcommunity/variants-shared";
 import { isDefined } from "@vueuse/core";
+import type { ITimeControlConfig } from "@ogfcommunity/variants-shared/src/time_control";
 
 const props = defineProps<{
   time_control: IPerPlayerTimeControlBase;
+  time_config: ITimeControlConfig;
 }>();
 
-const time = ref(props.time_control.remainingTimeMS);
-const formattedTime = computed(() => msToTime(time.value));
+const clockController = computed(() => {
+  const clockController = timeControlMap.get(props.time_config.type);
+  if (!clockController) {
+    throw new Error(`Invalid time control: ${props.time_config.type}`);
+  }
+  return clockController;
+});
+const time = ref(props.time_control.clockState);
+const formattedTime = computed(() => {
+  if (clockController.value.msUntilTimeout(time.value, props.time_config) > 0) {
+    return clockController.value.timeString(time.value);
+  } else {
+    return "";
+  }
+});
 let timerIndex: number | null = null;
 
 watch(
@@ -31,7 +46,7 @@ function resetTimer(): void {
   if (timerIndex !== null) {
     clearInterval(timerIndex);
   }
-  time.value = props.time_control.remainingTimeMS;
+  time.value = props.time_control.clockState;
 
   if (isDefined(props.time_control.onThePlaySince) && time.value !== null) {
     let elapsed;
@@ -48,16 +63,28 @@ function resetTimer(): void {
       elapsed = now.getTime() - onThePlaySince.getTime();
 
       timerIndex = window.setInterval(() => {
-        if (time.value <= 0 && timerIndex !== null) {
+        const msUntilTimeout = clockController.value.msUntilTimeout(
+          time.value,
+          props.time_config,
+        );
+        if (msUntilTimeout <= 0 && timerIndex !== null) {
           clearInterval(timerIndex);
         } else {
           const timeStamp = new Date();
           const elapsed = timeStamp.getTime() - onThePlaySince.getTime();
-          time.value = props.time_control.remainingTimeMS - elapsed;
+          time.value = clockController.value.elapse(
+            elapsed,
+            props.time_control.clockState,
+            props.time_config,
+          );
         }
       }, 1000);
     }
-    time.value = Math.max(0, time.value - elapsed);
+    time.value = clockController.value.elapse(
+      elapsed,
+      time.value,
+      props.time_config,
+    );
   }
 }
 </script>

@@ -19,8 +19,8 @@ test("initialState (Absolute)", () => {
   expect(initialState("baduk", ABSOLUTE_CONFIG)).toEqual({
     moveTimestamps: [],
     forPlayer: {
-      "0": { remainingTimeMS: 600000, onThePlaySince: null },
-      "1": { remainingTimeMS: 600000, onThePlaySince: null },
+      "0": { clockState: { remainingTimeMS: 600000 }, onThePlaySince: null },
+      "1": { clockState: { remainingTimeMS: 600000 }, onThePlaySince: null },
     },
   });
 });
@@ -33,11 +33,11 @@ test("makeTransition (Absolute)", () => {
     "game_id",
   );
   const playerData: IPerPlayerTimeControlBase = {
-    remainingTimeMS: 600000,
+    clockState: { remainingTimeMS: 600000 },
     onThePlaySince: null,
   };
   transition(playerData);
-  expect(playerData.remainingTimeMS).toBe(595000);
+  expect(playerData.clockState).toEqual({ remainingTimeMS: 595000 });
 });
 
 test("makeTransition: timeout (Absolute)", () => {
@@ -48,11 +48,11 @@ test("makeTransition: timeout (Absolute)", () => {
     "game_id",
   );
   const playerData: IPerPlayerTimeControlBase = {
-    remainingTimeMS: 600000,
+    clockState: { remainingTimeMS: 600000 },
     onThePlaySince: null,
   };
   transition(playerData);
-  expect(playerData.remainingTimeMS).toBe(0);
+  expect(playerData.clockState).toEqual({ remainingTimeMS: 0 });
 });
 
 test("makeTransition: timeout (Fischer)", () => {
@@ -72,11 +72,11 @@ test("makeTransition: timeout (Fischer)", () => {
     "game_id",
   );
   const playerData: IPerPlayerTimeControlBase = {
-    remainingTimeMS: 600000,
+    clockState: { remainingTimeMS: 600000 },
     onThePlaySince: null,
   };
   transition(playerData);
-  expect(playerData.remainingTimeMS).toBe(0);
+  expect(playerData.clockState).toEqual({ remainingTimeMS: 0 });
 });
 
 test("makeTransition: (Uncapped Fischer)", () => {
@@ -96,11 +96,11 @@ test("makeTransition: (Uncapped Fischer)", () => {
     "game_id",
   );
   const playerData: IPerPlayerTimeControlBase = {
-    remainingTimeMS: 600_000,
+    clockState: { remainingTimeMS: 600_000 },
     onThePlaySince: null,
   };
   transition(playerData);
-  expect(playerData.remainingTimeMS).toBe(603_000);
+  expect(playerData.clockState).toEqual({ remainingTimeMS: 603_000 });
 });
 
 test("makeTransition (Invalid)", () => {
@@ -115,7 +115,7 @@ test("makeTransition (Invalid)", () => {
 
 test("msUntilTimeout (Absolute)", () => {
   const playerData: IPerPlayerTimeControlBase = {
-    remainingTimeMS: 600000,
+    clockState: { remainingTimeMS: 600000 },
     // player has not played a move yet
     // or player is not on the play
     onThePlaySince: null,

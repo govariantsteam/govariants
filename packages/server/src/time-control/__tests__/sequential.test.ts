@@ -1,6 +1,7 @@
 import {
   BadukConfig,
   GameResponse,
+  IBasicTimeState,
   IConfigWithTimeControl,
   IFischerConfig,
   ITimeControlBase,
@@ -63,21 +64,29 @@ describe("Sequential Time Control Tests", () => {
 
     const seconds1 = 10;
     gameResponse.time_control = mockPlayMove(0, "aa", seconds1);
-    const time1 = gameResponse.time_control.forPlayer[0].remainingTimeMS;
+    const time1 = (
+      gameResponse.time_control.forPlayer[0].clockState as IBasicTimeState
+    ).remainingTimeMS;
 
     const seconds2 = 20;
     gameResponse.time_control = mockPlayMove(1, "bb", seconds2);
-    const time2 = gameResponse.time_control.forPlayer[1].remainingTimeMS;
+    const time2 = (
+      gameResponse.time_control.forPlayer[1].clockState as IBasicTimeState
+    ).remainingTimeMS;
 
     // time control should start here
 
     const seconds3 = 24;
     gameResponse.time_control = mockPlayMove(0, "cc", seconds3);
-    const time3 = gameResponse.time_control.forPlayer[0].remainingTimeMS;
+    const time3 = (
+      gameResponse.time_control.forPlayer[0].clockState as IBasicTimeState
+    ).remainingTimeMS;
 
     const seconds4 = 30;
     gameResponse.time_control = mockPlayMove(1, "dd", seconds4);
-    const time4 = gameResponse.time_control.forPlayer[1].remainingTimeMS;
+    const time4 = (
+      gameResponse.time_control.forPlayer[1].clockState as IBasicTimeState
+    ).remainingTimeMS;
 
     const seconds5 = 40;
     clock.setTimestamp(new Date(0, 0, 0, 0, 0, seconds5));

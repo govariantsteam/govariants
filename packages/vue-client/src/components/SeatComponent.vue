@@ -2,6 +2,7 @@
 import type {
   User,
   IPerPlayerTimeControlBase,
+  ITimeControlConfig,
 } from "@ogfcommunity/variants-shared";
 import GameTimer from "../components/GameTimer.vue";
 
@@ -11,6 +12,7 @@ defineProps<{
   player_n: number;
   selected?: number;
   time_control: IPerPlayerTimeControlBase | null;
+  time_config?: ITimeControlConfig;
   is_players_turn: boolean;
 }>();
 </script>
@@ -25,7 +27,11 @@ defineProps<{
 
     <div v-if="occupant == null">
       <div class="timer-and-button">
-        <GameTimer v-if="time_control" v-bind:time_control="time_control" />
+        <GameTimer
+          v-if="time_control && time_config"
+          v-bind:time_control="time_control"
+          v-bind:time_config="time_config"
+        />
         <button v-if="user_id" @click.stop="$emit('sit')">Take Seat</button>
       </div>
     </div>
@@ -34,7 +40,11 @@ defineProps<{
         {{ occupant.username ?? `guest (...${occupant.id.slice(-6)})` }}
       </p>
       <div class="timer-and-button">
-        <GameTimer v-if="time_control" v-bind:time_control="time_control" />
+        <GameTimer
+          v-if="time_control && time_config"
+          v-bind:time_control="time_control"
+          v-bind:time_config="time_config"
+        />
         <button v-if="occupant.id === user_id" @click.stop="$emit('leave')">
           Leave Seat
         </button>

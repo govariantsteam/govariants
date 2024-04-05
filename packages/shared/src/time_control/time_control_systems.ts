@@ -248,8 +248,8 @@ function nullRenewal<T>(state: T) {
 
 export const timeControlMap: ReadonlyMap<
   TimeControlType,
-  TimeControl<unknown, unknown>
-> = new Map<TimeControlType, TimeControl<unknown, unknown>>([
+  TimeControl<object, object>
+> = new Map<TimeControlType, TimeControl<object, object>>([
   [TimeControlType.Absolute, new AbsoluteTimeControl()],
   [TimeControlType.ByoYomi, new ByoYomiTimeControl()],
   [TimeControlType.Canadian, new CanadianTimeControl()],

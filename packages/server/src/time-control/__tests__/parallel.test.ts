@@ -37,12 +37,12 @@ function baseGameResponse(): GameResponse {
       moveTimestamps: [],
       forPlayer: {
         "0": {
-          remainingTimeMS: 300000,
+          clockState: { remainingTimeMS: 300000 },
           onThePlaySince: null,
           stagedMoveAt: null,
         } as PerPlayerTimeControlParallel,
         "1": {
-          remainingTimeMS: 300000,
+          clockState: { remainingTimeMS: 300000 },
           onThePlaySince: null,
           stagedMoveAt: null,
         } as PerPlayerTimeControlParallel,
@@ -65,12 +65,12 @@ test("initialState (Fischer)", () => {
     moveTimestamps: [],
     forPlayer: {
       "0": {
-        remainingTimeMS: 300000,
+        clockState: { remainingTimeMS: 300000 },
         onThePlaySince: null,
         stagedMoveAt: null,
       },
       "1": {
-        remainingTimeMS: 300000,
+        clockState: { remainingTimeMS: 300000 },
         onThePlaySince: null,
         stagedMoveAt: null,
       },
@@ -94,12 +94,12 @@ test("handleMove - staged move (Fischer)", () => {
     moveTimestamps: [DATE1],
     forPlayer: {
       "0": {
-        remainingTimeMS: 300000,
+        clockState: { remainingTimeMS: 300000 },
         onThePlaySince: null,
         stagedMoveAt: DATE1,
       },
       "1": {
-        remainingTimeMS: 300000,
+        clockState: { remainingTimeMS: 300000 },
         onThePlaySince: null,
         stagedMoveAt: null,
       },
@@ -131,12 +131,12 @@ test("handleMove - round transition (Fischer)", () => {
     moveTimestamps: [DATE1, DATE2, DATE3, DATE4],
     forPlayer: {
       "0": {
-        remainingTimeMS: 305000,
+        clockState: { remainingTimeMS: 305000 },
         onThePlaySince: DATE4,
         stagedMoveAt: null,
       },
       "1": {
-        remainingTimeMS: 300000,
+        clockState: { remainingTimeMS: 300000 },
         onThePlaySince: DATE4,
         stagedMoveAt: null,
       },
@@ -172,12 +172,12 @@ test("handleMove - missing time_control will be treated as initialState", () => 
     moveTimestamps: [DATE1],
     forPlayer: {
       "0": {
-        remainingTimeMS: 300000,
+        clockState: { remainingTimeMS: 300000 },
         onThePlaySince: null,
         stagedMoveAt: DATE1,
       },
       "1": {
-        remainingTimeMS: 300000,
+        clockState: { remainingTimeMS: 300000 },
         onThePlaySince: null,
         stagedMoveAt: null,
       },
@@ -213,12 +213,12 @@ test("handleMove - timeout sets the clock to zero (Fischer)", () => {
     moveTimestamps: [DATE1, DATE2, TIMEOUT_DATE],
     forPlayer: {
       "0": {
-        remainingTimeMS: 0,
+        clockState: { remainingTimeMS: 0 },
         onThePlaySince: null,
         stagedMoveAt: null,
       },
       "1": {
-        remainingTimeMS: 300000,
+        clockState: { remainingTimeMS: 300000 },
         onThePlaySince: DATE2,
         stagedMoveAt: null,
       },

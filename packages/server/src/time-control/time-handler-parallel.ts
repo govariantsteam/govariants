@@ -5,6 +5,7 @@ import {
   ITimeControlBase,
   PerPlayerTimeControlParallel,
   TimeControlParallel,
+  timeControlMap,
 } from "@ogfcommunity/variants-shared";
 import { ITimeoutService } from "./timeout";
 import { ITimeHandler } from "./time-control";
@@ -13,6 +14,7 @@ import {
   getMsUntilTimeout,
   initialState,
   makeTransition,
+  nullTimeState,
 } from "./time-handler-utils";
 
 export class TimeHandlerParallelMoves implements ITimeHandler {
@@ -98,20 +100,22 @@ export class TimeHandlerParallelMoves implements ITimeHandler {
 
     const playerData = timeControl.forPlayer[playerNr];
 
+    const timeConfig = (game.config as IConfigWithTimeControl).time_control;
+    const clockController = timeControlMap.get(timeConfig.type);
+
     if (move === "resign" || move === "timeout") {
       playerData.onThePlaySince = null;
       playerData.stagedMoveAt = null;
       if (move === "timeout") {
-        playerData.remainingTimeMS = 0;
+        playerData.clockState = nullTimeState(clockController, timeConfig);
       }
     } else {
       playerData.stagedMoveAt = timestamp;
+      const clockState = timeControl.forPlayer[playerNr].clockState;
 
-      // TODO: for now this should work, but I should think about this when adding
-      // other time controls like Byo-Yomi and such.
       if (
         playerData.onThePlaySince !== null &&
-        timeControl.forPlayer[playerNr].remainingTimeMS <=
+        clockController.msUntilTimeout(clockState, timeConfig) <=
           timestamp.getTime() - playerData.onThePlaySince.getTime()
       ) {
         throw new Error(

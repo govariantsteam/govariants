@@ -3,9 +3,11 @@ import {
   MovesType,
   getOnlyMove,
   makeGameObject,
+  timeControlMap,
 } from "@ogfcommunity/variants-shared";
 import { timeControlHandlerMap } from "./time-handler-map";
 import { Clock } from "./clock";
+import { nullTimeState } from "./time-handler-utils";
 
 type GameTimeouts = {
   // timeout for this player, or null
@@ -120,6 +122,11 @@ export class TimeoutService implements ITimeoutService {
       const game = await getGame(gameId);
 
       try {
+        const clock = timeControlMap.get(game.config.time_control!.type);
+        game.time_control!.forPlayer[playerNr].clockState = nullTimeState(
+          clock,
+          game.config.time_control!,
+        );
         await handleMoveAndTime(gameId, timeoutMove, game);
       } catch (error) {
         console.error(error);

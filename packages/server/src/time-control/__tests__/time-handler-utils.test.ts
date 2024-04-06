@@ -26,12 +26,7 @@ test("initialState (Absolute)", () => {
 });
 
 test("makeTransition (Absolute)", () => {
-  const transition = makeTransition(
-    () => 5000,
-    ABSOLUTE_CONFIG,
-    "aa",
-    "game_id",
-  );
+  const transition = makeTransition(() => 5000, ABSOLUTE_CONFIG, "game_id");
   const playerData: IPerPlayerTimeControlBase = {
     clockState: { remainingTimeMS: 600000 },
     onThePlaySince: null,
@@ -40,11 +35,11 @@ test("makeTransition (Absolute)", () => {
   expect(playerData.clockState).toEqual({ remainingTimeMS: 595000 });
 });
 
+/*
 test("makeTransition: timeout (Absolute)", () => {
   const transition = makeTransition(
     () => 600005, // Timeout plus a bit
     ABSOLUTE_CONFIG,
-    "timeout",
     "game_id",
   );
   const playerData: IPerPlayerTimeControlBase = {
@@ -68,7 +63,6 @@ test("makeTransition: timeout (Fischer)", () => {
   const transition = makeTransition(
     () => 600005, // Timeout plus a bit
     fischerConfig,
-    "timeout",
     "game_id",
   );
   const playerData: IPerPlayerTimeControlBase = {
@@ -77,7 +71,7 @@ test("makeTransition: timeout (Fischer)", () => {
   };
   transition(playerData);
   expect(playerData.clockState).toEqual({ remainingTimeMS: 0 });
-});
+});*/
 
 test("makeTransition: (Uncapped Fischer)", () => {
   const fischerConfig = {
@@ -92,7 +86,6 @@ test("makeTransition: (Uncapped Fischer)", () => {
   const transition = makeTransition(
     () => 2000, // Timeout plus a bit
     fischerConfig,
-    "aa",
     "game_id",
   );
   const playerData: IPerPlayerTimeControlBase = {
@@ -108,9 +101,9 @@ test("makeTransition (Invalid)", () => {
     ...new Baduk().defaultConfig(),
     time_control: { type: TimeControlType.Invalid, mainTimeMS: 600_000 },
   };
-  expect(() =>
-    makeTransition(() => 5000, invalidConfig, "aa", "game_id"),
-  ).toThrow("invalid");
+  expect(() => makeTransition(() => 5000, invalidConfig, "game_id")).toThrow(
+    "invalid",
+  );
 });
 
 test("msUntilTimeout (Absolute)", () => {

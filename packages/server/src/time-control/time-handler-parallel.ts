@@ -100,7 +100,10 @@ export class TimeHandlerParallelMoves implements ITimeHandler {
 
     const playerData = timeControl.forPlayer[playerNr];
 
-    const timeConfig = (game.config as IConfigWithTimeControl).time_control;
+    if (!game.config.time_control) {
+      throw new Error(`Time control not found in game ${game.id}`);
+    }
+    const timeConfig = game.config.time_control;
     const clockController = timeControlMap.get(timeConfig.type);
 
     if (move === "resign" || move === "timeout") {

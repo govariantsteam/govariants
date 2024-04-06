@@ -1,7 +1,9 @@
 import {
   GameResponse,
+  IConfigWithTimeControl,
   IFischerConfig,
   ParallelGo,
+  ParallelGoConfig,
   PerPlayerTimeControlParallel,
   TimeControlType,
 } from "@ogfcommunity/variants-shared";
@@ -248,4 +250,86 @@ test("handleMove - re-stage move not allowed if it will cause timeout", () => {
   expect(() => handler.handleMove(gameResponse, game, 0, "dd", false)).toThrow(
     "you can't change your move because it would reduce your remaining time to zero.",
   );
+});
+
+function setupFourPlayerGameFirstRound(
+  numMovesPlayedInSecondRound: number = 0,
+) {
+  const config: IConfigWithTimeControl & ParallelGoConfig = {
+    ...new ParallelGo().defaultConfig(),
+    time_control: {
+      type: TimeControlType.Absolute,
+      mainTimeMS: 300_000,
+    },
+    num_players: 4,
+  };
+
+  const firstMoveDate = new Date(MS_SINCE_EPOCH + 10_000);
+  const secondMoveDate = new Date(MS_SINCE_EPOCH + 20_000);
+  const players = [0, 1, 2, 3];
+
+  const game = new ParallelGo(config);
+  players.forEach((player) => game.playMove(player, "aa"));
+
+  players
+    .slice(0, numMovesPlayedInSecondRound)
+    .forEach((player) => game.playMove(player, "bb"));
+
+  // kinda impossible to have all players play at the same exact time, but I think it is okay
+  const moveTimestamps = players.map(() => firstMoveDate);
+  const perPlayerState: PerPlayerTimeControlParallel = {
+    clockState: { remainingTimeMS: 290_000 },
+    onThePlaySince: firstMoveDate,
+    stagedMoveAt: null,
+  };
+  const perPlayerStateAlreadyPlayedSecond: PerPlayerTimeControlParallel = {
+    clockState: { remainingTimeMS: 280_000 },
+    onThePlaySince: null,
+    stagedMoveAt: secondMoveDate,
+  };
+  const playerStates = players.map((player) =>
+    player < numMovesPlayedInSecondRound
+      ? perPlayerStateAlreadyPlayedSecond
+      : perPlayerState,
+  );
+  const gameResponse: GameResponse = {
+    ...baseGameResponse(),
+    config,
+    time_control: {
+      moveTimestamps,
+      forPlayer: Object.fromEntries(
+        playerStates.map((state, player) => [player.toString(), state]),
+      ),
+    },
+  };
+
+  return { gameResponse, game };
+}
+
+test("handleMove - four players, timeout", () => {
+  const { game, gameResponse } = setupFourPlayerGameFirstRound(3);
+
+  const clock = new TestClock(TIMEOUT_DATE);
+  const timeoutService = new TestTimeoutService();
+  const handler = new TimeHandlerParallelMoves(clock, timeoutService);
+
+  const time_control = handler.handleMove(
+    gameResponse,
+    game,
+    3,
+    "timeout",
+    true,
+  );
+
+  expect(timeoutService.getTimeoutTime("xxxxxx", 0)).toBeUndefined();
+  expect(timeoutService.getTimeoutTime("xxxxxx", 1)).toBeUndefined();
+  expect(timeoutService.getTimeoutTime("xxxxxx", 2)).toBeUndefined();
+  expect(timeoutService.getTimeoutTime("xxxxxx", 3)).toBe(0);
+
+  expect(time_control).toEqual({
+    moveTimestamps: gameResponse.time_control?.moveTimestamps.concat([
+      //TIMEOUT_DATE,
+    ]),
+    forPlayer: gameResponse.time_control?.forPlayer,
+  });
 });

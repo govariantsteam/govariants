@@ -242,7 +242,7 @@ class CanadianTimeControl
 }
 
 // Convenience function for when the state doesn't change at the end of a round
-function nullRenewal<T>(state: T) {
+function nullRenewal<T extends object>(state: T) {
   return { ...state };
 }
 

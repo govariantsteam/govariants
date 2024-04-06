@@ -49,7 +49,6 @@ export function initialState(
 export function makeTransition<T extends IPerPlayerTimeControlBase>(
   getElapsedMS: (playerData: T) => number,
   config: IConfigWithTimeControl,
-  move: string,
   game_id: string,
 ): (playerData: T) => void {
   const timeConfig = config.time_control;
@@ -58,11 +57,6 @@ export function makeTransition<T extends IPerPlayerTimeControlBase>(
     throw Error(`game with id ${game_id} has invalid time control type`);
   }
   return (playerData) => {
-    if (move === "timeout") {
-      playerData.clockState = nullTimeState(clock, timeConfig);
-      return;
-    }
-
     const elapsedState = clock.elapse(
       getElapsedMS(playerData),
       playerData.clockState,

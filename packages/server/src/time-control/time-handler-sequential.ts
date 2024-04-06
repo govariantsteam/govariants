@@ -49,7 +49,6 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
     const transition = makeTransition(
       (playerData) => timestamp.getTime() - playerData.onThePlaySince.getTime(),
       config,
-      move,
       game.id,
     );
 

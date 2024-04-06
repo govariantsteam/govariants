@@ -106,16 +106,22 @@ class ByoYomiTimeControl implements TimeControl<IByoYomiConfig, IByoYomiState> {
       elapsedMS -= state.mainTimeRemainingMS;
       state.mainTimeRemainingMS = 0;
     }
-    while (state.periodTimeRemainingMS < elapsedMS) {
-      elapsedMS -= state.periodTimeRemainingMS;
-      state.periodsRemaining--;
-      if (state.periodsRemaining === 0) {
-        state.periodTimeRemainingMS = 0;
-        return state;
-      }
-      state.periodTimeRemainingMS = config.periodTimeMS;
+
+    if (state.periodTimeRemainingMS > elapsedMS) {
+      state.periodTimeRemainingMS -= elapsedMS;
+      return state;
     }
-    state.periodTimeRemainingMS -= elapsedMS;
+
+    elapsedMS -= state.periodTimeRemainingMS;
+
+    const remainder = elapsedMS % config.periodTimeMS;
+    const q = (elapsedMS - remainder) / config.periodTimeMS;
+    const periodsUsed = q + 1;
+
+    state.periodsRemaining = Math.max(0, state.periodsRemaining - periodsUsed);
+    state.periodTimeRemainingMS =
+      state.periodsRemaining === 0 ? 0 : config.periodTimeMS - remainder;
+
     return state;
   }
 

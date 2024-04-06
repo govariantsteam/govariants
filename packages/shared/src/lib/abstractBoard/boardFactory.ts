@@ -4,47 +4,47 @@ import { Vector2D } from "../../variants/badukWithAbstractBoard/abstractBoard/Ve
 import { CreatePolygonalBoard as createPolygonalBoard } from "../../variants/badukWithAbstractBoard/abstractBoard/PolygonalBoardHelper";
 import { CreateCircularBoard } from "../../variants/badukWithAbstractBoard/abstractBoard/CircularBoardHelper";
 import { TrihexagonalBoardHelper } from "../../variants/badukWithAbstractBoard/abstractBoard/TrihexagonalBoardHelper";
-import { createSierpinskyBoard } from "../../variants/badukWithAbstractBoard/abstractBoard/SierpinskyBoard";
+import { createSierpinskyBoard as createSierpinskyBoardExternal } from "../../variants/badukWithAbstractBoard/abstractBoard/SierpinskyBoard";
 
-export enum BoardPattern {
-  Grid = "grid",
-  Polygonal = "polygonal",
-  Circular = "circular",
-  Trihexagonal = "trihexagonal",
-  Sierplinsky = "sierplinsky",
-}
+export const BoardPattern = {
+  Grid: "grid",
+  Polygonal: "polygonal",
+  Circular: "circular",
+  Trihexagonal: "trihexagonal",
+  Sierpinsky: "sierpinsky",
+} as const;
 
 export type BoardConfig =
   | GridBoardConfig
   | RhombitrihexagonalBoardConfig
   | CircularBoardConfig
   | TrihexagonalBoardConfig
-  | SierplinskyBoardConfig;
+  | SierpinskyBoardConfig;
 
 export interface GridBoardConfig {
-  type: BoardPattern.Grid;
+  type: typeof BoardPattern.Grid;
   width: number;
   height: number;
 }
 
 export interface RhombitrihexagonalBoardConfig {
-  type: BoardPattern.Polygonal; // Is this rhombitrihexagonal?
+  type: typeof BoardPattern.Polygonal; // Is this rhombitrihexagonal?
   size: number;
 }
 
 export interface CircularBoardConfig {
-  type: BoardPattern.Circular;
+  type: typeof BoardPattern.Circular;
   rings: number;
   nodesPerRing: number;
 }
 
 export interface TrihexagonalBoardConfig {
-  type: BoardPattern.Trihexagonal;
+  type: typeof BoardPattern.Trihexagonal;
   size: number;
 }
 
-export interface SierplinskyBoardConfig {
-  type: BoardPattern.Sierplinsky;
+export interface SierpinskyBoardConfig {
+  type: typeof BoardPattern.Sierpinsky;
   size: number;
 }
 
@@ -82,8 +82,8 @@ export function createBoard<TIntersection extends Intersection>(
         intersectionConstructor,
       );
       break;
-    case BoardPattern.Sierplinsky:
-      intersections = createSierplinskyBoard<TIntersection>(
+    case BoardPattern.Sierpinsky:
+      intersections = createSierpinskyBoard<TIntersection>(
         config,
         intersectionConstructor,
       );
@@ -150,12 +150,12 @@ function createTrihexagonalBoard<TIntersection extends Intersection>(
   );
 }
 
-function createSierplinskyBoard<TIntersection extends Intersection>(
-  config: SierplinskyBoardConfig,
+function createSierpinskyBoard<TIntersection extends Intersection>(
+  config: SierpinskyBoardConfig,
   intersectionConstructor: IntersectionConstructor<TIntersection>,
 ): TIntersection[] {
   return convertIntersections<TIntersection>(
-    createSierpinskyBoard(config.size),
+    createSierpinskyBoardExternal(config.size),
     intersectionConstructor,
   );
 }

@@ -57,7 +57,6 @@ export class TimeHandlerParallelMoves implements ITimeHandler {
       (playerData) =>
         playerData.stagedMoveAt.getTime() - playerData.onThePlaySince.getTime(),
       config,
-      move,
       game.id,
     );
 
@@ -137,7 +136,8 @@ export class TimeHandlerParallelMoves implements ITimeHandler {
         // time control starts only after first move of player
         if (
           playerData.onThePlaySince !== null &&
-          (player === playerNr || game.moves.some((move) => player in move))
+          (player === playerNr || game.moves.some((move) => player in move)) &&
+          playerData.stagedMoveAt
         ) {
           transition(timeControl.forPlayer[player]);
         }

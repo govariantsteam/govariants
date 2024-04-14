@@ -215,3 +215,53 @@ test("Double capture by the wall", () => {
     [[], [], [1], [0], [], []],
   ]);
 });
+
+test("1 timeouts in one round", () => {
+  const game = new ParallelGo({
+    width: 4,
+    height: 3,
+    num_players: 4,
+    collision_handling: "merge",
+  });
+
+  const rounds = [
+    ["aa", "ba", "ca", "da"],
+    ["ab", "bb", "cb", "timeout"],
+  ];
+  rounds.forEach((round, idx) => {
+    expect(game.round).toBe(idx);
+    game.playMove(0, round[0]);
+    game.playMove(1, round[1]);
+    game.playMove(2, round[2]);
+    game.playMove(3, round[3]);
+    expect(game.round).toBe(idx + 1);
+  });
+
+  expect(game.round).toBe(2);
+  expect(game.nextToPlay()).toEqual([0, 1, 2]);
+});
+
+test("2 timeouts in one round", () => {
+  const game = new ParallelGo({
+    width: 4,
+    height: 3,
+    num_players: 4,
+    collision_handling: "merge",
+  });
+
+  const rounds = [
+    ["aa", "ba", "ca", "da"],
+    ["ab", "bb", "timeout", "timeout"],
+  ];
+  rounds.forEach((round, idx) => {
+    expect(game.round).toBe(idx);
+    game.playMove(0, round[0]);
+    game.playMove(1, round[1]);
+    game.playMove(2, round[2]);
+    game.playMove(3, round[3]);
+    expect(game.round).toBe(idx + 1);
+  });
+
+  expect(game.round).toBe(2);
+  expect(game.nextToPlay()).toEqual([0, 1]);
+});

@@ -2,7 +2,7 @@ import http from "http";
 import { Server } from "socket.io";
 
 let _io: Server | null = null;
-export function init(server: http.Server, origin: string) {
+export function init(server: http.Server, origin: string | string[]) {
   _io = new Server(server, {
     cors: {
       origin,

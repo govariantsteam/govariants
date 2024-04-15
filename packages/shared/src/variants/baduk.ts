@@ -38,6 +38,11 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
 
   constructor(config?: BadukConfig) {
     super(config);
+
+    if (this.config.width >= 52 || this.config.height >= 52) {
+      throw new Error("Baduk does not support sizes greater than 52");
+    }
+
     this.board = new Grid<Color>(this.config.width, this.config.height).fill(
       Color.EMPTY,
     );

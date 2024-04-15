@@ -7,7 +7,9 @@ import {
   gamesFilterToUrlParams,
 } from "@ogfcommunity/variants-shared";
 import GameListItem from "@/components/GameListItem.vue";
+import GameListItemFallback from "@/components/GameListItemFallback.vue";
 import GamesFilterForm from "@/components/GamesFilterForm.vue";
+import VErrorBoundary from "vue-error-boundary";
 
 const countOptions = [10, 15, 25, 50];
 const count = ref(countOptions[0]);
@@ -40,7 +42,17 @@ function setFilter(gamesFilter: GamesFilter) {
   <hr />
   <ul>
     <template v-for="game in games" :key="game.id">
-      <GameListItem :game="game" />
+      <VErrorBoundary stop-propagation>
+        <template #boundary="{ hasError, error }">
+          <GameListItemFallback
+            v-if="hasError"
+            :error="error.message"
+            :variant="game.variant"
+            :game-id="game.id"
+          />
+          <GameListItem v-else :game="game" />
+        </template>
+      </VErrorBoundary>
     </template>
   </ul>
   <button @click="first()" :disabled="offset === 0">First</button>

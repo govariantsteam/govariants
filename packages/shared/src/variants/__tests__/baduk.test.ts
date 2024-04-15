@@ -195,3 +195,8 @@ test("Capture test", () => {
     [W, W, W],
   ]);
 });
+
+test("Board too big", () => {
+  // SGF encoding only supports up to 52
+  expect(() => new Baduk({ width: 500, height: 500, komi: 0 })).toThrow();
+});

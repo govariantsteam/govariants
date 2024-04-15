@@ -53,11 +53,13 @@ router.get("/games", async (req, res) => {
 router.post("/games", async (req, res) => {
   const data = req.body;
 
-  const game: GameResponse = await createGame(data.variant, data.config);
-
-  res.send(game);
-
-  return;
+  try {
+    const game: GameResponse = await createGame(data.variant, data.config);
+    res.send(game);
+  } catch (e) {
+    res.status(500);
+    res.json(e.message);
+  }
 });
 
 router.post("/games/:gameId/move", async (req, res) => {

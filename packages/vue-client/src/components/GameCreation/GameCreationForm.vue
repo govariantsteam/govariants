@@ -54,11 +54,15 @@ const createGame = async () => {
     return;
   }
 
-  const game = await requests.post("/games", {
-    variant: variant.value,
-    config: { ...config, time_control: timeControlConfig },
-  });
-  router.push({ name: "game", params: { gameId: game.id } });
+  try {
+    const game = await requests.post("/games", {
+      variant: variant.value,
+      config: { ...config, time_control: timeControlConfig },
+    });
+    router.push({ name: "game", params: { gameId: game.id } });
+  } catch (e) {
+    alert(e);
+  }
 };
 
 const parseConfigThenCreateGame = async () => {

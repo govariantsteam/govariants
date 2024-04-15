@@ -13,7 +13,8 @@
     "lint": "yarn workspaces foreach -pti run lint",
     "start:server": "yarn workspace @ogfcommunity/variants-server run start",
     "start:client": "yarn workspace @ogfcommunity/variants-vue-client run start",
-    "start:shared": "yarn workspace @ogfcommunity/variants-shared run start"
+    "start:shared": "yarn workspace @ogfcommunity/variants-shared run start",
+    "new-variant": "node  ./scripts/create-new-app.js"
   },
   "workspaces": {
     "packages": [

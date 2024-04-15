@@ -2,17 +2,49 @@ import { Intersection } from "./intersection";
 import { Intersection as IntersectionOld } from "../../variants/badukWithAbstractBoard/abstractBoard/intersection";
 import { Vector2D } from "../../variants/badukWithAbstractBoard/abstractBoard/Vector2D";
 import { CreatePolygonalBoard as createPolygonalBoard } from "../../variants/badukWithAbstractBoard/abstractBoard/PolygonalBoardHelper";
+import { CreateCircularBoard } from "../../variants/badukWithAbstractBoard/abstractBoard/CircularBoardHelper";
+import { TrihexagonalBoardHelper } from "../../variants/badukWithAbstractBoard/abstractBoard/TrihexagonalBoardHelper";
+import { createSierpinskyBoard as createSierpinskyBoardExternal } from "../../variants/badukWithAbstractBoard/abstractBoard/SierpinskyBoard";
 
-export type BoardConfig = GridBoardConfig | RhombitrihexagonalBoardConfig;
+export const BoardPattern = {
+  Grid: "grid",
+  Polygonal: "polygonal",
+  Circular: "circular",
+  Trihexagonal: "trihexagonal",
+  Sierpinsky: "sierpinsky",
+} as const;
+
+export type BoardConfig =
+  | GridBoardConfig
+  | RhombitrihexagonalBoardConfig
+  | CircularBoardConfig
+  | TrihexagonalBoardConfig
+  | SierpinskyBoardConfig;
 
 export interface GridBoardConfig {
-  type: "grid";
+  type: typeof BoardPattern.Grid;
   width: number;
   height: number;
 }
 
 export interface RhombitrihexagonalBoardConfig {
-  type: "polygonal"; // Is this rhombitrihexagonal?
+  type: typeof BoardPattern.Polygonal; // Is this rhombitrihexagonal?
+  size: number;
+}
+
+export interface CircularBoardConfig {
+  type: typeof BoardPattern.Circular;
+  rings: number;
+  nodesPerRing: number;
+}
+
+export interface TrihexagonalBoardConfig {
+  type: typeof BoardPattern.Trihexagonal;
+  size: number;
+}
+
+export interface SierpinskyBoardConfig {
+  type: typeof BoardPattern.Sierpinsky;
   size: number;
 }
 
@@ -26,14 +58,32 @@ export function createBoard<TIntersection extends Intersection>(
 ): TIntersection[] {
   let intersections: TIntersection[];
   switch (config.type) {
-    case "grid":
+    case BoardPattern.Grid:
       intersections = createGridBoard<TIntersection>(
         config,
         intersectionConstructor,
       );
       break;
-    case "polygonal":
+    case BoardPattern.Polygonal:
       intersections = createRthBoard<TIntersection>(
+        config,
+        intersectionConstructor,
+      );
+      break;
+    case BoardPattern.Circular:
+      intersections = createCircularBoard<TIntersection>(
+        config,
+        intersectionConstructor,
+      );
+      break;
+    case BoardPattern.Trihexagonal:
+      intersections = createTrihexagonalBoard<TIntersection>(
+        config,
+        intersectionConstructor,
+      );
+      break;
+    case BoardPattern.Sierpinsky:
+      intersections = createSierpinskyBoard<TIntersection>(
         config,
         intersectionConstructor,
       );
@@ -76,6 +126,36 @@ function createRthBoard<TIntersection extends Intersection>(
 ): TIntersection[] {
   return convertIntersections<TIntersection>(
     createPolygonalBoard(config.size),
+    intersectionConstructor,
+  );
+}
+
+function createCircularBoard<TIntersection extends Intersection>(
+  config: CircularBoardConfig,
+  intersectionConstructor: IntersectionConstructor<TIntersection>,
+): TIntersection[] {
+  return convertIntersections<TIntersection>(
+    CreateCircularBoard(config.rings, config.nodesPerRing),
+    intersectionConstructor,
+  );
+}
+
+function createTrihexagonalBoard<TIntersection extends Intersection>(
+  config: TrihexagonalBoardConfig,
+  intersectionConstructor: IntersectionConstructor<TIntersection>,
+): TIntersection[] {
+  return convertIntersections<TIntersection>(
+    new TrihexagonalBoardHelper().CreateTrihexagonalBoard(config.size),
+    intersectionConstructor,
+  );
+}
+
+function createSierpinskyBoard<TIntersection extends Intersection>(
+  config: SierpinskyBoardConfig,
+  intersectionConstructor: IntersectionConstructor<TIntersection>,
+): TIntersection[] {
+  return convertIntersections<TIntersection>(
+    createSierpinskyBoardExternal(config.size),
     intersectionConstructor,
   );
 }

@@ -1,3 +1,4 @@
+import { BoardPattern } from "../../lib/abstractBoard/boardFactory";
 import {
   Fractional,
   FractionalConfig,
@@ -8,7 +9,10 @@ class FractionalTestGame extends Fractional {
   readonly firstCorner: FractionalIntersection | undefined;
 
   constructor(config: Pick<FractionalConfig, "players">) {
-    super({ ...config, board: { type: "grid", width: 9, height: 9 } });
+    super({
+      ...config,
+      board: { type: BoardPattern.Grid, width: 9, height: 9 },
+    });
 
     this.firstCorner = this.intersections.find(
       (i) => i.neighbours.length === 2,

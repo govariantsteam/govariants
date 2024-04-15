@@ -4,6 +4,7 @@ import {
   AbstractBadukConfig,
 } from "../../lib/abstractBaduk/abstractBaduk";
 import { FractionalStone } from "./fractionalStone";
+import { BoardPattern } from "../../lib/abstractBoard/boardFactory";
 
 export type Color =
   | "black"
@@ -137,7 +138,7 @@ export class Fractional extends AbstractBaduk<
         { primaryColor: "white", secondaryColor: "green" },
         { primaryColor: "white", secondaryColor: "blue" },
       ],
-      board: { type: "grid", width: 19, height: 19 },
+      board: { type: BoardPattern.Grid, width: 19, height: 19 },
     };
   }
 

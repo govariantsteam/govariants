@@ -55,7 +55,7 @@ export function create3DSierpinskyBoard(depth: number): Intersection[] {
       ),
   );
 
-  const outerSierplinskyTriangles = outerIntersections.map(
+  const outerSierpinskyTriangles = outerIntersections.map(
     (intersection, index) =>
       new SierpinskyTriangle(
         [
@@ -71,9 +71,9 @@ export function create3DSierpinskyBoard(depth: number): Intersection[] {
     ...middleIntersections,
     ...outerIntersections,
     ...sierpinskyTriangle.flatten(),
-    ...outerSierplinskyTriangles[0].flatten(),
-    ...outerSierplinskyTriangles[1].flatten(),
-    ...outerSierplinskyTriangles[2].flatten(),
+    ...outerSierpinskyTriangles[0].flatten(),
+    ...outerSierpinskyTriangles[1].flatten(),
+    ...outerSierpinskyTriangles[2].flatten(),
   ].map((intersection, index) => {
     intersection.Identifier = index;
     return intersection;

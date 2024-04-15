@@ -6,7 +6,6 @@ import {
   getOnlyMove,
   HasTimeControlConfig,
   GamesFilter,
-  game_map,
 } from "@ogfcommunity/variants-shared";
 import { ObjectId, WithId, Document, Filter } from "mongodb";
 import { getDb } from "./db";
@@ -95,7 +94,7 @@ export async function createGame(
   config: object,
 ): Promise<GameResponse> {
   // Construct a game from the config to ensure the config is valid
-  new game_map[variant](config);
+  makeGameObject(variant, config);
 
   const game = {
     variant: variant,

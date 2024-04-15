@@ -20,7 +20,11 @@ import { router as apiRouter } from "./api";
 import * as socket_io from "./socket_io";
 import { ITimeoutService, TimeoutService } from "./time-control/timeout";
 
-const LOCAL_ORIGIN = "http://127.0.0.1:5173";
+const LOCAL_ORIGIN = [
+  "http://127.0.0.1:5173",
+  "http://localhost:5173",
+  "http://[::1]:5173",
+];
 
 const timeoutService = new TimeoutService();
 export function getTimeoutService(): ITimeoutService {

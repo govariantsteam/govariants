@@ -1,8 +1,9 @@
-import { {{ namePascal }}, Color } from "../{{ nameSnake }}";
+import { {{ namePascal }} } from "../{{ nameSnake }}";
 
-const B = Color.BLACK;
-const _ = Color.EMPTY;
-const W = Color.WHITE;
+// These variables just make the boards a little prettier
+const B = 0;
+const _ = null;
+const W = 1;
 
 test("Play a game", () => {
   const game = new {{ namePascal }}({ width: 4, height: 4 });

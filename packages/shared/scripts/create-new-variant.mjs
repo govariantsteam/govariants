@@ -6,17 +6,32 @@ import path from "path";
 /* global process */
 
 // Function to replace templates
-function replaceTemplates(sourcePath, targetPath) {
+function replaceTemplates(sourcePath, targetPath, variantName) {
   // Read the source file
   let content = readFileSync(sourcePath, "utf-8");
 
   // Use Nunjucks to render the template
   content = nunjucks.renderString(content, {
-    /* your variables here */
+    namePascal: snakeToPascal(variantName),
+    nameSnake: variantName,
   });
 
   // Write the rendered content to the target file
   writeFileSync(targetPath, content);
+}
+
+// convert snake_case string to PascalCase
+function snakeToPascal(snakeCase) {
+  // Split the string into an array of words
+  const words = snakeCase.split("_");
+
+  // Capitalize the first letter of each word
+  const pascalWords = words.map(
+    (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
+  );
+
+  // Join the words back together
+  return pascalWords.join("");
 }
 
 // Get the variant name
@@ -43,7 +58,7 @@ const testFileOutput = path.join(
 );
 
 // Call the copy directory function
-replaceTemplates(sourceFileTemplate, sourceFileOutput);
-replaceTemplates(testFileTemplate, testFileOutput);
+replaceTemplates(sourceFileTemplate, sourceFileOutput, variantName);
+replaceTemplates(testFileTemplate, testFileOutput, variantName);
 
 console.log("Directory copied and templates replaced successfully.");

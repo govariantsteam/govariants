@@ -1,3 +1,26 @@
-/* global console */
+import { {{ namePascal }}, Color } from "../{{ nameSnake }}";
 
-console.log("hello, world");
+const B = Color.BLACK;
+const _ = Color.EMPTY;
+const W = Color.WHITE;
+
+test("Play a game", () => {
+  const game = new {{ namePascal }}({ width: 4, height: 4 });
+  // Tiny board:
+  // B - - -
+  // - W - -
+  // - - B -
+  // - - - W
+
+  game.playMove(0, "aa");
+  game.playMove(1, "bb");
+  game.playMove(0, "cc");
+  game.playMove(1, "dd");
+
+  expect(game.exportState().board).toEqual([
+    [B, _, _, _],
+    [_, W, _, _],
+    [_, _, B, _],
+    [_, _, _, W],
+  ]);
+});

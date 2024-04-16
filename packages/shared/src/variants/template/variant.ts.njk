@@ -1,3 +1,91 @@
-/* global console */
+import { Coordinate } from "../lib/coordinate";
+import { Grid } from "../lib/grid";
+import { AbstractGame } from "../abstract_game";
 
-console.log("hello, world");
+export enum Color {
+  EMPTY = 0,
+  BLACK = 1,
+  WHITE = 2,
+}
+
+export interface {{ namePascal }}Config {
+  width: number;
+  height: number;
+}
+
+export interface {{ namePascal }}State {
+  board: Color[][];
+}
+
+export type {{ namePascal }}Move = { 0: string } | { 1: string };
+
+export class {{ namePascal }} extends AbstractGame<
+  {{ namePascal }}Config,
+  {{ namePascal }}State
+> {
+  public board: Grid<Color>;
+  protected next_to_play: 0 | 1 = 0;
+
+  constructor(config?: {{ namePascal }}Config) {
+    super(config);
+
+    this.board = new Grid<Color>(this.config.width, this.config.height).fill(
+      Color.EMPTY,
+    );
+  }
+
+  override exportState(): {{ namePascal }}State {
+    return {
+      board: this.board.to2DArray(),
+    };
+  }
+
+  override nextToPlay(): number[] {
+    // This just means either player can play as long as the game hasn't ended
+    // you will likely want to change this.
+    return this.phase === "gameover" ? [] : [0, 1];
+  }
+
+  override playMove(player: number, move: string): void {
+    if (move === "resign") {
+      // Set this.phase to "gameover" to end the game
+      this.phase = "gameover";
+      this.result = this.next_to_play === 0 ? "W+R" : "B+R";
+      return;
+    }
+
+    if (move === "timeout") {
+      this.phase = "gameover";
+      this.result = player === 0 ? "W+T" : "B+T";
+      return;
+    }
+
+    if (move == "pass") {
+      return;
+    }
+
+    const decoded_move = Coordinate.fromSgfRepr(move);
+    if (!this.board.isInBounds(decoded_move)) {
+      // You can throw from this function to signify invalid moves
+      throw Error(
+        `Move out of bounds. (move: ${decoded_move}, board dimensions: ${this.config.width}x${this.config.height}`,
+      );
+    }
+
+    this.board.set(decoded_move, player === 0 ? Color.BLACK : Color.WHITE);
+
+    super.increaseRound();
+  }
+
+  override numPlayers(): number {
+    return 2;
+  }
+
+  override specialMoves(): { [key: string]: string } {
+    return { pass: "Pass", resign: "Resign" };
+  }
+
+  defaultConfig(): {{ namePascal }}Config {
+    return { width: 19, height: 19 };
+  }
+}

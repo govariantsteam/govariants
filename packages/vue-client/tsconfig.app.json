@@ -8,7 +8,7 @@
     "rootDir": "..",
     "paths": {
       "@/*": ["vue-client/src/*"], 
-      "@shared/*": ["shared/src/*"]
+      "@shared/*": ["./shared/src/*"]
     }
     ,
     "verbatimModuleSyntax": false

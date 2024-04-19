@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import {
-  makeGameObject,
-  type GameResponse,
-  getOnlyMove,
-} from "@/../../shared/src";
+import { makeGameObject, type GameResponse, getOnlyMove } from "@shared/index";
 import { computed } from "vue";
 import { board_map } from "@/board_map";
 

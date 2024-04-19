@@ -5,8 +5,8 @@ import {
   type BadukConfig,
   type FreezeGoState,
   Color,
-} from "@/../../shared/src";
-import { Grid } from "@/../../shared/src";
+} from "@shared/index";
+import { Grid } from "@shared/index";
 import { computed } from "vue";
 
 const props = defineProps<{

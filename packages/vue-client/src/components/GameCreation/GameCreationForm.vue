@@ -4,12 +4,12 @@ import {
   getVariantList,
   getDefaultConfig,
   type ITimeControlConfig,
-} from "@/../../shared/src";
+} from "@shared/index";
 import * as requests from "@/requests";
 import router from "@/router";
 import { config_form_map } from "@/config_form_map";
 import TimeControlConfigForm from "./TimeControlConfigForm.vue";
-import { BoardPattern } from "@/../../shared/src/variants/badukWithAbstractBoard";
+import { BoardPattern } from "@shared/variants/badukWithAbstractBoard";
 
 interface IConfigWithOptionalTimeControl {
   time_control?: ITimeControlConfig;

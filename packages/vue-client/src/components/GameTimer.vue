@@ -1,11 +1,8 @@
 <script setup lang="ts">
 import { ref, watch, computed } from "vue";
-import {
-  type IPerPlayerTimeControlBase,
-  timeControlMap,
-} from "@/../../shared/src";
+import { type IPerPlayerTimeControlBase, timeControlMap } from "@shared/index";
 import { isDefined } from "@vueuse/core";
-import type { ITimeControlConfig } from "@/../../shared/src/time_control";
+import type { ITimeControlConfig } from "@shared/time_control";
 
 const props = defineProps<{
   time_control: IPerPlayerTimeControlBase;

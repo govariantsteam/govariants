@@ -24,7 +24,7 @@ import {
   type KeimaState,
   Grid,
   Color,
-} from "@/../../shared/src";
+} from "@shared/index";
 import { computed } from "vue";
 
 const props = defineProps<{

@@ -1,16 +1,16 @@
 <script lang="ts">
-import { TimeControlType } from "@/../../shared/src/time_control";
+import { TimeControlType } from "@shared/time_control";
 function shouldShowPeriodTime(type: TimeControlType) {
   return type == TimeControlType.ByoYomi || type === TimeControlType.Canadian;
 }
 </script>
 
 <script setup lang="ts">
-import type { IByoYomiConfig, ICanadianTimeConfig } from "@/../../shared/src";
+import type { IByoYomiConfig, ICanadianTimeConfig } from "@shared/index";
 import {
   type ITimeControlConfig,
   type IFischerConfig,
-} from "@/../../shared/src/time_control";
+} from "@shared/time_control";
 import { ref } from "vue";
 
 const typeRef = ref(null);

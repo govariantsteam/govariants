@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { BadukConfig } from "@/../../shared/src";
+import type { BadukConfig } from "@shared/index";
 
 const props = defineProps<{ initialConfig: BadukConfig }>();
 const config = { ...props.initialConfig } as BadukConfig;

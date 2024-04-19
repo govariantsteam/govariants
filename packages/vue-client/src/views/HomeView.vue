@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import GameCreationForm from "@/components/GameCreation/GameCreationForm.vue";
 import GameList from "@/components/GameList.vue";
-import { SITE_NAME } from "@/../../shared/src";
+import { SITE_NAME } from "@shared/index";
 </script>
 
 <template>

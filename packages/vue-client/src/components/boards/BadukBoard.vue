@@ -5,7 +5,7 @@ import {
   type BadukConfig,
   type BadukState,
   getHoshi,
-} from "@/../../shared/src";
+} from "@shared/index";
 import { toRefs } from "vue";
 
 const props = defineProps<{

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { Color } from "@/../../shared/src";
+import { Color } from "@shared/index";
 import type {
   BadukWithAbstractBoardConfig,
   BadukWithAbstractBoardState,
-} from "@/../../shared/src/variants/badukWithAbstractBoard";
+} from "@shared/variants/badukWithAbstractBoard";
 import { computed } from "vue";
 
 const props = defineProps<{

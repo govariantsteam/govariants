@@ -5,7 +5,7 @@ import {
   type GameResponse,
   type GamesFilter,
   gamesFilterToUrlParams,
-} from "@/../../shared/src";
+} from "@shared/index";
 import GameListItem from "@/components/GameListItem.vue";
 import GameListItemFallback from "@/components/GameListItemFallback.vue";
 import GamesFilterForm from "@/components/GamesFilterForm.vue";

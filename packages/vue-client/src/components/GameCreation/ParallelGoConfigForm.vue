@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ParallelGoConfig } from "@/../../shared/src";
+import type { ParallelGoConfig } from "@shared/index";
 
 const props = defineProps<{ initialConfig: ParallelGoConfig }>();
 const config = { ...props.initialConfig } as ParallelGoConfig;

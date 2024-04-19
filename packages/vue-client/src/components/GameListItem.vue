@@ -3,7 +3,7 @@ import {
   makeGameObject,
   type GameResponse,
   getOnlyMove,
-} from "@ogfcommunity/variants-shared";
+} from "@/../../shared/src";
 import { computed } from "vue";
 import { board_map } from "@/board_map";
 

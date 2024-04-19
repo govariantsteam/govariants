@@ -9,7 +9,7 @@ interface MulticolorStone {
 import { ref, toRefs, type Ref } from "vue";
 import TaegeukStone from "../TaegeukStone.vue";
 import IntersectionAnnotation from "../IntersectionAnnotation.vue";
-import { Coordinate } from "@ogfcommunity/variants-shared";
+import { Coordinate } from "@/../../shared/src";
 
 const props = defineProps<{
   board: (MulticolorStone | null)[][];

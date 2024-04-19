@@ -11,12 +11,14 @@ export * from "./lib/coordinate";
 export * from "./time_control";
 export * from "./lib/utils";
 export * from "./lib/hoshi";
-export { FreezeGoState } from "./variants/freeze";
+export { type FreezeGoState } from "./variants/freeze";
 export {
-  Color as FractionalColor,
+  type Color as FractionalColor,
   Fractional,
-  FractionalConfig,
-  FractionalState,
+  type FractionalConfig,
+  type FractionalState,
 } from "./variants/fractional";
-export { KeimaState } from "./variants/keima";
+export { type KeimaState } from "./variants/keima";
 export * from "./variants/drift";
+
+export const SITE_NAME = "Go Variants";

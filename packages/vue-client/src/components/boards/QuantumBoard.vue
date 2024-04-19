@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Color, type CoordinateLike } from "@ogfcommunity/variants-shared";
+import { Color, type CoordinateLike } from "@/../../shared/src";
 </script>
 
 <script setup lang="ts">
@@ -8,8 +8,8 @@ import {
   Coordinate,
   type QuantumGoState,
   type BadukConfig,
-} from "@ogfcommunity/variants-shared";
-import { Grid } from "@ogfcommunity/variants-shared";
+} from "@/../../shared/src";
+import { Grid } from "@/../../shared/src";
 import { computed } from "vue";
 
 const props = defineProps<{

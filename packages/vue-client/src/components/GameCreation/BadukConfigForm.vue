@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { BadukConfig } from "@ogfcommunity/variants-shared";
+import type { BadukConfig } from "@/../../shared/src";
 
 const props = defineProps<{ initialConfig: BadukConfig }>();
 const config = { ...props.initialConfig } as BadukConfig;

@@ -3,6 +3,15 @@
   "include": ["vite.config.*", "vitest.config.*", "cypress.config.*"],
   "compilerOptions": {
     "composite": true,
-    "types": ["node"]
+    "types": ["node"],
+    "baseUrl": "..",
+    "rootDir": "..",
+    "paths": {
+      "@/*": ["vue-client/src/*"], 
+      "@shared/*": ["shared/src/*"]
+    }
+    ,
+    "verbatimModuleSyntax": false
   }
+  
 }

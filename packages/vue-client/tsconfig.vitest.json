@@ -4,6 +4,12 @@
   "compilerOptions": {
     "composite": true,
     "lib": [],
-    "types": ["node", "jsdom"]
+    "types": ["node", "jsdom"],
+    "baseUrl": "..",
+    "rootDir": "..",
+    "paths": {
+      "@/*": ["vue-client/src/*"], 
+      "@shared/*": ["shared/src/*"]
+    }
   }
 }

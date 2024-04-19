@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { MovesType } from "@ogfcommunity/variants-shared";
+import type { MovesType } from "@/../../shared/src";
 
 type Stone = { colors: string[]; annotation?: "CR" };
 
@@ -31,8 +31,8 @@ import {
   Coordinate,
   type ParallelGoConfig,
   type ParallelGoState,
-} from "@ogfcommunity/variants-shared";
-import { Grid } from "@ogfcommunity/variants-shared";
+} from "@/../../shared/src";
+import { Grid } from "@/../../shared/src";
 import { computed } from "vue";
 
 const props = defineProps<{

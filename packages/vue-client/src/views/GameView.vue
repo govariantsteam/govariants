@@ -5,7 +5,7 @@ import {
   getOnlyMove,
   HasTimeControlConfig,
   timeControlMap,
-} from "@ogfcommunity/variants-shared";
+} from "@/../../shared/src";
 import * as requests from "../requests";
 import SeatComponent from "@/components/SeatComponent.vue";
 import { useCurrentUser } from "../stores/user";
@@ -13,7 +13,7 @@ import type {
   User,
   IPerPlayerTimeControlBase,
   IConfigWithTimeControl,
-} from "@ogfcommunity/variants-shared";
+} from "@/../../shared/src";
 import { computed, reactive, ref, watchEffect, type Ref } from "vue";
 import { board_map } from "@/board_map";
 import { socket } from "../requests";

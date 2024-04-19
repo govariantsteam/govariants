@@ -12,9 +12,14 @@
     }
   ],
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": "..",
+    "rootDir": "..",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["vue-client/src/*"], 
+      "@shared/*": ["shared/src/*"]
     }
+    ,
+    "verbatimModuleSyntax": false
   }
+  
 }

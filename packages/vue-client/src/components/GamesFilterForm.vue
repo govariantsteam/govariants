@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useCurrentUser } from "@/stores/user";
-import { getVariantList, type GamesFilter } from "@shared/index";
+import { getVariantList, type GamesFilter } from "@shared";
 import { type Ref, ref, computed } from "vue";
 
 const emit = defineEmits<{ (e: "filterChange", filter: GamesFilter): void }>();

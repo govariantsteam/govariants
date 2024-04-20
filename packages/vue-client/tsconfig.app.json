@@ -7,10 +7,12 @@
     "baseUrl": "..",
     "rootDir": "..",
     "paths": {
-      "@/*": ["vue-client/src/*"], 
+      "@/*": ["vue-client/src/*"],
+      "@shared": ["./shared/src/index"],
       "@shared/*": ["./shared/src/*"]
     }
     ,
-    "verbatimModuleSyntax": false
+    "verbatimModuleSyntax": false,
+    "moduleResolution": "node"
   }
 }

@@ -3,7 +3,7 @@ import type {
   User,
   IPerPlayerTimeControlBase,
   ITimeControlConfig,
-} from "@shared/index";
+} from "@shared";
 import GameTimer from "../components/GameTimer.vue";
 
 defineProps<{

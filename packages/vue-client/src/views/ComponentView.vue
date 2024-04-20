@@ -2,7 +2,7 @@
 import { reactive, ref } from "vue";
 import TaegeukStone from "../components/TaegeukStone.vue";
 import MulticolorGridBoard from "../components/boards/MulticolorGridBoard.vue";
-import type { Coordinate } from "@shared/index";
+import type { Coordinate } from "@shared";
 import SocketTest from "../components/SocketTest.vue";
 
 // https://sashamaps.net/docs/resources/20-colors/

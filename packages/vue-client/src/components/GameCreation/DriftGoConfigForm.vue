@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { DriftGoConfig } from "@shared/index";
+import type { DriftGoConfig } from "@shared";
 
 const props = defineProps<{ initialConfig: DriftGoConfig }>();
 const config = { ...props.initialConfig } as DriftGoConfig;

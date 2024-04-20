@@ -6,7 +6,7 @@ function shouldShowPeriodTime(type: TimeControlType) {
 </script>
 
 <script setup lang="ts">
-import type { IByoYomiConfig, ICanadianTimeConfig } from "@shared/index";
+import type { IByoYomiConfig, ICanadianTimeConfig } from "@shared";
 import {
   type ITimeControlConfig,
   type IFischerConfig,

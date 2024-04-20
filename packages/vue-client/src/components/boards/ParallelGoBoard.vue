@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { MovesType } from "@shared/index";
+import type { MovesType } from "@shared";
 
 type Stone = { colors: string[]; annotation?: "CR" };
 
@@ -31,8 +31,8 @@ import {
   Coordinate,
   type ParallelGoConfig,
   type ParallelGoState,
-} from "@shared/index";
-import { Grid } from "@shared/index";
+} from "@shared";
+import { Grid } from "@shared";
 import { computed } from "vue";
 
 const props = defineProps<{

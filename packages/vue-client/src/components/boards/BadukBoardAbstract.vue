@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Color } from "@shared/index";
+import { Color } from "@shared";
 import type {
   BadukWithAbstractBoardConfig,
   BadukWithAbstractBoardState,

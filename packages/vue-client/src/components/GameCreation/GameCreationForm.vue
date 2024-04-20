@@ -4,7 +4,7 @@ import {
   getVariantList,
   getDefaultConfig,
   type ITimeControlConfig,
-} from "@shared/index";
+} from "@shared";
 import * as requests from "@/requests";
 import router from "@/router";
 import { config_form_map } from "@/config_form_map";

@@ -16,8 +16,7 @@
     "rootDir": "..",
     "paths": {
       "@/*": ["vue-client/src/*"], 
-      "@shared": ["./shared/src/index"],
-      "@shared/*": ["./shared/src/*"]
+      "@ogfcommunity/variants-shared": ["./shared/src/index"],
     }
     ,
     "verbatimModuleSyntax": false,

@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import type { FractionalConfig, FractionalState } from "@shared";
+import type {
+  FractionalConfig,
+  FractionalState,
+} from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
 import TaegeukStone from "../TaegeukStone.vue";
 

@@ -2,7 +2,7 @@
 import {
   BoardPattern,
   type BadukWithAbstractBoardConfig,
-} from "@shared/variants/badukWithAbstractBoard";
+} from "@ogfcommunity/variants-shared/src/variants/badukWithAbstractBoard";
 import { type Ref, ref, watch } from "vue";
 
 const props = defineProps<{ initialConfig: BadukWithAbstractBoardConfig }>();

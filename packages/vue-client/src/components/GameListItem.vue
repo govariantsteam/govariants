@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import { makeGameObject, type GameResponse, getOnlyMove } from "@shared";
+import {
+  makeGameObject,
+  type GameResponse,
+  getOnlyMove,
+} from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
 import { board_map } from "@/board_map";
 

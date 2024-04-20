@@ -1,6 +1,6 @@
 import { defineStore, storeToRefs } from "pinia";
 import * as requests from "../requests";
-import type { User } from "@shared";
+import type { User } from "@ogfcommunity/variants-shared";
 import type { Ref } from "vue";
 
 interface UserStoreStateTree {

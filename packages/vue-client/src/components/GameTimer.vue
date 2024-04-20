@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { ref, watch, computed } from "vue";
-import { type IPerPlayerTimeControlBase, timeControlMap } from "@shared";
+import {
+  type IPerPlayerTimeControlBase,
+  timeControlMap,
+} from "@ogfcommunity/variants-shared";
 import { isDefined } from "@vueuse/core";
-import type { ITimeControlConfig } from "@shared/time_control";
+import type { ITimeControlConfig } from "@ogfcommunity/variants-shared/src/time_control";
 
 const props = defineProps<{
   time_control: IPerPlayerTimeControlBase;

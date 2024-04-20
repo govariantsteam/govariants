@@ -24,7 +24,7 @@ import {
   type KeimaState,
   Grid,
   Color,
-} from "@shared";
+} from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
 
 const props = defineProps<{

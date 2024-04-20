@@ -5,7 +5,7 @@ import {
   type BadukConfig,
   type BadukState,
   getHoshi,
-} from "@shared";
+} from "@ogfcommunity/variants-shared";
 import { toRefs } from "vue";
 
 const props = defineProps<{

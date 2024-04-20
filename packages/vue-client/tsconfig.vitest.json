@@ -1,16 +1,8 @@
 {
   "extends": "./tsconfig.app.json",
-  "exclude": ["**/__tests__/**/*", "../shared/**/*.test.ts"],
   "compilerOptions": {
     "composite": true,
     "lib": [],
-    "types": ["node", "jsdom"],
-    "baseUrl": "..",
-    "rootDir": "..",
-    "paths": {
-      "@/*": ["vue-client/src/*"], 
-      "@shared/*": ["./shared/src/*"]
-    }
-  },
-  "include": ["./src/**/*", "../shared/src/**/*"]
+    "types": ["node", "jsdom"]
+  }
 }

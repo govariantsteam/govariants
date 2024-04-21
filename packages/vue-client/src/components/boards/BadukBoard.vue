@@ -6,23 +6,17 @@ import {
   type BadukState,
   getHoshi,
 } from "@ogfcommunity/variants-shared";
-import { toRefs } from "vue";
+import { computed } from "vue";
+import { positionsGetter } from "./board_utils";
 
 const props = defineProps<{
   gamestate: BadukState;
   config: BadukConfig;
 }>();
 
-props.config;
-
-const { width, height } = toRefs(props.config);
-
-const positions = new Array(height.value * width.value)
-  .fill(null)
-  .map(
-    (_, index) =>
-      new Coordinate(index % width.value, Math.floor(index / width.value)),
-  );
+const width = computed(() => props.config.width);
+const height = computed(() => props.config.height);
+const positions = computed(positionsGetter(width, height));
 
 function colorToClassString(color: Color): string {
   return color === Color.EMPTY

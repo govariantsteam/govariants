@@ -12,9 +12,14 @@
     }
   ],
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": "..",
+    "rootDir": "..",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["vue-client/src/*"], 
+      "@ogfcommunity/variants-shared": ["./shared/src/index"],
     }
+    ,
+    "verbatimModuleSyntax": false,
+    "moduleResolution": "node"
   }
 }

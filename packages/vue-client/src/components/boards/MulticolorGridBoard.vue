@@ -6,10 +6,11 @@ interface MulticolorStone {
 </script>
 
 <script setup lang="ts">
-import { ref, toRefs, type Ref } from "vue";
+import { computed, ref, type Ref } from "vue";
 import TaegeukStone from "../TaegeukStone.vue";
 import IntersectionAnnotation from "../IntersectionAnnotation.vue";
 import { Coordinate } from "@ogfcommunity/variants-shared";
+import { positionsGetter } from "./board_utils";
 
 const props = defineProps<{
   board: (MulticolorStone | null)[][];
@@ -17,13 +18,9 @@ const props = defineProps<{
   config: { height: number; width: number };
 }>();
 
-const { width, height } = toRefs(props.config);
-
-const positions = new Array(height.value * width.value)
-  .fill(null)
-  .map((_, index) => {
-    return new Coordinate(index % width.value, Math.floor(index / width.value));
-  });
+const width = computed(() => props.config.width);
+const height = computed(() => props.config.height);
+const positions = computed(positionsGetter(width, height));
 
 const hovered: Ref<Coordinate> = ref(new Coordinate(-1, -1));
 

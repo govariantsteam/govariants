@@ -2,7 +2,7 @@
   "name": "@ogfcommunity/variants-server",
   "main": "dist/index.js",
   "scripts": {
-    "start": "nodemon ./src/index.ts",
+    "start": "nodemon ./src/index.ts -w ./src -w ../shared/dist",
     "build": "tsc",
     "launch": "node ./dist/index.js",
     "test": "jest",

@@ -2,37 +2,28 @@ import { Coordinate } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
 import { AbstractGame } from "../abstract_game";
 
+// 0 will represent X, 1 will represent O
 type Color = number | null;
-
-export interface TicTacToeConfig {
-  width: number;
-  height: number;
-}
 
 export interface TicTacToeState {
   board: Color[][];
 }
 
-export class TicTacToe extends AbstractGame<TicTacToeConfig, TicTacToeState> {
+export class TicTacToe extends AbstractGame<object, TicTacToeState> {
   public board: Grid<number | null>;
   protected next_to_play: 0 | 1 = 0;
 
   // Initialize state of the game for a given config
-  constructor(config?: TicTacToeConfig) {
+  constructor(config?: object) {
     // AbstractGame will set this.config to the defaultConfig() if config is undefined.
     // Therefore, we access config through this.config in the rest of this function
     super(config);
 
-    if (this.config.width >= 25 || this.config.height >= 25) {
-      // You can throw from this function to signify an invalid config
-      // It is highly recommended to put a cap on board size to prevent
-      // overloading the CPU
-      throw new Error("Board too big!");
-    }
+    // Usually, we would validate some config properties, but we will not
+    // worry about making Tic-Tac-Toe configurable.
 
-    this.board = new Grid<Color>(this.config.width, this.config.height).fill(
-      null,
-    );
+    // Tic-Tac-Toe is played on a 3x3 grid
+    this.board = new Grid<Color>(3, 3).fill(null);
   }
 
   // Return an object that represents the state of the game as it should be displayed to
@@ -86,9 +77,7 @@ export class TicTacToe extends AbstractGame<TicTacToeConfig, TicTacToeState> {
     const decoded_move = Coordinate.fromSgfRepr(move);
     if (!this.board.isInBounds(decoded_move)) {
       // You can throw from the playMove() function to signify invalid moves
-      throw Error(
-        `Move out of bounds. (move: ${decoded_move}, board dimensions: ${this.config.width}x${this.config.height}`,
-      );
+      throw Error(`Move out of bounds. (move: ${decoded_move})`);
     }
 
     // After checking the move is valid
@@ -110,7 +99,7 @@ export class TicTacToe extends AbstractGame<TicTacToeConfig, TicTacToeState> {
     return { pass: "Pass", resign: "Resign" };
   }
 
-  defaultConfig(): TicTacToeConfig {
-    return { width: 19, height: 19 };
+  defaultConfig(): object {
+    return {};
   }
 }

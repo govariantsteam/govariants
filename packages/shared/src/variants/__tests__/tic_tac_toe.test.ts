@@ -1,27 +1,24 @@
 import { TicTacToe } from "../tic_tac_toe";
 
 // These variables just make the boards a little prettier
-const B = 0;
+const X = 0;
 const _ = null;
-const W = 1;
+const O = 1;
 
 test("Play a game", () => {
-  const game = new TicTacToe({ width: 4, height: 4 });
+  const game = new TicTacToe({});
   // Tiny board:
-  // B - - -
-  // - W - -
-  // - - B -
-  // - - - W
+  // O - -
+  // - X -
+  // - - X
 
-  game.playMove(0, "aa");
-  game.playMove(1, "bb");
+  game.playMove(0, "bb");
+  game.playMove(1, "aa");
   game.playMove(0, "cc");
-  game.playMove(1, "dd");
 
   expect(game.exportState().board).toEqual([
-    [B, _, _, _],
-    [_, W, _, _],
-    [_, _, B, _],
-    [_, _, _, W],
+    [O, _, _],
+    [_, X, _],
+    [_, _, X],
   ]);
 });

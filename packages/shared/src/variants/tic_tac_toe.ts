@@ -3,14 +3,14 @@ import { Grid } from "../lib/grid";
 import { AbstractGame } from "../abstract_game";
 
 // 0 will represent X, 1 will represent O
-type Color = number | null;
+type XO = number | null;
 
 export interface TicTacToeState {
-  board: Color[][];
+  board: XO[][];
 }
 
 export class TicTacToe extends AbstractGame<object, TicTacToeState> {
-  public board: Grid<number | null>;
+  public board: Grid<XO>;
   protected next_to_play: 0 | 1 = 0;
 
   // Initialize state of the game for a given config
@@ -23,7 +23,7 @@ export class TicTacToe extends AbstractGame<object, TicTacToeState> {
     // worry about making Tic-Tac-Toe configurable.
 
     // Tic-Tac-Toe is played on a 3x3 grid
-    this.board = new Grid<Color>(3, 3).fill(null);
+    this.board = new Grid<XO>(3, 3).fill(null);
   }
 
   // Return an object that represents the state of the game as it should be displayed to
@@ -43,9 +43,7 @@ export class TicTacToe extends AbstractGame<object, TicTacToeState> {
       return [];
     }
 
-    // Return a list of the players who may submit a move
-    // [0, 1] means either player can make a move - you will likely want to change this
-    return [0, 1];
+    return [this.next_to_play];
   }
 
   // Validate move and update the state accordingly
@@ -67,6 +65,10 @@ export class TicTacToe extends AbstractGame<object, TicTacToeState> {
       return;
     }
 
+    if (player !== this.next_to_play) {
+      throw new Error(`Not ${stringXO(player)}'s turn!`);
+    }
+
     if (move == "pass") {
       // It is important to increase the round in order for game playback
       // and timers to work
@@ -82,6 +84,9 @@ export class TicTacToe extends AbstractGame<object, TicTacToeState> {
 
     // After checking the move is valid
     this.board.set(decoded_move, player);
+
+    // Switch players
+    this.next_to_play = player === 0 ? 1 : 0;
 
     // It is important to increase the round in order for game playback
     // and timers to work
@@ -102,4 +107,10 @@ export class TicTacToe extends AbstractGame<object, TicTacToeState> {
   defaultConfig(): object {
     return {};
   }
+}
+
+function stringXO(player: XO) {
+  if (player === 0) return "X";
+  if (player === 1) return "O";
+  return "";
 }

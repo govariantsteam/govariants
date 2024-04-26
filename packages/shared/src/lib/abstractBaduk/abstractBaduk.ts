@@ -96,9 +96,7 @@ export abstract class AbstractBaduk<
       .filter((chain) =>
         Array.from(chain).every((intersection) => !intersection.stone?.isNew),
       )
-      .forEach((chain) =>
-        chain.forEach((intersection) => (intersection.stone = null)),
-      );
+      .forEach((chain) => this.removeChain(chain));
 
     chainsWithoutLiberties
       .filter((chain) =>
@@ -106,9 +104,7 @@ export abstract class AbstractBaduk<
           intersection.neighbours.every((neighbour) => neighbour.stone),
         ),
       )
-      .forEach((chain) =>
-        chain.forEach((intersection) => (intersection.stone = null)),
-      );
+      .forEach((chain) => this.removeChain(chain));
 
     if (setNewToOld) {
       changedIntersections.forEach((intersection) => {
@@ -201,5 +197,11 @@ export abstract class AbstractBaduk<
     );
 
     return r;
+  }
+
+  protected removeChain(
+    chain: Set<BadukIntersection<TChainType, TStone>>,
+  ): void {
+    chain.forEach((intersection) => (intersection.stone = null));
   }
 }

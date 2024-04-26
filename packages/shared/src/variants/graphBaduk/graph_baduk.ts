@@ -1,4 +1,5 @@
 import { AbstractBaduk } from "../../lib/abstractBaduk/abstractBaduk";
+import { BadukIntersection } from "../../lib/abstractBaduk/badukIntersection";
 import { BoardPattern } from "../../lib/abstractBoard/boardFactory";
 import {
   BinaryColor,
@@ -14,7 +15,7 @@ export class GraphBaduk extends AbstractBaduk<
   BadukStone<BinaryColor>,
   GraphBadukState
 > {
-  private moves: string[] = [];
+  captures = { 0: 0, 1: 0 };
 
   constructor(config?: GraphBadukConfig) {
     super(config);
@@ -27,22 +28,46 @@ export class GraphBaduk extends AbstractBaduk<
     };
   }
 
+  private unpackColor(
+    colorSet: Set<BinaryColor> | undefined,
+  ): BinaryColor | null {
+    if (colorSet === undefined) return null;
+    return colorSet.has("black") ? "black" : "white";
+  }
+
   exportState(): GraphBadukState {
     return {
-      moves: this.moves,
+      komi: this.config.komi,
+      board: this.intersections.map((intersection) =>
+        this.unpackColor(intersection.stone?.color),
+      ),
+      captures: {
+        0: this.captures[0],
+        1: this.captures[1],
+      },
+      round: this.round,
     };
+  }
+
+  protected handleResign(player: number): void {
+    this.phase = "gameover";
+    this.result = player === 0 ? "W+R" : "B+R";
+    return;
+  }
+
+  protected handleTimeout(player: number): void {
+    this.phase = "gameover";
+    this.result = player === 0 ? "W+T" : "B+T";
   }
 
   playMove(player: number, move: string): void {
     if (move === "resign") {
-      this.phase = "gameover";
-      this.result = player === 0 ? "W+R" : "B+R";
+      this.handleResign(player);
       return;
     }
 
     if (move === "timeout") {
-      this.phase = "gameover";
-      this.result = player === 0 ? "W+T" : "B+T";
+      this.handleTimeout(player);
       return;
     }
 
@@ -51,8 +76,7 @@ export class GraphBaduk extends AbstractBaduk<
     }
 
     if (move != "pass") {
-      // TODO: properly decode intersectionId from move
-      const intersectionId = 0;
+      const intersectionId = Number(move);
       const intersection = this.intersections.find(
         (x) => x.id === intersectionId,
       );
@@ -66,13 +90,12 @@ export class GraphBaduk extends AbstractBaduk<
       this.playMoveInternal(player, intersection);
       this.postValidateMove(intersection);
     }
-    this.moves.push(move);
     this.prepareForNextMove(move);
     super.increaseRound();
   }
 
   nextToPlay(): number[] {
-    return this.phase === "gameover" ? [] : [this.moves.length % 2];
+    return this.phase === "gameover" ? [] : [this.round % 2];
   }
 
   numPlayers(): number {
@@ -81,6 +104,23 @@ export class GraphBaduk extends AbstractBaduk<
 
   override specialMoves(): { [key: string]: string } {
     return { pass: "Pass", resign: "Resign" };
+  }
+
+  protected override removeChain(chain: Set<GraphBadukIntersection>): void {
+    const color = Array.from(chain).at(0)?.stone?.color;
+    if (color) {
+      if (this.unpackColor(color) === "black") {
+        this.captures[1] += chain.size;
+      } else {
+        this.captures[0] += chain.size;
+      }
+    } else {
+      console.log(
+        "potential implementation error: unable to identify color of chain",
+      );
+    }
+
+    super.removeChain(chain);
   }
 
   protected playMoveInternal(
@@ -98,8 +138,10 @@ export class GraphBaduk extends AbstractBaduk<
       throw new Error("Self capture is not allowed.");
     }
 
-    // TODO: Ko Detector
+    this.checkForKo();
   }
 
   protected prepareForNextMove(move: string): void {}
+
+  protected checkForKo(): void {}
 }

@@ -1,12 +1,13 @@
 import { AbstractBaduk } from "../../lib/abstractBaduk/abstractBaduk";
-import { BadukIntersection } from "../../lib/abstractBaduk/badukIntersection";
 import { BoardPattern } from "../../lib/abstractBoard/boardFactory";
+import { SuperKoDetector } from "../../lib/ko_detector";
 import {
   BinaryColor,
   GraphBadukConfig,
   GraphBadukState,
   BadukStone,
   GraphBadukIntersection,
+  GraphBadukKoState,
 } from "./graph_baduk.types";
 
 export class GraphBaduk extends AbstractBaduk<
@@ -16,6 +17,7 @@ export class GraphBaduk extends AbstractBaduk<
   GraphBadukState
 > {
   captures = { 0: 0, 1: 0 };
+  private ko_detector = new SuperKoDetector<GraphBadukKoState>();
 
   constructor(config?: GraphBadukConfig) {
     super(config);
@@ -35,12 +37,16 @@ export class GraphBaduk extends AbstractBaduk<
     return colorSet.has("black") ? "black" : "white";
   }
 
+  private simpliedBoard(): GraphBadukState["board"] {
+    return this.intersections.map((intersection) =>
+      this.unpackColor(intersection.stone?.color),
+    );
+  }
+
   exportState(): GraphBadukState {
     return {
       komi: this.config.komi,
-      board: this.intersections.map((intersection) =>
-        this.unpackColor(intersection.stone?.color),
-      ),
+      board: this.simpliedBoard(),
       captures: {
         0: this.captures[0],
         1: this.captures[1],
@@ -90,7 +96,7 @@ export class GraphBaduk extends AbstractBaduk<
       this.playMoveInternal(player, intersection);
       this.postValidateMove(intersection);
     }
-    this.prepareForNextMove(move);
+    this.prepareForNextMove(player, move);
     super.increaseRound();
   }
 
@@ -141,7 +147,14 @@ export class GraphBaduk extends AbstractBaduk<
     this.checkForKo();
   }
 
-  protected prepareForNextMove(move: string): void {}
+  // eslint-disable-next-line
+  protected prepareForNextMove(player: number, move: string): void {}
 
-  protected checkForKo(): void {}
+  protected checkForKo(): void {
+    const koState: GraphBadukKoState = {
+      board: this.simpliedBoard(),
+      nextToPlay: this.nextToPlay().at(0),
+    };
+    this.ko_detector.push(koState);
+  }
 }

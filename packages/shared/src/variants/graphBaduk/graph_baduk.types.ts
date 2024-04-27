@@ -39,3 +39,8 @@ export type GraphBadukIntersection = BadukIntersection<
   BinaryColor,
   BadukStone<BinaryColor>
 >;
+
+export type GraphBadukKoState = {
+  board: (BinaryColor | null)[];
+  nextToPlay: number | undefined;
+};

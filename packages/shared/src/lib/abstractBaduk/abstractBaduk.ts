@@ -199,6 +199,13 @@ export abstract class AbstractBaduk<
     return r;
   }
 
+  /**
+   * Removes a chain.
+   *
+   * @param chain The chain to remove, equals a set of intersections.
+   *              Note that due to prior removal of stones, there is
+   *              no guarantee that all intersections of chain are occupied.
+   */
   protected removeChain(
     chain: Set<BadukIntersection<TChainType, TStone>>,
   ): void {

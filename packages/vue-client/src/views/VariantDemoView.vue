@@ -161,7 +161,7 @@ function makeMove(move_str: string) {
     </div>
   </div>
   <div className="seat-list">
-    <div v-for="(player, idx) in game.numPlayers" :key="idx">
+    <div v-for="(_, idx) in game.numPlayers" :key="idx">
       <SeatComponent
         :user_id="user?.id"
         :occupant="user || undefined"

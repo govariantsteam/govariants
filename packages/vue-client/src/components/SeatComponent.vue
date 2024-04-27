@@ -5,6 +5,7 @@ import type {
   ITimeControlConfig,
 } from "@ogfcommunity/variants-shared";
 import GameTimer from "../components/GameTimer.vue";
+import { computed, getCurrentInstance } from "vue";
 
 defineProps<{
   user_id?: string;
@@ -15,6 +16,16 @@ defineProps<{
   time_config?: ITimeControlConfig;
   is_players_turn: boolean;
 }>();
+
+defineEmits<{
+  (event: "select"): void;
+  (event: "sit"): void;
+  (event: "leave"): void;
+}>();
+const hasLeaveCallback = computed(
+  // https://stackoverflow.com/a/76208995/5001502
+  () => !!getCurrentInstance()?.vnode.props?.onLeave,
+);
 </script>
 
 <template>
@@ -45,7 +56,10 @@ defineProps<{
           v-bind:time_control="time_control"
           v-bind:time_config="time_config"
         />
-        <button v-if="occupant.id === user_id" @click.stop="$emit('leave')">
+        <button
+          v-if="hasLeaveCallback && occupant.id === user_id"
+          @click.stop="$emit('leave')"
+        >
           Leave Seat
         </button>
       </div>

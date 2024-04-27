@@ -18,6 +18,7 @@ import { computed, reactive, ref, watchEffect, type Ref } from "vue";
 import { board_map } from "@/board_map";
 import { socket } from "../requests";
 import { variant_short_description_map } from "../components/variant_descriptions/variant_description.consts";
+import NavButtons from "@/components/NavButtons.vue";
 
 const props = defineProps<{ gameId: string }>();
 
@@ -31,18 +32,6 @@ const DEFAULT_GAME: GameResponse = {
 // null <-> viewing the latest round
 // while viewing history of game, maybe we should prevent player from making a move (accidentally)
 const view_round: Ref<number | null> = ref(null);
-const navigateRounds = (offset: number): void => {
-  if (game.value.round === undefined) {
-    // game not initialised
-    return;
-  }
-
-  const after_offset = (view_round.value ?? game.value.round) + offset;
-  const round_in_range = Math.min(game.value.round, Math.max(0, after_offset));
-
-  view_round.value =
-    round_in_range === game.value.round ? null : round_in_range;
-};
 
 const gameResponse: GameResponse = reactive(DEFAULT_GAME);
 const game = computed(() => {
@@ -209,23 +198,7 @@ const createTimeControlPreview = (
       v-bind:config="gameResponse.config"
       v-on:move="makeMove"
     />
-    <div class="round-nav-buttons">
-      <div class="left-container">
-        <button @click="() => navigateRounds(-(game.round ?? 0))">
-          &lt;&lt;&lt;
-        </button>
-        <button @click="() => navigateRounds(-10)">&lt;&lt;</button>
-        <button @click="() => navigateRounds(-1)">&lt;</button>
-      </div>
-      <span>
-        {{ view_round ?? game.round ?? "" }} / {{ game.round ?? "" }}</span
-      >
-      <div class="right-container">
-        <button @click="() => navigateRounds(1)">></button>
-        <button @click="() => navigateRounds(10)">>></button>
-        <button @click="() => navigateRounds(game.round ?? 0)">>>></button>
-      </div>
-    </div>
+    <NavButtons :gameRound="game.round" v-model="view_round" />
 
     <div id="variant-info">
       <div>
@@ -300,24 +273,6 @@ pre {
   text-align: left;
 }
 
-.round-nav-buttons {
-  height: fit-content;
-  display: flex;
-  flex-direction: row;
-  width: inherit;
-  max-width: var(--board-side-length);
-  justify-content: space-between;
-  .left-container {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-  }
-  .right-container {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-  }
-}
 .seat-list {
   display: flex;
   flex-direction: column;

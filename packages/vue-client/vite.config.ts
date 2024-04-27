@@ -9,6 +9,12 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
+      "@ogfcommunity/variants-shared/src": fileURLToPath(
+        new URL("../shared/src", import.meta.url),
+      ),
+      "@ogfcommunity/variants-shared": fileURLToPath(
+        new URL("../shared/src", import.meta.url),
+      ),
     },
     preserveSymlinks: true, // defaults to false, but with default imports from @ofgcommunity/variants-shared in componentes don't work
   },

@@ -2,8 +2,9 @@
   "name": "@ogfcommunity/variants-server",
   "main": "dist/index.js",
   "scripts": {
-    "start": "nodemon ./src/index.ts",
-    "launch": "tsc && node ./dist/index.js",
+    "start": "nodemon ./src/index.ts -w ./src -w ../shared/dist",
+    "build": "tsc",
+    "launch": "node ./dist/index.js",
     "test": "jest",
     "lint": "eslint --fix ./src && prettier --write ./src",
     "lint:check": "eslint ./src && prettier --check ./src"

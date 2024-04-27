@@ -109,3 +109,8 @@ a,
   display: flex;
   flex-direction: column;
 }
+
+.info-label {
+  font-weight: bold;
+  margin-right: 0.5em;
+}

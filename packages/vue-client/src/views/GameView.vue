@@ -7,7 +7,7 @@ import {
   timeControlMap,
 } from "@ogfcommunity/variants-shared";
 import * as requests from "../requests";
-import SeatComponent from "@/components/SeatComponent.vue";
+import SeatComponent from "@/components/GameView/SeatComponent.vue";
 import { useCurrentUser } from "../stores/user";
 import type {
   User,
@@ -18,7 +18,8 @@ import { computed, reactive, ref, watchEffect, type Ref } from "vue";
 import { board_map } from "@/board_map";
 import { socket } from "../requests";
 import { variant_short_description_map } from "../components/variant_descriptions/variant_description.consts";
-import NavButtons from "@/components/NavButtons.vue";
+import NavButtons from "@/components/GameView/NavButtons.vue";
+import PlayersToMove from "@/components/GameView/PlayersToMove.vue";
 
 const props = defineProps<{ gameId: string }>();
 
@@ -242,21 +243,9 @@ const createTimeControlPreview = (
         {{ value }}
       </button>
     </div>
-
-    <div v-if="game.next_to_play?.length" class="players-to-move-container">
-      <div v-if="game.next_to_play?.length === 1" class="info-label">
-        Player {{ game.next_to_play[0] }} to move
-      </div>
-      <div v-else>
-        <span class="info-label">Players to move:</span>
-        <ul>
-          <li v-for="value in game.next_to_play" :key="value">
-            Player {{ value }}
-          </li>
-        </ul>
-      </div>
-    </div>
   </div>
+
+  <PlayersToMove :next-to-play="game.next_to_play" />
 
   <div v-if="game.result" style="font-weight: bold; font-size: 24pt">
     Result: {{ game.result }}
@@ -264,15 +253,6 @@ const createTimeControlPreview = (
 </template>
 
 <style scoped>
-.info-label {
-  font-weight: bold;
-  margin-right: 0.5em;
-}
-
-pre {
-  text-align: left;
-}
-
 .seat-list {
   display: flex;
   flex-direction: column;
@@ -289,15 +269,5 @@ pre {
   .seat-list {
     max-height: var(--board-side-length);
   }
-}
-
-.players-to-move-container {
-  margin: 5px 0;
-}
-
-.players-to-move-container ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
 }
 </style>

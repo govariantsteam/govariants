@@ -4,8 +4,8 @@ import type {
   IPerPlayerTimeControlBase,
   ITimeControlConfig,
 } from "@ogfcommunity/variants-shared";
-import GameTimer from "../components/GameTimer.vue";
 import { computed, getCurrentInstance } from "vue";
+import GameTimer from "../GameTimer.vue";
 
 defineProps<{
   user_id?: string;

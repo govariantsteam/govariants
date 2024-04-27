@@ -10,28 +10,33 @@ import { computed, reactive, ref, type Ref } from "vue";
 import { board_map } from "@/board_map";
 import { variant_short_description_map } from "../components/variant_descriptions/variant_description.consts";
 import type { MovesType } from "@ogfcommunity/variants-shared";
+import NavButtons from "@/components/NavButtons.vue";
 
 const props = defineProps<{ variant: string }>();
 
 // null <-> viewing the latest round
 // while viewing history of game, maybe we should prevent player from making a move (accidentally)
 const view_round: Ref<number | null> = ref(null);
-const navigateRounds = (offset: number): void => {
-  if (game.value.round === undefined) {
-    // game not initialised
-    return;
-  }
-
-  const after_offset = (view_round.value ?? game.value.round) + offset;
-  const round_in_range = Math.min(game.value.round, Math.max(0, after_offset));
-
-  view_round.value =
-    round_in_range === game.value.round ? null : round_in_range;
-};
 
 const config = ref(getDefaultConfig(props.variant));
 const moves = reactive<Array<MovesType>>([]);
-const game = ref(getGame(props.variant, config.value, [], null));
+const playing_as = ref<undefined | number>(undefined);
+const setPlayingAs = (seat: number) => {
+  if (playing_as.value === seat) {
+    playing_as.value = undefined;
+    return;
+  }
+  playing_as.value = seat;
+};
+const game = computed(() =>
+  getGame(
+    props.variant,
+    config.value,
+    moves,
+    view_round.value,
+    playing_as.value,
+  ),
+);
 
 function getGame(
   variant: string,
@@ -78,15 +83,6 @@ const variantDescriptionShort = computed(
 
 const user = useCurrentUser();
 
-const playing_as = ref<undefined | number>(undefined);
-const setPlayingAs = (seat: number) => {
-  if (playing_as.value === seat) {
-    playing_as.value = undefined;
-    return;
-  }
-  playing_as.value = seat;
-};
-
 function makeMove(move_str: string) {
   const move: { [player: number]: string } = {};
 
@@ -103,7 +99,8 @@ function makeMove(move_str: string) {
   move[playing_as.value] = move_str;
 
   try {
-    game.value = getGame(
+    // Validate the move before pushing onto stack
+    getGame(
       props.variant,
       config.value,
       moves.concat([move]),
@@ -128,23 +125,7 @@ function makeMove(move_str: string) {
       v-bind:config="config"
       v-on:move="makeMove"
     />
-    <div class="round-nav-buttons">
-      <div class="left-container">
-        <button @click="() => navigateRounds(-(game.round ?? 0))">
-          &lt;&lt;&lt;
-        </button>
-        <button @click="() => navigateRounds(-10)">&lt;&lt;</button>
-        <button @click="() => navigateRounds(-1)">&lt;</button>
-      </div>
-      <span>
-        {{ view_round ?? game.round ?? "" }} / {{ game.round ?? "" }}</span
-      >
-      <div class="right-container">
-        <button @click="() => navigateRounds(1)">></button>
-        <button @click="() => navigateRounds(10)">>></button>
-        <button @click="() => navigateRounds(game.round ?? 0)">>>></button>
-      </div>
-    </div>
+    <NavButtons v-model="view_round" :gameRound="game.round" />
 
     <div id="variant-info">
       <div>
@@ -213,24 +194,6 @@ pre {
   text-align: left;
 }
 
-.round-nav-buttons {
-  height: fit-content;
-  display: flex;
-  flex-direction: row;
-  width: inherit;
-  max-width: var(--board-side-length);
-  justify-content: space-between;
-  .left-container {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-  }
-  .right-container {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-  }
-}
 .seat-list {
   display: flex;
   flex-direction: column;

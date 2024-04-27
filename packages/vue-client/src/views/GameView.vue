@@ -7,7 +7,7 @@ import {
   timeControlMap,
 } from "@ogfcommunity/variants-shared";
 import * as requests from "../requests";
-import SeatComponent from "@/components/SeatComponent.vue";
+import SeatComponent from "@/components/GameView/SeatComponent.vue";
 import { useCurrentUser } from "../stores/user";
 import type {
   User,
@@ -18,7 +18,7 @@ import { computed, reactive, ref, watchEffect, type Ref } from "vue";
 import { board_map } from "@/board_map";
 import { socket } from "../requests";
 import { variant_short_description_map } from "../components/variant_descriptions/variant_description.consts";
-import NavButtons from "@/components/NavButtons.vue";
+import NavButtons from "@/components/GameView/NavButtons.vue";
 
 const props = defineProps<{ gameId: string }>();
 

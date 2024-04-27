@@ -269,10 +269,6 @@ const createTimeControlPreview = (
   margin-right: 0.5em;
 }
 
-pre {
-  text-align: left;
-}
-
 .seat-list {
   display: flex;
   flex-direction: column;

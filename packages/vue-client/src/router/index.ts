@@ -32,6 +32,12 @@ const router = createRouter({
       props: true,
     },
     {
+      path: "/variants/:variant/demo",
+      name: "demo",
+      component: () => import("../views/VariantDemoView.vue"),
+      props: true,
+    },
+    {
       path: "/components",
       name: "components",
       component: () => import("../views/ComponentView.vue"),

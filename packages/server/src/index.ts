@@ -14,7 +14,7 @@ import { connectToDb, getDb } from "./db";
 import passport from "passport";
 import { Strategy as CustomStrategy } from "passport-custom";
 import { Strategy as LocalStrategy } from "passport-local";
-import { UserResponse } from "@ogfcommunity/variants-shared";
+import { SITE_NAME, UserResponse } from "@ogfcommunity/variants-shared";
 import { router as apiRouter } from "./api";
 import * as socket_io from "./socket_io";
 import { ITimeoutService, TimeoutService } from "./time-control/timeout";
@@ -139,5 +139,6 @@ if (isProd) {
 
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
+  console.log(`${SITE_NAME} server started`);
   console.log(`listening on *:${PORT}`);
 });

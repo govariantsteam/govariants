@@ -40,6 +40,7 @@
     "ts-jest": "^29.1.1"
   },
   "nodemonConfig": {
-    "watch": ["./src", "../shared/dist"]
+    "watch": ["./src", "../shared/dist"],
+    "delay": 500
   }
 }

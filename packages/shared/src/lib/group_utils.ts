@@ -1,7 +1,7 @@
 // Perhaps we can remove some of these functions if it becomes cumbersome to
 // implement these functions every time.  For example, `forEach` can be replaced
 // by map if we ignore the output
-interface Fillable<K, V> {
+export interface Fillable<K, V> {
   at(index: K): V | undefined;
   set(index: K, val: V): void;
   map<V2>(f: (val: V) => V2): Fillable<K, V2>;

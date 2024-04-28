@@ -37,7 +37,7 @@ export class GraphBaduk extends AbstractBaduk<
     return colorSet.has("black") ? "black" : "white";
   }
 
-  private simpliedBoard(): GraphBadukState["board"] {
+  private simplifiedBoard(): GraphBadukState["board"] {
     return this.intersections.map((intersection) =>
       this.unpackColor(intersection.stone?.color),
     );
@@ -46,7 +46,7 @@ export class GraphBaduk extends AbstractBaduk<
   exportState(): GraphBadukState {
     return {
       komi: this.config.komi,
-      board: this.simpliedBoard(),
+      board: this.simplifiedBoard(),
       captures: {
         0: this.captures[0],
         1: this.captures[1],
@@ -97,7 +97,6 @@ export class GraphBaduk extends AbstractBaduk<
       this.postValidateMove(intersection);
     }
     this.prepareForNextMove(player, move);
-    super.increaseRound();
   }
 
   nextToPlay(): number[] {
@@ -147,12 +146,13 @@ export class GraphBaduk extends AbstractBaduk<
     this.checkForKo();
   }
 
-  // eslint-disable-next-line
-  protected prepareForNextMove(player: number, move: string): void {}
+  protected prepareForNextMove(player: number, move: string): void {
+    super.increaseRound();
+  }
 
   protected checkForKo(): void {
     const koState: GraphBadukKoState = {
-      board: this.simpliedBoard(),
+      board: this.simplifiedBoard(),
       nextToPlay: this.nextToPlay().at(0),
     };
     this.ko_detector.push(koState);

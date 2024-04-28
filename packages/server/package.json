@@ -2,7 +2,7 @@
   "name": "@ogfcommunity/variants-server",
   "main": "dist/index.js",
   "scripts": {
-    "start": "nodemon ./src/index.ts -w ./src -w ../shared/dist",
+    "start": "nodemon ./src/index.ts",
     "build": "tsc",
     "launch": "node ./dist/index.js",
     "test": "jest",
@@ -38,5 +38,8 @@
     "jest": "^29.6.0",
     "prettier": "^3.0.0",
     "ts-jest": "^29.1.1"
+  },
+  "nodemonConfig": {
+    "watch": ["./src", "../shared/dist"]
   }
 }

@@ -12,6 +12,7 @@ import { variant_short_description_map } from "../components/variant_description
 import type { MovesType } from "@ogfcommunity/variants-shared";
 import NavButtons from "@/components/GameView/NavButtons.vue";
 import PlayersToMove from "@/components/GameView/PlayersToMove.vue";
+import { config_form_map } from "@/config_form_map";
 
 const props = defineProps<{ variant: string }>();
 
@@ -20,6 +21,7 @@ const props = defineProps<{ variant: string }>();
 const view_round: Ref<number | null> = ref(null);
 
 const config = ref(getDefaultConfig(props.variant));
+const variantConfigForm = computed(() => config_form_map[props.variant]);
 const moves = reactive<Array<MovesType>>([]);
 const playing_as = ref<undefined | number>(undefined);
 const setPlayingAs = (seat: number) => {
@@ -115,6 +117,13 @@ function makeMove(move_str: string) {
     }
   }
 }
+
+function onConfigChange(c: object) {
+  config.value = { ...c };
+  // Changing the config most likely invalidates the moves
+  // so we restart the game
+  moves.length = 0;
+}
 </script>
 
 <template>
@@ -166,6 +175,12 @@ function makeMove(move_str: string) {
     </div>
 
     <PlayersToMove :next-to-play="game.next_to_play" />
+
+    <component
+      v-bind:is="variantConfigForm"
+      v-bind:initialConfig="getDefaultConfig(variant)"
+      v-on:configChanged="onConfigChange"
+    />
   </div>
 
   <div v-if="game.result" style="font-weight: bold; font-size: 24pt">

@@ -60,6 +60,10 @@ export class Grid<T> implements Fillable<CoordinateLike, T> {
     return ret;
   }
 
+  decodeIndex(key: string): CoordinateLike {
+    return Coordinate.fromSgfRepr(key);
+  }
+
   forEach(
     callbackfn: (value: T, index: Coordinate, grid: Grid<T>) => void,
     thisArg?: this,

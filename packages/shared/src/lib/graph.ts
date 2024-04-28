@@ -61,6 +61,10 @@ export class Graph<T> implements Fillable<number, T> {
     return ret;
   }
 
+  decodeIndex(key: string): number {
+    return Number(key);
+  }
+
   forEach(
     callbackfn: (value: T, index: number, grid: Graph<T>) => void,
     thisArg?: this,

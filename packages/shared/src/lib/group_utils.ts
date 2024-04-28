@@ -8,6 +8,7 @@ export interface Fillable<K, V> {
   neighbors(index: K): K[];
   isInBounds(index: K): boolean;
   forEach(f: (value: V, index: K) => void): void;
+  decodeIndex(key: string): K;
 }
 
 export function getGroup<K, V>(index: K, g: Fillable<K, V>): K[] {

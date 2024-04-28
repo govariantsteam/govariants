@@ -1,4 +1,3 @@
-import { Coordinate, CoordinateLike } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
 import { Fillable, getGroup, getOuterBorder } from "../lib/group_utils";
 import { SuperKoDetector } from "../lib/ko_detector";
@@ -29,13 +28,13 @@ export interface BadukState {
 
 export type BadukMove = { 0: string } | { 1: string };
 
-declare type BadukBoardType<TColor> = Fillable<CoordinateLike, TColor>;
+declare type BadukBoardType<TColor> = Fillable<unknown, TColor>;
 
 export class Baduk extends AbstractGame<BadukConfig, BadukState> {
   protected captures = { 0: 0, 1: 0 };
   private ko_detector = new SuperKoDetector();
   protected score_board?: BadukBoardType<Color>;
-  public board: BadukBoardType<Color>;
+  public board: Fillable<unknown, Color>;
   public board2DRepresentation?: BadukBoardType<Vector2D>;
   protected next_to_play: 0 | 1 = 0;
   protected last_move = "";
@@ -86,8 +85,7 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
     }
 
     if (move != "pass") {
-      const decoded_move = Coordinate.fromSgfRepr(move);
-      const { x, y } = decoded_move;
+      const decoded_move = this.board.decodeIndex(move);
       const color = this.board.at(decoded_move);
       if (color === undefined) {
         throw Error(
@@ -96,7 +94,7 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
       }
       if (color !== Color.EMPTY) {
         throw Error(
-          `Cannot place a stone on top of an existing stone. (${color} at (${x}, ${y}))`,
+          `Cannot place a stone on top of an existing stone.`,
         );
       }
 
@@ -115,7 +113,7 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
     return { pass: "Pass", resign: "Resign" };
   }
 
-  private playMoveInternal(move: Coordinate): void {
+  private playMoveInternal(move: unknown): void {
     this.board.set(move, this.next_to_play === 0 ? Color.BLACK : Color.WHITE);
 
     const opponent_color = this.next_to_play === 0 ? Color.WHITE : Color.BLACK;
@@ -132,7 +130,7 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
     });
   }
 
-  protected postValidateMove(move: Coordinate): void {
+  protected postValidateMove(move: unknown): void {
     // Detect suicide
     if (!groupHasLiberties(getGroup(move, this.board), this.board)) {
       throw Error("Move is suicidal!");
@@ -206,15 +204,10 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
 
 /** Returns true if the group containing (x, y) has at least one liberty. */
 export function groupHasLiberties(
-  group: CoordinateLike[],
-  board: Fillable<CoordinateLike, Color>,
+  group: unknown[],
+  board: Fillable<unknown, Color>,
 ) {
   const outer_border = getOuterBorder(group, board);
   const border_colors = outer_border.map((pos) => board.at(pos));
   return border_colors.includes(Color.EMPTY);
-}
-
-/** Returns a reducer that will count occurences of a given number **/
-function count_color<T>(value: T) {
-  return (total: number, color: T) => total + (color === value ? 1 : 0);
 }

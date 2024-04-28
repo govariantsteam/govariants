@@ -96,7 +96,7 @@ export class GraphBaduk extends AbstractBaduk<
       this.playMoveInternal(player, intersection);
       this.postValidateMove(intersection);
     }
-    this.prepareForNextMove(player, move);
+    this.prepareForNextMove();
   }
 
   nextToPlay(): number[] {
@@ -146,7 +146,7 @@ export class GraphBaduk extends AbstractBaduk<
     this.checkForKo();
   }
 
-  protected prepareForNextMove(player: number, move: string): void {
+  protected prepareForNextMove(): void {
     super.increaseRound();
   }
 

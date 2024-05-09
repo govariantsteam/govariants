@@ -1,6 +1,5 @@
 import { QuantumGo } from "../quantum";
 import { Color } from "../baduk";
-import { Grid } from "../../lib/grid";
 
 const W = Color.WHITE;
 const B = Color.BLACK;

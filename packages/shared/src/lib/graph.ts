@@ -84,12 +84,6 @@ export class Graph<T> implements Fillable<number, T> {
       initialValue,
     );
   }
-
-  // I believe this method will be useful for rendering the board
-  // and this typing should make sure that this.data is not changed from outside.
-  getDataIterator(): Iterable<T> {
-    return this.data;
-  }
 }
 
 function identity<T>(x: T): T {

@@ -121,11 +121,6 @@ function createGridBoard<TIntersection extends Intersection>(
   return intersections;
 }
 
-export type GraphBoard<TIntersection extends Intersection, TColor> = {
-  graph: Graph<TColor>;
-  boardAsIntersections: TIntersection[];
-};
-
 export function createGraph<TIntersection extends Intersection, TColor>(
   intersections: TIntersection[],
 ): Graph<TColor> {

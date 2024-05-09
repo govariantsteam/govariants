@@ -7,7 +7,7 @@ import DriftGoConfigFormVue from "./components/GameCreation/DriftGoConfigForm.vu
 export const config_form_map: {
   [variant: string]: Component<{ initialConfig: object }>;
 } = {
-  //baduk: BadukConfigForm,
+  baduk: BadukConfigForm,
   phantom: BadukConfigForm,
   badukWithAbstractBoard: BadukWithAbstractBoardConfigForm,
   parallel: ParalleGoConfigForm,

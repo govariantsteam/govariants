@@ -10,7 +10,7 @@ export class Keima extends Baduk {
 
   constructor(config?: BadukConfig) {
     if (config && !isGridBadukConfig(config)) {
-      throw Error("config for drift must be for board type grid");
+      throw Error("config for keima must be for board type grid");
     }
     super(config);
   }

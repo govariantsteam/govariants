@@ -5,7 +5,7 @@ export class PyramidGo extends Baduk {
   private weights: Grid<number>;
   constructor(config?: BadukConfig) {
     if (config && !isGridBadukConfig(config)) {
-      throw Error("config for drift must be for board type grid");
+      throw Error("config for pyramid must be for board type grid");
     }
     super(config);
 

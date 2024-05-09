@@ -1,12 +1,12 @@
 import { AbstractGame } from "../abstract_game";
-import { Coordinate } from "../lib/coordinate";
+import { Coordinate, CoordinateLike } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
-import { Baduk, BadukConfig, Color } from "./baduk";
+import { Baduk, BadukBoardType, BadukConfig, Color } from "./baduk";
 
 export interface QuantumGoState {
   // length=2
   // two go boards
-  boards: Color[][][];
+  boards: BadukBoardType<Color>[];
   // length=0..2, in order of initial placement
   quantum_stones: string[];
 }
@@ -23,7 +23,7 @@ class BadukHelper {
     this.badukGame.playMove(player, "pass");
   }
 
-  play(player: number, move: string): Coordinate[] {
+  play(player: number, move: string): CoordinateLike[] {
     const subgame = this.badukGame;
     const prevBoard = copyBoard(subgame);
     subgame.playMove(player, move);
@@ -32,7 +32,7 @@ class BadukHelper {
     return captures;
   }
 
-  clear(group: Coordinate[]) {
+  clear(group: CoordinateLike[]) {
     for (const pos of group) {
       this.badukGame.board.set(pos, Color.EMPTY);
     }
@@ -159,7 +159,7 @@ export class QuantumGo extends AbstractGame<BadukConfig, QuantumGoState> {
         if (pos != null) {
           board.set(pos, color);
         }
-        return board.to2DArray();
+        return board;
       };
       const first = this.quantum_stones[0];
       return {
@@ -172,7 +172,7 @@ export class QuantumGo extends AbstractGame<BadukConfig, QuantumGoState> {
     }
 
     return {
-      boards: this.subgames.map((game) => game.badukGame.board.to2DArray()),
+      boards: this.subgames.map((game) => game.badukGame.board),
       quantum_stones: this.quantum_stones.map((pos) => pos.toSgfRepr()),
     };
   }
@@ -194,7 +194,7 @@ export class QuantumGo extends AbstractGame<BadukConfig, QuantumGoState> {
   }
 
   /* returns position on the other board */
-  mappedCapture(pos: Coordinate): Coordinate {
+  mappedCapture(pos: CoordinateLike): CoordinateLike {
     const idx = this.quantum_stones.findIndex((qpos) => qpos.equals(pos));
     switch (idx) {
       case -1:
@@ -211,24 +211,20 @@ export class QuantumGo extends AbstractGame<BadukConfig, QuantumGoState> {
 
 /** based on two board states, determine which stones were captured */
 function deduceCaptures(
-  prevBoard: Grid<Color>,
-  currBoard: Grid<Color>,
-): Coordinate[] {
-  const captures = [];
-  for (let y = 0; y < prevBoard.height; y++) {
-    for (let x = 0; x < prevBoard.width; x++) {
-      if (
-        prevBoard.at({ x, y }) !== Color.EMPTY &&
-        currBoard.at({ x, y }) === Color.EMPTY
-      ) {
-        captures.push(new Coordinate(x, y));
-      }
+  prevBoard: BadukBoardType<Color>,
+  currBoard: BadukBoardType<Color>,
+): CoordinateLike[] {
+  const captures: CoordinateLike[] = [];
+  prevBoard.forEach((color, coordinate) => {
+    if (color !== Color.EMPTY && currBoard.at(coordinate) === Color.EMPTY) {
+      captures.push(coordinate);
     }
-  }
+  });
+
   return captures;
 }
 
 /** Make a copy of the game's board */
-function copyBoard(game: Baduk): Grid<Color> {
+function copyBoard(game: Baduk): BadukBoardType<Color> {
   return game.board.map((color) => color);
 }

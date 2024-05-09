@@ -1,5 +1,5 @@
 import { Coordinate } from "../lib/coordinate";
-import { Baduk, BadukState } from "./baduk";
+import { Baduk, BadukConfig, BadukState, isGridBadukConfig } from "./baduk";
 
 export interface KeimaState extends BadukState {
   keima?: string;
@@ -7,6 +7,13 @@ export interface KeimaState extends BadukState {
 
 export class Keima extends Baduk {
   private move_number = 0;
+
+  constructor(config?: BadukConfig) {
+    if (config && !isGridBadukConfig(config)) {
+      throw Error("config for drift must be for board type grid");
+    }
+    super(config);
+  }
 
   playMove(player: number, move: string): void {
     super.playMove(player, move);

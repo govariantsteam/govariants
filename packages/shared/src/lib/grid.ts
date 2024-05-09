@@ -1,10 +1,11 @@
 import { Coordinate, type CoordinateLike } from "./coordinate";
+import { Fillable } from "./group_utils";
 
 /**
  * A 2D analog to the native JavaScript array.  As much as possible,
  * the API should match that of a regular Array.
  */
-export class Grid<T> {
+export class Grid<T> implements Fillable<CoordinateLike, T> {
   private arr: Array<T>;
   constructor(
     public readonly width: number,
@@ -68,7 +69,7 @@ export class Grid<T> {
     }, thisArg);
   }
 
-  static from2DArray<T>(array: T[][]) {
+  static from2DArray<T>(array: T[][]): Grid<T> {
     const height = array.length;
 
     if (!height) {

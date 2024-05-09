@@ -5,6 +5,7 @@ import { CreatePolygonalBoard as createPolygonalBoard } from "../../variants/bad
 import { CreateCircularBoard } from "../../variants/badukWithAbstractBoard/abstractBoard/CircularBoardHelper";
 import { TrihexagonalBoardHelper } from "../../variants/badukWithAbstractBoard/abstractBoard/TrihexagonalBoardHelper";
 import { createSierpinskyBoard as createSierpinskyBoardExternal } from "../../variants/badukWithAbstractBoard/abstractBoard/SierpinskyBoard";
+import { Graph } from "../graph";
 
 export const BoardPattern = {
   Grid: "grid",
@@ -118,6 +119,20 @@ function createGridBoard<TIntersection extends Intersection>(
   }
 
   return intersections;
+}
+
+export type GraphBoard<TIntersection extends Intersection, TColor> = {
+  graph: Graph<TColor>;
+  boardAsIntersections: TIntersection[];
+};
+
+export function createGraph<TIntersection extends Intersection, TColor>(
+  intersections: TIntersection[],
+): Graph<TColor> {
+  const adjacencyMatrix = intersections.map((intersection) =>
+    intersection.neighbours.map((_neighbour, index) => index),
+  );
+  return new Graph<TColor>(adjacencyMatrix);
 }
 
 function createRthBoard<TIntersection extends Intersection>(

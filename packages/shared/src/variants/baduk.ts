@@ -1,8 +1,17 @@
 import { Coordinate, CoordinateLike } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
-import { getGroup, getOuterBorder } from "../lib/group_utils";
+import { Fillable, getGroup, getOuterBorder } from "../lib/group_utils";
 import { SuperKoDetector } from "../lib/ko_detector";
 import { AbstractGame } from "../abstract_game";
+import {
+  BoardConfig,
+  BoardPattern,
+  GridBoardConfig,
+  createBoard,
+  createGraph,
+} from "../lib/abstractBoard/boardFactory";
+import { Intersection } from "../lib/abstractBoard/intersection";
+import { GraphWrapper } from "../lib/graph";
 
 export enum Color {
   EMPTY = 0,
@@ -14,23 +23,27 @@ export interface BadukConfig {
   width: number;
   height: number;
   komi: number;
+  board?: BoardConfig;
 }
 
 export interface BadukState {
-  board: Color[][];
+  board: BadukBoardType<Color>;
   next_to_play: 0 | 1;
   captures: { 0: number; 1: number };
   last_move: string;
-  score_board?: Color[][];
+  score_board?: BadukBoardType<Color>;
 }
 
 export type BadukMove = { 0: string } | { 1: string };
 
+export declare type BadukBoardType<TColor> = Fillable<CoordinateLike, TColor>;
+
 export class Baduk extends AbstractGame<BadukConfig, BadukState> {
   protected captures = { 0: 0, 1: 0 };
   private ko_detector = new SuperKoDetector();
-  protected score_board?: Grid<Color>;
-  public board: Grid<Color>;
+  protected score_board?: BadukBoardType<Color>;
+  public board: BadukBoardType<Color>;
+  public boardAsIntersections?: Intersection[];
   protected next_to_play: 0 | 1 = 0;
   protected last_move = "";
   /** after game ends, this is black points - white points */
@@ -43,18 +56,23 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
       throw new Error("Baduk does not support sizes greater than 52");
     }
 
-    this.board = new Grid<Color>(this.config.width, this.config.height).fill(
-      Color.EMPTY,
-    );
+    if (isGridBadukConfig(this.config)) {
+      this.board = new Grid<Color>(this.config.width, this.config.height).fill(
+        Color.EMPTY,
+      );
+    } else {
+      this.boardAsIntersections = createBoard(this.config.board!, Intersection);
+      this.board = new GraphWrapper(createGraph(this.boardAsIntersections));
+    }
   }
 
   override exportState(): BadukState {
     return {
-      board: this.board.to2DArray(),
+      board: this.board,
       next_to_play: this.next_to_play,
       last_move: this.last_move,
       captures: { 0: this.captures[0], 1: this.captures[1] },
-      ...(this.score_board && { score_board: this.score_board.to2DArray() }),
+      ...(this.score_board && { score_board: this.score_board }),
     };
   }
 
@@ -170,12 +188,15 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
 
     this.score_board = board;
 
-    const black_points: number = board.reduce(
-      count_color<Color>(Color.BLACK),
-      0,
+    let black_points = 0;
+    board.forEach(
+      (intersection) => (black_points += intersection === Color.BLACK ? 1 : 0),
     );
-    const white_points: number =
-      board.reduce(count_color<Color>(Color.WHITE), 0) + this.config.komi;
+
+    let white_points = 0;
+    board.forEach(
+      (intersection) => (white_points += intersection === Color.WHITE ? 1 : 0),
+    );
 
     const diff = black_points - white_points;
     this.numeric_result = diff;
@@ -196,7 +217,10 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
 }
 
 /** Returns true if the group containing (x, y) has at least one liberty. */
-export function groupHasLiberties(group: CoordinateLike[], board: Grid<Color>) {
+export function groupHasLiberties(
+  group: CoordinateLike[],
+  board: Fillable<CoordinateLike, Color>,
+) {
   const outer_border = getOuterBorder(group, board);
   const border_colors = outer_border.map((pos) => board.at(pos));
   return border_colors.includes(Color.EMPTY);
@@ -205,4 +229,17 @@ export function groupHasLiberties(group: CoordinateLike[], board: Grid<Color>) {
 /** Returns a reducer that will count occurences of a given number **/
 function count_color<T>(value: T) {
   return (total: number, color: T) => total + (color === value ? 1 : 0);
+}
+
+export type GridBadukConfig = {
+  width: number;
+  height: number;
+  komi: number;
+  board?: GridBoardConfig;
+};
+
+export function isGridBadukConfig(
+  config: BadukConfig,
+): config is GridBadukConfig {
+  return config.board === undefined || config.board.type === BoardPattern.Grid;
 }

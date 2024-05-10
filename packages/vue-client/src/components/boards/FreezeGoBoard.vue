@@ -5,6 +5,7 @@ import {
   type FreezeGoState,
   Color,
   GridBadukConfig,
+  getWidthAndHeight,
 } from "@ogfcommunity/variants-shared";
 import { Grid } from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
@@ -13,6 +14,8 @@ const props = defineProps<{
   config: GridBadukConfig;
   gamestate: FreezeGoState;
 }>();
+
+const board_dimensions = computed(() => getWidthAndHeight(props.config));
 
 const NORMAL_COLORS = { background: "#dcb35c", black: "black", white: "white" };
 const FROZEN_COLORS = {
@@ -49,7 +52,7 @@ const board = computed(() => {
 <template>
   <MulticolorGridBoard
     :board="board"
-    :config="props.config"
+    :config="board_dimensions"
     :background_color="
       gamestate.frozen ? FROZEN_COLORS.background : NORMAL_COLORS.background
     "

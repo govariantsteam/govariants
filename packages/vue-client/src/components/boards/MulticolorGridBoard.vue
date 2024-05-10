@@ -9,21 +9,17 @@ interface MulticolorStone {
 import { computed, ref, type Ref } from "vue";
 import TaegeukStone from "../TaegeukStone.vue";
 import IntersectionAnnotation from "../IntersectionAnnotation.vue";
-import {
-  Coordinate,
-  GridBadukConfig,
-  getWidthAndHeight,
-} from "@ogfcommunity/variants-shared";
+import { Coordinate } from "@ogfcommunity/variants-shared";
 import { positionsGetter } from "./board_utils";
 
 const props = defineProps<{
   board: (MulticolorStone | null)[][];
   background_color?: string;
-  config: GridBadukConfig;
+  config: { width: number; height: number };
 }>();
 
-const width = computed(() => getWidthAndHeight(props.config).width);
-const height = computed(() => getWidthAndHeight(props.config).height);
+const width = computed(() => props.config.width);
+const height = computed(() => props.config.height);
 const positions = computed(positionsGetter(width, height));
 
 const hovered: Ref<Coordinate> = ref(new Coordinate(-1, -1));

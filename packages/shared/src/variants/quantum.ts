@@ -24,7 +24,7 @@ class BadukHelper {
     this.badukGame.playMove(player, "pass");
   }
 
-  play(player: number, move: string): CoordinateLike[] {
+  play(player: number, move: string): Coordinate[] {
     const subgame = this.badukGame;
     const prevBoard = copyBoard(subgame);
     subgame.playMove(player, move);
@@ -194,7 +194,7 @@ export class QuantumGo extends AbstractGame<GridBadukConfig, QuantumGoState> {
   }
 
   /* returns position on the other board */
-  mappedCapture(pos: CoordinateLike): CoordinateLike {
+  mappedCapture(pos: Coordinate): Coordinate {
     const idx = this.quantum_stones.findIndex((qpos) => qpos.equals(pos));
     switch (idx) {
       case -1:
@@ -213,11 +213,11 @@ export class QuantumGo extends AbstractGame<GridBadukConfig, QuantumGoState> {
 function deduceCaptures(
   prevBoard: BadukBoard<Color>,
   currBoard: BadukBoard<Color>,
-): CoordinateLike[] {
-  const captures: CoordinateLike[] = [];
+): Coordinate[] {
+  const captures: Coordinate[] = [];
   prevBoard.forEach((color, coordinate) => {
     if (color !== Color.EMPTY && currBoard.at(coordinate) === Color.EMPTY) {
-      captures.push(coordinate);
+      captures.push(new Coordinate(coordinate.x, coordinate.y));
     }
   });
 

@@ -195,15 +195,13 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
 
     this.score_board = board;
 
-    let black_points = 0;
-    board.forEach(
-      (intersection) => (black_points += intersection === Color.BLACK ? 1 : 0),
+    const black_points: number = board.reduce(
+      count_color<Color>(Color.BLACK),
+      0,
     );
 
-    let white_points = this.config.komi;
-    board.forEach(
-      (intersection) => (white_points += intersection === Color.WHITE ? 1 : 0),
-    );
+    const white_points: number =
+      board.reduce(count_color<Color>(Color.WHITE), 0) + this.config.komi;
 
     const diff = black_points - white_points;
     this.numeric_result = diff;

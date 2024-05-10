@@ -148,4 +148,20 @@ export class GraphWrapper<T> implements Fillable<CoordinateLike, T> {
     // Return a 2D array, since this looks a lot like a Grid.
     return [this.graph.serialize()];
   }
+
+  reduce<OutT>(
+    callbackfn: (
+      previousValue: OutT,
+      currentValue: T,
+      index: CoordinateLike,
+      array: GraphWrapper<T>,
+    ) => OutT,
+    initialValue: OutT,
+  ): OutT {
+    return this.graph.reduce(
+      (previousValue, currentValue, index) =>
+        callbackfn(previousValue, currentValue, this.packNumber(index), this),
+      initialValue,
+    );
+  }
 }

@@ -84,6 +84,10 @@ export class Graph<T> implements Fillable<number, T> {
       initialValue,
     );
   }
+
+  serialize() {
+    return [...this.data];
+  }
 }
 
 function identity<T>(x: T): T {
@@ -123,7 +127,7 @@ export class GraphWrapper<T> implements Fillable<CoordinateLike, T> {
   set(index: CoordinateLike, val: T): void {
     this.graph.set(this.unpackCoordinate(index), val);
   }
-  map<TDest>(f: (val: T) => TDest): Fillable<CoordinateLike, TDest> {
+  map<TDest>(f: (val: T) => TDest): GraphWrapper<TDest> {
     return new GraphWrapper(this.graph.map(f));
   }
   neighbors(index: CoordinateLike): Coordinate[] {
@@ -138,5 +142,10 @@ export class GraphWrapper<T> implements Fillable<CoordinateLike, T> {
     return this.graph.forEach((value: T, index: number) =>
       f(value, this.packNumber(index)),
     );
+  }
+
+  serialize() {
+    // Return a 2D array, since this looks a lot like a Grid.
+    return [this.graph.serialize()];
   }
 }

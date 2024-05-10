@@ -1,12 +1,9 @@
-import { Baduk, BadukConfig, Color, isGridBadukConfig } from "./baduk";
+import { GridBadukConfig, Color, GridBaduk } from "./baduk";
 import { Grid } from "../lib/grid";
 
-export class PyramidGo extends Baduk {
+export class PyramidGo extends GridBaduk {
   private weights: Grid<number>;
-  constructor(config?: BadukConfig) {
-    if (config && !isGridBadukConfig(config)) {
-      throw Error("config for pyramid must be for board type grid");
-    }
+  constructor(config?: GridBadukConfig) {
     super(config);
 
     // Note: config may be undefined, but this.config is
@@ -35,7 +32,7 @@ export class PyramidGo extends Baduk {
 
   private pointsForColor(c: Color) {
     if (this.score_board === undefined) return 0;
-    return (this.score_board as Grid<Color>)
+    return this.score_board
       .map((color, index) =>
         color === c ? (this.weights.at(index) as number) : 0,
       )

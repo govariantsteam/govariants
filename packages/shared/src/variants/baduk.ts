@@ -27,16 +27,20 @@ export interface BadukConfig {
 }
 
 export interface BadukState {
-  board: BadukBoardType<Color>;
+  board: Color[][];
   next_to_play: 0 | 1;
   captures: { 0: number; 1: number };
   last_move: string;
-  score_board?: BadukBoardType<Color>;
+  score_board?: Color[][];
 }
 
 export type BadukMove = { 0: string } | { 1: string };
 
-export declare type BadukBoardType<TColor> = Fillable<CoordinateLike, TColor>;
+// export declare type BadukBoardType<TColor> = Fillable<CoordinateLike, TColor>;
+// Grid | GraphWrapper, so we have a better idea of serialize() return type
+export declare type BadukBoardType<TColor> =
+  | Grid<TColor>
+  | GraphWrapper<TColor>;
 
 export class Baduk extends AbstractGame<BadukConfig, BadukState> {
   protected captures = { 0: 0, 1: 0 };
@@ -68,11 +72,11 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
 
   override exportState(): BadukState {
     return {
-      board: this.board,
+      board: this.board.serialize(),
       next_to_play: this.next_to_play,
       last_move: this.last_move,
       captures: { 0: this.captures[0], 1: this.captures[1] },
-      ...(this.score_board && { score_board: this.score_board }),
+      ...(this.score_board && { score_board: this.score_board.serialize() }),
     };
   }
 
@@ -211,7 +215,7 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
     this.phase = "gameover";
   }
 
-  defaultConfig(): BadukConfig {
+  defaultConfig(): GridBadukConfig {
     return { width: 19, height: 19, komi: 6.5 };
   }
 }
@@ -227,6 +231,8 @@ export function groupHasLiberties(
 }
 
 /** Returns a reducer that will count occurences of a given number **/
+// This was used before... will need to figure out where it went
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function count_color<T>(value: T) {
   return (total: number, color: T) => total + (color === value ? 1 : 0);
 }
@@ -242,4 +248,16 @@ export function isGridBadukConfig(
   config: BadukConfig,
 ): config is GridBadukConfig {
   return config.board === undefined || config.board.type === BoardPattern.Grid;
+}
+
+export class GridBaduk extends Baduk {
+  // ! isn't typesafe, but we know board will be assigned in super()
+  declare board: Grid<Color>;
+  protected declare score_board?: Grid<Color>;
+  constructor(config?: GridBadukConfig) {
+    if (config && !isGridBadukConfig(config)) {
+      throw "GridBaduk requires a GridBadukConfig";
+    }
+    super(config);
+  }
 }

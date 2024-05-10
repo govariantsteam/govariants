@@ -1,17 +1,21 @@
 import { Coordinate, CoordinateLike } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
-import { Fillable, getGroup, getOuterBorder } from "../lib/group_utils";
+import { getGroup, getOuterBorder } from "../lib/group_utils";
 import { SuperKoDetector } from "../lib/ko_detector";
 import { AbstractGame } from "../abstract_game";
 import {
   BoardConfig,
-  BoardPattern,
-  GridBoardConfig,
   createBoard,
   createGraph,
 } from "../lib/abstractBoard/boardFactory";
 import { Intersection } from "../lib/abstractBoard/intersection";
 import { GraphWrapper } from "../lib/graph";
+import {
+  GridBadukConfig,
+  LegacyBadukConfig,
+  getWidthAndHeight,
+  isGridBadukConfig,
+} from "./baduk_utils";
 
 export enum Color {
   EMPTY = 0,
@@ -19,12 +23,12 @@ export enum Color {
   WHITE = 2,
 }
 
-export interface BadukConfig {
-  width: number;
-  height: number;
-  komi: number;
-  board?: BoardConfig;
-}
+export type BadukConfig =
+  | LegacyBadukConfig
+  | {
+      komi: number;
+      board: BoardConfig;
+    };
 
 export interface BadukState {
   board: Color[][];
@@ -38,15 +42,13 @@ export type BadukMove = { 0: string } | { 1: string };
 
 // export declare type BadukBoardType<TColor> = Fillable<CoordinateLike, TColor>;
 // Grid | GraphWrapper, so we have a better idea of serialize() return type
-export declare type BadukBoardType<TColor> =
-  | Grid<TColor>
-  | GraphWrapper<TColor>;
+export declare type BadukBoard<TColor> = Grid<TColor> | GraphWrapper<TColor>;
 
 export class Baduk extends AbstractGame<BadukConfig, BadukState> {
   protected captures = { 0: 0, 1: 0 };
   private ko_detector = new SuperKoDetector();
-  protected score_board?: BadukBoardType<Color>;
-  public board: BadukBoardType<Color>;
+  protected score_board?: BadukBoard<Color>;
+  public board: BadukBoard<Color>;
   public boardAsIntersections?: Intersection[];
   protected next_to_play: 0 | 1 = 0;
   protected last_move = "";
@@ -56,14 +58,14 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
   constructor(config?: BadukConfig) {
     super(config);
 
-    if (this.config.width >= 52 || this.config.height >= 52) {
-      throw new Error("Baduk does not support sizes greater than 52");
-    }
-
     if (isGridBadukConfig(this.config)) {
-      this.board = new Grid<Color>(this.config.width, this.config.height).fill(
-        Color.EMPTY,
-      );
+      const { width, height } = getWidthAndHeight(this.config);
+
+      if (width >= 52 || height >= 52) {
+        throw new Error("Baduk does not support sizes greater than 52");
+      }
+
+      this.board = new Grid<Color>(width, height).fill(Color.EMPTY);
     } else {
       this.boardAsIntersections = createBoard(this.config.board!, Intersection);
       this.board = new GraphWrapper(createGraph(this.boardAsIntersections));
@@ -107,7 +109,7 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
       const color = this.board.at(decoded_move);
       if (color === undefined) {
         throw Error(
-          `Move out of bounds. (move: ${decoded_move}, board dimensions: ${this.config.width}x${this.config.height}`,
+          `Move out of bounds. (move: ${decoded_move}, config: ${JSON.stringify(this.config)}`,
         );
       }
       if (color !== Color.EMPTY) {
@@ -197,7 +199,7 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
       (intersection) => (black_points += intersection === Color.BLACK ? 1 : 0),
     );
 
-    let white_points = 0;
+    let white_points = this.config.komi;
     board.forEach(
       (intersection) => (white_points += intersection === Color.WHITE ? 1 : 0),
     );
@@ -223,7 +225,7 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
 /** Returns true if the group containing (x, y) has at least one liberty. */
 export function groupHasLiberties(
   group: CoordinateLike[],
-  board: Fillable<CoordinateLike, Color>,
+  board: BadukBoard<Color>,
 ) {
   const outer_border = getOuterBorder(group, board);
   const border_colors = outer_border.map((pos) => board.at(pos));
@@ -237,23 +239,11 @@ function count_color<T>(value: T) {
   return (total: number, color: T) => total + (color === value ? 1 : 0);
 }
 
-export type GridBadukConfig = {
-  width: number;
-  height: number;
-  komi: number;
-  board?: GridBoardConfig;
-};
-
-export function isGridBadukConfig(
-  config: BadukConfig,
-): config is GridBadukConfig {
-  return config.board === undefined || config.board.type === BoardPattern.Grid;
-}
-
 export class GridBaduk extends Baduk {
   // ! isn't typesafe, but we know board will be assigned in super()
   declare board: Grid<Color>;
   protected declare score_board?: Grid<Color>;
+  declare config: GridBadukConfig;
   constructor(config?: GridBadukConfig) {
     if (config && !isGridBadukConfig(config)) {
       throw "GridBaduk requires a GridBadukConfig";

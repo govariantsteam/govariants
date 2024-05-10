@@ -1,4 +1,4 @@
-import { Baduk, BadukBoardType, Color } from "./baduk";
+import { Baduk, BadukBoard, Color } from "./baduk";
 import { Coordinate, CoordinateLike } from "../lib/coordinate";
 
 export class TetrisGo extends Baduk {
@@ -11,7 +11,7 @@ export class TetrisGo extends Baduk {
   }
 }
 
-function getGroup(pos: CoordinateLike, board: BadukBoardType<Color>) {
+function getGroup(pos: CoordinateLike, board: BadukBoard<Color>) {
   const starting_color = board.at(pos);
   const visited = board.map(() => false);
   const group: Coordinate[] = [];

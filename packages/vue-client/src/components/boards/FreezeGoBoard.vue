@@ -2,15 +2,15 @@
 import MulticolorGridBoard from "./MulticolorGridBoard.vue";
 import {
   Coordinate,
-  type BadukConfig,
   type FreezeGoState,
   Color,
+  GridBadukConfig,
 } from "@ogfcommunity/variants-shared";
 import { Grid } from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
 
 const props = defineProps<{
-  config: BadukConfig;
+  config: GridBadukConfig;
   gamestate: FreezeGoState;
 }>();
 

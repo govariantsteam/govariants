@@ -5,6 +5,7 @@ import { SuperKoDetector } from "../lib/ko_detector";
 import { AbstractGame } from "../abstract_game";
 import {
   BoardConfig,
+  BoardPattern,
   createBoard,
   createGraph,
 } from "../lib/abstractBoard/boardFactory";
@@ -249,5 +250,16 @@ export class GridBaduk extends Baduk {
       throw "GridBaduk requires a GridBadukConfig";
     }
     super(config);
+  }
+
+  override defaultConfig(): GridBadukConfig {
+    return {
+      komi: 6.5,
+      board: {
+        type: BoardPattern.Grid,
+        width: 19,
+        height: 19,
+      },
+    };
   }
 }

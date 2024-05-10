@@ -1,5 +1,6 @@
 import { QuantumGo } from "../quantum";
 import { Color } from "../baduk";
+import { Grid } from "../../lib/grid";
 
 const W = Color.WHITE;
 const B = Color.BLACK;
@@ -226,7 +227,7 @@ test("Placing a stone in a captured quantum position", () => {
 
   moves.forEach((move) => game.playMove(move[0], move[1]));
 
-  const boards = game.exportState().boards;
+  const boards = game.exportState().boards.map(Grid.from2DArray);
   expect(boards[0].at({ x: 8, y: 0 })).toBe(Color.BLACK);
   expect(boards[0].at({ x: 0, y: 8 })).toBe(Color.EMPTY);
   expect(boards[1].at({ x: 8, y: 0 })).toBe(Color.EMPTY);
@@ -270,7 +271,7 @@ test("Placing a white stone in a captured quantum position", () => {
 
   moves.forEach((move) => game.playMove(move[0], move[1]));
 
-  const boards = game.exportState().boards;
+  const boards = game.exportState().boards.map(Grid.from2DArray);
   expect(boards[0].at({ x: 8, y: 0 })).toBe(Color.EMPTY);
   expect(boards[0].at({ x: 0, y: 8 })).toBe(Color.WHITE);
   expect(boards[1].at({ x: 8, y: 0 })).toBe(Color.WHITE);

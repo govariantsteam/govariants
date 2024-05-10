@@ -144,6 +144,10 @@ export class Grid<T> implements Fillable<CoordinateLike, T> {
       initialValue,
     );
   }
+
+  serialize() {
+    return this.to2DArray();
+  }
 }
 
 function flat_index_to_coordinate(index: number, width: number): Coordinate {

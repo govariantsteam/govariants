@@ -6,7 +6,7 @@ import { Baduk, BadukBoardType, BadukConfig, Color } from "./baduk";
 export interface QuantumGoState {
   // length=2
   // two go boards
-  boards: BadukBoardType<Color>[];
+  boards: Color[][][];
   // length=0..2, in order of initial placement
   quantum_stones: string[];
 }
@@ -159,7 +159,7 @@ export class QuantumGo extends AbstractGame<BadukConfig, QuantumGoState> {
         if (pos != null) {
           board.set(pos, color);
         }
-        return board;
+        return board.to2DArray();
       };
       const first = this.quantum_stones[0];
       return {
@@ -172,7 +172,7 @@ export class QuantumGo extends AbstractGame<BadukConfig, QuantumGoState> {
     }
 
     return {
-      boards: this.subgames.map((game) => game.badukGame.board),
+      boards: this.subgames.map((game) => game.badukGame.board.serialize()),
       quantum_stones: this.quantum_stones.map((pos) => pos.toSgfRepr()),
     };
   }

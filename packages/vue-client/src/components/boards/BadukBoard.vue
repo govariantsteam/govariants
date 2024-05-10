@@ -83,7 +83,7 @@ function positionClicked(pos: Coordinate) {
       <circle
         v-for="pos in positions"
         :key="`${pos.x},${pos.y}`"
-        v-bind:class="colorToClassString(gamestate.board.at(pos)!)"
+        v-bind:class="colorToClassString(gamestate.board[pos.y][pos.x])"
         v-on:click="positionClicked(pos)"
         v-bind:cx="pos.x"
         v-bind:cy="pos.y"
@@ -93,12 +93,14 @@ function positionClicked(pos: Coordinate) {
     <g v-if="gamestate.score_board">
       <template v-for="pos in positions">
         <rect
-          v-if="gamestate.score_board.at(pos)"
+          v-if="gamestate.score_board[pos.y][pos.x]"
           :key="`${pos.x},${pos.y}`"
           v-bind:x="pos.x - 0.2"
           v-bind:y="pos.y - 0.2"
           v-bind:fill="
-            gamestate.score_board.at(pos) === Color.BLACK ? 'black' : 'white'
+            gamestate.score_board[pos.y][pos.x] === Color.BLACK
+              ? 'black'
+              : 'white'
           "
           stroke="gray"
           stroke-width="0.05"

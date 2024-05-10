@@ -8,6 +8,11 @@ export interface Fillable<K, V> {
   neighbors(index: K): K[];
   isInBounds(index: K): boolean;
   forEach(f: (value: V, index: K) => void): void;
+  // It could be interesting to have this be some generic type that is
+  // parameterized by V, but unfortunately it's not supported by TS
+  // https://github.com/microsoft/TypeScript/issues/1213
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  serialize(): unknown;
 }
 
 export function getGroup<K, V>(index: K, g: Fillable<K, V>): K[] {

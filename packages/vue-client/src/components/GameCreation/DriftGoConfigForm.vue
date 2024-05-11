@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import {
-  getWidthAndHeight,
-  type DriftGoConfig,
-} from "@ogfcommunity/variants-shared";
+import { type DriftGoConfig } from "@ogfcommunity/variants-shared";
 
 const props = defineProps<{ initialConfig: DriftGoConfig }>();
 const config: DriftGoConfig = {
@@ -11,8 +8,8 @@ const config: DriftGoConfig = {
   yShift: props.initialConfig.yShift,
   board: {
     type: "grid",
-    width: getWidthAndHeight(props.initialConfig).width,
-    height: getWidthAndHeight(props.initialConfig).height,
+    width: props.initialConfig.board.width,
+    height: props.initialConfig.board.height,
   },
 };
 

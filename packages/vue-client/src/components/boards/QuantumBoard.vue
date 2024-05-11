@@ -7,8 +7,8 @@ import MulticolorGridBoard from "./MulticolorGridBoard.vue";
 import {
   Coordinate,
   type QuantumGoState,
-  getWidthAndHeight,
   GridBadukConfig,
+  getWidthAndHeight,
 } from "@ogfcommunity/variants-shared";
 import { Grid } from "@ogfcommunity/variants-shared";
 import { computed } from "vue";

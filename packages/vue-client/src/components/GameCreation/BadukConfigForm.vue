@@ -1,17 +1,20 @@
 import { Grid } from '../../../../shared/src/lib/grid';
 <script setup lang="ts">
-import {
-  getWidthAndHeight,
-  type GridBadukConfig,
-} from "@ogfcommunity/variants-shared";
+import { type GridBadukConfig } from "@ogfcommunity/variants-shared";
 
-const props = defineProps<{ initialConfig: GridBadukConfig }>();
+const props = defineProps<{
+  initialConfig: {
+    komi: number;
+    board: { type: "grid"; width: number; height: number };
+  };
+}>();
+// the type here is ugly atm, but I will fix this when I add input forms for the new board patterns
 const config: GridBadukConfig = {
   komi: props.initialConfig.komi,
   board: {
     type: "grid",
-    width: getWidthAndHeight(props.initialConfig).width,
-    height: getWidthAndHeight(props.initialConfig).height,
+    width: props.initialConfig.board.width,
+    height: props.initialConfig.board.height,
   },
 };
 

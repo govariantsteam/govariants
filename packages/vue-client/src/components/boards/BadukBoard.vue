@@ -4,8 +4,8 @@ import {
   Coordinate,
   type BadukState,
   getHoshi,
-  GridBadukConfig,
   getWidthAndHeight,
+  GridBadukConfig,
 } from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
 import { positionsGetter } from "./board_utils";
@@ -16,7 +16,7 @@ const props = defineProps<{
 }>();
 
 const width = computed(() => getWidthAndHeight(props.config).width);
-const height = computed(() => getWidthAndHeight(props.config).height);
+const height = computed(() => getWidthAndHeight(props.config).width);
 const positions = computed(positionsGetter(width, height));
 
 function colorToClassString(color: Color): string {

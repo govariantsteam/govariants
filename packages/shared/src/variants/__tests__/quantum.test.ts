@@ -7,7 +7,10 @@ const B = Color.BLACK;
 const _ = Color.EMPTY;
 
 test("Quantum stone placement", () => {
-  const game = new QuantumGo({ width: 2, height: 2, komi: 0.5 });
+  const game = new QuantumGo({
+    board: { type: "grid", width: 2, height: 2 },
+    komi: 0.5,
+  });
 
   game.playMove(0, "aa");
   expect(game.exportState().boards).toEqual([
@@ -37,7 +40,10 @@ test("Quantum stone placement", () => {
 });
 
 test("Test throws if incorrect player in the quantum stone phase", () => {
-  const game = new QuantumGo({ width: 2, height: 2, komi: 0.5 });
+  const game = new QuantumGo({
+    board: { type: "grid", width: 2, height: 2 },
+    komi: 0.5,
+  });
 
   expect(() => game.playMove(1, "aa")).toThrow();
   game.playMove(0, "aa");
@@ -45,14 +51,20 @@ test("Test throws if incorrect player in the quantum stone phase", () => {
 });
 
 test("Test throws stone played on top of stone in quantum phase", () => {
-  const game = new QuantumGo({ width: 2, height: 2, komi: 0.5 });
+  const game = new QuantumGo({
+    board: { type: "grid", width: 2, height: 2 },
+    komi: 0.5,
+  });
 
   game.playMove(0, "aa");
   expect(() => game.playMove(1, "aa")).toThrow();
 });
 
 test("Capture quantum stone", () => {
-  const game = new QuantumGo({ width: 5, height: 3, komi: 0.5 });
+  const game = new QuantumGo({
+    board: { type: "grid", width: 5, height: 3 },
+    komi: 0.5,
+  });
 
   // .{B}. . W
   // B{W}B . W
@@ -102,7 +114,10 @@ test("Capture quantum stone", () => {
 });
 
 test("Capture non-quantum stone", () => {
-  const game = new QuantumGo({ width: 5, height: 3, komi: 0.5 });
+  const game = new QuantumGo({
+    board: { type: "grid", width: 5, height: 3 },
+    komi: 0.5,
+  });
 
   // .{B}. . W
   // B W B .{W}
@@ -152,7 +167,10 @@ test("Capture non-quantum stone", () => {
 });
 
 test("Two passes ends the game", () => {
-  const game = new QuantumGo({ width: 4, height: 2, komi: 0.5 });
+  const game = new QuantumGo({
+    board: { type: "grid", width: 4, height: 2 },
+    komi: 0.5,
+  });
 
   game.playMove(0, "ba");
   game.playMove(1, "ca");
@@ -195,7 +213,10 @@ test("Two passes ends the game", () => {
 });
 
 test("Placing a stone in a captured quantum position", () => {
-  const game = new QuantumGo({ width: 9, height: 9, komi: 0.5 });
+  const game = new QuantumGo({
+    board: { type: "grid", width: 9, height: 9 },
+    komi: 0.5,
+  });
 
   // https://www.govariants.com/game/660248dd5e01aefcbd63df6a
 
@@ -238,7 +259,10 @@ test("Placing a stone in a captured quantum position", () => {
 });
 
 test("Placing a white stone in a captured quantum position", () => {
-  const game = new QuantumGo({ width: 9, height: 9, komi: 0.5 });
+  const game = new QuantumGo({
+    board: { type: "grid", width: 9, height: 9 },
+    komi: 0.5,
+  });
 
   // https://www.govariants.com/game/660248dd5e01aefcbd63df6a
 

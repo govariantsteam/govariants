@@ -20,5 +20,6 @@ export {
 } from "./variants/fractional";
 export { type KeimaState } from "./variants/keima";
 export * from "./variants/drift";
+export * from "./variants/baduk_utils";
 
 export const SITE_NAME = "Go Variants";

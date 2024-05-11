@@ -1,4 +1,4 @@
-import { Baduk } from "./variants/baduk";
+import { GridBaduk } from "./variants/baduk";
 import { AbstractGame } from "./abstract_game";
 import { BadukWithAbstractBoard } from "./variants/badukWithAbstractBoard";
 import { Phantom } from "./variants/phantom";
@@ -19,7 +19,7 @@ export const game_map: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [variant: string]: new (config?: any) => AbstractGame;
 } = {
-  baduk: Baduk,
+  baduk: GridBaduk,
   badukWithAbstractBoard: BadukWithAbstractBoard,
   phantom: Phantom,
   parallel: ParallelGo,

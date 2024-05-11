@@ -1,4 +1,4 @@
-import { Baduk, BadukState, Color } from "./baduk";
+import { BadukState, Color, Baduk } from "./baduk";
 
 export class OneColorGo extends Baduk {
   exportState(): BadukState {
@@ -6,7 +6,7 @@ export class OneColorGo extends Baduk {
       ...super.exportState(),
       board: this.board
         .map((color) => (Color.EMPTY === color ? Color.EMPTY : Color.WHITE))
-        .to2DArray(),
+        .serialize(),
     };
   }
 }

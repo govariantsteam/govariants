@@ -1,14 +1,15 @@
-import { Baduk, BadukConfig, Color } from "./baduk";
+import { Color, GridBaduk } from "./baduk";
 import { Grid } from "../lib/grid";
+import { GridBadukConfig, getWidthAndHeight } from "./baduk_utils";
 
-export class PyramidGo extends Baduk {
+export class PyramidGo extends GridBaduk {
   private weights: Grid<number>;
-  constructor(config?: BadukConfig) {
+  constructor(config?: GridBadukConfig) {
     super(config);
 
     // Note: config may be undefined, but this.config is
     // defined after the AbstractGame constructor is called.
-    const { width, height } = this.config;
+    const { width, height } = getWidthAndHeight(this.config);
 
     this.weights = new Grid(width, height)
       .fill(0)

@@ -1,13 +1,14 @@
 import { Coordinate } from "../lib/coordinate";
 import { getGroup } from "../lib/group_utils";
-import { Baduk, BadukConfig, Color, groupHasLiberties } from "./baduk";
+import { Color, GridBaduk, groupHasLiberties } from "./baduk";
+import { GridBadukConfig } from "./baduk_utils";
 
-export interface DriftGoConfig extends BadukConfig {
+export type DriftGoConfig = GridBadukConfig & {
   yShift: number;
   xShift: number;
-}
+};
 
-export class DriftGo extends Baduk {
+export class DriftGo extends GridBaduk {
   private typedConfig: DriftGoConfig;
 
   constructor(config?: DriftGoConfig) {

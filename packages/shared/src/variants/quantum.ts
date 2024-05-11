@@ -1,7 +1,8 @@
 import { AbstractGame } from "../abstract_game";
-import { Coordinate } from "../lib/coordinate";
+import { Coordinate, CoordinateLike } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
-import { Baduk, BadukConfig, Color } from "./baduk";
+import { Baduk, BadukBoard, BadukConfig, Color } from "./baduk";
+import { GridBadukConfig, getWidthAndHeight } from "./baduk_utils";
 
 export interface QuantumGoState {
   // length=2
@@ -32,18 +33,18 @@ class BadukHelper {
     return captures;
   }
 
-  clear(group: Coordinate[]) {
+  clear(group: CoordinateLike[]) {
     for (const pos of group) {
       this.badukGame.board.set(pos, Color.EMPTY);
     }
   }
 }
 
-export class QuantumGo extends AbstractGame<BadukConfig, QuantumGoState> {
+export class QuantumGo extends AbstractGame<GridBadukConfig, QuantumGoState> {
   subgames: BadukHelper[] = [];
   quantum_stones: Coordinate[] = [];
 
-  constructor(config: BadukConfig) {
+  constructor(config: GridBadukConfig) {
     super(config);
   }
 
@@ -86,7 +87,8 @@ export class QuantumGo extends AbstractGame<BadukConfig, QuantumGoState> {
     const pos = Coordinate.fromSgfRepr(move);
     // TODO: add a Dimensions class (#216) and look at that instead of
     // building a grid for no reason
-    if (!new Grid(this.config.width, this.config.height).isInBounds(pos)) {
+    const { width, height } = getWidthAndHeight(this.config);
+    if (!new Grid(width, height).isInBounds(pos)) {
       throw new Error("Out of bounds!");
     }
 
@@ -152,10 +154,8 @@ export class QuantumGo extends AbstractGame<BadukConfig, QuantumGoState> {
         pos: Coordinate | undefined,
         color: Color,
       ) => {
-        const board = new Grid<Color>(
-          this.config.width,
-          this.config.height,
-        ).fill(Color.EMPTY);
+        const { width, height } = getWidthAndHeight(this.config);
+        const board = new Grid<Color>(width, height).fill(Color.EMPTY);
         if (pos != null) {
           board.set(pos, color);
         }
@@ -172,7 +172,7 @@ export class QuantumGo extends AbstractGame<BadukConfig, QuantumGoState> {
     }
 
     return {
-      boards: this.subgames.map((game) => game.badukGame.board.to2DArray()),
+      boards: this.subgames.map((game) => game.badukGame.board.serialize()),
       quantum_stones: this.quantum_stones.map((pos) => pos.toSgfRepr()),
     };
   }
@@ -185,7 +185,7 @@ export class QuantumGo extends AbstractGame<BadukConfig, QuantumGoState> {
   numPlayers(): number {
     return 2;
   }
-  defaultConfig(): BadukConfig {
+  defaultConfig(): GridBadukConfig {
     return { width: 9, height: 9, komi: 7.5 };
   }
 
@@ -211,24 +211,20 @@ export class QuantumGo extends AbstractGame<BadukConfig, QuantumGoState> {
 
 /** based on two board states, determine which stones were captured */
 function deduceCaptures(
-  prevBoard: Grid<Color>,
-  currBoard: Grid<Color>,
+  prevBoard: BadukBoard<Color>,
+  currBoard: BadukBoard<Color>,
 ): Coordinate[] {
-  const captures = [];
-  for (let y = 0; y < prevBoard.height; y++) {
-    for (let x = 0; x < prevBoard.width; x++) {
-      if (
-        prevBoard.at({ x, y }) !== Color.EMPTY &&
-        currBoard.at({ x, y }) === Color.EMPTY
-      ) {
-        captures.push(new Coordinate(x, y));
-      }
+  const captures: Coordinate[] = [];
+  prevBoard.forEach((color, coordinate) => {
+    if (color !== Color.EMPTY && currBoard.at(coordinate) === Color.EMPTY) {
+      captures.push(new Coordinate(coordinate.x, coordinate.y));
     }
-  }
+  });
+
   return captures;
 }
 
 /** Make a copy of the game's board */
-function copyBoard(game: Baduk): Grid<Color> {
+function copyBoard(game: Baduk): BadukBoard<Color> {
   return game.board.map((color) => color);
 }

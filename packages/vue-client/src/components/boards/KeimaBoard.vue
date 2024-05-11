@@ -20,17 +20,20 @@ function getKeimaMoves({ x, y }: Coordinate, board: Grid<Color>): Coordinate[] {
 import MulticolorGridBoard from "./MulticolorGridBoard.vue";
 import {
   Coordinate,
-  type BadukConfig,
   type KeimaState,
   Grid,
   Color,
+  getWidthAndHeight,
 } from "@ogfcommunity/variants-shared";
+import { GridBadukConfig } from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
 
 const props = defineProps<{
-  config: BadukConfig;
+  config: GridBadukConfig;
   gamestate: KeimaState;
 }>();
+
+const board_dimensions = computed(() => getWidthAndHeight(props.config));
 
 const emit = defineEmits<{
   (e: "move", pos: string): void;
@@ -68,7 +71,7 @@ const board = computed(() => {
 <template>
   <MulticolorGridBoard
     :board="board"
-    :config="props.config"
+    :board_dimensions="board_dimensions"
     @click="positionClicked"
   />
 </template>

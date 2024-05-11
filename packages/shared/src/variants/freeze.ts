@@ -1,7 +1,6 @@
 import { Coordinate, CoordinateLike } from "../lib/coordinate";
-import { Grid } from "../lib/grid";
 import { getGroup, getOuterBorder } from "../lib/group_utils";
-import { Baduk, BadukState, Color } from "./baduk";
+import { Baduk, BadukBoard, BadukState, Color } from "./baduk";
 
 export interface FreezeGoState extends BadukState {
   frozen: boolean;
@@ -33,7 +32,7 @@ export class FreezeGo extends Baduk {
   }
 }
 
-function is_in_atari(pos: CoordinateLike, board: Grid<Color>) {
+function is_in_atari(pos: CoordinateLike, board: BadukBoard<Color>) {
   const group = getGroup(pos, board);
   const num_liberties = getOuterBorder(group, board).filter(
     (pos) => board.at(pos) === Color.EMPTY,

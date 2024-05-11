@@ -1,8 +1,20 @@
 <script setup lang="ts">
-import type { DriftGoConfig } from "@ogfcommunity/variants-shared";
+import {
+  getWidthAndHeight,
+  type DriftGoConfig,
+} from "@ogfcommunity/variants-shared";
 
 const props = defineProps<{ initialConfig: DriftGoConfig }>();
-const config = { ...props.initialConfig } as DriftGoConfig;
+const config: DriftGoConfig = {
+  komi: props.initialConfig.komi,
+  xShift: props.initialConfig.xShift,
+  yShift: props.initialConfig.yShift,
+  board: {
+    type: "grid",
+    width: getWidthAndHeight(props.initialConfig).width,
+    height: getWidthAndHeight(props.initialConfig).height,
+  },
+};
 
 const emit = defineEmits<{
   (e: "configChanged", config: DriftGoConfig): void;
@@ -16,9 +28,9 @@ function emitConfigChange() {
 <template>
   <form @change="emitConfigChange" class="config-form-column">
     <label>Width</label>
-    <input type="number" min="1" v-model="config.width" />
+    <input type="number" min="1" v-model="config.board.width" />
     <label>Height</label>
-    <input type="number" min="1" v-model="config.height" />
+    <input type="number" min="1" v-model="config.board.height" />
     <label>Komi</label>
     <input type="number" step="0.5" v-model="config.komi" />
     <label>X-Shift</label>

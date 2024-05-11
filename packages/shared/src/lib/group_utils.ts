@@ -1,13 +1,18 @@
 // Perhaps we can remove some of these functions if it becomes cumbersome to
 // implement these functions every time.  For example, `forEach` can be replaced
 // by map if we ignore the output
-interface Fillable<K, V> {
+export interface Fillable<K, V> {
   at(index: K): V | undefined;
   set(index: K, val: V): void;
   map<V2>(f: (val: V) => V2): Fillable<K, V2>;
   neighbors(index: K): K[];
   isInBounds(index: K): boolean;
   forEach(f: (value: V, index: K) => void): void;
+  // It could be interesting to have this be some generic type that is
+  // parameterized by V, but unfortunately it's not supported by TS
+  // https://github.com/microsoft/TypeScript/issues/1213
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  serialize(): unknown;
 }
 
 export function getGroup<K, V>(index: K, g: Fillable<K, V>): K[] {

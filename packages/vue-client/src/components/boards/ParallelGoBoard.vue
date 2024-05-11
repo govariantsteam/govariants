@@ -114,7 +114,7 @@ const board = computed(() => {
 <template>
   <MulticolorGridBoard
     :board="board"
-    :config="props.config"
+    :board_dimensions="props.config"
     @click="positionClicked"
   />
 </template>

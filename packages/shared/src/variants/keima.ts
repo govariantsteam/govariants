@@ -1,11 +1,11 @@
 import { Coordinate } from "../lib/coordinate";
-import { Baduk, BadukState } from "./baduk";
+import { BadukState, GridBaduk } from "./baduk";
 
 export interface KeimaState extends BadukState {
   keima?: string;
 }
 
-export class Keima extends Baduk {
+export class Keima extends GridBaduk {
   private move_number = 0;
 
   playMove(player: number, move: string): void {

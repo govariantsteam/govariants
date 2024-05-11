@@ -2,20 +2,21 @@
 import {
   Color,
   Coordinate,
-  type BadukConfig,
   type BadukState,
   getHoshi,
+  GridBadukConfig,
+  getWidthAndHeight,
 } from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
 import { positionsGetter } from "./board_utils";
 
 const props = defineProps<{
   gamestate: BadukState;
-  config: BadukConfig;
+  config: GridBadukConfig;
 }>();
 
-const width = computed(() => props.config.width);
-const height = computed(() => props.config.height);
+const width = computed(() => getWidthAndHeight(props.config).width);
+const height = computed(() => getWidthAndHeight(props.config).height);
 const positions = computed(positionsGetter(width, height));
 
 function colorToClassString(color: Color): string {

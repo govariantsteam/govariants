@@ -17,7 +17,7 @@ export class Coordinate implements CoordinateLike {
     return new Coordinate(decodeChar(move[0]), decodeChar(move[1]));
   }
 
-  equals(other: Coordinate) {
+  equals(other: CoordinateLike) {
     return this.x === other.x && this.y === other.y;
   }
 }

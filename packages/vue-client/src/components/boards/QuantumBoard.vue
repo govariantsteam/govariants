@@ -7,15 +7,18 @@ import MulticolorGridBoard from "./MulticolorGridBoard.vue";
 import {
   Coordinate,
   type QuantumGoState,
-  type BadukConfig,
+  getWidthAndHeight,
+  GridBadukConfig,
 } from "@ogfcommunity/variants-shared";
 import { Grid } from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
 
 const props = defineProps<{
-  config: BadukConfig;
+  config: GridBadukConfig;
   gamestate: QuantumGoState;
 }>();
+
+const board_dimensions = computed(() => getWidthAndHeight(props.config));
 
 const emit = defineEmits<{
   (e: "move", pos: string): void;
@@ -68,14 +71,14 @@ const board_1 = computed(() => {
   <div style="width: 50%; height: 100%; display: inline-block">
     <MulticolorGridBoard
       :board="board_0"
-      :config="props.config"
+      :board_dimensions="board_dimensions"
       @click="positionClicked"
     />
   </div>
   <div style="width: 50%; height: 100%; display: inline-block">
     <MulticolorGridBoard
       :board="board_1"
-      :config="props.config"
+      :board_dimensions="board_dimensions"
       @click="positionClicked"
     />
   </div>

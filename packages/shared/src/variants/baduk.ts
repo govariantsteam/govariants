@@ -50,7 +50,6 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
   private ko_detector = new SuperKoDetector();
   protected score_board?: BadukBoard<Color>;
   public board: BadukBoard<Color>;
-  public boardAsIntersections?: Intersection[];
   protected next_to_play: 0 | 1 = 0;
   protected last_move = "";
   /** after game ends, this is black points - white points */
@@ -68,8 +67,8 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
 
       this.board = new Grid<Color>(width, height).fill(Color.EMPTY);
     } else {
-      this.boardAsIntersections = createBoard(this.config.board!, Intersection);
-      this.board = new GraphWrapper(createGraph(this.boardAsIntersections));
+      const intersections = createBoard(this.config.board!, Intersection);
+      this.board = new GraphWrapper(createGraph(intersections));
     }
   }
 
@@ -217,7 +216,14 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
   }
 
   defaultConfig(): GridBadukConfig {
-    return { width: 19, height: 19, komi: 6.5 };
+    return {
+      komi: 6.5,
+      board: {
+        type: BoardPattern.Grid,
+        width: 19,
+        height: 19,
+      },
+    };
   }
 }
 
@@ -232,8 +238,6 @@ export function groupHasLiberties(
 }
 
 /** Returns a reducer that will count occurences of a given number **/
-// This was used before... will need to figure out where it went
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function count_color<T>(value: T) {
   return (total: number, color: T) => total + (color === value ? 1 : 0);
 }

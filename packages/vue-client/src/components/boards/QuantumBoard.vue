@@ -71,14 +71,14 @@ const board_1 = computed(() => {
   <div style="width: 50%; height: 100%; display: inline-block">
     <MulticolorGridBoard
       :board="board_0"
-      :config="board_dimensions"
+      :board_dimensions="board_dimensions"
       @click="positionClicked"
     />
   </div>
   <div style="width: 50%; height: 100%; display: inline-block">
     <MulticolorGridBoard
       :board="board_1"
-      :config="board_dimensions"
+      :board_dimensions="board_dimensions"
       @click="positionClicked"
     />
   </div>

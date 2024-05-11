@@ -52,7 +52,7 @@ const board = computed(() => {
 <template>
   <MulticolorGridBoard
     :board="board"
-    :config="board_dimensions"
+    :board_dimensions="board_dimensions"
     :background_color="
       gamestate.frozen ? FROZEN_COLORS.background : NORMAL_COLORS.background
     "

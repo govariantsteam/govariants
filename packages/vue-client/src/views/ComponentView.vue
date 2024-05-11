@@ -55,7 +55,7 @@ function update_board_state(pos: Coordinate) {
     <h2>Page to test unused components</h2>
     <SocketTest />
     <MulticolorGridBoard
-      :config="{ width: 3, height: 4 }"
+      :board_dimensions="{ width: 3, height: 4 }"
       :board="board_state"
       @click="update_board_state"
     />

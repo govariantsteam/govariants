@@ -15,11 +15,11 @@ import { positionsGetter } from "./board_utils";
 const props = defineProps<{
   board: (MulticolorStone | null)[][];
   background_color?: string;
-  config: { width: number; height: number };
+  board_dimensions: { width: number; height: number };
 }>();
 
-const width = computed(() => props.config.width);
-const height = computed(() => props.config.height);
+const width = computed(() => props.board_dimensions.width);
+const height = computed(() => props.board_dimensions.height);
 const positions = computed(positionsGetter(width, height));
 
 const hovered: Ref<Coordinate> = ref(new Coordinate(-1, -1));

@@ -16,7 +16,7 @@ const props = defineProps<{
 }>();
 
 const width = computed(() => getWidthAndHeight(props.config).width);
-const height = computed(() => getWidthAndHeight(props.config).width);
+const height = computed(() => getWidthAndHeight(props.config).height);
 const positions = computed(positionsGetter(width, height));
 
 function colorToClassString(color: Color): string {

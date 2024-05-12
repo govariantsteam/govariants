@@ -1,42 +1,17 @@
-import { GridBoardConfig } from "../lib/abstractBoard/boardFactory";
 import { Coordinate } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
 import { getGroup } from "../lib/group_utils";
-import { Baduk, Color, groupHasLiberties } from "./baduk";
-import { LegacyBadukConfig, NewBadukConfig } from "./baduk_utils";
+import { Color, GridBaduk, groupHasLiberties } from "./baduk";
+import { NewGridBadukConfig } from "./baduk_utils";
 
-export type DriftGoConfig = { komi: number; board: GridBoardConfig } & {
+export type DriftGoConfig = NewGridBadukConfig & {
   yShift: number;
   xShift: number;
 };
 
-export type LegacyDriftGoConfig = LegacyBadukConfig & {
-  yShift: number;
-  xShift: number;
-};
-
-function isDriftGoConfig(config: object): config is DriftGoConfig {
-  return (
-    "komi" in config &&
-    "board" in config &&
-    "xShift" in config &&
-    "yShift" in config
-  );
-}
-
-export class DriftGo extends Baduk {
-  private typedConfig: DriftGoConfig;
+export class DriftGo extends GridBaduk {
+  declare config: DriftGoConfig;
   declare board: Grid<Color>;
-
-  constructor(config?: DriftGoConfig | LegacyDriftGoConfig) {
-    super(config);
-    if (!isDriftGoConfig(this.config)) {
-      throw Error(
-        `Drift accepts only grid board config. Received config: ${JSON.stringify(config)}`,
-      );
-    }
-    this.typedConfig = this.config ?? this.defaultConfig();
-  }
 
   defaultConfig(): DriftGoConfig {
     return {
@@ -81,8 +56,8 @@ export class DriftGo extends Baduk {
 
   private shift(coord: Coordinate): Coordinate {
     return new Coordinate(
-      (coord.x - this.typedConfig.xShift) % this.board.width,
-      (coord.y - this.typedConfig.yShift) % this.board.height,
+      (coord.x - this.config.xShift) % this.board.width,
+      (coord.y - this.config.yShift) % this.board.height,
     );
   }
 

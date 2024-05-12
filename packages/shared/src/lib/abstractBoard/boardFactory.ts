@@ -130,10 +130,7 @@ export function createGraph<TIntersection extends Intersection, TColor>(
       intersections.indexOf(neighbour),
     ),
   );
-  const graph = new Graph<TColor>(adjacencyMatrix);
-  intersections.forEach((intersection) =>
-    graph.set(intersection.id, startColor),
-  );
+  const graph = new Graph<TColor>(adjacencyMatrix).fill(startColor);
   return graph;
 }
 

@@ -1,12 +1,10 @@
 import { AbstractGame } from "../abstract_game";
 import { BoardPattern } from "../lib/abstractBoard/boardFactory";
 import { Coordinate, CoordinateLike } from "../lib/coordinate";
-import { Grid } from "../lib/grid";
 import { Baduk, BadukBoard, BadukConfig, Color } from "./baduk";
 import {
-  GridBadukConfig,
-  LegacyBadukConfig,
-  isGridBadukConfig,
+  NewBadukConfig,
+  NewGridBadukConfig,
   isLegacyBadukConfig,
   mapToNewConfig,
 } from "./baduk_utils";
@@ -47,18 +45,12 @@ class BadukHelper {
   }
 }
 
-export class QuantumGo extends AbstractGame<BadukConfig, QuantumGoState> {
+export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
   subgames: BadukHelper[] = [];
   quantum_stones: Coordinate[] = [];
 
-  constructor(config: BadukConfig | LegacyBadukConfig) {
+  constructor(config: BadukConfig) {
     super(isLegacyBadukConfig(config) ? mapToNewConfig(config) : config);
-
-    if (config && !isGridBadukConfig(this.config)) {
-      throw Error(
-        `Drift accepty only grid board config. Received config: ${JSON.stringify(config)}`,
-      );
-    }
   }
 
   playMove(player: number, move: string): void {
@@ -201,7 +193,7 @@ export class QuantumGo extends AbstractGame<BadukConfig, QuantumGoState> {
   numPlayers(): number {
     return 2;
   }
-  defaultConfig(): GridBadukConfig {
+  defaultConfig(): NewGridBadukConfig {
     return {
       board: { type: BoardPattern.Grid, width: 9, height: 9 },
       komi: 7.5,

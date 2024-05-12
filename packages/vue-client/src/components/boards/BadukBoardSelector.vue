@@ -3,6 +3,7 @@ import {
   BadukConfig,
   BadukState,
   GridBadukConfig,
+  NewBadukConfig,
   isGridBadukConfig,
 } from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
@@ -29,7 +30,7 @@ const isGridBoard = computed(() => isGridBadukConfig(props.config));
   <BadukGraphBoard
     v-if="!isGridBoard"
     :gamestate="$props.gamestate"
-    :config="$props.config"
+    :config="$props.config as NewBadukConfig"
     @move="move"
   />
   <BadukBoard

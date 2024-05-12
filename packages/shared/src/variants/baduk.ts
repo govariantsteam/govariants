@@ -4,7 +4,6 @@ import { getGroup, getOuterBorder } from "../lib/group_utils";
 import { SuperKoDetector } from "../lib/ko_detector";
 import { AbstractGame } from "../abstract_game";
 import {
-  BoardConfig,
   BoardPattern,
   createBoard,
   createGraph,
@@ -12,9 +11,9 @@ import {
 import { Intersection } from "../lib/abstractBoard/intersection";
 import { GraphWrapper } from "../lib/graph";
 import {
-  GridBadukConfig,
   LegacyBadukConfig,
   NewBadukConfig,
+  NewGridBadukConfig,
   isGridBadukConfig,
   isLegacyBadukConfig,
   mapToNewConfig,
@@ -51,7 +50,7 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
   /** after game ends, this is black points - white points */
   public numeric_result?: number;
 
-  constructor(config?: LegacyBadukConfig | BadukConfig) {
+  constructor(config?: BadukConfig) {
     super(isLegacyBadukConfig(config) ? mapToNewConfig(config) : config);
 
     if (isGridBadukConfig(this.config)) {
@@ -246,4 +245,28 @@ export function groupHasLiberties(
 /** Returns a reducer that will count occurences of a given number **/
 function count_color<T>(value: T) {
   return (total: number, color: T) => total + (color === value ? 1 : 0);
+}
+
+export class GridBaduk extends Baduk {
+  // ! isn't typesafe, but we know board will be assigned in super()
+  declare board: Grid<Color>;
+  protected declare score_board?: Grid<Color>;
+  declare config: NewGridBadukConfig;
+  constructor(config?: BadukConfig) {
+    if (config && !isGridBadukConfig(config)) {
+      throw "GridBaduk requires a GridBadukConfig";
+    }
+    super(config);
+  }
+
+  override defaultConfig(): NewGridBadukConfig {
+    return {
+      komi: 6.5,
+      board: {
+        type: BoardPattern.Grid,
+        width: 19,
+        height: 19,
+      },
+    };
+  }
 }

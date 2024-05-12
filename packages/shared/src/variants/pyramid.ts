@@ -1,23 +1,14 @@
-import { Baduk, Color } from "./baduk";
+import { Color, GridBaduk } from "./baduk";
 import { Grid } from "../lib/grid";
-import {
-  GridBadukConfig,
-  LegacyBadukConfig,
-  isGridBadukConfig,
-} from "./baduk_utils";
+import { GridBadukConfig } from "./baduk_utils";
 
-export class PyramidGo extends Baduk {
+export class PyramidGo extends GridBaduk {
   private weights: Grid<number>;
   declare board: Grid<Color>;
   declare score_board?: Grid<Color>;
 
-  constructor(config?: GridBadukConfig | LegacyBadukConfig) {
+  constructor(config?: GridBadukConfig) {
     super(config);
-    if (!isGridBadukConfig(this.config)) {
-      throw Error(
-        `Pyramid accepts only grid board config. Received config: ${JSON.stringify(config)}`,
-      );
-    }
 
     // Note: config may be undefined, but this.config is
     // defined after the AbstractGame constructor is called.

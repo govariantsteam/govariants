@@ -1,26 +1,12 @@
 import { Coordinate } from "../lib/coordinate";
-import { Baduk, BadukState } from "./baduk";
-import {
-  GridBadukConfig,
-  LegacyBadukConfig,
-  isGridBadukConfig,
-} from "./baduk_utils";
+import { BadukState, GridBaduk } from "./baduk";
 
 export interface KeimaState extends BadukState {
   keima?: string;
 }
 
-export class Keima extends Baduk {
+export class Keima extends GridBaduk {
   private move_number = 0;
-
-  constructor(config?: GridBadukConfig | LegacyBadukConfig) {
-    super(config);
-    if (!isGridBadukConfig(this.config)) {
-      throw Error(
-        `Keima accepts only grid board config. Received config: ${JSON.stringify(config)}`,
-      );
-    }
-  }
 
   playMove(player: number, move: string): void {
     super.playMove(player, move);

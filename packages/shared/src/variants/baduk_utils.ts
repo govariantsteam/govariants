@@ -16,12 +16,12 @@ export type NewBadukConfig = {
   board: BoardConfig;
 };
 
-export type GridBadukConfig =
-  | LegacyBadukConfig
-  | {
-      komi: number;
-      board: GridBoardConfig;
-    };
+export type NewGridBadukConfig = {
+  komi: number;
+  board: GridBoardConfig;
+};
+
+export type GridBadukConfig = LegacyBadukConfig | NewGridBadukConfig;
 
 export function isGridBadukConfig(
   config: BadukConfig,

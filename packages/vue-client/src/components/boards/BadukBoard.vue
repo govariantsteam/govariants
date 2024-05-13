@@ -4,8 +4,8 @@ import {
   Coordinate,
   type BadukState,
   getHoshi,
-  GridBadukConfig,
   getWidthAndHeight,
+  GridBadukConfig,
 } from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
 import { positionsGetter } from "./board_utils";

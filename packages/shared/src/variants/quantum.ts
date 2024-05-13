@@ -1,8 +1,13 @@
 import { AbstractGame } from "../abstract_game";
+import { BoardPattern } from "../lib/abstractBoard/boardFactory";
 import { Coordinate, CoordinateLike } from "../lib/coordinate";
-import { Grid } from "../lib/grid";
 import { Baduk, BadukBoard, BadukConfig, Color } from "./baduk";
-import { GridBadukConfig, getWidthAndHeight } from "./baduk_utils";
+import {
+  NewBadukConfig,
+  NewGridBadukConfig,
+  isLegacyBadukConfig,
+  mapToNewConfig,
+} from "./baduk_utils";
 
 export interface QuantumGoState {
   // length=2
@@ -40,12 +45,12 @@ class BadukHelper {
   }
 }
 
-export class QuantumGo extends AbstractGame<GridBadukConfig, QuantumGoState> {
+export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
   subgames: BadukHelper[] = [];
   quantum_stones: Coordinate[] = [];
 
-  constructor(config: GridBadukConfig) {
-    super(config);
+  constructor(config: BadukConfig) {
+    super(isLegacyBadukConfig(config) ? mapToNewConfig(config) : config);
   }
 
   playMove(player: number, move: string): void {
@@ -87,8 +92,11 @@ export class QuantumGo extends AbstractGame<GridBadukConfig, QuantumGoState> {
     const pos = Coordinate.fromSgfRepr(move);
     // TODO: add a Dimensions class (#216) and look at that instead of
     // building a grid for no reason
-    const { width, height } = getWidthAndHeight(this.config);
-    if (!new Grid(width, height).isInBounds(pos)) {
+    if (
+      !new BadukHelper({ ...this.config, komi: 0 }).badukGame.board.isInBounds(
+        pos,
+      )
+    ) {
       throw new Error("Out of bounds!");
     }
 
@@ -154,12 +162,12 @@ export class QuantumGo extends AbstractGame<GridBadukConfig, QuantumGoState> {
         pos: Coordinate | undefined,
         color: Color,
       ) => {
-        const { width, height } = getWidthAndHeight(this.config);
-        const board = new Grid<Color>(width, height).fill(Color.EMPTY);
+        const board = new BadukHelper({ ...this.config, komi: 0 }).badukGame
+          .board;
         if (pos != null) {
           board.set(pos, color);
         }
-        return board.to2DArray();
+        return board.serialize();
       };
       const first = this.quantum_stones[0];
       return {
@@ -185,8 +193,11 @@ export class QuantumGo extends AbstractGame<GridBadukConfig, QuantumGoState> {
   numPlayers(): number {
     return 2;
   }
-  defaultConfig(): GridBadukConfig {
-    return { width: 9, height: 9, komi: 7.5 };
+  defaultConfig(): NewGridBadukConfig {
+    return {
+      board: { type: BoardPattern.Grid, width: 9, height: 9 },
+      komi: 7.5,
+    };
   }
 
   specialMoves(): { [key: string]: string } {

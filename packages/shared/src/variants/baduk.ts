@@ -4,7 +4,6 @@ import { getGroup, getOuterBorder } from "../lib/group_utils";
 import { SuperKoDetector } from "../lib/ko_detector";
 import { AbstractGame } from "../abstract_game";
 import {
-  BoardConfig,
   BoardPattern,
   createBoard,
   createGraph,
@@ -12,10 +11,12 @@ import {
 import { Intersection } from "../lib/abstractBoard/intersection";
 import { GraphWrapper } from "../lib/graph";
 import {
-  GridBadukConfig,
   LegacyBadukConfig,
-  getWidthAndHeight,
+  NewBadukConfig,
+  NewGridBadukConfig,
   isGridBadukConfig,
+  isLegacyBadukConfig,
+  mapToNewConfig,
 } from "./baduk_utils";
 
 export enum Color {
@@ -24,12 +25,7 @@ export enum Color {
   WHITE = 2,
 }
 
-export type BadukConfig =
-  | LegacyBadukConfig
-  | {
-      komi: number;
-      board: BoardConfig;
-    };
+export type BadukConfig = LegacyBadukConfig | NewBadukConfig;
 
 export interface BadukState {
   board: Color[][];
@@ -41,11 +37,10 @@ export interface BadukState {
 
 export type BadukMove = { 0: string } | { 1: string };
 
-// export declare type BadukBoardType<TColor> = Fillable<CoordinateLike, TColor>;
 // Grid | GraphWrapper, so we have a better idea of serialize() return type
 export declare type BadukBoard<TColor> = Grid<TColor> | GraphWrapper<TColor>;
 
-export class Baduk extends AbstractGame<BadukConfig, BadukState> {
+export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
   protected captures = { 0: 0, 1: 0 };
   private ko_detector = new SuperKoDetector();
   protected score_board?: BadukBoard<Color>;
@@ -56,19 +51,20 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
   public numeric_result?: number;
 
   constructor(config?: BadukConfig) {
-    super(config);
+    super(isLegacyBadukConfig(config) ? mapToNewConfig(config) : config);
 
     if (isGridBadukConfig(this.config)) {
-      const { width, height } = getWidthAndHeight(this.config);
-
-      if (width >= 52 || height >= 52) {
+      if (this.config.board.width >= 52 || this.config.board.height >= 52) {
         throw new Error("Baduk does not support sizes greater than 52");
       }
 
-      this.board = new Grid<Color>(width, height).fill(Color.EMPTY);
+      this.board = new Grid<Color>(
+        this.config.board.width,
+        this.config.board.height,
+      ).fill(Color.EMPTY);
     } else {
-      const intersections = createBoard(this.config.board!, Intersection);
-      this.board = new GraphWrapper(createGraph(intersections));
+      const intersections = createBoard(this.config.board, Intersection);
+      this.board = new GraphWrapper(createGraph(intersections, Color.EMPTY));
     }
   }
 
@@ -84,6 +80,14 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
 
   override nextToPlay(): number[] {
     return this.phase === "gameover" ? [] : [this.next_to_play];
+  }
+
+  private decodeMove(move: string): Coordinate {
+    if (isGridBadukConfig(this.config)) {
+      return Coordinate.fromSgfRepr(move);
+    }
+    // graph boards encode moves with the unique identifier number
+    return new Coordinate(Number(move), 0);
   }
 
   override playMove(player: number, move: string): void {
@@ -104,7 +108,8 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
     }
 
     if (move != "pass") {
-      const decoded_move = Coordinate.fromSgfRepr(move);
+      const decoded_move = this.decodeMove(move);
+
       const { x, y } = decoded_move;
       const color = this.board.at(decoded_move);
       if (color === undefined) {
@@ -215,7 +220,7 @@ export class Baduk extends AbstractGame<BadukConfig, BadukState> {
     this.phase = "gameover";
   }
 
-  defaultConfig(): GridBadukConfig {
+  defaultConfig(): NewBadukConfig {
     return {
       komi: 6.5,
       board: {
@@ -246,15 +251,15 @@ export class GridBaduk extends Baduk {
   // ! isn't typesafe, but we know board will be assigned in super()
   declare board: Grid<Color>;
   protected declare score_board?: Grid<Color>;
-  declare config: GridBadukConfig;
-  constructor(config?: GridBadukConfig) {
+  declare config: NewGridBadukConfig;
+  constructor(config?: BadukConfig) {
     if (config && !isGridBadukConfig(config)) {
       throw "GridBaduk requires a GridBadukConfig";
     }
     super(config);
   }
 
-  override defaultConfig(): GridBadukConfig {
+  override defaultConfig(): NewGridBadukConfig {
     return {
       komi: 6.5,
       board: {

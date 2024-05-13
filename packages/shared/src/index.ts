@@ -21,5 +21,7 @@ export {
 export { type KeimaState } from "./variants/keima";
 export * from "./variants/drift";
 export * from "./variants/baduk_utils";
+export * from "./lib/abstractBoard/boardFactory";
+export * from "./lib/abstractBoard/intersection";
 
 export const SITE_NAME = "Go Variants";

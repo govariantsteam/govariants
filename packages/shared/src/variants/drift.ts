@@ -1,23 +1,25 @@
 import { Coordinate } from "../lib/coordinate";
+import { Grid } from "../lib/grid";
 import { getGroup } from "../lib/group_utils";
 import { Color, GridBaduk, groupHasLiberties } from "./baduk";
-import { GridBadukConfig } from "./baduk_utils";
+import { NewGridBadukConfig } from "./baduk_utils";
 
-export type DriftGoConfig = GridBadukConfig & {
+export type DriftGoConfig = NewGridBadukConfig & {
   yShift: number;
   xShift: number;
 };
 
 export class DriftGo extends GridBaduk {
-  private typedConfig: DriftGoConfig;
-
-  constructor(config?: DriftGoConfig) {
-    super(config);
-    this.typedConfig = config ?? this.defaultConfig();
-  }
+  declare config: DriftGoConfig;
+  declare board: Grid<Color>;
 
   defaultConfig(): DriftGoConfig {
-    return { ...super.defaultConfig(), xShift: 0, yShift: 1 };
+    return {
+      komi: 6.5,
+      board: { type: "grid", width: 19, height: 19 },
+      xShift: 0,
+      yShift: 1,
+    };
   }
 
   protected prepareForNextMove(move: string): void {
@@ -54,8 +56,8 @@ export class DriftGo extends GridBaduk {
 
   private shift(coord: Coordinate): Coordinate {
     return new Coordinate(
-      (coord.x - this.typedConfig.xShift) % this.board.width,
-      (coord.y - this.typedConfig.yShift) % this.board.height,
+      (coord.x - this.config.xShift) % this.board.width,
+      (coord.y - this.config.yShift) % this.board.height,
     );
   }
 

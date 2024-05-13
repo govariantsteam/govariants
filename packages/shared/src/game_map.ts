@@ -1,4 +1,3 @@
-import { GridBaduk } from "./variants/baduk";
 import { AbstractGame } from "./abstract_game";
 import { BadukWithAbstractBoard } from "./variants/badukWithAbstractBoard";
 import { Phantom } from "./variants/phantom";
@@ -14,12 +13,13 @@ import { Keima } from "./variants/keima";
 import { OneColorGo } from "./variants/one_color";
 import { DriftGo } from "./variants/drift";
 import { QuantumGo } from "./variants/quantum";
+import { Baduk } from "./variants/baduk";
 
 export const game_map: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [variant: string]: new (config?: any) => AbstractGame;
 } = {
-  baduk: GridBaduk,
+  baduk: Baduk,
   badukWithAbstractBoard: BadukWithAbstractBoard,
   phantom: Phantom,
   parallel: ParallelGo,

@@ -123,11 +123,14 @@ function createGridBoard<TIntersection extends Intersection>(
 
 export function createGraph<TIntersection extends Intersection, TColor>(
   intersections: TIntersection[],
+  startColor: TColor,
 ): Graph<TColor> {
   const adjacencyMatrix = intersections.map((intersection) =>
-    intersection.neighbours.map((_neighbour, index) => index),
+    intersection.neighbours.map((neighbour) =>
+      intersections.indexOf(neighbour),
+    ),
   );
-  return new Graph<TColor>(adjacencyMatrix);
+  return new Graph<TColor>(adjacencyMatrix).fill(startColor);
 }
 
 function createRthBoard<TIntersection extends Intersection>(

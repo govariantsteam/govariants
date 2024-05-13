@@ -7,7 +7,7 @@ import CircularBoardConfigForm from "./CircularBoardConfigForm.vue";
 import TrihexagonalConfigForm from "./TrihexagonalConfigForm.vue";
 import SierpinskyBoardConfigForm from "./SierpinskyBoardConfigForm.vue";
 
-const props = defineProps<{ gridOnly?: boolean }>();
+const _props = defineProps<{ gridOnly?: boolean }>();
 
 const board_type: Ref<string> = ref(BoardPattern.Grid);
 

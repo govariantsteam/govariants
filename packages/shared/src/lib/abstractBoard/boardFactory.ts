@@ -130,8 +130,7 @@ export function createGraph<TIntersection extends Intersection, TColor>(
       intersections.indexOf(neighbour),
     ),
   );
-  const graph = new Graph<TColor>(adjacencyMatrix).fill(startColor);
-  return graph;
+  return new Graph<TColor>(adjacencyMatrix).fill(startColor);
 }
 
 function createRthBoard<TIntersection extends Intersection>(

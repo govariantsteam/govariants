@@ -5,7 +5,7 @@ import {
 } from "@ogfcommunity/variants-shared";
 import BadukConfigForm from "./BadukConfigForm.vue";
 
-const props = defineProps<{
+const _props = defineProps<{
   initialConfig: NewGridBadukConfig;
 }>();
 

@@ -41,12 +41,16 @@ function positionHovered(index: number) {
 const viewBox = computed(() => {
   const xPositions = intersections.map((i) => i.position.X);
   const yPositions = intersections.map((i) => i.position.Y);
-  const minX = Math.min(...xPositions) - 1;
-  const minY = Math.min(...yPositions) - 1;
-  const width = Math.max(...xPositions) - Math.min(...xPositions) + 2;
-  const height = Math.max(...yPositions) - Math.min(...yPositions) + 2;
-  const vb = `${minX} ${minY} ${width} ${height}`;
-  return vb;
+  const minX = Math.min(...xPositions);
+  const minY = Math.min(...yPositions);
+  const width = Math.max(...xPositions) - Math.min(...xPositions);
+  const height = Math.max(...yPositions) - Math.min(...yPositions);
+  return {
+    minX: minX,
+    minY: minY,
+    width: width,
+    height: height,
+  };
 });
 </script>
 
@@ -56,13 +60,15 @@ const viewBox = computed(() => {
     xmlns="http://www.w3.org/2000/svg"
     width="100%"
     height="100%"
-    v-bind:viewBox="viewBox"
+    v-bind:viewBox="`${viewBox.minX - 1} ${viewBox.minY - 1} ${
+      viewBox.width + 2
+    } ${viewBox.height + 2}`"
   >
     <rect
-      x="-0.5"
-      y="-0.5"
-      width="100%"
-      height="100%"
+      v-bind:x="viewBox.minX - 0.5"
+      v-bind:y="viewBox.minY - 0.5"
+      v-bind:width="viewBox.width + 1"
+      v-bind:height="viewBox.height + 1"
       :fill="background_color ?? '#dcb35c'"
     />
 

@@ -27,6 +27,10 @@ yarn start
 
 This will start two dev servers.  One is a React server listening on `localhost:3000`, and the other is an Express server listening on `localhost:3001`.
 
+## Variant Demos
+
+See https://github.com/govariantsteam/govariants/pull/249 for information about variant demos, can also be used to develop variants without setting up MongoDB.
+
 ## Creating a new variant
 
 This PR has a simple example showing how to add tic-tac-toe to the repo: https://github.com/benjaminpjones/govariants/pull/27

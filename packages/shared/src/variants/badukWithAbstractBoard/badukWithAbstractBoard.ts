@@ -1,13 +1,6 @@
 import { AbstractGame } from "../../abstract_game";
-import type { IBadukBoard } from "./abstractBoard/Interfaces/IBadukBoard";
-import { BadukBoardAbstract } from "./abstractBoard/BadukBoardAbstract";
-import type { Intersection } from "./abstractBoard/intersection";
-
-export enum Color {
-  EMPTY = 0,
-  BLACK = 1,
-  WHITE = 2,
-}
+import { Baduk, BadukConfig } from "../baduk";
+import { BoardConfig } from "../../lib/abstractBoard/boardFactory";
 
 export enum BoardPattern {
   Unknown = 0,
@@ -25,183 +18,44 @@ export interface BadukWithAbstractBoardConfig {
   pattern: BoardPattern;
 }
 
-export interface BadukWithAbstractBoardState {
-  board: IBadukBoard;
-  next_to_play: 0 | 1;
-  captures: { 0: number; 1: number };
+function mapToNewBoardConfig(
+  config: BadukWithAbstractBoardConfig,
+): BoardConfig {
+  switch (config.pattern) {
+    case BoardPattern.Rectangular: {
+      return { type: "grid", width: config.width, height: config.height };
+    }
+    case BoardPattern.Polygonal: {
+      return { type: "polygonal", size: config.width };
+    }
+    case BoardPattern.Circular: {
+      return {
+        type: "circular",
+        rings: config.height,
+        nodesPerRing: config.width,
+      };
+    }
+    case BoardPattern.Trihexagonal: {
+      return { type: "trihexagonal", size: config.width };
+    }
+    case BoardPattern.Sierpinsky: {
+      return { type: "sierpinsky", size: config.width };
+    }
+  }
+  // default return
+  return { type: "grid", width: 19, height: 19 };
 }
 
-export class BadukWithAbstractBoard extends AbstractGame<
-  BadukWithAbstractBoardConfig,
-  BadukWithAbstractBoardState
-> {
-  board: BadukBoardAbstract;
-  private next_to_play: 0 | 1 = 0;
-  private captures = { 0: 0, 1: 0 };
-  private last_move = "";
-
-  constructor(config?: BadukWithAbstractBoardConfig) {
-    super(config);
-    this.board = new BadukBoardAbstract(this.config);
-  }
-
-  exportState(): BadukWithAbstractBoardState {
-    return {
-      board: this.board,
-      captures: { 0: this.captures[0], 1: this.captures[1] },
-      next_to_play: this.next_to_play,
-    };
-  }
-
-  nextToPlay(): number[] {
-    return this.phase === "gameover" ? [] : [this.next_to_play];
-  }
-
-  playMove(player: number, move: string): void {
-    if (player != this.next_to_play) {
-      throw Error(`It's not player ${player}'s turn!`);
-    }
-    this.next_to_play = this.next_to_play === 0 ? 1 : 0;
-
-    if (move == "pass") {
-      if (this.last_move === "pass") {
-        //this.finalizeScore();
-      } else {
-        this.last_move = move;
-      }
-      super.increaseRound();
-      return;
-    }
-
-    if (move === "resign") {
-      this.phase = "gameover";
-      this.result = this.next_to_play === 0 ? "B+R" : "W+R";
-      return;
-    }
-
-    if (move === "timeout") {
-      this.phase = "gameover";
-      this.result = player === 0 ? "W+T" : "B+T";
-      return;
-    }
-
-    const decoded_move = decodeMove(move);
-    if (isOutOfBounds(decoded_move, this.board)) {
-      throw Error(
-        `Move out of bounds. (move: ${decoded_move}, intersections: ${this.board.Intersections.length}`,
-      );
-    }
-    const intersection = this.board.Intersections[decoded_move];
-
-    if (intersection.StoneState.Color != Color.EMPTY) {
-      throw Error(
-        `Cannot place a stone on top of an existing stone. (${intersection.StoneState.Color} at (${decoded_move}))`,
-      );
-    }
-    const player_color = player === 0 ? Color.BLACK : Color.WHITE;
-    intersection.StoneState.Color = player_color;
-
-    // Capture any opponent groups
-    intersection.Neighbours.forEach((neighbour) => {
-      if (
-        neighbour.StoneState.Color !== player_color &&
-        !groupHasLiberties(neighbour, this.board)
-      ) {
-        this.captures[player] += removeGroup(neighbour);
-      }
-    });
-
-    // Detect suicide
-    if (!groupHasLiberties(intersection, this.board)) {
-      console.log(this.board);
-      throw Error("Move is suicidal!");
-    }
-
-    this.last_move = move;
-    super.increaseRound();
-  }
-
-  numPlayers(): number {
-    return 2;
-  }
-
-  private finalizeScore(): void {
-    console.log("finalise score is not implemented yet");
-  }
-
-  specialMoves() {
-    return { pass: "Pass", resign: "Resign" };
-  }
-
-  defaultConfig(): BadukWithAbstractBoardConfig {
-    return { width: 4, height: 4, komi: 5.5, pattern: 2 };
-  }
+export function mapToNewBadukConfig(
+  config: BadukWithAbstractBoardConfig,
+): BadukConfig {
+  return { komi: config.komi, board: mapToNewBoardConfig(config) };
 }
 
-function decodeMove(move: string): number {
-  return Number(move);
-}
-
-/** Returns true if the group containing intersection has at least one liberty. */
-function groupHasLiberties(
-  intersection: Intersection,
-  board: BadukBoardAbstract,
-) {
-  const color = intersection.StoneState.Color;
-  const visited: { [key: string]: boolean } = {};
-  board.Intersections.forEach((i) => (visited[i.Identifier] = false));
-
-  function helper(intersection: Intersection): boolean {
-    if (intersection.StoneState.Color === Color.EMPTY) {
-      // found a liberty
-      return true;
-    }
-    if (color !== intersection.StoneState.Color) {
-      // opponent color
-      return false;
-    }
-    if (visited[intersection.Identifier]) {
-      // Already seen
-      return false;
-    }
-    visited[intersection.Identifier] = true;
-    return intersection.Neighbours.some(helper);
-  }
-
-  return helper(intersection);
-}
-
-/**
- * Removes the group containing pos, and returns the number of stones removed
- * from the board.
- */
-function removeGroup(intersection: Intersection): number {
-  return floodFill(intersection, Color.EMPTY);
-}
-
-function isOutOfBounds(i: number, board: BadukBoardAbstract): boolean {
-  return i < 0 || i >= board.Intersections.length;
-}
-
-/** Fills area with the given color, and returns the number of spaces filled. */
-function floodFill(intersection: Intersection, target_color: Color): number {
-  const starting_color = intersection.StoneState.Color;
-  if (starting_color === target_color) {
-    return 0;
-  }
-
-  function helper(intersection: Intersection): number {
-    if (starting_color !== intersection.StoneState.Color) {
-      return 0;
-    }
-
-    intersection.StoneState.Color = target_color;
-
-    return intersection.Neighbours.map(helper).reduce(
-      (acc, val) => acc + val,
-      1,
-    );
-  }
-
-  return helper(intersection);
-}
+export const BadukWithAbstractBoardConstructor = function (
+  config?: BadukWithAbstractBoardConfig,
+): AbstractGame {
+  return new Baduk(
+    config === undefined ? undefined : mapToNewBadukConfig(config),
+  );
+};

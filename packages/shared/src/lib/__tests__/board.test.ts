@@ -1,4 +1,4 @@
-import { Color } from "../../variants/badukWithAbstractBoard";
+import { Color } from "../../variants/baduk";
 import {
   BoardPattern,
   createBoard,

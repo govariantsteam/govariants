@@ -1,5 +1,5 @@
 import { AbstractGame } from "./abstract_game";
-import { BadukWithAbstractBoard } from "./variants/badukWithAbstractBoard";
+import { BadukWithAbstractBoardConstructor } from "./variants/badukWithAbstractBoard";
 import { Phantom } from "./variants/phantom";
 import { ParallelGo } from "./variants/parallel";
 import { Capture } from "./variants/capture";
@@ -14,13 +14,14 @@ import { OneColorGo } from "./variants/one_color";
 import { DriftGo } from "./variants/drift";
 import { QuantumGo } from "./variants/quantum";
 import { Baduk } from "./variants/baduk";
+import { deprecated_variants } from "./deprecated_variants";
 
 export const game_map: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [variant: string]: new (config?: any) => AbstractGame;
 } = {
   baduk: Baduk,
-  badukWithAbstractBoard: BadukWithAbstractBoard,
+  badukWithAbstractBoard: BadukWithAbstractBoardConstructor as any,
   phantom: Phantom,
   parallel: ParallelGo,
   capture: Capture,
@@ -57,7 +58,9 @@ export function makeGameObject(
 }
 
 export function getVariantList(): string[] {
-  return Object.keys(game_map);
+  return Object.keys(game_map).filter(
+    (variant) => !deprecated_variants.includes(variant),
+  );
 }
 
 export function getDefaultConfig(variant: string) {

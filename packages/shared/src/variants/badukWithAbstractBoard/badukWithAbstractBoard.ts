@@ -52,10 +52,10 @@ export function mapToNewBadukConfig(
   return { komi: config.komi, board: mapToNewBoardConfig(config) };
 }
 
-export const BadukWithAbstractBoardConstructor = function (
-  config?: BadukWithAbstractBoardConfig,
-): AbstractGame {
-  return new Baduk(
-    config === undefined ? undefined : mapToNewBadukConfig(config),
-  );
-};
+export class BadukWithAbstractBoard extends Baduk {
+  constructor(config?: BadukWithAbstractBoardConfig) {
+    const mapped_config =
+      config === undefined ? undefined : mapToNewBadukConfig(config);
+    super(mapped_config);
+  }
+}

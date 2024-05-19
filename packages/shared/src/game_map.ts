@@ -1,5 +1,5 @@
 import { AbstractGame } from "./abstract_game";
-import { BadukWithAbstractBoardConstructor } from "./variants/badukWithAbstractBoard";
+import { BadukWithAbstractBoard } from "./variants/badukWithAbstractBoard";
 import { Phantom } from "./variants/phantom";
 import { ParallelGo } from "./variants/parallel";
 import { Capture } from "./variants/capture";
@@ -21,7 +21,7 @@ export const game_map: {
   [variant: string]: new (config?: any) => AbstractGame;
 } = {
   baduk: Baduk,
-  badukWithAbstractBoard: BadukWithAbstractBoardConstructor as any,
+  badukWithAbstractBoard: BadukWithAbstractBoard,
   phantom: Phantom,
   parallel: ParallelGo,
   capture: Capture,

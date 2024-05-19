@@ -1,4 +1,3 @@
-import { AbstractGame } from "../../abstract_game";
 import { Baduk, BadukConfig } from "../baduk";
 import { BoardConfig } from "../../lib/abstractBoard/boardFactory";
 

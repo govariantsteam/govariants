@@ -5,6 +5,7 @@ import { Baduk, BadukBoard, BadukConfig, Color } from "./baduk";
 import {
   NewBadukConfig,
   NewGridBadukConfig,
+  isGridBadukConfig,
   isLegacyBadukConfig,
   mapToNewConfig,
 } from "./baduk_utils";
@@ -53,6 +54,21 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
     super(isLegacyBadukConfig(config) ? mapToNewConfig(config) : config);
   }
 
+  private decodeMove(move: string): Coordinate {
+    if (isGridBadukConfig(this.config)) {
+      return Coordinate.fromSgfRepr(move);
+    }
+    // graph boards encode moves with the unique identifier number
+    return new Coordinate(Number(move), 0);
+  }
+
+  private encodeMove(pos: Coordinate): string {
+    if (isGridBadukConfig(this.config)) {
+      return pos.toSgfRepr();
+    }
+    return pos.x.toString();
+  }
+
   playMove(player: number, move: string): void {
     if (move === "resign") {
       this.phase = "gameover";
@@ -89,7 +105,7 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
       return;
     }
 
-    const pos = Coordinate.fromSgfRepr(move);
+    const pos = this.decodeMove(move);
     // TODO: add a Dimensions class (#216) and look at that instead of
     // building a grid for no reason
     if (
@@ -120,7 +136,7 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
           new BadukHelper({ ...this.config, komi: 0 }),
         ];
         // We can assume this exists because it is filled in the first round.
-        const first = this.quantum_stones[0].toSgfRepr();
+        const first = this.encodeMove(this.quantum_stones[0]);
         // move 0
         this.subgames[0].play(0, first);
         this.subgames[1].play(0, move);
@@ -145,7 +161,7 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
         }
         const quantum_captures = this.subgames.map((game, idx) =>
           game
-            .play(player, moves[idx].toSgfRepr())
+            .play(player, this.encodeMove(moves[idx]))
             .map(this.mappedCapture.bind(this)),
         );
         this.subgames[0].clear(quantum_captures[1]);

@@ -14,6 +14,7 @@ import { OneColorGo } from "./variants/one_color";
 import { DriftGo } from "./variants/drift";
 import { QuantumGo } from "./variants/quantum";
 import { Baduk } from "./variants/baduk";
+import { deprecated_variants } from "./deprecated_variants";
 
 export const game_map: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -57,7 +58,9 @@ export function makeGameObject(
 }
 
 export function getVariantList(): string[] {
-  return Object.keys(game_map);
+  return Object.keys(game_map).filter(
+    (variant) => !deprecated_variants.includes(variant),
+  );
 }
 
 export function getDefaultConfig(variant: string) {

@@ -55,6 +55,11 @@ export interface SierpinskyBoardConfig {
 export interface GridWithHolesBoardConfig {
   type: "gridWithHoles";
   bitmap: (0 | 1 | 2 | 3 | 4)[][];
+  // 0: no intersection
+  // 0b01: connect to the right
+  // 0b10: connect down
+  // 0b11: connect down and to the right
+  // 0b100: intersection with just existing connections up or to the left
 }
 
 export interface IntersectionConstructor<TIntersection extends Intersection> {

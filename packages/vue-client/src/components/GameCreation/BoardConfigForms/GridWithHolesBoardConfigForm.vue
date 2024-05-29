@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { GridWithHolesBoardConfig } from "@ogfcommunity/variants-shared";
+import {
+  GridWithHolesBoardConfig,
+  assertRectangular2DArrayOf,
+} from "@ogfcommunity/variants-shared";
 import { ref, watch } from "vue";
 
 const defaultConfig: GridWithHolesBoardConfig = {
@@ -23,26 +26,12 @@ watch(bitmapString, () => {
   console.log(`bitmapString changed: ${bitmapString.value}`);
   configError.value = undefined;
   try {
-    const j = JSON.parse(bitmapString.value);
-    if (!Array.isArray(j) || j.some((row) => !Array.isArray(row))) {
-      throw new Error("Bitmap needs to be a 2D array!");
-    }
-    const array2D = j as unknown[][];
-    const width = array2D[0].length;
-
-    if (array2D.some((row) => row.length !== width)) {
-      throw new Error("All rows of Bitmap need to be of the same size!");
-    }
-
-    if (
-      array2D.some((row) =>
-        row.some((x) => [0, 1, 2, 3, 4].every((y) => x !== y)),
-      )
-    ) {
-      throw new Error(
-        "All elements of Bitmap's row need to be 0, 1, 2, 3 or 4",
-      );
-    }
+    const isBitmapElement = (x: unknown): x is 0 | 1 | 2 | 3 | 4 =>
+      [0, 1, 2, 3, 4].some((y) => x == y);
+    const array2D = assertRectangular2DArrayOf(
+      JSON.parse(bitmapString.value),
+      isBitmapElement,
+    );
 
     config.value.bitmap = array2D as (0 | 1 | 2 | 3 | 4)[][];
     emitConfigChange();

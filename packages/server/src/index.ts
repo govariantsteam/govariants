@@ -122,6 +122,15 @@ io.on("connection", (socket) => {
     io.emit("pong", data);
     console.log("ping");
   });
+
+  // source: https://socket.io/how-to/implement-a-subscription-model
+  socket.on("subscribe", (topics) => {
+    socket.join(topics);
+  });
+
+  socket.on("unsubscribe", (topic) => {
+    socket.leave(topic);
+  });
 });
 
 // If production, serve the React repo!

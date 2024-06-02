@@ -21,10 +21,7 @@ import PlayersToMove from "@/components/GameView/PlayersToMove.vue";
 
 const props = defineProps<{ gameId: string }>();
 
-const state_map = new Map<
-  { round: number; seat: number | null },
-  GameStateResponse
->();
+const state_map = new Map<string, GameStateResponse>();
 const view_state = ref<GameStateResponse | undefined>();
 const current_round = ref(0);
 let variant = ref("");
@@ -42,7 +39,7 @@ const playing_as = ref<undefined | number>(undefined);
 
 function setNewState(stateResponse: GameStateResponse): void {
   state_map.set(
-    { round: stateResponse.round, seat: stateResponse.seat },
+    encodeSeatAndRound(stateResponse.round, stateResponse.seat),
     stateResponse,
   );
   if (current_round.value < stateResponse.round) {
@@ -58,8 +55,12 @@ function setNewState(stateResponse: GameStateResponse): void {
   }
 }
 
+function encodeSeatAndRound(round: number, seat: number | null): string {
+  return `${round};${seat ?? ""}`;
+}
+
 async function setViewState(round: number, seat: number | null): Promise<void> {
-  const maybe_state = state_map.get({ seat: seat, round: round });
+  const maybe_state = state_map.get(encodeSeatAndRound(round, seat));
   if (maybe_state) {
     view_state.value = maybe_state;
     return;

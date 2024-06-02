@@ -26,7 +26,7 @@ const view_state = ref<GameStateResponse | undefined>();
 const current_round = ref(0);
 let variant = ref("");
 let config: object | undefined = undefined;
-const players = ref();
+const players = ref<User[]>();
 // null <-> viewing the latest round
 // while viewing history of game, maybe we should prevent player from making a move (accidentally)
 const view_round: Ref<number | null> = ref(null);
@@ -111,16 +111,19 @@ const leave = (seat: number) => {
     });
 };
 
+function unsubscribeAllSeats(): void {
+  for (let i = 0; i < (players.value?.length ?? 0); i++) {
+    socket.emit("unsubscribe", `game/${props.gameId}/${i}`);
+  }
+}
+
 const setPlayingAs = (seat: number) => {
   if (!user.value) {
     return;
   }
+  unsubscribeAllSeats();
   if (playing_as.value === seat) {
     playing_as.value = undefined;
-    socket.emit(
-      "unsubscribe",
-      players.value.map((player) => `game/${props.gameId}/${player}`),
-    );
     return;
   }
   if (players.value && players.value[seat]?.id === user.value.id) {

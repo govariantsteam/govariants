@@ -209,7 +209,7 @@ function emitGame(
   const specialMoves = game_obj.specialMoves();
 
   io()
-    .to(`game/${game_id}/`)
+    .to(`game/${game_id}`)
     .emit("move", {
       state: game_obj.exportState(null),
       round: game_obj.round,

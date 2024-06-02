@@ -124,12 +124,12 @@ io.on("connection", (socket) => {
   });
 
   // source: https://socket.io/how-to/implement-a-subscription-model
-  socket.on("subscribe", (topics) => {
-    socket.join(topics);
+  socket.on("subscribe", async (topics) => {
+    await socket.join(topics);
   });
 
-  socket.on("unsubscribe", (topic) => {
-    socket.leave(topic);
+  socket.on("unsubscribe", async (topic) => {
+    await socket.leave(topic);
   });
 });
 

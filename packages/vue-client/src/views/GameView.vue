@@ -24,8 +24,8 @@ const props = defineProps<{ gameId: string }>();
 const state_map = new Map<string, GameStateResponse>();
 const view_state = ref<GameStateResponse | undefined>();
 const current_round = ref(0);
-let variant = ref("");
-let config: object | undefined = undefined;
+const variant = ref("");
+const config: Ref<object | undefined> = ref();
 const players = ref<User[]>();
 // null <-> viewing the latest round
 // while viewing history of game, maybe we should prevent player from making a move (accidentally)
@@ -84,7 +84,7 @@ watchEffect(async () => {
     .get(`/games/${props.gameId}/state/initial`)
     .then((result) => {
       variant.value = result.variant;
-      config = result.config;
+      config.value = result.config;
       players.value = result.players;
       setNewState(result.stateResponse);
     })

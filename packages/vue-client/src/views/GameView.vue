@@ -155,9 +155,9 @@ watchEffect((onCleanup) => {
   }
   const topic = `game/${props.gameId}`;
   socket.emit("subscribe", [topic]);
-  socket.on("move", (state: GameStateResponse) =>
-    setViewState(state.round, state.seat),
-  );
+  socket.on("move", (state: GameStateResponse) => {
+    setNewState(state);
+  });
 
   const seatsMessage = `game/${props.gameId}/seats`;
   socket.on(seatsMessage, (data) => {

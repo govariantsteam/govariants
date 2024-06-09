@@ -278,16 +278,31 @@ export async function getGameState(
   seat: number | null,
   round: number | null,
 ): Promise<GameStateResponse> {
-  const game_obj = makeGameObject(game.variant, game.config);
+  let game_obj = makeGameObject(game.variant, game.config);
 
   for (let i = 0; i < game.moves.length; i++) {
-    if (game_obj.round === round) {
+    if (round !== null && game_obj.round > round) {
       break;
     }
 
     const encoded_move = game.moves[i];
     const { player, move } = getOnlyMove(encoded_move);
     game_obj.playMove(player, move);
+  }
+
+  if (round !== null && game_obj.round > round) {
+    // user is viewing past round
+    game_obj = makeGameObject(game.variant, game.config);
+    for (let i = 0; i < game.moves.length; i++) {
+      if (game_obj.round === round) {
+        // stop at start of round, so staged moves etc. are not included
+        break;
+      }
+
+      const encoded_move = game.moves[i];
+      const { player, move } = getOnlyMove(encoded_move);
+      game_obj.playMove(player, move);
+    }
   }
 
   return {

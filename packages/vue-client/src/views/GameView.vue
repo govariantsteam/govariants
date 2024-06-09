@@ -22,7 +22,7 @@ import PlayersToMove from "@/components/GameView/PlayersToMove.vue";
 const props = defineProps<{ gameId: string }>();
 
 const state_map = new Map<string, GameStateResponse>();
-const view_state = ref<GameStateResponse | undefined>();
+const game_state = ref<GameStateResponse | undefined>();
 const current_round = ref(0);
 const variant = ref("");
 const config: Ref<object | undefined> = ref();
@@ -51,7 +51,7 @@ function setNewState(stateResponse: GameStateResponse): void {
         stateResponse.round === current_round.value)) &&
     playing_as.value === (stateResponse.seat ?? undefined)
   ) {
-    view_state.value = stateResponse;
+    game_state.value = stateResponse;
   }
 }
 
@@ -59,10 +59,13 @@ function encodeSeatAndRound(round: number, seat: number | null): string {
   return `${round};${seat ?? ""}`;
 }
 
-async function setViewState(round: number, seat: number | null): Promise<void> {
+async function updateGameState(
+  round: number,
+  seat: number | null,
+): Promise<void> {
   const maybe_state = state_map.get(encodeSeatAndRound(round, seat));
   if (maybe_state) {
-    view_state.value = maybe_state;
+    game_state.value = maybe_state;
     return;
   }
   await requests
@@ -73,7 +76,7 @@ async function setViewState(round: number, seat: number | null): Promise<void> {
 }
 
 watchEffect(() => {
-  setViewState(
+  updateGameState(
     view_round.value ?? current_round.value,
     playing_as.value ?? null,
   );
@@ -192,9 +195,9 @@ const createTimeControlPreview = (
 <template>
   <div>
     <component
-      v-if="variantGameView && view_state?.state"
+      v-if="variantGameView && game_state?.state"
       v-bind:is="variantGameView"
-      v-bind:gamestate="view_state.state"
+      v-bind:gamestate="game_state.state"
       v-bind:config="config"
       v-on:move="makeMove"
     />
@@ -225,17 +228,17 @@ const createTimeControlPreview = (
         @select="setPlayingAs(idx)"
         :selected="playing_as"
         :time_control="
-          view_state?.timeControl?.forPlayer[idx] ??
+          game_state?.timeControl?.forPlayer[idx] ??
           createTimeControlPreview(config)
         "
         :time_config="(config as IConfigWithTimeControl).time_control"
-        :is_players_turn="view_state?.next_to_play?.includes(idx) ?? false"
+        :is_players_turn="game_state?.next_to_play?.includes(idx) ?? false"
       />
     </div>
 
     <div>
       <button
-        v-for="(value, key) in view_state?.special_moves"
+        v-for="(value, key) in game_state?.special_moves"
         :key="key"
         @click="makeMove(key as string)"
       >
@@ -244,10 +247,10 @@ const createTimeControlPreview = (
     </div>
   </div>
 
-  <PlayersToMove :next-to-play="view_state?.next_to_play" />
+  <PlayersToMove :next-to-play="game_state?.next_to_play" />
 
-  <div v-if="view_state?.result" style="font-weight: bold; font-size: 24pt">
-    Result: {{ view_state?.result }}
+  <div v-if="game_state?.result" style="font-weight: bold; font-size: 24pt">
+    Result: {{ game_state?.result }}
   </div>
 </template>
 

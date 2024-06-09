@@ -36,7 +36,6 @@ export interface FractionalConfig extends AbstractBadukConfig {
   players: FractionalPlayerConfig[];
 }
 
-// TODO: Circular dependencies! Does state have to be JSON.stringifyable?
 export interface FractionalState {
   boardState: (Color[] | null)[];
   stagedMove?: { intersectionID: number; colors: Color[] };

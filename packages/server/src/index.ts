@@ -128,8 +128,10 @@ io.on("connection", (socket) => {
     await socket.join(topics);
   });
 
-  socket.on("unsubscribe", async (topic) => {
-    await socket.leave(topic);
+  socket.on("unsubscribe", async (topics) => {
+    for (const topic of topics) {
+      await socket.leave(topic);
+    }
   });
 });
 

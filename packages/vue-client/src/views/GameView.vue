@@ -115,8 +115,11 @@ const leave = (seat: number) => {
 };
 
 function unsubscribeAllSeats(): void {
-  for (let i = 0; i < (players.value?.length ?? 0); i++) {
-    socket.emit("unsubscribe", `game/${props.gameId}/${i}`);
+  if (players.value) {
+    socket.emit(
+      "unsubscribe",
+      players.value.map((_, index) => `game/${props.gameId}/${index}`),
+    );
   }
 }
 

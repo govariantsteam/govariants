@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import {
-  createBoard,
-  type FractionalConfig,
-  type FractionalState,
+import type {
+  FractionalConfig,
+  FractionalState,
 } from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
 import TaegeukStone from "../TaegeukStone.vue";
-import { Intersection } from "../../../../shared/src/lib/abstractBoard/intersection";
 
 const props = defineProps<{
   config: FractionalConfig;
@@ -21,14 +19,10 @@ function intersectionClicked(identifier: number) {
   emit("move", identifier);
 }
 
-const intersections = computed(() =>
-  createBoard(props.config.board, Intersection),
-);
-
 const boardRect = computed(
   (): { x: number; y: number; width: number; height: number } => {
-    const xPositions = intersections.value.map((i) => i.position.X);
-    const yPositions = intersections.value.map((i) => i.position.Y);
+    const xPositions = props.gamestate.intersections.map((i) => i.position.X);
+    const yPositions = props.gamestate.intersections.map((i) => i.position.Y);
     const xMin = Math.min(...xPositions);
     const xMax = Math.max(...xPositions);
     const yMin = Math.min(...yPositions);
@@ -51,15 +45,7 @@ const viewBox = computed(() => {
   return `${x} ${y} ${width} ${height}`;
 });
 
-const stagedMove = computed(() =>
-  props.gamestate.stagedMove
-    ? {
-        intersection:
-          intersections.value[props.gamestate.stagedMove.intersectionID],
-        colors: props.gamestate.stagedMove.colors,
-      }
-    : undefined,
-);
+const stagedMove = computed(() => props.gamestate.stagedMove);
 </script>
 
 <template>
@@ -78,7 +64,10 @@ const stagedMove = computed(() =>
       :height="boardRect.height"
     />
     <g class="lines">
-      <g v-for="intersection in intersections" :key="intersection.id">
+      <g
+        v-for="intersection in props.gamestate.intersections"
+        :key="intersection.id"
+      >
         <line
           v-for="neighbour in intersection.neighbours.filter(
             (n) => n.id < intersection.id,
@@ -93,10 +82,13 @@ const stagedMove = computed(() =>
       </g>
     </g>
     <g class="stones">
-      <g v-for="(intersection, index) in intersections" :key="intersection.id">
+      <g
+        v-for="intersection in props.gamestate.intersections"
+        :key="intersection.id"
+      >
         <TaegeukStone
-          v-if="$props.gamestate.boardState.at(index)"
-          :colors="[...$props.gamestate.boardState.at(index)]"
+          v-if="intersection.stone"
+          :colors="[...intersection.stone.colors]"
           :cx="intersection.position.X"
           :cy="intersection.position.Y"
           :r="0.47"

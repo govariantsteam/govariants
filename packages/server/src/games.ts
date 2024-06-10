@@ -6,7 +6,6 @@ import {
   getOnlyMove,
   HasTimeControlConfig,
   GamesFilter,
-  AbstractGame,
 } from "@ogfcommunity/variants-shared";
 import { ObjectId, WithId, Document, Filter } from "mongodb";
 import { getDb } from "./db";
@@ -18,7 +17,6 @@ import {
 } from "./time-control/time-control";
 import { timeControlHandlerMap } from "./time-control/time-handler-map";
 import { Clock } from "./time-control/clock";
-import { GameStateResponse } from "../../shared/src/api_types";
 
 export function gamesCollection() {
   return getDb().db().collection("games");
@@ -195,41 +193,9 @@ export async function handleMoveAndTime(
 
   game.moves.push(moves);
 
-  emitGame(game.id, game.players?.length ?? 0, game_obj);
+  io().emit(`game/${game_id}`, game);
 
   return game;
-}
-
-function emitGame(
-  game_id: string,
-  num_players: number,
-  game_obj: AbstractGame<unknown, unknown>,
-): void {
-  const next_to_play = game_obj.nextToPlay();
-  const specialMoves = game_obj.specialMoves();
-
-  io()
-    .to(`game/${game_id}`)
-    .emit("move", {
-      state: game_obj.exportState(null),
-      round: game_obj.round,
-      next_to_play: next_to_play,
-      special_moves: specialMoves,
-      result: game_obj.result,
-      seat: null,
-    });
-
-  for (let seat = 0; seat < num_players; seat++) {
-    const gameStateResponse: GameStateResponse = {
-      state: game_obj.exportState(seat),
-      round: game_obj.round,
-      next_to_play: next_to_play,
-      special_moves: specialMoves,
-      result: game_obj.result,
-      seat: seat,
-    };
-    io().to(`game/${game_id}/${seat}`).emit("move", gameStateResponse);
-  }
 }
 
 async function updateSeat(
@@ -271,49 +237,6 @@ export async function leaveSeat(
   user_id: string,
 ) {
   return updateSeat(game_id, seat, user_id, undefined);
-}
-
-export async function getGameState(
-  game: GameResponse,
-  seat: number | null,
-  round: number | null,
-): Promise<GameStateResponse> {
-  let game_obj = makeGameObject(game.variant, game.config);
-
-  for (let i = 0; i < game.moves.length; i++) {
-    if (round !== null && game_obj.round > round) {
-      break;
-    }
-
-    const encoded_move = game.moves[i];
-    const { player, move } = getOnlyMove(encoded_move);
-    game_obj.playMove(player, move);
-  }
-
-  if (round !== null && game_obj.round > round) {
-    // user is viewing past round
-    game_obj = makeGameObject(game.variant, game.config);
-    for (let i = 0; i < game.moves.length; i++) {
-      if (game_obj.round === round) {
-        // stop at start of round, so staged moves etc. are not included
-        break;
-      }
-
-      const encoded_move = game.moves[i];
-      const { player, move } = getOnlyMove(encoded_move);
-      game_obj.playMove(player, move);
-    }
-  }
-
-  return {
-    state: game_obj.exportState(seat),
-    round: game_obj.round,
-    next_to_play: game_obj.nextToPlay(),
-    special_moves: game_obj.specialMoves(),
-    result: game_obj.result,
-    seat: seat,
-    timeControl: game.time_control,
-  };
 }
 
 // This function exists for games whose players field has not yet been defined.

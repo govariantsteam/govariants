@@ -7,7 +7,6 @@ import {
   playMove,
   takeSeat,
   leaveSeat,
-  getGameState,
 } from "./games";
 import {
   checkUsername,
@@ -23,7 +22,6 @@ import {
   UserResponse,
 } from "@ogfcommunity/variants-shared";
 import { io } from "./socket_io";
-import { GameInitialResponse } from "@ogfcommunity/variants-shared/src/api_types";
 
 export const router = express.Router();
 
@@ -174,35 +172,4 @@ router.get("/logout", async function (req, res) {
       res.json({});
     });
   });
-});
-
-router.get("/games/:gameId/state/initial", async (req, res) => {
-  try {
-    const game = await getGame(req.params.gameId);
-    const stateResponse = await getGameState(game, null, null);
-    const result: GameInitialResponse = {
-      variant: game.variant,
-      config: game.config,
-      id: game.id,
-      players: game.players,
-      stateResponse: stateResponse,
-    };
-    res.send(result);
-  } catch (e) {
-    res.status(500);
-    res.json(e.message);
-  }
-});
-
-router.get("/games/:gameId/state", async (req, res) => {
-  try {
-    const seat = req.query.seat === "" ? null : Number(req.query.seat);
-    const round = req.query.round === "" ? null : Number(req.query.round);
-    const game = await getGame(req.params.gameId);
-    const stateResponse = await getGameState(game, seat, round);
-    res.send(stateResponse);
-  } catch (e) {
-    res.status(500);
-    res.json(e.message);
-  }
 });

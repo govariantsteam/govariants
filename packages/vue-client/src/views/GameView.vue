@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import {
-  makeGameObject,
-  type GameResponse,
-  getOnlyMove,
   HasTimeControlConfig,
   timeControlMap,
 } from "@ogfcommunity/variants-shared";
@@ -13,8 +10,9 @@ import type {
   User,
   IPerPlayerTimeControlBase,
   IConfigWithTimeControl,
+  GameStateResponse,
 } from "@ogfcommunity/variants-shared";
-import { computed, reactive, ref, watchEffect, type Ref } from "vue";
+import { computed, ref, watchEffect, type Ref } from "vue";
 import { board_map } from "@/board_map";
 import { socket } from "../requests";
 import { variant_short_description_map } from "../components/variant_descriptions/variant_description.consts";
@@ -23,81 +21,84 @@ import PlayersToMove from "@/components/GameView/PlayersToMove.vue";
 
 const props = defineProps<{ gameId: string }>();
 
-const DEFAULT_GAME: GameResponse = {
-  id: "",
-  variant: "",
-  moves: [],
-  config: {},
-};
-
+const state_map = new Map<string, GameStateResponse>();
+const game_state = ref<GameStateResponse | undefined>();
+const current_round = ref(0);
+const variant = ref("");
+const config: Ref<object | undefined> = ref();
+const players = ref<User[]>();
 // null <-> viewing the latest round
 // while viewing history of game, maybe we should prevent player from making a move (accidentally)
 const view_round: Ref<number | null> = ref(null);
-
-const gameResponse: GameResponse = reactive(DEFAULT_GAME);
-const game = computed(() => {
-  if (!gameResponse.variant) {
-    return { result: null, state: null };
-  }
-  const game_obj = makeGameObject(gameResponse.variant, gameResponse.config);
-
-  let state: unknown = null;
-  gameResponse.moves.forEach((m) => {
-    if (
-      view_round.value !== null &&
-      state === null &&
-      game_obj.round === view_round.value
-    ) {
-      state = structuredClone(game_obj.exportState(playing_as.value));
-    }
-
-    const { player, move } = getOnlyMove(m);
-    game_obj.playMove(player, move);
-  });
-  const result =
-    game_obj.phase === "gameover" ? game_obj.result || "Game over" : null;
-
-  if (state === null) {
-    state = game_obj.exportState(playing_as.value);
-  }
-  return {
-    result,
-    state,
-    round: game_obj.round,
-    next_to_play: game_obj.nextToPlay(),
-  };
-});
-const specialMoves = computed(() =>
-  !gameResponse.variant || !gameResponse.config
-    ? {}
-    : makeGameObject(gameResponse.variant, gameResponse.config).specialMoves(),
-);
-const variantGameView = computed(() => board_map[gameResponse.variant]);
+const variantGameView = computed(() => board_map[variant.value]);
 const variantDescriptionShort = computed(
-  () => variant_short_description_map[gameResponse.variant] ?? "",
+  () => variant_short_description_map[variant.value] ?? "",
 );
-watchEffect(async () => {
-  // TODO: provide a cleanup function to cancel the request.
-  await requests
-    .get(`/games/${props.gameId}`)
-    .then((result) => Object.assign(gameResponse, result))
-    .catch(alert);
+const user = useCurrentUser();
+const playing_as = ref<undefined | number>(undefined);
 
-  const userSeats = gameResponse.players
-    ?.map((playerUser: User | undefined, index: number) =>
-      playerUser && playerUser?.id === user.value?.id ? index : null,
-    )
-    .filter((index: number | null): index is number => index !== null);
-  if (userSeats?.length === 1) {
-    setPlayingAs(userSeats[0]);
+function setNewState(stateResponse: GameStateResponse): void {
+  state_map.set(
+    encodeSeatAndRound(stateResponse.round, stateResponse.seat),
+    stateResponse,
+  );
+  if (current_round.value < stateResponse.round) {
+    current_round.value = stateResponse.round;
   }
+  if (
+    (view_round.value === stateResponse.round ||
+      (view_round.value === null &&
+        stateResponse.round === current_round.value)) &&
+    playing_as.value === (stateResponse.seat ?? undefined)
+  ) {
+    game_state.value = stateResponse;
+  }
+}
+
+function encodeSeatAndRound(round: number, seat: number | null): string {
+  return `${round};${seat ?? ""}`;
+}
+
+async function updateGameState(
+  round: number,
+  seat: number | null,
+): Promise<void> {
+  const maybe_state = state_map.get(encodeSeatAndRound(round, seat));
+  if (maybe_state) {
+    game_state.value = maybe_state;
+    return;
+  }
+  await requests
+    .get(`/games/${props.gameId}/state/?seat=${seat ?? ""}&round=${round}`)
+    .then(setNewState)
+    .catch(alert);
+  return;
+}
+
+watchEffect(() => {
+  updateGameState(
+    view_round.value ?? current_round.value,
+    playing_as.value ?? null,
+  );
+});
+
+watchEffect(async () => {
+  await requests
+    .get(`/games/${props.gameId}/state/initial`)
+    .then((result) => {
+      variant.value = result.variant;
+      config.value = result.config;
+      players.value = result.players;
+      setNewState(result.stateResponse);
+    })
+    .catch(alert);
 });
 
 const sit = (seat: number) => {
   requests
     .post(`/games/${props.gameId}/sit/${seat}`, {})
-    .then((players: User[]) => {
-      gameResponse.players = players;
+    .then((players_array: User[]) => {
+      players.value = players_array;
       playing_as.value = seat;
     });
 };
@@ -105,30 +106,35 @@ const sit = (seat: number) => {
 const leave = (seat: number) => {
   requests
     .post(`/games/${props.gameId}/leave/${seat}`, {})
-    .then((players: User[]) => {
-      gameResponse.players = players;
+    .then((players_array: User[]) => {
+      players.value = players_array;
       if (playing_as.value === seat) {
         playing_as.value = undefined;
       }
     });
 };
 
-const user = useCurrentUser();
+function unsubscribeAllSeats(): void {
+  if (players.value) {
+    socket.emit(
+      "unsubscribe",
+      players.value.map((_, index) => `game/${props.gameId}/${index}`),
+    );
+  }
+}
 
-const playing_as = ref<undefined | number>(undefined);
 const setPlayingAs = (seat: number) => {
   if (!user.value) {
     return;
   }
+  unsubscribeAllSeats();
   if (playing_as.value === seat) {
     playing_as.value = undefined;
     return;
   }
-  if (
-    gameResponse.players &&
-    gameResponse.players[seat]?.id === user.value.id
-  ) {
+  if (players.value && players.value[seat]?.id === user.value.id) {
     playing_as.value = seat;
+    socket.emit("subscribe", [`game/${props.gameId}/${seat}`]);
   }
 };
 
@@ -146,40 +152,39 @@ function makeMove(move_str: string) {
   }
 
   move[playing_as.value] = move_str;
-  requests
-    .post(`/games/${gameResponse.id}/move`, move)
-    .then((res: GameResponse) => {
-      Object.assign(gameResponse, res);
-    })
-    .catch(alert);
+  requests.post(`/games/${props.gameId}/move`, move).catch(alert);
 }
 
 watchEffect((onCleanup) => {
   if (!props.gameId) {
     return;
   }
-  const message = `game/${props.gameId}`;
-  socket.on(message, (data) => {
-    Object.assign(gameResponse, data);
+  const topic = `game/${props.gameId}`;
+  socket.emit("subscribe", [topic]);
+  socket.on("move", (state: GameStateResponse) => {
+    setNewState(state);
   });
+
   const seatsMessage = `game/${props.gameId}/seats`;
   socket.on(seatsMessage, (data) => {
-    gameResponse.players = data;
+    players.value = data;
   });
 
   onCleanup(() => {
-    socket.off(message);
+    socket.emit("unsubscribe", [topic]);
+    socket.off("move");
     socket.off(seatsMessage);
   });
 });
+
 const createTimeControlPreview = (
-  game: GameResponse,
+  config: unknown,
 ): IPerPlayerTimeControlBase | null => {
-  if (HasTimeControlConfig(game.config)) {
-    const config = (game.config as IConfigWithTimeControl).time_control;
-    const clock = timeControlMap.get(config.type);
+  if (HasTimeControlConfig(config)) {
+    const time_control_config = (config as IConfigWithTimeControl).time_control;
+    const clock = timeControlMap.get(time_control_config.type);
     if (!clock) {
-      throw new Error(`Invalid time control: ${config.type}`);
+      throw new Error(`Invalid time control: ${time_control_config.type}`);
     }
     return {
       clockState: clock.initialState(config),
@@ -193,19 +198,19 @@ const createTimeControlPreview = (
 <template>
   <div>
     <component
-      v-if="variantGameView && game.state"
+      v-if="variantGameView && game_state?.state"
       v-bind:is="variantGameView"
-      v-bind:gamestate="game.state"
-      v-bind:config="gameResponse.config"
+      v-bind:gamestate="game_state.state"
+      v-bind:config="config"
       v-on:move="makeMove"
     />
-    <NavButtons :gameRound="game.round" v-model="view_round" />
+    <NavButtons :gameRound="current_round" v-model="view_round" />
 
     <div id="variant-info">
       <div>
         <span class="info-label">Variant:</span>
         <span class="info-attribute">
-          {{ gameResponse.variant ?? "unknown" }}
+          {{ variant ?? "unknown" }}
         </span>
       </div>
 
@@ -216,7 +221,7 @@ const createTimeControlPreview = (
     </div>
   </div>
   <div className="seat-list">
-    <div v-for="(player, idx) in gameResponse.players" :key="idx">
+    <div v-for="(player, idx) in players" :key="idx">
       <SeatComponent
         :user_id="user?.id"
         :occupant="player"
@@ -226,17 +231,17 @@ const createTimeControlPreview = (
         @select="setPlayingAs(idx)"
         :selected="playing_as"
         :time_control="
-          gameResponse.time_control?.forPlayer[idx] ??
-          createTimeControlPreview(gameResponse)
+          game_state?.timeControl?.forPlayer[idx] ??
+          createTimeControlPreview(config)
         "
-        :time_config="(gameResponse.config as IConfigWithTimeControl).time_control"
-        :is_players_turn="game.next_to_play?.includes(idx) ?? false"
+        :time_config="(config as IConfigWithTimeControl).time_control"
+        :is_players_turn="game_state?.next_to_play?.includes(idx) ?? false"
       />
     </div>
 
     <div>
       <button
-        v-for="(value, key) in specialMoves"
+        v-for="(value, key) in game_state?.special_moves"
         :key="key"
         @click="makeMove(key as string)"
       >
@@ -245,10 +250,10 @@ const createTimeControlPreview = (
     </div>
   </div>
 
-  <PlayersToMove :next-to-play="game.next_to_play" />
+  <PlayersToMove :next-to-play="game_state?.next_to_play" />
 
-  <div v-if="game.result" style="font-weight: bold; font-size: 24pt">
-    Result: {{ game.result }}
+  <div v-if="game_state?.result" style="font-weight: bold; font-size: 24pt">
+    Result: {{ game_state?.result }}
   </div>
 </template>
 

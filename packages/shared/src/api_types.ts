@@ -27,3 +27,20 @@ export type GamesFilter = {
   user_id?: string;
   variant?: string;
 };
+
+export type GameStateResponse = {
+  state: unknown;
+  round: number;
+  next_to_play: number[];
+  special_moves: { [key: string]: string };
+  result: string;
+  seat: number | null;
+  timeControl?: ITimeControlBase;
+};
+
+export type GameInitialResponse = Omit<
+  GameResponse,
+  "moves" | "timeControl"
+> & {
+  stateResponse: GameStateResponse;
+};

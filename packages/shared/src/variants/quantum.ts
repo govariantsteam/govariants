@@ -49,9 +49,16 @@ class BadukHelper {
 export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
   subgames: BadukHelper[] = [];
   quantum_stones: Coordinate[] = [];
+  
+  public sgfContent: string = '';
+  private moves: string[] = [];
+  public moveNumber: number = 0;
+
 
   constructor(config: BadukConfig) {
     super(isLegacyBadukConfig(config) ? mapToNewConfig(config) : config);
+    this.bootstrap("player Black","player white", 9, 6.5); 
+    // make sure that player names, board size, and komi arugments are dynamic with user input
   }
 
   private decodeMove(move: string): Coordinate {
@@ -68,17 +75,18 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
     }
     return pos.x.toString();
   }
-
   playMove(player: number, move: string): void {
     if (move === "resign") {
       this.phase = "gameover";
       this.result = player === 0 ? "B+R" : "W+R";
+      this.writeToSGF(this.moves, false);
       return;
     }
 
     if (move === "timeout") {
       this.phase = "gameover";
       this.result = player === 0 ? "B+T" : "W+T";
+      this.writeToSGF(this.moves, false);
       return;
     }
 
@@ -102,6 +110,7 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
           this.result = "Tie";
         }
       }
+      this.writeToSGF(this.moves, false);
       return;
     }
 
@@ -122,6 +131,7 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
           throw new Error("Black must place the first quantum stone.");
         }
         this.quantum_stones.push(pos);
+       
         break;
       }
       case 1: {
@@ -129,6 +139,7 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
           throw new Error("White must place the second quantum stone.");
         }
         this.quantum_stones.push(pos);
+
         this.subgames = [
           // komi is 0 so that it's easier to use the result of the subgames to
           // build our final score
@@ -168,6 +179,10 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
         this.subgames[1].clear(quantum_captures[0]);
       }
     }
+    // adding the coordinates to the moves array
+    this.moves[this.moveNumber] = move;
+
+    this.moveNumber++;
 
     super.increaseRound();
   }
@@ -234,7 +249,48 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
     }
     throw new Error("Error finding mapped capture.");
   }
+
+
+  public bootstrap(playerB: string, playerW: string, boardSize: number, komi: number){
+
+    const currentDate: Date = new Date();
+
+    let initData: string[] = [
+
+      "(;\n", 
+      "EV[GO Variants]\n", 
+      `PB[${playerB}]\n`, 
+      `PW[${playerW}]\n`,
+      `SZ[${boardSize}]\n`,
+      `KM[${komi}]\n`,     
+      `DT[${currentDate.getMonth()+1}/${currentDate.getDate()}/${currentDate.getFullYear()} ${currentDate.getHours()}:${currentDate.getMinutes()}]\n`,
+      "VS[quantum]\n",
+      "\n",
+      "\n"
+
+    ];
+  
+    this.writeToSGF(initData, true);
+   
+  }
+  
+  //creating sgf file
+  public writeToSGF(text: string[], callingBootstrap: boolean){
+
+    for (let i = 0; i < text.length; i++){
+      let formattedMove = text[i];
+      if(!callingBootstrap){
+        formattedMove = `${i % 2 === 0 ? ";B" : ";W"}[${text[i]}]`;
+      }
+      this.sgfContent += formattedMove;
+    }
+    if(!callingBootstrap){
+      this.sgfContent += "\n\n)";
+      console.log(this.sgfContent);
+    }  
+  }
 }
+
 
 /** based on two board states, determine which stones were captured */
 function deduceCaptures(

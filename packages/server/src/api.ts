@@ -29,7 +29,7 @@ export const router = express.Router();
 
 // Set up express routes
 
-router.post('/game/:gameId/sgf', async (req, res) => {
+router.get('/game/:gameId/sgf', async (req, res) => {
   //route not being called
   console.log("test");
   res.status(200).send("test");
@@ -48,8 +48,8 @@ router.post('/game/:gameId/sgf', async (req, res) => {
       throw new Error(`SGF not supported for variant ${game.variant}`);
     }
     
-    // send the SGF string as the response
-    res.status(200).send(game_obj.getSGF());
+    // download sgf
+    res.download(game_obj.getSGF());
   } catch (e) {
     res.status(500).json({ error: e.message });
   }

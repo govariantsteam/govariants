@@ -44,4 +44,7 @@ export class ChessGame extends AbstractGame<object, ChessState> {
   defaultConfig(): object {
     return {};
   }
+  getSGF(): string{
+    return '';
+  }
 }

@@ -32,6 +32,12 @@ const router = createRouter({
       props: true,
     },
     {
+      path: '/game/:gameId/sgf',
+      name: 'sgf',
+      component: () => import('../views/GameView.vue'),
+      props: true
+    },
+    {
       path: "/variants/:variant/demo",
       name: "demo",
       component: () => import("../views/VariantDemoView.vue"),

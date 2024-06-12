@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import DownloadSGF from './DownloadSGF.vue';
 const props = defineProps<{ gameRound?: number }>();
 
 const round = defineModel<number | null>();
@@ -34,16 +33,8 @@ const navigateRounds = (offset: number): void => {
       <button @click="() => navigateRounds(10)">>></button>
       <button @click="() => navigateRounds(props.gameRound ?? 0)">>>></button>
     </div>
-
-    
   </div>
-
-  <DownloadSGF />
-  
-
 </template>
-
-
 
 
 <style scoped>

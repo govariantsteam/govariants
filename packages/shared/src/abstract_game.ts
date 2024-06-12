@@ -16,6 +16,11 @@ export abstract class AbstractGame<GameConfig = object, GameState = object> {
   }
 
   /**
+   * Returns the SGF data for a game
+   */
+  abstract getSGF(): string;
+
+  /**
    * Play one move by the specified player.
    *
    * May throw if the move was invalid and we should return that information

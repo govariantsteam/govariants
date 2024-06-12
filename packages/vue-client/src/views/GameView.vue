@@ -20,6 +20,8 @@ import { socket } from "../requests";
 import { variant_short_description_map } from "../components/variant_descriptions/variant_description.consts";
 import NavButtons from "@/components/GameView/NavButtons.vue";
 import PlayersToMove from "@/components/GameView/PlayersToMove.vue";
+import DownloadSGF from '@/components/GameView/DownloadSGF.vue';
+
 
 const props = defineProps<{ gameId: string }>();
 
@@ -201,6 +203,8 @@ const createTimeControlPreview = (
     />
     <NavButtons :gameRound="game.round" v-model="view_round" />
 
+    <DownloadSGF :gameId="gameId"/>
+
     <div id="variant-info">
       <div>
         <span class="info-label">Variant:</span>
@@ -271,3 +275,6 @@ const createTimeControlPreview = (
   }
 }
 </style>
+
+
+

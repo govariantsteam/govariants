@@ -202,4 +202,7 @@ export abstract class AbstractBaduk<
 
     return r;
   }
+  getSGF(): string{
+    return '';
+  }
 }

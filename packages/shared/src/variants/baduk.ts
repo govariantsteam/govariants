@@ -230,6 +230,11 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
       },
     };
   }
+
+  getSGF(): string{
+    return '';
+  }
+
 }
 
 /** Returns true if the group containing (x, y) has at least one liberty. */
@@ -268,5 +273,9 @@ export class GridBaduk extends Baduk {
         height: 19,
       },
     };
+  }
+
+  getSGF(): string{
+    return '';
   }
 }

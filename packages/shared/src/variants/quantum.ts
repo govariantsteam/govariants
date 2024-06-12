@@ -75,6 +75,7 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
     }
     return pos.x.toString();
   }
+  
   playMove(player: number, move: string): void {
     if (move === "resign") {
       this.phase = "gameover";
@@ -289,6 +290,11 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
       console.log(this.sgfContent);
     }  
   }
+
+  getSGF(): string{
+    return this.sgfContent;
+  }
+  
 }
 
 

@@ -1,4 +1,5 @@
 import express from "express";
+import { makeGameObject } from "@ogfcommunity/variants-shared";
 import passport, { AuthenticateCallback } from "passport";
 import {
   getGame,
@@ -15,6 +16,7 @@ import {
   getUserByName,
 } from "./users";
 import {
+  getOnlyMove,
   GameResponse,
   GamesFilter,
   MovesType,
@@ -26,6 +28,33 @@ import { io } from "./socket_io";
 export const router = express.Router();
 
 // Set up express routes
+
+router.post('/game/:gameId/sgf', async (req, res) => {
+  //route not being called
+  console.log("test");
+  res.status(200).send("test");
+  try {
+
+    const game = await getGame(req.params.gameId);
+
+    const game_obj = makeGameObject(game.variant, game.config);
+
+    game.moves.forEach((moves) => {
+      const { player, move } = getOnlyMove(moves);
+      game_obj.playMove(player, move);
+    });
+
+    if (game_obj.getSGF() === '') {
+      throw new Error(`SGF not supported for variant ${game.variant}`);
+    }
+    
+    // send the SGF string as the response
+    res.status(200).send(game_obj.getSGF());
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 router.get("/games/:gameId", async (req, res) => {
   try {
     const game: GameResponse = await getGame(req.params.gameId);
@@ -49,6 +78,8 @@ router.get("/games", async (req, res) => {
   );
   res.send(games || 0);
 });
+
+
 
 router.post("/games", async (req, res) => {
   const data = req.body;

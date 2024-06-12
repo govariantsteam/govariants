@@ -7,6 +7,7 @@ import {
   HasTimeControlConfig,
   GamesFilter,
   AbstractGame,
+  GameStateResponse,
 } from "@ogfcommunity/variants-shared";
 import { ObjectId, WithId, Document, Filter } from "mongodb";
 import { getDb } from "./db";
@@ -18,7 +19,6 @@ import {
 } from "./time-control/time-control";
 import { timeControlHandlerMap } from "./time-control/time-handler-map";
 import { Clock } from "./time-control/clock";
-import { GameStateResponse } from "../../shared/src/api_types";
 
 export function gamesCollection() {
   return getDb().db().collection("games");

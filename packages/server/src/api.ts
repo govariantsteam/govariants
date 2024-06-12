@@ -21,9 +21,9 @@ import {
   MovesType,
   User,
   UserResponse,
+  GameInitialResponse,
 } from "@ogfcommunity/variants-shared";
 import { io } from "./socket_io";
-import { GameInitialResponse } from "@ogfcommunity/variants-shared/src/api_types";
 
 export const router = express.Router();
 

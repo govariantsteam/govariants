@@ -3,10 +3,10 @@ import {
   createBoard,
   type FractionalConfig,
   type FractionalState,
+  Intersection,
 } from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
 import TaegeukStone from "../TaegeukStone.vue";
-import { Intersection } from "../../../../shared/src/lib/abstractBoard/intersection";
 
 const props = defineProps<{
   config: FractionalConfig;

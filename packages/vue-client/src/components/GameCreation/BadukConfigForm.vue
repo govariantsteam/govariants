@@ -1,4 +1,3 @@
-import { Grid } from '../../../../shared/src/lib/grid';
 <script setup lang="ts">
 import { BoardConfig, NewBadukConfig } from "@ogfcommunity/variants-shared";
 import BoardConfigForm from "./BoardConfigForms/BoardConfigForm.vue";

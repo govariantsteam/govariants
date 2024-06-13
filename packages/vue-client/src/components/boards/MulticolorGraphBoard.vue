@@ -21,7 +21,9 @@ const props = defineProps<{
   board_config: BoardConfig;
 }>();
 
-const intersections = createBoard(props.board_config, Intersection);
+const intersections = computed(() =>
+  createBoard(props.board_config, Intersection),
+);
 const hovered: Ref<number> = ref(-1);
 
 const emit = defineEmits<{
@@ -39,8 +41,8 @@ function positionHovered(index: number) {
 }
 
 const viewBox = computed(() => {
-  const xPositions = intersections.map((i) => i.position.X);
-  const yPositions = intersections.map((i) => i.position.Y);
+  const xPositions = intersections.value.map((i) => i.position.X);
+  const yPositions = intersections.value.map((i) => i.position.Y);
   const minX = Math.min(...xPositions);
   const minY = Math.min(...yPositions);
   const width = Math.max(...xPositions) - Math.min(...xPositions);
@@ -87,7 +89,7 @@ const viewBox = computed(() => {
     </g>
     <g v-for="intersection in intersections" :key="intersection.id">
       <TaegeukStone
-        :key="`${intersection.position.X},${intersection.position.Y}`"
+        :key="`${intersection.id}: ${intersection.position.X},${intersection.position.Y}`"
         :cx="intersection.position.X"
         :cy="intersection.position.Y"
         :r="0.48"

@@ -32,3 +32,24 @@ export function gamesFilterToUrlParams(filter: GamesFilter): string {
       : `&variant=${encodeURIComponent(filter.variant)}`)
   );
 }
+
+export function assertRectangular2DArrayOf<T>(
+  arr: unknown,
+  typeGuard: (x: unknown) => x is T,
+): T[][] {
+  if (!Array.isArray(arr) || arr.some((row) => !Array.isArray(row))) {
+    throw new Error("2D array expected!");
+  }
+  const array2D = arr as unknown[][];
+  const width = array2D[0].length;
+
+  if (array2D.some((row) => row.length !== width)) {
+    throw new Error("Expected an array with all rows of the same size!");
+  }
+
+  if (!array2D.every((row) => row.every(typeGuard))) {
+    throw new Error("Expected an array with all elements of a given type!");
+  }
+
+  return array2D as T[][];
+}

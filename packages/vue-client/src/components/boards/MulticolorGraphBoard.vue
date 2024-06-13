@@ -13,6 +13,7 @@ import {
   BoardConfig,
   createBoard,
   Intersection,
+  createGraph,
 } from "@ogfcommunity/variants-shared";
 
 const props = defineProps<{
@@ -21,7 +22,10 @@ const props = defineProps<{
   board_config: BoardConfig;
 }>();
 
-const intersections = createBoard(props.board_config, Intersection);
+const intersections = computed(() =>
+  createBoard(props.board_config, Intersection),
+);
+const board = computed(() => createGraph(intersections.value, null));
 const hovered: Ref<number> = ref(-1);
 
 const emit = defineEmits<{
@@ -39,8 +43,8 @@ function positionHovered(index: number) {
 }
 
 const viewBox = computed(() => {
-  const xPositions = intersections.map((i) => i.position.X);
-  const yPositions = intersections.map((i) => i.position.Y);
+  const xPositions = intersections.value.map((i) => i.position.X);
+  const yPositions = intersections.value.map((i) => i.position.Y);
   const minX = Math.min(...xPositions);
   const minY = Math.min(...yPositions);
   const width = Math.max(...xPositions) - Math.min(...xPositions);
@@ -72,53 +76,53 @@ const viewBox = computed(() => {
       :fill="background_color ?? '#dcb35c'"
     />
 
-    <g v-for="intersection in intersections" :key="intersection.id">
+    <g v-for="(intersection, index) in intersections" :key="index">
       <line
-        v-for="neighbour in intersection.neighbours.filter(
-          (n) => n.id < intersection.id,
-        )"
-        :key="neighbour.id"
+        v-for="neighbour_index in board
+          .neighbors(index)
+          .filter((n) => n < index)"
+        :key="neighbour_index"
         class="grid"
         v-bind:x1="intersection.position.X"
-        v-bind:x2="neighbour.position.X"
+        v-bind:x2="intersections[neighbour_index].position.X"
         v-bind:y1="intersection.position.Y"
-        v-bind:y2="neighbour.position.Y"
+        v-bind:y2="intersections[neighbour_index].position.Y"
       />
     </g>
-    <g v-for="intersection in intersections" :key="intersection.id">
+    <g v-for="(intersection, index) in intersections" :key="index">
       <TaegeukStone
         :key="`${intersection.position.X},${intersection.position.Y}`"
         :cx="intersection.position.X"
         :cy="intersection.position.Y"
         :r="0.48"
-        :colors="props.board?.at(intersection.id)?.colors ?? []"
-        @click="positionClicked(intersection.id)"
-        @mouseover="positionHovered(intersection.id)"
+        :colors="props.board?.at(index)?.colors ?? []"
+        @click="positionClicked(index)"
+        @mouseover="positionHovered(index)"
       />
     </g>
     <g>
       <IntersectionAnnotation
-        v-for="intersection in intersections.filter(
-          (x) => props.board.at(x.id)?.annotation,
+        v-for="(intersection, index) in intersections.filter(
+          (_, idx) => props.board.at(idx)?.annotation,
         )"
-        :key="intersection.id"
+        :key="index"
         :cx="intersection.position.X"
         :cy="intersection.position.Y"
         :r="0.48"
-        :annotation="props.board.at(intersection.id)?.annotation!"
+        :annotation="props.board.at(index)?.annotation!"
       />
     </g>
     <g>
       <rect
-        v-for="intersection in intersections"
-        :key="intersection.id"
-        @click="positionClicked(intersection.id)"
-        @mouseover="positionHovered(intersection.id)"
+        v-for="(intersection, index) in intersections"
+        :key="index"
+        @click="positionClicked(index)"
+        @mouseover="positionHovered(index)"
         :x="intersection.position.X - 0.5"
         :y="intersection.position.Y - 0.5"
         width="1"
         height="1"
-        :fill="hovered == intersection.id ? 'pink' : 'transparent'"
+        :fill="hovered == index ? 'pink' : 'transparent'"
         opacity="0.5"
       />
     </g>

@@ -22,7 +22,6 @@ export class BadukBoardAbstract implements IBadukBoard {
           this.Array2D.push(new Array<Intersection>());
           for (let j = 0; j < conf.width; j++) {
             const intersection = new Intersection(new Vector2D(i, j));
-            intersection.Identifier = i * conf.width + j;
 
             this.Intersections.push(intersection);
             this.Array2D[i].push(intersection);

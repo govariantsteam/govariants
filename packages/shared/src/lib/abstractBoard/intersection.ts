@@ -5,14 +5,12 @@ import type { Vector2D } from "../../variants/badukWithAbstractBoard/abstractBoa
 */
 
 export class Intersection {
-  id: number;
   neighbours: this[];
   position: Vector2D;
 
-  constructor(v: Vector2D, id: number) {
+  constructor(v: Vector2D) {
     this.position = v;
     this.neighbours = [];
-    this.id = id;
   }
 
   connectTo(intersection: this, bothSides: boolean) {
@@ -29,7 +27,7 @@ export class Intersection {
   export(): Intersection {
     // TODO: How to export? Why is it needed?
     // TODO: Polymorphic this as return type? Can't construct new this(), right?
-    const intersection = new Intersection(this.position.Export(), this.id);
+    const intersection = new Intersection(this.position.Export());
     //ToDo: How to export Neighbours?
     return intersection;
   }

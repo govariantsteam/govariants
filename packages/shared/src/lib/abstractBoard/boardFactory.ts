@@ -50,7 +50,7 @@ export interface SierpinskyBoardConfig {
 }
 
 export interface IntersectionConstructor<TIntersection extends Intersection> {
-  new (vector: Vector2D, id: number): TIntersection;
+  new (vector: Vector2D): TIntersection;
 }
 
 export function createBoard<TIntersection extends Intersection>(
@@ -104,7 +104,7 @@ function createGridBoard<TIntersection extends Intersection>(
     array2D.push(new Array<TIntersection>());
     for (let x = 0; x < config.width; x++) {
       const id = y * config.width + x;
-      const intersection = new intersectionConstructor(new Vector2D(x, y), id);
+      const intersection = new intersectionConstructor(new Vector2D(x, y));
 
       intersections.push(intersection);
       array2D[y].push(intersection);
@@ -177,17 +177,14 @@ function convertIntersections<TIntersection extends Intersection>(
   old: IntersectionOld[],
   intersectionConstructor: IntersectionConstructor<TIntersection>,
 ): TIntersection[] {
-  const intersections = new Map<TIntersection["id"], TIntersection>(
-    old.map((o) => [
-      o.Identifier,
-      new intersectionConstructor(o.Position, o.Identifier),
-    ]),
+  const intersections = new Map<number, TIntersection>(
+    old.map((o, index) => [index, new intersectionConstructor(o.Position)]),
   );
-  old.forEach((i) =>
+  old.forEach((i, index) =>
     i.Neighbours.forEach((n) =>
       intersections
-        .get(i.Identifier)!
-        .connectTo(intersections.get(n.Identifier)!, false),
+        .get(index)!
+        .connectTo(intersections.get(old.indexOf(n))!, false),
     ),
   );
 

@@ -3,6 +3,7 @@ import type {
   FractionalConfig,
   FractionalState,
 } from "@ogfcommunity/variants-shared";
+import { createGraph } from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
 import TaegeukStone from "../TaegeukStone.vue";
 
@@ -35,6 +36,7 @@ const boardRect = computed(
     };
   },
 );
+const board = computed(() => createGraph(props.gamestate.intersections, null));
 
 const viewBox = computed(() => {
   // viewBox is slightly larger than board
@@ -65,26 +67,26 @@ const stagedMove = computed(() => props.gamestate.stagedMove);
     />
     <g class="lines">
       <g
-        v-for="intersection in props.gamestate.intersections"
-        :key="intersection.id"
+        v-for="(intersection, index) in props.gamestate.intersections"
+        :key="index"
       >
         <line
-          v-for="neighbour in intersection.neighbours.filter(
-            (n) => n.id < intersection.id,
-          )"
-          :key="neighbour.id"
+          v-for="neighbour_index in board
+            .neighbors(index)
+            .filter((n) => n < index)"
+          :key="neighbour_index"
           class="grid"
           :x1="intersection.position.X"
-          :x2="neighbour.position.X"
+          :x2="props.gamestate.intersections[neighbour_index].position.X"
           :y1="intersection.position.Y"
-          :y2="neighbour.position.Y"
+          :y2="props.gamestate.intersections[neighbour_index].position.Y"
         />
       </g>
     </g>
     <g class="stones">
       <g
-        v-for="intersection in props.gamestate.intersections"
-        :key="intersection.id"
+        v-for="(intersection, index) in props.gamestate.intersections"
+        :key="index"
       >
         <TaegeukStone
           v-if="intersection.stone"
@@ -96,7 +98,7 @@ const stagedMove = computed(() => props.gamestate.stagedMove);
         <circle
           v-else
           class="click-placeholder"
-          v-on:click="intersectionClicked(intersection.id)"
+          v-on:click="intersectionClicked(index)"
           v-bind:cx="intersection.position.X"
           v-bind:cy="intersection.position.Y"
           r="0.47"

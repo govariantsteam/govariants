@@ -25,7 +25,7 @@ const props = defineProps<{
 const intersections = computed(() =>
   createBoard(props.board_config, Intersection),
 );
-const board = computed(() => createGraph(intersections.value, null));
+const graph = computed(() => createGraph(intersections.value, null));
 const hovered: Ref<number> = ref(-1);
 
 const emit = defineEmits<{
@@ -78,7 +78,7 @@ const viewBox = computed(() => {
 
     <g v-for="(intersection, index) in intersections" :key="index">
       <line
-        v-for="neighbour_index in board
+        v-for="neighbour_index in graph
           .neighbors(index)
           .filter((n) => n < index)"
         :key="neighbour_index"

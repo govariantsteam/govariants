@@ -103,7 +103,6 @@ function createGridBoard<TIntersection extends Intersection>(
   for (let y = 0; y < config.height; y++) {
     array2D.push(new Array<TIntersection>());
     for (let x = 0; x < config.width; x++) {
-      const id = y * config.width + x;
       const intersection = new intersectionConstructor(new Vector2D(x, y));
 
       intersections.push(intersection);

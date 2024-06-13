@@ -194,6 +194,11 @@ const createTimeControlPreview = (
 
 <template>
   <div>
+
+    <!---
+    TODO: go board has some unnecessary top padding that should be removed
+    -->
+
     <component
       v-if="variantGameView && game.state"
       v-bind:is="variantGameView"
@@ -201,9 +206,15 @@ const createTimeControlPreview = (
       v-bind:config="gameResponse.config"
       v-on:move="makeMove"
     />
+
+    <div v-if="game.result" style="font-weight: bold; font-size: 24pt; margin-bottom: 0pt" >
+    Result: {{ game.result }}
+    </div>
+
     <NavButtons :gameRound="game.round" v-model="view_round" />
 
     <DownloadSGF :gameId="gameId"/>
+
 
     <div id="variant-info">
       <div>
@@ -251,9 +262,6 @@ const createTimeControlPreview = (
 
   <PlayersToMove :next-to-play="game.next_to_play" />
 
-  <div v-if="game.result" style="font-weight: bold; font-size: 24pt">
-    Result: {{ game.result }}
-  </div>
 </template>
 
 <style scoped>

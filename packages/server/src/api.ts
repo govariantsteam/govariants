@@ -30,9 +30,6 @@ export const router = express.Router();
 // Set up express routes
 
 router.get('/game/:gameId/sgf', async (req, res) => {
-  //route not being called
-  console.log("test");
-  res.status(200).send("test");
   try {
 
     const game = await getGame(req.params.gameId);
@@ -46,10 +43,17 @@ router.get('/game/:gameId/sgf', async (req, res) => {
 
     if (game_obj.getSGF() === '') {
       throw new Error(`SGF not supported for variant ${game.variant}`);
+    } else if (!(game_obj.phase === 'gameover')){
+      throw new Error('Game is not over!');
+    } else {
+      
+      res.set({
+        "Content-Disposition": `attachment; filename="game_${req.params.gameId}.sgf"`,
+      });
+      res.set("Content-Type", "text/plain");
+      res.send(game_obj.getSGF());
     }
-    
-    // download sgf
-    res.download(game_obj.getSGF());
+
   } catch (e) {
     res.status(500).json({ error: e.message });
   }

@@ -58,7 +58,7 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
   constructor(config: BadukConfig) {
     super(isLegacyBadukConfig(config) ? mapToNewConfig(config) : config);
     this.bootstrap("player Black","player white", 9, 6.5); 
-    // make sure that player names, board size, and komi arugments are dynamic with user input
+    // TODO: make sure that player names, board size, and komi arugments are dynamic with user input
   }
 
   private decodeMove(move: string): Coordinate {
@@ -100,6 +100,7 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
       this.subgames.forEach((game) => game.pass(player));
       if (this.subgames[0].badukGame.phase === "gameover") {
         this.phase = "gameover";
+        this.writeToSGF(this.moves, false);
         const getResult = (board: number) =>
           this.subgames[board].badukGame.numeric_result ?? 0;
         const numeric_result = getResult(0) + getResult(1) - this.config.komi;
@@ -111,7 +112,6 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
           this.result = "Tie";
         }
       }
-      this.writeToSGF(this.moves, false);
       return;
     }
 
@@ -256,7 +256,7 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
 
     const currentDate: Date = new Date();
 
-    let initData: string[] = [
+    const initData: string[] = [
 
       "(;\n", 
       "EV[GO Variants]\n", 
@@ -287,7 +287,6 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
     }
     if(!callingBootstrap){
       this.sgfContent += "\n\n)";
-      console.log(this.sgfContent);
     }  
   }
 

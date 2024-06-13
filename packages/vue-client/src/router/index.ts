@@ -32,7 +32,7 @@ const router = createRouter({
       props: true,
     },
     {
-      path: '/game/:gameId/sgf',
+      path: '/api/game/:gameId/sgf',
       name: 'sgf',
       component: () => import('../views/GameView.vue'),
       props: true

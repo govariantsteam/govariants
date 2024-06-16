@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import type {
-  FractionalConfig,
-  FractionalState,
+import {
+  createBoard,
+  type FractionalConfig,
+  type FractionalState,
+  Intersection,
 } from "@ogfcommunity/variants-shared";
 import { createGraph } from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
@@ -20,10 +22,14 @@ function intersectionClicked(identifier: number) {
   emit("move", identifier);
 }
 
+const intersections = computed(() =>
+  createBoard(props.config.board, Intersection),
+);
+
 const boardRect = computed(
   (): { x: number; y: number; width: number; height: number } => {
-    const xPositions = props.gamestate.intersections.map((i) => i.position.X);
-    const yPositions = props.gamestate.intersections.map((i) => i.position.Y);
+    const xPositions = intersections.value.map((i) => i.position.X);
+    const yPositions = intersections.value.map((i) => i.position.Y);
     const xMin = Math.min(...xPositions);
     const xMax = Math.max(...xPositions);
     const yMin = Math.min(...yPositions);
@@ -36,7 +42,7 @@ const boardRect = computed(
     };
   },
 );
-const board = computed(() => createGraph(props.gamestate.intersections, null));
+const board = computed(() => createGraph(intersections.value, null));
 
 const viewBox = computed(() => {
   // viewBox is slightly larger than board
@@ -47,7 +53,15 @@ const viewBox = computed(() => {
   return `${x} ${y} ${width} ${height}`;
 });
 
-const stagedMove = computed(() => props.gamestate.stagedMove);
+const stagedMove = computed(() =>
+  props.gamestate.stagedMove
+    ? {
+        intersection:
+          intersections.value[props.gamestate.stagedMove.intersectionID],
+        colors: props.gamestate.stagedMove.colors,
+      }
+    : undefined,
+);
 </script>
 
 <template>
@@ -66,10 +80,7 @@ const stagedMove = computed(() => props.gamestate.stagedMove);
       :height="boardRect.height"
     />
     <g class="lines">
-      <g
-        v-for="(intersection, index) in props.gamestate.intersections"
-        :key="index"
-      >
+      <g v-for="(intersection, index) in intersections" :key="index">
         <line
           v-for="neighbour_index in board
             .neighbors(index)
@@ -77,20 +88,17 @@ const stagedMove = computed(() => props.gamestate.stagedMove);
           :key="neighbour_index"
           class="grid"
           :x1="intersection.position.X"
-          :x2="props.gamestate.intersections[neighbour_index].position.X"
+          :x2="intersections[neighbour_index].position.X"
           :y1="intersection.position.Y"
-          :y2="props.gamestate.intersections[neighbour_index].position.Y"
+          :y2="intersections[neighbour_index].position.Y"
         />
       </g>
     </g>
     <g class="stones">
-      <g
-        v-for="(intersection, index) in props.gamestate.intersections"
-        :key="index"
-      >
+      <g v-for="(intersection, index) in intersections" :key="index">
         <TaegeukStone
-          v-if="intersection.stone"
-          :colors="[...intersection.stone.colors]"
+          v-if="$props.gamestate.boardState.at(index)"
+          :colors="[...$props.gamestate.boardState.at(index)]"
           :cx="intersection.position.X"
           :cy="intersection.position.Y"
           :r="0.47"

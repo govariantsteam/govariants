@@ -6,6 +6,7 @@ import { CreateCircularBoard } from "../../variants/badukWithAbstractBoard/abstr
 import { TrihexagonalBoardHelper } from "../../variants/badukWithAbstractBoard/abstractBoard/TrihexagonalBoardHelper";
 import { createSierpinskyBoard as createSierpinskyBoardExternal } from "../../variants/badukWithAbstractBoard/abstractBoard/SierpinskyBoard";
 import { Graph } from "../graph";
+import { Grid } from "../grid";
 
 export const BoardPattern = {
   Grid: "grid",
@@ -13,6 +14,7 @@ export const BoardPattern = {
   Circular: "circular",
   Trihexagonal: "trihexagonal",
   Sierpinsky: "sierpinsky",
+  GridWithHoles: "gridWithHoles",
 } as const;
 
 export type BoardConfig =
@@ -20,7 +22,8 @@ export type BoardConfig =
   | RhombitrihexagonalBoardConfig
   | CircularBoardConfig
   | TrihexagonalBoardConfig
-  | SierpinskyBoardConfig;
+  | SierpinskyBoardConfig
+  | GridWithHolesBoardConfig;
 
 export interface GridBoardConfig {
   type: typeof BoardPattern.Grid;
@@ -47,6 +50,16 @@ export interface TrihexagonalBoardConfig {
 export interface SierpinskyBoardConfig {
   type: typeof BoardPattern.Sierpinsky;
   size: number;
+}
+
+export interface GridWithHolesBoardConfig {
+  type: "gridWithHoles";
+  bitmap: (0 | 1 | 2 | 3 | 4)[][];
+  // 0: no intersection
+  // 0b01: connect to the right
+  // 0b10: connect down
+  // 0b11: connect down and to the right
+  // 0b100: intersection with just existing connections up or to the left
 }
 
 export interface IntersectionConstructor<TIntersection extends Intersection> {
@@ -89,6 +102,11 @@ export function createBoard<TIntersection extends Intersection>(
         intersectionConstructor,
       );
       break;
+    case "gridWithHoles":
+      intersections = createGridWithHolesBoard<TIntersection>(
+        config,
+        intersectionConstructor,
+      );
   }
   return intersections;
 }
@@ -170,6 +188,40 @@ function createSierpinskyBoard<TIntersection extends Intersection>(
     createSierpinskyBoardExternal(config.size),
     intersectionConstructor,
   );
+}
+
+function createGridWithHolesBoard<TIntersection extends Intersection>(
+  config: GridWithHolesBoardConfig,
+  intersectionConstructor: IntersectionConstructor<TIntersection>,
+): TIntersection[] {
+  const bitGrid = Grid.from2DArray(config.bitmap);
+  const intersections = bitGrid.map((isIntersection, index) =>
+    isIntersection
+      ? new intersectionConstructor(new Vector2D(index.x, index.y))
+      : null,
+  );
+
+  intersections.forEach((intersection, index) => {
+    if (!intersection) return;
+    intersections
+      .neighbors(index)
+      .filter((neighbourIndex) => {
+        const bits = bitGrid.at(index);
+        return (
+          bits &&
+          ((bits & 1 && index.x < neighbourIndex.x) ||
+            (bits & 2 && index.y < neighbourIndex.y))
+        );
+      })
+      .forEach((neighbourIndex) =>
+        intersections.at(neighbourIndex)?.connectTo(intersection, true),
+      );
+  });
+
+  return intersections
+    .to2DArray()
+    .flat()
+    .filter((intersection): intersection is TIntersection => !!intersection);
 }
 
 function convertIntersections<TIntersection extends Intersection>(

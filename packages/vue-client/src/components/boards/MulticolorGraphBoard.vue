@@ -91,7 +91,7 @@ const viewBox = computed(() => {
     </g>
     <g v-for="(intersection, index) in intersections" :key="index">
       <TaegeukStone
-        :key="`${intersection.position.X},${intersection.position.Y}`"
+        :key="`${index}: ${intersection.position.X},${intersection.position.Y}`"
         :cx="intersection.position.X"
         :cy="intersection.position.Y"
         :r="0.48"

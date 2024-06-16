@@ -62,6 +62,6 @@ test("Surrounded merge stone", () => {
   game.playMove(2, cornerId);
 
   const state = game.exportState();
-  expect(state.intersections.filter((i) => i.stone).length).toBe(2);
-  expect(state.intersections.at(Number(cornerId))?.stone).toBeNull();
+  expect(state.boardState.filter((i) => i).length).toBe(2);
+  expect(state.boardState.at(Number(cornerId))).toBeNull();
 });

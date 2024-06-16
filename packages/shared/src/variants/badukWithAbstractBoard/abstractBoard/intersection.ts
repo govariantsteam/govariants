@@ -4,13 +4,11 @@ import type { Vector2D } from "./Vector2D";
 export class Intersection {
   Neighbours: Intersection[];
   Position: Vector2D;
-  Identifier: number;
   StoneState: StoneState;
 
   constructor(v: Vector2D) {
     this.Position = v;
     this.Neighbours = [];
-    this.Identifier = 0;
     this.StoneState = new StoneState(Color.EMPTY);
   }
 
@@ -27,7 +25,6 @@ export class Intersection {
 
   Export(): Intersection {
     const intersection = new Intersection(this.Position.Export());
-    intersection.Identifier = this.Identifier;
     intersection.StoneState = this.StoneState.Export();
     //ToDo: How to export Neighbours?
     return intersection;

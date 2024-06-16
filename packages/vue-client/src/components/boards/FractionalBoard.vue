@@ -5,6 +5,7 @@ import {
   type FractionalState,
   Intersection,
 } from "@ogfcommunity/variants-shared";
+import { createGraph } from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
 import TaegeukStone from "../TaegeukStone.vue";
 
@@ -41,6 +42,7 @@ const boardRect = computed(
     };
   },
 );
+const board = computed(() => createGraph(intersections.value, null));
 
 const viewBox = computed(() => {
   // viewBox is slightly larger than board
@@ -78,22 +80,22 @@ const stagedMove = computed(() =>
       :height="boardRect.height"
     />
     <g class="lines">
-      <g v-for="intersection in intersections" :key="intersection.id">
+      <g v-for="(intersection, index) in intersections" :key="index">
         <line
-          v-for="neighbour in intersection.neighbours.filter(
-            (n) => n.id < intersection.id,
-          )"
-          :key="neighbour.id"
+          v-for="neighbour_index in board
+            .neighbors(index)
+            .filter((n) => n < index)"
+          :key="neighbour_index"
           class="grid"
           :x1="intersection.position.X"
-          :x2="neighbour.position.X"
+          :x2="intersections[neighbour_index].position.X"
           :y1="intersection.position.Y"
-          :y2="neighbour.position.Y"
+          :y2="intersections[neighbour_index].position.Y"
         />
       </g>
     </g>
     <g class="stones">
-      <g v-for="(intersection, index) in intersections" :key="intersection.id">
+      <g v-for="(intersection, index) in intersections" :key="index">
         <TaegeukStone
           v-if="$props.gamestate.boardState.at(index)"
           :colors="[...$props.gamestate.boardState.at(index)]"
@@ -104,7 +106,7 @@ const stagedMove = computed(() =>
         <circle
           v-else
           class="click-placeholder"
-          v-on:click="intersectionClicked(intersection.id)"
+          v-on:click="intersectionClicked(index)"
           v-bind:cx="intersection.position.X"
           v-bind:cy="intersection.position.Y"
           r="0.47"

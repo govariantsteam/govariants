@@ -18,6 +18,10 @@ class FractionalTestGame extends Fractional {
       (i) => i.neighbours.length === 2,
     );
   }
+
+  indexOf(intersection: FractionalIntersection): number | undefined {
+    return this.intersections.indexOf(intersection);
+  }
 }
 
 test("Surrounded merge stone", () => {
@@ -36,9 +40,15 @@ test("Surrounded merge stone", () => {
   expect(game.firstCorner?.neighbours[0]).toBeTruthy();
   expect(game.firstCorner?.neighbours[1]).toBeTruthy();
 
-  const cornerId = game.firstCorner?.id.toString() ?? "";
-  const neighbour0Id = game.firstCorner?.neighbours[0].id.toString() ?? "";
-  const neighbour1Id = game.firstCorner?.neighbours[1].id.toString() ?? "";
+  const cornerId = game.firstCorner
+    ? game.indexOf(game.firstCorner)?.toString() ?? ""
+    : "";
+  const neighbour0Id = game.firstCorner
+    ? game.indexOf(game.firstCorner.neighbours[0])?.toString() ?? ""
+    : "";
+  const neighbour1Id = game.firstCorner
+    ? game.indexOf(game.firstCorner.neighbours[1])?.toString() ?? ""
+    : "";
 
   // Round 1
   game.playMove(0, neighbour0Id);

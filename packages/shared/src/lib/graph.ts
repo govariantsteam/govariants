@@ -88,6 +88,10 @@ export class Graph<T> implements Fillable<number, T> {
   serialize() {
     return [...this.data];
   }
+
+  get length(): number {
+    return this.data.length;
+  }
 }
 
 function identity<T>(x: T): T {

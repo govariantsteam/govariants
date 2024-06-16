@@ -63,13 +63,7 @@ const stagedMove = computed(() =>
 </script>
 
 <template>
-  <svg
-    class="board"
-    xmlns="http://www.w3.org/2000/svg"
-    width="100%"
-    height="100%"
-    :viewBox="viewBox"
-  >
+  <svg class="board" xmlns="http://www.w3.org/2000/svg" :viewBox="viewBox">
     <rect
       class="background"
       :x="boardRect.x"

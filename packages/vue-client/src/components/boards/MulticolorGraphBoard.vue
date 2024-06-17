@@ -62,8 +62,6 @@ const viewBox = computed(() => {
   <svg
     class="board"
     xmlns="http://www.w3.org/2000/svg"
-    width="100%"
-    height="100%"
     v-bind:viewBox="`${viewBox.minX - 1} ${viewBox.minY - 1} ${
       viewBox.width + 2
     } ${viewBox.height + 2}`"

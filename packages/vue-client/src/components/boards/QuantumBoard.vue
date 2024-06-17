@@ -119,14 +119,14 @@ const graph_boards = computed(() => {
 
 <template>
   <template v-if="gridConfig">
-    <div style="width: 50%; height: 100%; display: inline-block">
+    <div style="width: 50%; height: min-content; display: inline-block">
       <MulticolorGridBoard
         :board="board_0"
         :board_dimensions="board_dimensions!"
         @click="emitMove($event.toSgfRepr())"
       />
     </div>
-    <div style="width: 50%; height: 100%; display: inline-block">
+    <div style="width: 50%; height: min-content; display: inline-block">
       <MulticolorGridBoard
         :board="board_1"
         :board_dimensions="board_dimensions!"
@@ -136,14 +136,14 @@ const graph_boards = computed(() => {
   </template>
 
   <template v-if="graphConfig">
-    <div style="width: 50%; height: 100%; display: inline-block">
+    <div style="display: inline-block">
       <MulticolorGraphBoard
         :board="graph_boards.board_0"
         :board_config="graphConfig!.board"
         @click="emitMove($event.toString())"
       />
     </div>
-    <div style="width: 50%; height: 100%; display: inline-block">
+    <div style="display: inline-block">
       <MulticolorGraphBoard
         :board="graph_boards.board_1"
         :board_config="graphConfig!.board"

@@ -249,10 +249,6 @@ export class ParallelGo extends AbstractGame<
     }
     return participation;
   }
-
-  getSGF(): string{
-    return '';
-  }
 }
 
 interface Group {

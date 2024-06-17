@@ -182,6 +182,8 @@ test("Two passes ends the game", () => {
 
   game.playMove(0, "pass");
   game.playMove(1, "pass");
+  
+  expect(game.getSGF()).toBe("(;\nEV[GO Variants]\nPB[player Black]\nPW[player white]\nSZ[4:2]\nKM[6.5]\nVS[quantum]\n\n\n;B[ba];W[ca];B[bb];W[cb]\n\n)");
 
   // next to play should be empty in order for time control to work
   expect(game.nextToPlay()).toEqual([]);

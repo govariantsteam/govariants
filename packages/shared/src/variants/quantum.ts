@@ -5,6 +5,7 @@ import { Baduk, BadukBoard, BadukConfig, Color } from "./baduk";
 import {
   NewBadukConfig,
   NewGridBadukConfig,
+  getWidthAndHeight,
   isGridBadukConfig,
   isLegacyBadukConfig,
   mapToNewConfig,
@@ -20,6 +21,7 @@ export interface QuantumGoState {
 
 /** helper class to make interactions with the Baduk instances easier */
 class BadukHelper {
+
   public badukGame: Baduk;
 
   constructor(config: BadukConfig) {
@@ -47,18 +49,22 @@ class BadukHelper {
 }
 
 export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
+
+ 
   subgames: BadukHelper[] = [];
   quantum_stones: Coordinate[] = [];
   
-  public sgfContent: string = '';
+  private sgfContent: string = '';
   private moves: string[] = [];
-  public moveNumber: number = 0;
 
 
   constructor(config: BadukConfig) {
     super(isLegacyBadukConfig(config) ? mapToNewConfig(config) : config);
-    this.bootstrap("player Black","player white", 9, 6.5); 
-    // TODO: make sure that player names, board size, and komi arugments are dynamic with user input
+    
+    if (isGridBadukConfig(this.config)) {
+      const {width , height} = getWidthAndHeight(this.config);
+      this.makeSGFHeader("player Black","player white", `${width}:${height}`, config.komi);
+    }
   }
 
   private decodeMove(move: string): Coordinate {
@@ -181,9 +187,7 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
       }
     }
     // adding the coordinates to the moves array
-    this.moves[this.moveNumber] = move;
-
-    this.moveNumber++;
+    this.moves.push(move);
 
     super.increaseRound();
   }
@@ -252,9 +256,7 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
   }
 
 
-  public bootstrap(playerB: string, playerW: string, boardSize: number, komi: number){
-
-    const currentDate: Date = new Date();
+  public makeSGFHeader(playerB: string, playerW: string, boardSize: string, komi: number){
 
     const initData: string[] = [
 
@@ -264,33 +266,36 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
       `PW[${playerW}]\n`,
       `SZ[${boardSize}]\n`,
       `KM[${komi}]\n`,     
-      `DT[${currentDate.getMonth()+1}/${currentDate.getDate()}/${currentDate.getFullYear()} ${currentDate.getHours()}:${currentDate.getMinutes()}]\n`,
       "VS[quantum]\n",
       "\n",
       "\n"
 
     ];
-  
+    
     this.writeToSGF(initData, true);
    
   }
   
   //creating sgf file
-  public writeToSGF(text: string[], callingBootstrap: boolean){
+  private writeToSGF(text: string[], callingMakeSGFHeader: boolean){
 
     for (let i = 0; i < text.length; i++){
       let formattedMove = text[i];
-      if(!callingBootstrap){
+      if(!callingMakeSGFHeader){
         formattedMove = `${i % 2 === 0 ? ";B" : ";W"}[${text[i]}]`;
       }
       this.sgfContent += formattedMove;
     }
-    if(!callingBootstrap){
+    if(!callingMakeSGFHeader){
       this.sgfContent += "\n\n)";
-    }  
+    }
   }
 
-  getSGF(): string{
+  getSGF(): string {
+    if (!isGridBadukConfig(this.config)) {
+      // SGF for non rectangular boards is not possible
+      return "non-rectangular";
+    }
     return this.sgfContent;
   }
   

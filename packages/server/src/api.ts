@@ -43,6 +43,8 @@ router.get('/game/:gameId/sgf', async (req, res) => {
 
     if (game_obj.getSGF() === '') {
       throw new Error(`SGF not supported for variant ${game.variant}`);
+    } else if (game_obj.getSGF() === "non-rectangular"){
+      throw new Error('SGF for non rectangular boards is not possible');
     } else if (!(game_obj.phase === 'gameover')){
       throw new Error('Game is not over!');
     } else {

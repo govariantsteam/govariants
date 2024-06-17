@@ -2,9 +2,18 @@
  * @license AGPL-3.0-or-later
  */
 
+
+export interface AbstractGame<GameConfig = object, GameState = object> {
+  /**
+   * Returns the SGF data for a game
+   */
+  getSGF?(): string;
+}
+
 /**
  * An abstract class that can represent any game on the server
  */
+
 export abstract class AbstractGame<GameConfig = object, GameState = object> {
   private phase_: GamePhase = "play";
   private result_ = "";
@@ -14,18 +23,14 @@ export abstract class AbstractGame<GameConfig = object, GameState = object> {
   constructor(config?: GameConfig) {
     this.config = config ?? this.defaultConfig();
   }
-
-  /**
-   * Returns the SGF data for a game
-   */
-  abstract getSGF(): string;
-
+  
   /**
    * Play one move by the specified player.
    *
    * May throw if the move was invalid and we should return that information
    * to the user
    */
+
   abstract playMove(player: number, move: string): void;
 
   /** Returns complete representation of the game at this point in time. */

@@ -18,6 +18,7 @@ import { socket } from "../requests";
 import { variant_short_description_map } from "../components/variant_descriptions/variant_description.consts";
 import NavButtons from "@/components/GameView/NavButtons.vue";
 import PlayersToMove from "@/components/GameView/PlayersToMove.vue";
+import DownloadSGF from "@/components/GameView/DownloadSGF.vue";
 
 const props = defineProps<{ gameId: string }>();
 
@@ -252,6 +253,7 @@ const createTimeControlPreview = (
 
   <PlayersToMove :next-to-play="game_state?.next_to_play" />
 
+  <DownloadSGF :gameId="gameId" />
   <div v-if="game_state?.result" style="font-weight: bold; font-size: 24pt">
     Result: {{ game_state?.result }}
   </div>

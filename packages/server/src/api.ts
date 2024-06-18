@@ -1,4 +1,5 @@
 import express from "express";
+import { makeGameObject } from "@ogfcommunity/variants-shared";
 import passport, { AuthenticateCallback } from "passport";
 import {
   getGame,
@@ -16,6 +17,7 @@ import {
   getUserByName,
 } from "./users";
 import {
+  getOnlyMove,
   GameResponse,
   GamesFilter,
   MovesType,
@@ -28,6 +30,36 @@ import { io } from "./socket_io";
 export const router = express.Router();
 
 // Set up express routes
+
+router.get("/game/:gameId/sgf", async (req, res) => {
+  try {
+    const game = await getGame(req.params.gameId);
+
+    const game_obj = makeGameObject(game.variant, game.config);
+
+    game.moves.forEach((moves) => {
+      const { player, move } = getOnlyMove(moves);
+      game_obj.playMove(player, move);
+    });
+
+    if (game_obj.getSGF() === "") {
+      throw new Error(`SGF not supported for variant ${game.variant}`);
+    } else if (game_obj.getSGF() === "non-rectangular") {
+      throw new Error("SGF for non rectangular boards is not possible");
+    } else if (!(game_obj.phase === "gameover")) {
+      throw new Error("Game is not over!");
+    } else {
+      res.set({
+        "Content-Disposition": `attachment; filename="game_${req.params.gameId}.sgf"`,
+      });
+      res.set("Content-Type", "text/plain");
+      res.send(game_obj.getSGF());
+    }
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 router.get("/games/:gameId", async (req, res) => {
   try {
     const game: GameResponse = await getGame(req.params.gameId);

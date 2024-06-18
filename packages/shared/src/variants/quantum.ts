@@ -63,7 +63,7 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
         "player Black",
         "player white",
         `${width}:${height}`,
-        config.komi,
+        this.config.komi,
       );
     }
   }

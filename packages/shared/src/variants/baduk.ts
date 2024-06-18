@@ -230,7 +230,6 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
       },
     };
   }
-
 }
 
 /** Returns true if the group containing (x, y) has at least one liberty. */

@@ -8,6 +8,7 @@ import {
   playMove,
   takeSeat,
   leaveSeat,
+  getGameState,
 } from "./games";
 import {
   checkUsername,
@@ -22,6 +23,7 @@ import {
   MovesType,
   User,
   UserResponse,
+  GameInitialResponse,
 } from "@ogfcommunity/variants-shared";
 import { io } from "./socket_io";
 
@@ -29,9 +31,8 @@ export const router = express.Router();
 
 // Set up express routes
 
-router.get('/game/:gameId/sgf', async (req, res) => {
+router.get("/game/:gameId/sgf", async (req, res) => {
   try {
-
     const game = await getGame(req.params.gameId);
 
     const game_obj = makeGameObject(game.variant, game.config);
@@ -41,21 +42,19 @@ router.get('/game/:gameId/sgf', async (req, res) => {
       game_obj.playMove(player, move);
     });
 
-    if (game_obj.getSGF() === '') {
+    if (game_obj.getSGF() === "") {
       throw new Error(`SGF not supported for variant ${game.variant}`);
-    } else if (game_obj.getSGF() === "non-rectangular"){
-      throw new Error('SGF for non rectangular boards is not possible');
-    } else if (!(game_obj.phase === 'gameover')){
-      throw new Error('Game is not over!');
+    } else if (game_obj.getSGF() === "non-rectangular") {
+      throw new Error("SGF for non rectangular boards is not possible");
+    } else if (!(game_obj.phase === "gameover")) {
+      throw new Error("Game is not over!");
     } else {
-      
       res.set({
         "Content-Disposition": `attachment; filename="game_${req.params.gameId}.sgf"`,
       });
       res.set("Content-Type", "text/plain");
       res.send(game_obj.getSGF());
     }
-
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
@@ -84,8 +83,6 @@ router.get("/games", async (req, res) => {
   );
   res.send(games || 0);
 });
-
-
 
 router.post("/games", async (req, res) => {
   const data = req.body;
@@ -209,4 +206,35 @@ router.get("/logout", async function (req, res) {
       res.json({});
     });
   });
+});
+
+router.get("/games/:gameId/state/initial", async (req, res) => {
+  try {
+    const game = await getGame(req.params.gameId);
+    const stateResponse = await getGameState(game, null, null);
+    const result: GameInitialResponse = {
+      variant: game.variant,
+      config: game.config,
+      id: game.id,
+      players: game.players,
+      stateResponse: stateResponse,
+    };
+    res.send(result);
+  } catch (e) {
+    res.status(500);
+    res.json(e.message);
+  }
+});
+
+router.get("/games/:gameId/state", async (req, res) => {
+  try {
+    const seat = req.query.seat === "" ? null : Number(req.query.seat);
+    const round = req.query.round === "" ? null : Number(req.query.round);
+    const game = await getGame(req.params.gameId);
+    const stateResponse = await getGameState(game, seat, round);
+    res.send(stateResponse);
+  } catch (e) {
+    res.status(500);
+    res.json(e.message);
+  }
 });

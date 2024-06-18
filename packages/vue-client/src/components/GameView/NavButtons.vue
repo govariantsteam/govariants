@@ -36,7 +36,6 @@ const navigateRounds = (offset: number): void => {
   </div>
 </template>
 
-
 <style scoped>
 .round-nav-buttons {
   height: fit-content;

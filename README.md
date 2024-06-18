@@ -1,5 +1,5 @@
 # Go Variants
-A place to play Go variants, brought to you by the OGF community.
+A place to play Go variants.
 
 ## Set up
 
@@ -10,10 +10,10 @@ to install MongoDB Community Edition and start `mongod`
 
 ### Install and run the app
 
-In the root of this repo, run
+Make sure you have [yarn installed](https://classic.yarnpkg.com/lang/en/docs/install/), then in the root of this repo, run:
 
 ```
-yarn install
+yarn
 ```
 
 This will install dependencies in the three main subdirectories in `packages/`: `client/`, `server/` and `shared/`.
@@ -21,11 +21,11 @@ This will install dependencies in the three main subdirectories in `packages/`: 
 To run the app, you can run
 
 ```
-yarn run build
+yarn build
 yarn start
 ```
 
-This will start two dev servers.  One is a React server listening on `localhost:3000`, and the other is an Express server listening on `localhost:3001`.
+This will start two dev servers.  One is a Vue server listening on `localhost:5173`, and the other is an Express server listening on `localhost:3001`.
 
 ## Variant Demos
 
@@ -33,8 +33,8 @@ See https://github.com/govariantsteam/govariants/pull/249 for information about 
 
 ## Creating a new variant
 
-This PR has a simple example showing how to add tic-tac-toe to the repo: https://github.com/benjaminpjones/govariants/pull/27
+This PR has a simple example showing how to add chess to the repo: https://github.com/govariantsteam/govariants/pull/105
 
-There are two main files to be concerned with: `shared/tictactoe/TicTacToe.ts` and `client/tictactoe/TicTacToeView.ts`.  The former specifies the rules of the game while the latter specifies how to render it on the client.
+There are two main files to be concerned with: `shared/src/chess/chess.ts` and `vue-client/src/components/boards/ChessBoard.ts`.  The former specifies the rules of the game while the latter specifies how to render it on the client.
 
 Disclaimer: the structure of the repo is changing rapidly, so the above PR may be outdated.  Feel free to reach out in the [forums thread](https://forums.online-go.com/t/collective-development-of-a-server-for-variants/43682) if you need help creating a variant.

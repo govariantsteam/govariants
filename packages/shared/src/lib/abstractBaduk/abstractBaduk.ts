@@ -49,7 +49,7 @@ export abstract class AbstractBaduk<
       [];
     const checkedIntersections: Map<number, Set<TChainType>> = new Map();
 
-    changedIntersections.forEach((intersection) => {
+    changedIntersections.forEach((intersection, index) => {
       if (!intersection.stone) {
         // This shouldn't be possible.
         // Maybe use better typing to show that all intersections here have stones.
@@ -59,9 +59,9 @@ export abstract class AbstractBaduk<
       const uncheckedChainTypes = new Set(
         Array.from(intersection.stone.getChainTypes()).filter(
           (chainType) =>
-            !(
-              checkedIntersections.get(intersection.id) ?? new Set<TChainType>()
-            ).has(chainType),
+            !(checkedIntersections.get(index) ?? new Set<TChainType>()).has(
+              chainType,
+            ),
         ),
       );
 
@@ -131,6 +131,8 @@ export abstract class AbstractBaduk<
     chainTypes: Set<TChainType>,
     checked: Map<number, Set<TChainType>> = new Map(),
   ): Map<TChainType, null | Set<BadukIntersection<TChainType, TStone>>> {
+    const intersection_index = this.intersections.indexOf(intersection);
+
     if (intersection.stone === null) {
       // Liberty spotted
       return new Map(
@@ -139,10 +141,10 @@ export abstract class AbstractBaduk<
     }
 
     const checkedChainTypes =
-      checked.get(intersection.id) ??
+      checked.get(intersection_index) ??
       (() => {
         const defaultValue = new Set<TChainType>();
-        checked.set(intersection.id, defaultValue);
+        checked.set(intersection_index, defaultValue);
         return defaultValue;
       })();
 

@@ -21,7 +21,6 @@ export function CreateCircularBoard(
         const intersection = new Intersection(
           new Vector2D(radius * Math.sin(angle), radius * Math.cos(angle)),
         );
-        intersection.Identifier = i * nodes_per_ring + x;
         return intersection;
       }),
     );

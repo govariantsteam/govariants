@@ -2,9 +2,19 @@
  * @license AGPL-3.0-or-later
  */
 
+// This is safe as long as all methods/members of this interface are optional.
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
+export interface AbstractGame {
+  /**
+   * Returns the SGF data for a game
+   */
+  getSGF?(): string;
+}
+
 /**
  * An abstract class that can represent any game on the server
  */
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export abstract class AbstractGame<GameConfig = object, GameState = object> {
   private phase_: GamePhase = "play";
   private result_ = "";
@@ -21,6 +31,7 @@ export abstract class AbstractGame<GameConfig = object, GameState = object> {
    * May throw if the move was invalid and we should return that information
    * to the user
    */
+
   abstract playMove(player: number, move: string): void;
 
   /** Returns complete representation of the game at this point in time. */

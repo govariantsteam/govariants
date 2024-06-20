@@ -487,7 +487,6 @@ export function CreatePolygonalBoard(size: number): Intersection[] {
 
   for (let z = 0; z < intersections.length; z++) {
     const i = intersections[z];
-    i.Identifier = z;
     i.Position = i.Position.Substract(shift);
   }
 

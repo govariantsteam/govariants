@@ -63,7 +63,7 @@ export interface GridWithHolesBoardConfig {
 }
 
 export interface IntersectionConstructor<TIntersection extends Intersection> {
-  new (vector: Vector2D, id: number): TIntersection;
+  new (vector: Vector2D): TIntersection;
 }
 
 export function createBoard<TIntersection extends Intersection>(
@@ -121,8 +121,7 @@ function createGridBoard<TIntersection extends Intersection>(
   for (let y = 0; y < config.height; y++) {
     array2D.push(new Array<TIntersection>());
     for (let x = 0; x < config.width; x++) {
-      const id = y * config.width + x;
-      const intersection = new intersectionConstructor(new Vector2D(x, y), id);
+      const intersection = new intersectionConstructor(new Vector2D(x, y));
 
       intersections.push(intersection);
       array2D[y].push(intersection);
@@ -196,16 +195,14 @@ function createGridWithHolesBoard<TIntersection extends Intersection>(
   intersectionConstructor: IntersectionConstructor<TIntersection>,
 ): TIntersection[] {
   const bitGrid = Grid.from2DArray(config.bitmap);
-  let counter = -1;
   const intersections = bitGrid.map((isIntersection, index) =>
     isIntersection
-      ? new intersectionConstructor(new Vector2D(index.x, index.y), ++counter)
+      ? new intersectionConstructor(new Vector2D(index.x, index.y))
       : null,
   );
 
   intersections.forEach((intersection, index) => {
     if (!intersection) return;
-    intersection.id = intersections.width * index.y + index.x;
     intersections
       .neighbors(index)
       .filter((neighbourIndex) => {
@@ -224,30 +221,21 @@ function createGridWithHolesBoard<TIntersection extends Intersection>(
   return intersections
     .to2DArray()
     .flat()
-    .filter((intersection): intersection is TIntersection => !!intersection)
-    .map((intersection, index) => {
-      intersection.id = index;
-      return intersection;
-    });
-  // The mapping is necessary curently,
-  // because Graph apparently expects an intersection's ID to be its index.
+    .filter((intersection): intersection is TIntersection => !!intersection);
 }
 
 function convertIntersections<TIntersection extends Intersection>(
   old: IntersectionOld[],
   intersectionConstructor: IntersectionConstructor<TIntersection>,
 ): TIntersection[] {
-  const intersections = new Map<TIntersection["id"], TIntersection>(
-    old.map((o) => [
-      o.Identifier,
-      new intersectionConstructor(o.Position, o.Identifier),
-    ]),
+  const intersections = new Map<number, TIntersection>(
+    old.map((o, index) => [index, new intersectionConstructor(o.Position)]),
   );
-  old.forEach((i) =>
+  old.forEach((i, index) =>
     i.Neighbours.forEach((n) =>
       intersections
-        .get(i.Identifier)!
-        .connectTo(intersections.get(n.Identifier)!, false),
+        .get(index)!
+        .connectTo(intersections.get(old.indexOf(n))!, false),
     ),
   );
 

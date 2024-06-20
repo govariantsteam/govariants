@@ -40,8 +40,6 @@ function positionClicked(pos: Coordinate) {
   <svg
     class="board"
     xmlns="http://www.w3.org/2000/svg"
-    width="100%"
-    height="100%"
     v-bind:viewBox="`-1 -1 ${width + 1} ${height + 1}`"
   >
     <rect

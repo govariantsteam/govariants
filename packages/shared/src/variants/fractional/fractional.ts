@@ -61,9 +61,7 @@ export class Fractional extends AbstractBaduk<
     }
 
     if (move.intersection.stone) {
-      throw new Error(
-        `There is already a stone at intersection ${move.intersection.id}`,
-      );
+      throw new Error(`There is already a stone at intersection ${m}`);
     }
 
     this.stagedMoves[move.player.index] = move.intersection;
@@ -106,7 +104,7 @@ export class Fractional extends AbstractBaduk<
       player != null && stagedIntersection
         ? {
             stagedMove: {
-              intersectionID: stagedIntersection.id,
+              intersectionID: this.intersections.indexOf(stagedIntersection),
               colors: this.getPlayerColors(player),
             },
           }
@@ -155,9 +153,7 @@ export class Fractional extends AbstractBaduk<
   /** Asserts there is exactly one move of type FractionalMove and returns it */
   private decodeMove(p: number, m: string): FractionalMove | null {
     const player = this.config.players[p];
-    const intersection = this.intersections.find(
-      (intersection) => intersection.id === Number.parseInt(m),
-    );
+    const intersection = this.intersections.at(Number.parseInt(m));
     return player && intersection
       ? { player: { ...player, index: p }, intersection }
       : null;

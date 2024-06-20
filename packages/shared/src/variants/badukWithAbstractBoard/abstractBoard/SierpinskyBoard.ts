@@ -16,12 +16,7 @@ export function createSierpinskyBoard(depth: number): Intersection[] {
 
   const sierpinskyTriangle = new SierpinskyTriangle(middleIntersections, depth);
 
-  return [...middleIntersections, ...sierpinskyTriangle.flatten()].map(
-    (intersection, index) => {
-      intersection.Identifier = index;
-      return intersection;
-    },
-  );
+  return [...middleIntersections, ...sierpinskyTriangle.flatten()];
 }
 
 // Not sure if this is usable, I'd like to leave it here as comment for the time being.

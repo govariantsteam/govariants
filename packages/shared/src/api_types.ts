@@ -7,6 +7,7 @@ import {
 export interface User {
   username?: string;
   id: string;
+  elo: number;
 }
 export interface GameResponse {
   id: string;

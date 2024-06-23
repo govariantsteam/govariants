@@ -2,6 +2,7 @@
 import {
   HasTimeControlConfig,
   timeControlMap,
+  game_map,
 } from "@ogfcommunity/variants-shared";
 import * as requests from "../requests";
 import SeatComponent from "@/components/GameView/SeatComponent.vue";
@@ -253,7 +254,7 @@ const createTimeControlPreview = (
 
   <PlayersToMove :next-to-play="game_state?.next_to_play" />
 
-  <DownloadSGF :gameId="gameId" />
+  <DownloadSGF v-if="game_map[variant]?.prototype.getSGF" :gameId="gameId" />
   <div v-if="game_state?.result" style="font-weight: bold; font-size: 24pt">
     Result: {{ game_state?.result }}
   </div>

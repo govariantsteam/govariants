@@ -136,14 +136,14 @@ const graph_boards = computed(() => {
   </template>
 
   <template v-if="graphConfig">
-    <div style="display: inline-block">
+    <div style="width: 50%; height: min-content; display: inline-block">
       <MulticolorGraphBoard
         :board="graph_boards.board_0"
         :board_config="graphConfig!.board"
         @click="emitMove($event.toString())"
       />
     </div>
-    <div style="display: inline-block">
+    <div style="width: 50%; height: min-content; display: inline-block">
       <MulticolorGraphBoard
         :board="graph_boards.board_1"
         :board_config="graphConfig!.board"

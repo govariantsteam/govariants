@@ -46,14 +46,12 @@ router.get("/game/:gameId/sgf", async (req, res) => {
       throw new Error(`SGF not supported for variant ${game.variant}`);
     } else if (game_obj.getSGF() === "non-rectangular") {
       throw new Error("SGF for non rectangular boards is not possible");
-    } else if (!(game_obj.phase === "gameover")) {
-      throw new Error("Game is not over!");
     } else {
       res.set({
         "Content-Disposition": `attachment; filename="game_${req.params.gameId}.sgf"`,
       });
       res.set("Content-Type", "text/plain");
-      res.send(game_obj.getSGF());
+      res.send(game_obj.getSGF() + "\n\n)");
     }
   } catch (e) {
     res.status(500).json({ error: e.message });

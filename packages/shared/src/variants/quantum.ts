@@ -21,6 +21,7 @@ export interface QuantumGoState {
 
 /** helper class to make interactions with the Baduk instances easier */
 class BadukHelper {
+
   public badukGame: Baduk;
 
   constructor(config: BadukConfig) {
@@ -48,23 +49,19 @@ class BadukHelper {
 }
 
 export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
+
+ 
   subgames: BadukHelper[] = [];
   quantum_stones: Coordinate[] = [];
-
-  private sgfContent: string = "";
-  private moves: string[] = [];
+  
+  private sgfContent: string = '';
 
   constructor(config: BadukConfig) {
     super(isLegacyBadukConfig(config) ? mapToNewConfig(config) : config);
-
+    
     if (isGridBadukConfig(this.config)) {
-      const { width, height } = getWidthAndHeight(this.config);
-      this.makeSGFHeader(
-        "player Black",
-        "player white",
-        `${width}:${height}`,
-        this.config.komi,
-      );
+      const {width , height} = getWidthAndHeight(this.config);
+      this.makeSGFHeader("player Black","player white", `${width}:${height}`, config.komi);
     }
   }
 
@@ -82,19 +79,17 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
     }
     return pos.x.toString();
   }
-
+  
   playMove(player: number, move: string): void {
     if (move === "resign") {
       this.phase = "gameover";
       this.result = player === 0 ? "B+R" : "W+R";
-      this.writeToSGF(this.moves, false);
       return;
     }
 
     if (move === "timeout") {
       this.phase = "gameover";
       this.result = player === 0 ? "B+T" : "W+T";
-      this.writeToSGF(this.moves, false);
       return;
     }
 
@@ -107,7 +102,6 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
       this.subgames.forEach((game) => game.pass(player));
       if (this.subgames[0].badukGame.phase === "gameover") {
         this.phase = "gameover";
-        this.writeToSGF(this.moves, false);
         const getResult = (board: number) =>
           this.subgames[board].badukGame.numeric_result ?? 0;
         const numeric_result = getResult(0) + getResult(1) - this.config.komi;
@@ -139,7 +133,7 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
           throw new Error("Black must place the first quantum stone.");
         }
         this.quantum_stones.push(pos);
-
+       
         break;
       }
       case 1: {
@@ -187,8 +181,7 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
         this.subgames[1].clear(quantum_captures[0]);
       }
     }
-    // adding the coordinates to the moves array
-    this.moves.push(move);
+    this.writeToSGF(move, player);
 
     super.increaseRound();
   }
@@ -256,39 +249,28 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
     throw new Error("Error finding mapped capture.");
   }
 
-  public makeSGFHeader(
-    playerB: string,
-    playerW: string,
-    boardSize: string,
-    komi: number,
-  ) {
-    const initData: string[] = [
-      "(;\n",
-      "EV[GO Variants]\n",
-      `PB[${playerB}]\n`,
-      `PW[${playerW}]\n`,
-      `SZ[${boardSize}]\n`,
-      `KM[${komi}]\n`,
-      "VS[quantum]\n",
-      "\n",
-      "\n",
-    ];
 
-    this.writeToSGF(initData, true);
+  public makeSGFHeader(playerB: string, playerW: string, boardSize: string, komi: number){
+      
+    this.sgfContent += 
+
+    "(;\n" +
+    "EV[GO Variants]\n" +
+    `PB[${playerB}]\n` +
+    `PW[${playerW}]\n` +
+    `SZ[${boardSize}]\n` +
+    `KM[${komi}]\n` +   
+    "VS[quantum]\n" +
+    "\n"
+    ;
+    
   }
-
-  //creating sgf file
-  private writeToSGF(text: string[], callingMakeSGFHeader: boolean) {
-    for (let i = 0; i < text.length; i++) {
-      let formattedMove = text[i];
-      if (!callingMakeSGFHeader) {
-        formattedMove = `${i % 2 === 0 ? ";B" : ";W"}[${text[i]}]`;
-      }
-      this.sgfContent += formattedMove;
-    }
-    if (!callingMakeSGFHeader) {
-      this.sgfContent += "\n\n)";
-    }
+  
+  //writing to sgf file
+  private writeToSGF(text: string, player: number){
+   
+    this.sgfContent += `${player % 2 === 0 ? ";B" : ";W"}[${text}]`;
+    
   }
 
   getSGF(): string {
@@ -298,7 +280,9 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
     }
     return this.sgfContent;
   }
+  
 }
+
 
 /** based on two board states, determine which stones were captured */
 function deduceCaptures(

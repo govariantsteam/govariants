@@ -263,13 +263,13 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
     "VS[quantum]\n" +
     "\n"
     ;
-    
+
   }
   
   //writing to sgf file
-  private writeToSGF(text: string, player: number){
+  private writeToSGF(content: string, player: number){
    
-    this.sgfContent += `${player % 2 === 0 ? ";B" : ";W"}[${text}]`;
+    this.sgfContent += `${player % 2 === 0 ? ";B" : ";W"}[${content}]`;
     
   }
 
@@ -282,7 +282,6 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
   }
   
 }
-
 
 /** based on two board states, determine which stones were captured */
 function deduceCaptures(

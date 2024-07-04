@@ -51,7 +51,7 @@ router.get("/game/:gameId/sgf", async (req, res) => {
         "Content-Disposition": `attachment; filename="game_${req.params.gameId}.sgf"`,
       });
       res.set("Content-Type", "text/plain");
-      res.send(game_obj.getSGF() + "\n\n)");
+      res.send(game_obj.getSGF());
     }
   } catch (e) {
     res.status(500).json({ error: e.message });

@@ -52,7 +52,6 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
   quantum_stones: Coordinate[] = [];
 
   private sgfContent: string = "";
-  private moves: string[] = [];
 
   constructor(config: BadukConfig) {
     super(isLegacyBadukConfig(config) ? mapToNewConfig(config) : config);
@@ -60,10 +59,10 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
     if (isGridBadukConfig(this.config)) {
       const { width, height } = getWidthAndHeight(this.config);
       this.makeSGFHeader(
-        "player Black",
-        "player white",
+        "Player Black",
+        "Player White",
         `${width}:${height}`,
-        this.config.komi,
+        config?.komi,
       );
     }
   }
@@ -87,14 +86,12 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
     if (move === "resign") {
       this.phase = "gameover";
       this.result = player === 0 ? "B+R" : "W+R";
-      this.writeToSGF(this.moves, false);
       return;
     }
 
     if (move === "timeout") {
       this.phase = "gameover";
       this.result = player === 0 ? "B+T" : "W+T";
-      this.writeToSGF(this.moves, false);
       return;
     }
 
@@ -107,7 +104,6 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
       this.subgames.forEach((game) => game.pass(player));
       if (this.subgames[0].badukGame.phase === "gameover") {
         this.phase = "gameover";
-        this.writeToSGF(this.moves, false);
         const getResult = (board: number) =>
           this.subgames[board].badukGame.numeric_result ?? 0;
         const numeric_result = getResult(0) + getResult(1) - this.config.komi;
@@ -187,8 +183,7 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
         this.subgames[1].clear(quantum_captures[0]);
       }
     }
-    // adding the coordinates to the moves array
-    this.moves.push(move);
+    this.writeToSGF(move, player);
 
     super.increaseRound();
   }
@@ -262,33 +257,12 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
     boardSize: string,
     komi: number,
   ) {
-    const initData: string[] = [
-      "(;\n",
-      "EV[GO Variants]\n",
-      `PB[${playerB}]\n`,
-      `PW[${playerW}]\n`,
-      `SZ[${boardSize}]\n`,
-      `KM[${komi}]\n`,
-      "VS[quantum]\n",
-      "\n",
-      "\n",
-    ];
-
-    this.writeToSGF(initData, true);
+    this.sgfContent += `(;\nEV[GO Variants]\nPB[${playerB}]\nPW[${playerW}]\nSZ[${boardSize}]\nKM[${komi}]\nVS[quantum]\n\n`;
   }
 
-  //creating sgf file
-  private writeToSGF(text: string[], callingMakeSGFHeader: boolean) {
-    for (let i = 0; i < text.length; i++) {
-      let formattedMove = text[i];
-      if (!callingMakeSGFHeader) {
-        formattedMove = `${i % 2 === 0 ? ";B" : ";W"}[${text[i]}]`;
-      }
-      this.sgfContent += formattedMove;
-    }
-    if (!callingMakeSGFHeader) {
-      this.sgfContent += "\n\n)";
-    }
+  //writing to sgf file
+  private writeToSGF(content: string, player: number) {
+    this.sgfContent += `${player % 2 === 0 ? ";B" : ";W"}[${content}]`;
   }
 
   getSGF(): string {
@@ -296,7 +270,7 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
       // SGF for non rectangular boards is not possible
       return "non-rectangular";
     }
-    return this.sgfContent;
+    return this.sgfContent + "\n\n)";
   }
 }
 

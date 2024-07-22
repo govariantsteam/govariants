@@ -20,7 +20,7 @@ export abstract class AbstractBaduk<
   TConfig extends AbstractBadukConfig,
   TChainType,
   TStone extends AbstractBadukStone<TChainType>,
-  TState,
+  TState extends object,
 > extends AbstractGame<TConfig, TState> {
   // TODO: Maybe less generic types needed? Fix types here?
   protected intersections: BadukIntersection<TChainType, TStone>[];

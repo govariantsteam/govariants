@@ -4,7 +4,7 @@ export * from "./variants/capture";
 export * from "./variants/parallel";
 export * from "./variants/quantum";
 export * from "./abstract_game";
-export * from "./game_map";
+export * from "./variant_map";
 export * from "./api_types";
 export * from "./lib/grid";
 export * from "./lib/coordinate";

@@ -15,7 +15,10 @@ export interface AbstractGame {
  * An abstract class that can represent any game on the server
  */
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
-export abstract class AbstractGame<GameConfig = object, GameState = object> {
+export abstract class AbstractGame<
+  GameConfig extends object = object,
+  GameState extends object = object,
+> {
   private phase_: GamePhase = "play";
   private result_ = "";
   protected readonly config: GameConfig;

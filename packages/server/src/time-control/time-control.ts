@@ -97,7 +97,7 @@ export interface ITimeHandler {
    */
   handleMove(
     game: GameResponse,
-    game_obj: AbstractGame<unknown, unknown>,
+    game_obj: AbstractGame,
     playerNr: number,
     move: string,
     isRoundTransition: boolean,

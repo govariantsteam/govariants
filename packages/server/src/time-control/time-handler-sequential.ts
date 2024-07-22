@@ -32,7 +32,7 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
 
   handleMove(
     game: GameResponse,
-    game_obj: AbstractGame<unknown, unknown>,
+    game_obj: AbstractGame,
     playerNr: number,
     move: string,
   ): ITimeControlBase {
@@ -72,7 +72,7 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
 
   private TimeTransitionBase(
     game: GameResponse,
-    game_obj: AbstractGame<unknown, unknown>,
+    game_obj: AbstractGame,
     playerNr: number,
     move: string,
     timestamp: Date,

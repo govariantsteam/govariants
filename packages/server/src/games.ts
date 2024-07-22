@@ -203,7 +203,7 @@ export async function handleMoveAndTime(
 function emitGame(
   game_id: string,
   num_players: number,
-  game_obj: AbstractGame<unknown, unknown>,
+  game_obj: AbstractGame,
 ): void {
   const next_to_play = game_obj.nextToPlay();
   const specialMoves = game_obj.specialMoves();

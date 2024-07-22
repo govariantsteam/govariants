@@ -2,7 +2,7 @@ import { BoardPattern } from "../abstractBoard/boardFactory";
 import { AbstractBaduk, AbstractBadukConfig } from "./abstractBaduk";
 import { BadukIntersection, AbstractBadukStone } from "./badukIntersection";
 
-type TestState = "test";
+type TestState = { state: "test" };
 
 type TestChainType = "a" | "b" | "c" | "d" | "e";
 type TestIntersection = BadukIntersection<
@@ -73,7 +73,7 @@ class AbstractBadukTestGame extends AbstractBaduk<
   }
 
   exportState(_player?: number): TestState {
-    return "test";
+    return { state: "test" };
   }
 
   importState(_state: TestState): void {

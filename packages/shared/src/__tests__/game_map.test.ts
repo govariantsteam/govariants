@@ -1,4 +1,8 @@
-import { getDefaultConfig, getVariantList, makeGameObject } from "../game_map";
+import {
+  getDefaultConfig,
+  getVariantList,
+  makeGameObject,
+} from "../variant_map";
 
 test.each(getVariantList())("Build %s from default config", (variant) => {
   const default_config = getDefaultConfig(variant);

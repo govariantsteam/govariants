@@ -15,26 +15,27 @@ import { DriftGo } from "./variants/drift";
 import { QuantumGo } from "./variants/quantum";
 import { Baduk } from "./variants/baduk";
 import { deprecated_variants } from "./deprecated_variants";
+import { Variant } from "./variant";
 
-export const game_map: {
+const variant_map: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [variant: string]: new (config?: any) => AbstractGame;
+  [variant: string]: Variant;
 } = {
-  baduk: Baduk,
-  badukWithAbstractBoard: BadukWithAbstractBoard,
-  phantom: Phantom,
-  parallel: ParallelGo,
-  capture: Capture,
-  chess: ChessGame,
-  tetris: TetrisGo,
-  pyramid: PyramidGo,
-  "thue-morse": ThueMorse,
-  freeze: FreezeGo,
-  fractional: Fractional,
-  keima: Keima,
-  "one color": OneColorGo,
-  drift: DriftGo,
-  quantum: QuantumGo,
+  baduk: { gameClass: Baduk },
+  badukWithAbstractBoard: { gameClass: BadukWithAbstractBoard },
+  phantom: { gameClass: Phantom },
+  parallel: { gameClass: ParallelGo },
+  capture: { gameClass: Capture },
+  chess: { gameClass: ChessGame },
+  tetris: { gameClass: TetrisGo },
+  pyramid: { gameClass: PyramidGo },
+  "thue-morse": { gameClass: ThueMorse },
+  freeze: { gameClass: FreezeGo },
+  fractional: { gameClass: Fractional },
+  keima: { gameClass: Keima },
+  "one color": { gameClass: OneColorGo },
+  drift: { gameClass: DriftGo },
+  quantum: { gameClass: QuantumGo },
 };
 
 class ConfigError extends Error {
@@ -47,9 +48,9 @@ class ConfigError extends Error {
 export function makeGameObject(
   variant: string,
   config: unknown,
-): AbstractGame<unknown, unknown> {
+): AbstractGame<object, object> {
   try {
-    return new game_map[variant](config);
+    return new variant_map[variant].gameClass(config);
   } catch (e) {
     throw new ConfigError(
       `${e}, (variant: ${variant}, config: ${JSON.stringify(config)})`,
@@ -58,12 +59,17 @@ export function makeGameObject(
 }
 
 export function getVariantList(): string[] {
-  return Object.keys(game_map).filter(
+  return Object.keys(variant_map).filter(
     (variant) => !deprecated_variants.includes(variant),
   );
 }
 
 export function getDefaultConfig(variant: string) {
-  const game = new game_map[variant]();
+  // TODO: move the default config into Variant since it is a "static" method
+  const game = makeGameObject(variant, undefined);
   return game.defaultConfig();
+}
+
+export function supportsSGF(variant: string) {
+  return variant_map[variant]?.gameClass.prototype.getSGF;
 }

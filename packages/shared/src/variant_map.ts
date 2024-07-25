@@ -21,21 +21,71 @@ const variant_map: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [variant: string]: Variant;
 } = {
-  baduk: { gameClass: Baduk },
-  badukWithAbstractBoard: { gameClass: BadukWithAbstractBoard },
-  phantom: { gameClass: Phantom },
-  parallel: { gameClass: ParallelGo },
-  capture: { gameClass: Capture },
-  chess: { gameClass: ChessGame },
-  tetris: { gameClass: TetrisGo },
-  pyramid: { gameClass: PyramidGo },
-  "thue-morse": { gameClass: ThueMorse },
-  freeze: { gameClass: FreezeGo },
-  fractional: { gameClass: Fractional },
-  keima: { gameClass: Keima },
-  "one color": { gameClass: OneColorGo },
-  drift: { gameClass: DriftGo },
-  quantum: { gameClass: QuantumGo },
+  baduk: {
+    gameClass: Baduk,
+    description:
+      "Traditional game of Baduk a.k.a. Go, Weiqi\n Surround stones to capture them\n Secure more territory + captures to win",
+  },
+  badukWithAbstractBoard: {
+    gameClass: BadukWithAbstractBoard,
+    description: "Baduk with varying board patterns",
+  },
+  phantom: {
+    gameClass: Phantom,
+    description: "Baduk but other players stones are invisible",
+  },
+  parallel: {
+    gameClass: ParallelGo,
+    description: "Multiplayer Baduk with parallel moves",
+  },
+  capture: {
+    gameClass: Capture,
+    description: "Baduk but the first player who captures a stone wins",
+  },
+  chess: {
+    gameClass: ChessGame,
+    description:
+      "Baduk with different types of stones\n the goal is to capture a specific stone",
+  },
+  tetris: {
+    gameClass: TetrisGo,
+    description: "Baduk but players can't play Tetris shapes",
+  },
+  pyramid: {
+    gameClass: PyramidGo,
+    description:
+      "Baduk with pyramid scoring\n Center is worth most points, edge the least",
+  },
+  "thue-morse": {
+    gameClass: ThueMorse,
+    description: "Baduk with move order according to Thue-Morse sequence",
+  },
+  freeze: {
+    gameClass: FreezeGo,
+    description: "Baduk but after an Atari, stones can't be captured",
+  },
+  fractional: {
+    gameClass: Fractional,
+    description:
+      "Multiplayer Baduk with multicolored stones and parallel moves",
+  },
+  keima: {
+    gameClass: Keima,
+    description:
+      "Baduk but players play two moves that must form a Keima (Knight's move) shape",
+  },
+  "one color": {
+    gameClass: OneColorGo,
+    description: "Baduk with obfuscated stone colors",
+  },
+  drift: {
+    gameClass: DriftGo,
+    description: "Baduk, but the entire board drifts on every turn",
+  },
+  quantum: {
+    gameClass: QuantumGo,
+    description: "Two boards whose stones are entangled",
+  },
 };
 
 class ConfigError extends Error {
@@ -71,5 +121,9 @@ export function getDefaultConfig(variant: string) {
 }
 
 export function supportsSGF(variant: string) {
-  return variant_map[variant]?.gameClass.prototype.getSGF;
+  return Boolean(variant_map[variant]?.gameClass.prototype.getSGF);
+}
+
+export function getDescription(variant: string) {
+  return variant_map[variant]?.description ?? "";
 }

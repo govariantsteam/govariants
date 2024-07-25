@@ -3,6 +3,7 @@ import {
   HasTimeControlConfig,
   timeControlMap,
   supportsSGF,
+  getDescription,
 } from "@ogfcommunity/variants-shared";
 import * as requests from "../requests";
 import SeatComponent from "@/components/GameView/SeatComponent.vue";
@@ -16,7 +17,6 @@ import type {
 import { computed, ref, watchEffect, type Ref } from "vue";
 import { board_map } from "@/board_map";
 import { socket } from "../requests";
-import { variant_short_description_map } from "../components/variant_descriptions/variant_description.consts";
 import NavButtons from "@/components/GameView/NavButtons.vue";
 import PlayersToMove from "@/components/GameView/PlayersToMove.vue";
 import DownloadSGF from "@/components/GameView/DownloadSGF.vue";
@@ -33,9 +33,7 @@ const players = ref<User[]>();
 // while viewing history of game, maybe we should prevent player from making a move (accidentally)
 const view_round: Ref<number | null> = ref(null);
 const variantGameView = computed(() => board_map[variant.value]);
-const variantDescriptionShort = computed(
-  () => variant_short_description_map[variant.value] ?? "",
-);
+const variantDescriptionShort = computed(() => getDescription(variant.value));
 const user = useCurrentUser();
 const playing_as = ref<undefined | number>(undefined);
 

@@ -5,4 +5,5 @@ export interface Variant {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   gameClass: new (config: any) => AbstractGame;
   description: string;
+  deprecated?: boolean;
 }

@@ -14,7 +14,6 @@ import { OneColorGo } from "./variants/one_color";
 import { DriftGo } from "./variants/drift";
 import { QuantumGo } from "./variants/quantum";
 import { Baduk } from "./variants/baduk";
-import { deprecated_variants } from "./deprecated_variants";
 import { Variant } from "./variant";
 
 const variant_map: {
@@ -29,6 +28,7 @@ const variant_map: {
   badukWithAbstractBoard: {
     gameClass: BadukWithAbstractBoard,
     description: "Baduk with varying board patterns",
+    deprecated: true,
   },
   phantom: {
     gameClass: Phantom,
@@ -109,9 +109,9 @@ export function makeGameObject(
 }
 
 export function getVariantList(): string[] {
-  return Object.keys(variant_map).filter(
-    (variant) => !deprecated_variants.includes(variant),
-  );
+  return Object.entries(variant_map)
+    .filter(([_name, variant]) => !variant.deprecated)
+    .map(([name, _variant]) => name);
 }
 
 export function getDefaultConfig(variant: string) {

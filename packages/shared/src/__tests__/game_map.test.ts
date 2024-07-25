@@ -19,3 +19,9 @@ test("invalid variants", () => {
   expect(getDescription(variant)).toBe("");
   expect(supportsSGF(variant)).toBe(false);
 });
+
+test("deprecated field contains baduk", () => {
+  const list = getVariantList();
+  // We will probably never deprecate baduk lol
+  expect(list).toContain("baduk");
+});

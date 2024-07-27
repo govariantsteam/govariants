@@ -1,9 +1,8 @@
 import { AbstractGame } from "./abstract_game";
 
-export interface Variant {
+export interface Variant<ConfigT extends object = object> {
   /** The class that implements AbstractGame and manages the state of an ongoing game */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  gameClass: new (config: any) => AbstractGame;
+  gameClass: new (config: ConfigT) => AbstractGame;
   description: string;
   deprecated?: boolean;
 }

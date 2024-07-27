@@ -1,6 +1,7 @@
 import { AbstractGame } from "../abstract_game";
 import { BoardPattern } from "../lib/abstractBoard/boardFactory";
 import { Coordinate, CoordinateLike } from "../lib/coordinate";
+import { Variant } from "../variant";
 import { Baduk, BadukBoard, BadukConfig, Color } from "./baduk";
 import {
   NewBadukConfig,
@@ -293,3 +294,8 @@ function deduceCaptures(
 function copyBoard(game: Baduk): BadukBoard<Color> {
   return game.board.map((color) => color);
 }
+
+export const quantumVariant: Variant<BadukConfig> = {
+  gameClass: QuantumGo,
+  description: "Two boards whose stones are entangled",
+};

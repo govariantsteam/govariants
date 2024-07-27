@@ -18,6 +18,7 @@ import {
   isLegacyBadukConfig,
   mapToNewConfig,
 } from "./baduk_utils";
+import { Variant } from "../variant";
 
 export enum Color {
   EMPTY = 0,
@@ -270,3 +271,9 @@ export class GridBaduk extends Baduk {
     };
   }
 }
+
+export const badukVariant: Variant<BadukConfig> = {
+  gameClass: Baduk,
+  description:
+    "Traditional game of Baduk a.k.a. Go, Weiqi\n Surround stones to capture them\n Secure more territory + captures to win",
+};

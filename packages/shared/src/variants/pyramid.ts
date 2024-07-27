@@ -1,6 +1,7 @@
 import { Color, GridBaduk } from "./baduk";
 import { Grid } from "../lib/grid";
 import { GridBadukConfig } from "./baduk_utils";
+import { Variant } from "../variant";
 
 export class PyramidGo extends GridBaduk {
   private weights: Grid<number>;
@@ -43,3 +44,9 @@ export class PyramidGo extends GridBaduk {
       .reduce((x, y) => x + y, 0);
   }
 }
+
+export const pyramidVariant: Variant<GridBadukConfig> = {
+  gameClass: PyramidGo,
+  description:
+    "Baduk with pyramid scoring\n Center is worth most points, edge the least",
+};

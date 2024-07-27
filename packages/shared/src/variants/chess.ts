@@ -1,5 +1,6 @@
 import { AbstractGame } from "../abstract_game";
 import { Chess } from "chess.js";
+import { Variant } from "../variant";
 
 export interface ChessState {
   fen: string;
@@ -45,3 +46,9 @@ export class ChessGame extends AbstractGame<object, ChessState> {
     return {};
   }
 }
+
+export const chessVariant: Variant = {
+  gameClass: ChessGame,
+  description:
+    "Baduk with different types of stones\n the goal is to capture a specific stone",
+};

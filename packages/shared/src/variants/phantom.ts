@@ -1,5 +1,6 @@
-import { Baduk, BadukState, Color } from "./baduk";
+import { Baduk, BadukConfig, BadukState, Color } from "./baduk";
 import { Grid } from "../lib/grid";
+import { Variant } from "../variant";
 
 export class Phantom extends Baduk {
   exportState(player?: number): BadukState {
@@ -28,3 +29,8 @@ function color_to_player(color: Color) {
       return undefined;
   }
 }
+
+export const phantomVariant: Variant<BadukConfig> = {
+  gameClass: Phantom,
+  description: "Baduk but other players stones are invisible",
+};

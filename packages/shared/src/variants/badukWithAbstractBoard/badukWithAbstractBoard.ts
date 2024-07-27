@@ -1,5 +1,6 @@
 import { Baduk, BadukConfig } from "../baduk";
 import { BoardConfig } from "../../lib/abstractBoard/boardFactory";
+import { Variant } from "../../variant";
 
 export enum BoardPattern {
   Unknown = 0,
@@ -58,3 +59,10 @@ export class BadukWithAbstractBoard extends Baduk {
     super(mapped_config);
   }
 }
+
+export const badukWithAbstractBoardVariant: Variant<BadukWithAbstractBoardConfig> =
+  {
+    gameClass: BadukWithAbstractBoard,
+    description: "Baduk with varying board patterns",
+    deprecated: true,
+  };

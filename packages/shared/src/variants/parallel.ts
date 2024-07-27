@@ -2,6 +2,7 @@ import { AbstractGame } from "../abstract_game";
 import { Coordinate } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
 import { MovesType, Participation } from "../lib/utils";
+import { Variant } from "../variant";
 
 export interface ParallelGoConfig {
   width: number;
@@ -256,3 +257,8 @@ interface Group {
   has_liberties: boolean;
   contains_staged: boolean;
 }
+
+export const parallelVariant: Variant<ParallelGoConfig> = {
+  gameClass: ParallelGo,
+  description: "Multiplayer Baduk with parallel moves",
+};

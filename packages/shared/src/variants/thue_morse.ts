@@ -1,4 +1,5 @@
-import { Baduk } from "./baduk";
+import { Variant } from "../variant";
+import { Baduk, BadukConfig } from "./baduk";
 
 export class ThueMorse extends Baduk {
   private move_number = 0;
@@ -30,3 +31,8 @@ function count_binary_ones(n: number) {
     .split("")
     .filter((digit) => digit === "1").length;
 }
+
+export const thueMorseVariant: Variant<BadukConfig> = {
+  gameClass: ThueMorse,
+  description: "Baduk with move order according to Thue-Morse sequence",
+};

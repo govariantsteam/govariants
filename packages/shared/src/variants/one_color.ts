@@ -1,4 +1,5 @@
-import { BadukState, Color, Baduk } from "./baduk";
+import { Variant } from "../variant";
+import { BadukState, Color, Baduk, BadukConfig } from "./baduk";
 
 export class OneColorGo extends Baduk {
   exportState(): BadukState {
@@ -10,3 +11,8 @@ export class OneColorGo extends Baduk {
     };
   }
 }
+
+export const oneColorGoVariant: Variant<BadukConfig> = {
+  gameClass: OneColorGo,
+  description: "Baduk with obfuscated stone colors",
+};

@@ -226,15 +226,9 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
   numPlayers(): number {
     return 2;
   }
-  defaultConfig(): NewGridBadukConfig {
-    return {
-      board: { type: BoardPattern.Grid, width: 9, height: 9 },
-      komi: 7.5,
-    };
-  }
 
   specialMoves(): { [key: string]: string } {
-    return new Baduk().specialMoves();
+    return this.subgames[0].badukGame.specialMoves();
   }
 
   /* returns position on the other board */
@@ -298,4 +292,10 @@ function copyBoard(game: Baduk): BadukBoard<Color> {
 export const quantumVariant: Variant<BadukConfig> = {
   gameClass: QuantumGo,
   description: "Two boards whose stones are entangled",
+  defaultConfig(): NewGridBadukConfig {
+    return {
+      board: { type: BoardPattern.Grid, width: 9, height: 9 },
+      komi: 7.5,
+    };
+  },
 };

@@ -53,9 +53,8 @@ export function mapToNewBadukConfig(
 }
 
 export class BadukWithAbstractBoard extends Baduk {
-  constructor(config?: BadukWithAbstractBoardConfig) {
-    const mapped_config =
-      config === undefined ? undefined : mapToNewBadukConfig(config);
+  constructor(config: BadukWithAbstractBoardConfig) {
+    const mapped_config = mapToNewBadukConfig(config);
     super(mapped_config);
   }
 }
@@ -65,4 +64,12 @@ export const badukWithAbstractBoardVariant: Variant<BadukWithAbstractBoardConfig
     gameClass: BadukWithAbstractBoard,
     description: "Baduk with varying board patterns",
     deprecated: true,
+    defaultConfig() {
+      return {
+        width: 19,
+        height: 19,
+        komi: 6.5,
+        pattern: BoardPattern.Rectangular,
+      };
+    },
   };

@@ -16,4 +16,5 @@ export class TetrisGo extends Baduk {
 export const tetrisVariant: Variant<BadukConfig> = {
   gameClass: TetrisGo,
   description: "Baduk but players can't play Tetris shapes",
+  defaultConfig: Baduk.defaultConfig,
 };

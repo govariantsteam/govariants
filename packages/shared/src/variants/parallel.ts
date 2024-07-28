@@ -35,7 +35,7 @@ export class ParallelGo extends AbstractGame<
     this.config.num_players,
   );
 
-  constructor(config?: ParallelGoConfig) {
+  constructor(config: ParallelGoConfig) {
     super(config);
     this.board = new Grid(this.config.width, this.config.height)
       .fill(undefined)
@@ -154,15 +154,6 @@ export class ParallelGo extends AbstractGame<
     );
   }
 
-  defaultConfig(): ParallelGoConfig {
-    return {
-      width: 19,
-      height: 19,
-      num_players: 2,
-      collision_handling: "merge",
-    };
-  }
-
   private getGroup(
     pos: Coordinate,
     color: number,
@@ -261,4 +252,12 @@ interface Group {
 export const parallelVariant: Variant<ParallelGoConfig> = {
   gameClass: ParallelGo,
   description: "Multiplayer Baduk with parallel moves",
+  defaultConfig(): ParallelGoConfig {
+    return {
+      width: 19,
+      height: 19,
+      num_players: 2,
+      collision_handling: "merge",
+    };
+  },
 };

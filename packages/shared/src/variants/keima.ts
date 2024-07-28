@@ -1,6 +1,6 @@
 import { Coordinate } from "../lib/coordinate";
 import { Variant } from "../variant";
-import { BadukConfig, BadukState, GridBaduk } from "./baduk";
+import { Baduk, BadukConfig, BadukState, GridBaduk } from "./baduk";
 
 export interface KeimaState extends BadukState {
   keima?: string;
@@ -70,4 +70,5 @@ export const keimaVariant: Variant<BadukConfig> = {
   gameClass: Keima,
   description:
     "Baduk but players play two moves that must form a Keima (Knight's move) shape",
+  defaultConfig: Baduk.defaultConfig,
 };

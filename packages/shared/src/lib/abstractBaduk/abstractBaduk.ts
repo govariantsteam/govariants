@@ -25,7 +25,7 @@ export abstract class AbstractBaduk<
   // TODO: Maybe less generic types needed? Fix types here?
   protected intersections: BadukIntersection<TChainType, TStone>[];
 
-  constructor(config?: TConfig) {
+  constructor(config: TConfig) {
     super(config);
     this.intersections = createBoard(
       this.config.board,

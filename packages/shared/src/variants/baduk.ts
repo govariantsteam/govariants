@@ -51,7 +51,7 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
   /** after game ends, this is black points - white points */
   public numeric_result?: number;
 
-  constructor(config?: BadukConfig) {
+  constructor(config: BadukConfig) {
     super(isLegacyBadukConfig(config) ? mapToNewConfig(config) : config);
 
     if (isGridBadukConfig(this.config)) {
@@ -221,7 +221,7 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
     this.phase = "gameover";
   }
 
-  defaultConfig(): NewBadukConfig {
+  static defaultConfig(): NewGridBadukConfig {
     return {
       komi: 6.5,
       board: {
@@ -253,22 +253,11 @@ export class GridBaduk extends Baduk {
   declare board: Grid<Color>;
   protected declare score_board?: Grid<Color>;
   declare config: NewGridBadukConfig;
-  constructor(config?: BadukConfig) {
+  constructor(config: BadukConfig) {
     if (config && !isGridBadukConfig(config)) {
       throw "GridBaduk requires a GridBadukConfig";
     }
     super(config);
-  }
-
-  override defaultConfig(): NewGridBadukConfig {
-    return {
-      komi: 6.5,
-      board: {
-        type: BoardPattern.Grid,
-        width: 19,
-        height: 19,
-      },
-    };
   }
 }
 
@@ -276,4 +265,5 @@ export const badukVariant: Variant<BadukConfig> = {
   gameClass: Baduk,
   description:
     "Traditional game of Baduk a.k.a. Go, Weiqi\n Surround stones to capture them\n Secure more territory + captures to win",
+  defaultConfig: Baduk.defaultConfig,
 };

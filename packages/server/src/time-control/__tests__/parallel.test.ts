@@ -4,6 +4,7 @@ import {
   ParallelGo,
   PerPlayerTimeControlParallel,
   TimeControlType,
+  parallelVariant,
 } from "@ogfcommunity/variants-shared";
 import { TestClock } from "../clock";
 import { TimeHandlerParallelMoves } from "../time-handler-parallel";
@@ -18,7 +19,7 @@ const TIMEOUT_DATE = new Date(MS_SINCE_EPOCH + 400000); // timeout and then some
 
 function baseGameConfig() {
   return {
-    ...new ParallelGo().defaultConfig(),
+    ...parallelVariant.defaultConfig(),
     time_control: {
       type: TimeControlType.Fischer,
       mainTimeMS: 300000,

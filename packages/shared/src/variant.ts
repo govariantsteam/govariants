@@ -5,4 +5,5 @@ export interface Variant<ConfigT extends object = object> {
   gameClass: new (config: ConfigT) => AbstractGame;
   description: string;
   deprecated?: boolean;
+  defaultConfig: () => ConfigT;
 }

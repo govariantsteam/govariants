@@ -44,4 +44,5 @@ function is_in_atari(pos: CoordinateLike, board: BadukBoard<Color>) {
 export const freezeGoVariant: Variant<BadukConfig> = {
   gameClass: FreezeGo,
   description: "Baduk but after an Atari, stones can't be captured",
+  defaultConfig: Baduk.defaultConfig,
 };

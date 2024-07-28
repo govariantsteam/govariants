@@ -15,4 +15,5 @@ export class OneColorGo extends Baduk {
 export const oneColorGoVariant: Variant<BadukConfig> = {
   gameClass: OneColorGo,
   description: "Baduk with obfuscated stone colors",
+  defaultConfig: Baduk.defaultConfig,
 };

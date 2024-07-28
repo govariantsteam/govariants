@@ -21,7 +21,7 @@ export class {{ namePascal }} extends AbstractGame<
   protected next_to_play: 0 | 1 = 0;
 
   // Initialize state of the game for a given config
-  constructor(config?: {{ namePascal }}Config) {
+  constructor(config: {{ namePascal }}Config) {
     // AbstractGame will set this.config to the defaultConfig() if config is undefined.
     // Therefore, we access config through this.config in the rest of this function
     super(config);

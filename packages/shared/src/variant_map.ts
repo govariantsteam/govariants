@@ -63,10 +63,8 @@ export function getVariantList(): string[] {
     .map(([name, _variant]) => name);
 }
 
-export function getDefaultConfig(variant: string) {
-  // TODO: move the default config into Variant since it is a "static" method
-  const game = makeGameObject(variant, undefined);
-  return game.defaultConfig();
+export function getDefaultConfig(variant: string): object {
+  return variant_map[variant]?.defaultConfig();
 }
 
 export function supportsSGF(variant: string) {

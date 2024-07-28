@@ -50,7 +50,7 @@ export class Fractional extends AbstractBaduk<
 > {
   private stagedMoves: (FractionalIntersection | null)[];
 
-  constructor(config?: FractionalConfig) {
+  constructor(config: FractionalConfig) {
     super(config);
     this.stagedMoves = this.stagedMovesDefaults();
   }
@@ -128,20 +128,6 @@ export class Fractional extends AbstractBaduk<
     return this.config.players.length;
   }
 
-  defaultConfig(): FractionalConfig {
-    return {
-      players: [
-        { primaryColor: "black", secondaryColor: "red" },
-        { primaryColor: "black", secondaryColor: "green" },
-        { primaryColor: "black", secondaryColor: "blue" },
-        { primaryColor: "white", secondaryColor: "red" },
-        { primaryColor: "white", secondaryColor: "green" },
-        { primaryColor: "white", secondaryColor: "blue" },
-      ],
-      board: { type: BoardPattern.Grid, width: 19, height: 19 },
-    };
-  }
-
   private getPlayerColors(id: number): Color[] {
     const player = this.config.players[id];
     const colors = [player.primaryColor];
@@ -170,4 +156,17 @@ export class Fractional extends AbstractBaduk<
 export const fractionalVariant: Variant<FractionalConfig> = {
   gameClass: Fractional,
   description: "Multiplayer Baduk with multicolored stones and parallel moves",
+  defaultConfig(): FractionalConfig {
+    return {
+      players: [
+        { primaryColor: "black", secondaryColor: "red" },
+        { primaryColor: "black", secondaryColor: "green" },
+        { primaryColor: "black", secondaryColor: "blue" },
+        { primaryColor: "white", secondaryColor: "red" },
+        { primaryColor: "white", secondaryColor: "green" },
+        { primaryColor: "white", secondaryColor: "blue" },
+      ],
+      board: { type: BoardPattern.Grid, width: 19, height: 19 },
+    };
+  },
 };

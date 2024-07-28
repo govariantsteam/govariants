@@ -33,4 +33,5 @@ function color_to_player(color: Color) {
 export const phantomVariant: Variant<BadukConfig> = {
   gameClass: Phantom,
   description: "Baduk but other players stones are invisible",
+  defaultConfig: Baduk.defaultConfig,
 };

@@ -10,6 +10,10 @@ export class ChessGame extends AbstractGame<object, ChessState> {
   // third-party chess object
   private chess = new Chess();
 
+  constructor(config?: object) {
+    super(config ?? {});
+  }
+
   playMove(player: number, move: string): void {
     if (move === "resign") {
       this.phase = "gameover";
@@ -51,4 +55,5 @@ export const chessVariant: Variant = {
   gameClass: ChessGame,
   description:
     "Baduk with different types of stones\n the goal is to capture a specific stone",
+  defaultConfig: Object,
 };

@@ -1,8 +1,8 @@
 import {
-  Baduk,
   IFischerConfig,
   IPerPlayerTimeControlBase,
   TimeControlType,
+  badukVariant,
 } from "@ogfcommunity/variants-shared";
 import {
   getMsUntilTimeout,
@@ -11,7 +11,7 @@ import {
 } from "../time-handler-utils";
 
 const ABSOLUTE_CONFIG = {
-  ...new Baduk().defaultConfig(),
+  ...badukVariant.defaultConfig(),
   time_control: { type: TimeControlType.Absolute, mainTimeMS: 600_000 },
 };
 
@@ -75,7 +75,7 @@ test("makeTransition: timeout (Fischer)", () => {
 
 test("makeTransition: (Uncapped Fischer)", () => {
   const fischerConfig = {
-    ...new Baduk().defaultConfig(),
+    ...badukVariant.defaultConfig(),
     time_control: {
       type: TimeControlType.Fischer,
       mainTimeMS: 600_000,
@@ -98,7 +98,7 @@ test("makeTransition: (Uncapped Fischer)", () => {
 
 test("makeTransition (Invalid)", () => {
   const invalidConfig = {
-    ...new Baduk().defaultConfig(),
+    ...badukVariant.defaultConfig(),
     time_control: { type: TimeControlType.Invalid, mainTimeMS: 600_000 },
   };
   expect(() => makeTransition(() => 5000, invalidConfig, "game_id")).toThrow(

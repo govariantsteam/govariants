@@ -1,4 +1,4 @@
-import { Color, GridBaduk } from "./baduk";
+import { Baduk, Color, GridBaduk } from "./baduk";
 import { Grid } from "../lib/grid";
 import { GridBadukConfig } from "./baduk_utils";
 import { Variant } from "../variant";
@@ -8,7 +8,7 @@ export class PyramidGo extends GridBaduk {
   declare board: Grid<Color>;
   declare score_board?: Grid<Color>;
 
-  constructor(config?: GridBadukConfig) {
+  constructor(config: GridBadukConfig) {
     super(config);
 
     // Note: config may be undefined, but this.config is
@@ -49,4 +49,5 @@ export const pyramidVariant: Variant<GridBadukConfig> = {
   gameClass: PyramidGo,
   description:
     "Baduk with pyramid scoring\n Center is worth most points, edge the least",
+  defaultConfig: Baduk.defaultConfig,
 };

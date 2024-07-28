@@ -18,4 +18,5 @@ export class Capture extends Baduk {
 export const captureVariant: Variant<BadukConfig> = {
   gameClass: Capture,
   description: "Baduk but the first player who captures a stone wins",
+  defaultConfig: Baduk.defaultConfig,
 };

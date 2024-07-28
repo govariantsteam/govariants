@@ -14,15 +14,6 @@ export class DriftGo extends GridBaduk {
   declare config: DriftGoConfig;
   declare board: Grid<Color>;
 
-  defaultConfig(): DriftGoConfig {
-    return {
-      komi: 6.5,
-      board: { type: "grid", width: 19, height: 19 },
-      xShift: 0,
-      yShift: 1,
-    };
-  }
-
   protected prepareForNextMove(move: string): void {
     // shift board
     this.board = this.board.map((_, coord: Coordinate) => {
@@ -75,4 +66,12 @@ export class DriftGo extends GridBaduk {
 export const driftVariant: Variant<DriftGoConfig> = {
   gameClass: DriftGo,
   description: "Baduk, but the entire board drifts on every turn",
+  defaultConfig(): DriftGoConfig {
+    return {
+      komi: 6.5,
+      board: { type: "grid", width: 19, height: 19 },
+      xShift: 0,
+      yShift: 1,
+    };
+  },
 };

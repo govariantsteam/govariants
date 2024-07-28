@@ -21,12 +21,9 @@ export abstract class AbstractGame<
 > {
   private phase_: GamePhase = "play";
   private result_ = "";
-  protected readonly config: GameConfig;
   private _round = 0;
 
-  constructor(config?: GameConfig) {
-    this.config = config ?? this.defaultConfig();
-  }
+  constructor(protected readonly config: GameConfig) {}
 
   /**
    * Play one move by the specified player.
@@ -80,13 +77,6 @@ export abstract class AbstractGame<
   specialMoves(): { [key: string]: string } {
     return {};
   }
-
-  /**
-   * Returns a valid config for the variant.
-   *
-   * This is used in the game creation form.
-   */
-  abstract defaultConfig(): GameConfig;
 
   /**
    * Returns the current round number. A Round can include multiple moves and

@@ -14,6 +14,7 @@ function replaceTemplates(sourcePath, targetPath, variantName) {
   content = nunjucks.renderString(content, {
     namePascal: snakeToPascal(variantName),
     nameSnake: variantName,
+    nameCamel: snakeToCamel(variantName),
   });
 
   // Write the rendered content to the target file
@@ -32,6 +33,19 @@ function snakeToPascal(snakeCase) {
 
   // Join the words back together
   return pascalWords.join("");
+}
+
+// convert snake_case string to camelCase
+function snakeToCamel(snakeCase) {
+  // Split the string into an array of words
+  const words = snakeCase.split("_");
+
+  // Capitalize the first letter of each word
+  const capitalizedWords = words.map(
+    (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
+  );
+
+  return [words[0], ...capitalizedWords.slice(1)].join("");
 }
 
 // Get the variant name

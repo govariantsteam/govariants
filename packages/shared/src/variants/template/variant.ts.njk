@@ -1,6 +1,7 @@
 import { Coordinate } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
 import { AbstractGame } from "../abstract_game";
+import { Variant } from "../variant";
 
 type Color = number | null;
 
@@ -113,7 +114,11 @@ export class {{ namePascal }} extends AbstractGame<
   override specialMoves(): { [key: string]: string } {
     return { pass: "Pass", resign: "Resign" };
   }
+}
 
+export const {{ nameCamel }}Variant: Variant<{{ namePascal }}Config> = {
+  gameClass: {{ namePascal }},
+  description: "TODO: Add a brief description of your variant here!",
   defaultConfig(): {{ namePascal }}Config {
     return { width: 19, height: 19 };
   }

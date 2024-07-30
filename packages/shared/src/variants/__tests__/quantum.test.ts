@@ -324,3 +324,12 @@ test("Oversized non-grid board", () => {
 
   expect(game.exportState().quantum_stones).toEqual(["100"]);
 });
+
+test("specialMoves returns values before any moves are played", () => {
+  const game = new QuantumGo({
+    komi: 6.5,
+    board: { type: "grid", width: 3, height: 3 },
+  });
+
+  expect(Object.keys(game.specialMoves())).not.toHaveLength(0);
+});

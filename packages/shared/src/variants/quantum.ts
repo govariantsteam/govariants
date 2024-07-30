@@ -227,9 +227,7 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
     return 2;
   }
 
-  specialMoves(): { [key: string]: string } {
-    return this.subgames[0].badukGame.specialMoves();
-  }
+  specialMoves = Baduk.prototype.specialMoves;
 
   /* returns position on the other board */
   mappedCapture(pos: Coordinate): Coordinate {

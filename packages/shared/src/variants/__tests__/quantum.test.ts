@@ -307,3 +307,20 @@ test("Placing a white stone in a captured quantum position", () => {
 
   expect(game.exportState().quantum_stones).toEqual(["ia", "ai"]);
 });
+
+test("Oversized non-grid board", () => {
+  const game = new QuantumGo({
+    komi: 6.5,
+    board: { type: "sierpinsky", size: 3 },
+  });
+
+  // We had a bug earlier where anything over 52 threw an error
+  game.playMove(0, "100");
+
+  const boards = game.exportState().boards;
+
+  expect(boards[0][0][100]).toBe(Color.BLACK);
+  expect(boards[1][0][100]).toBe(Color.WHITE);
+
+  expect(game.exportState().quantum_stones).toEqual(["100"]);
+});

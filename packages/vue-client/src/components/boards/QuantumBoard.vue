@@ -80,7 +80,7 @@ const board_1 = computed(() => {
 
 function graph_board_with_quantum_stones(
   board: Color[],
-  quantum_stones: Array<CoordinateLike>,
+  quantum_stones: number[],
 ) {
   const ret_board = board.map((color) => {
     switch (color) {
@@ -94,7 +94,7 @@ function graph_board_with_quantum_stones(
   });
 
   quantum_stones.forEach((stone) => {
-    ret_board.at(stone.x)?.colors.push("green");
+    ret_board.at(stone)?.colors.push("green");
   });
 
   return ret_board;
@@ -107,11 +107,11 @@ const graph_boards = computed(() => {
   return {
     board_0: graph_board_with_quantum_stones(
       sequence_0,
-      props.gamestate.quantum_stones.map((pos) => Coordinate.fromSgfRepr(pos)),
+      props.gamestate.quantum_stones.map(Number),
     ),
     board_1: graph_board_with_quantum_stones(
       sequence_1,
-      props.gamestate.quantum_stones.map((pos) => Coordinate.fromSgfRepr(pos)),
+      props.gamestate.quantum_stones.map(Number),
     ),
   };
 });

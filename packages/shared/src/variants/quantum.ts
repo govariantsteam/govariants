@@ -208,13 +208,13 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
           makeBoardWithStone(first, Color.BLACK),
           makeBoardWithStone(first, Color.WHITE),
         ],
-        quantum_stones: this.quantum_stones.map((pos) => pos.toSgfRepr()),
+        quantum_stones: this.serializeQuantumStones(),
       };
     }
 
     return {
       boards: this.subgames.map((game) => game.badukGame.board.serialize()),
-      quantum_stones: this.quantum_stones.map((pos) => pos.toSgfRepr()),
+      quantum_stones: this.serializeQuantumStones(),
     };
   }
   nextToPlay(): number[] {
@@ -227,9 +227,7 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
     return 2;
   }
 
-  specialMoves(): { [key: string]: string } {
-    return this.subgames[0].badukGame.specialMoves();
-  }
+  specialMoves = Baduk.prototype.specialMoves;
 
   /* returns position on the other board */
   mappedCapture(pos: Coordinate): Coordinate {
@@ -261,11 +259,22 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
   }
 
   getSGF(): string {
-    if (!isGridBadukConfig(this.config)) {
+    if (!this.isGrid()) {
       // SGF for non rectangular boards is not possible
       return "non-rectangular";
     }
     return this.sgfContent + "\n\n)";
+  }
+
+  private isGrid() {
+    return isGridBadukConfig(this.config);
+  }
+
+  private serializeQuantumStones() {
+    if (this.isGrid()) {
+      return this.quantum_stones.map((pos) => pos.toSgfRepr());
+    }
+    return this.quantum_stones.map((pos) => pos.x.toString());
   }
 }
 

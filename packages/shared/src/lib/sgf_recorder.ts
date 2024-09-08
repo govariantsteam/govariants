@@ -1,6 +1,3 @@
-import { Color } from "../variants/baduk";
-import { Coordinate } from "./coordinate";
-
 export class SgfRecorder {
   private body_: string = "";
   get sgfContent() {
@@ -15,14 +12,14 @@ export class SgfRecorder {
     public komi: number = 0,
   ) {}
 
-  recordMove(move: string, player: Color) {
+  recordMove(move: string, player: number) {
     if (move === "resign") {
-      this.result_ = `${player === Color.BLACK ? "W+R" : "B+R"}`;
+      this.result_ = `${player === 0 ? "W+R" : "B+R"}`;
       return;
     }
 
     if (move === "timeout") {
-      this.result_ = `${player === Color.BLACK ? "W+T" : "B+T"}`
+      this.result_ = `${player === 0 ? "W+T" : "B+T"}`
       return;
     }
 
@@ -30,7 +27,7 @@ export class SgfRecorder {
       move = "";
     }
 
-    this.body_ += `${player === Color.BLACK ? ";B" : ";W"}[${move}]`;
+    this.body_ += `${player === 0 ? ";B" : ";W"}[${move}]`;
   }
 
   private makeHeader(): string {

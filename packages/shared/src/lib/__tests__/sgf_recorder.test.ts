@@ -1,4 +1,3 @@
-import { Color } from "../../variants/baduk";
 import { SgfRecorder } from "../sgf_recorder";
 
 test("SgfRecorder square board", () => {
@@ -17,15 +16,15 @@ test("SgfRecorder non-square board", () => {
 
 test("Can write moves", () => {
   const detector = new SgfRecorder("baduk", { width: 9, height: 9 }, 7.5);
-  detector.recordMove("cd", Color.BLACK);
-  detector.recordMove("ec", Color.WHITE);
-  detector.recordMove("pass", Color.BLACK);
+  detector.recordMove("cd", 0);
+  detector.recordMove("ec", 1);
+  detector.recordMove("pass", 0);
   expect(detector.sgfContent).toContain(`;B[cd];W[ec]`);
 });
 
 test("Can handle resignation", () => {
     const detector = new SgfRecorder("baduk", { width: 9, height: 9 }, 7.5);
-    detector.recordMove("resign", Color.BLACK);
+    detector.recordMove("resign", 0);
     expect(detector.sgfContent).toContain("RE[W+R]");
   });
   

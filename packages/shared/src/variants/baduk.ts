@@ -19,6 +19,7 @@ import {
   mapToNewConfig,
 } from "./baduk_utils";
 import { Variant } from "../variant";
+import { SgfRecorder } from "../lib/sgf_recorder";
 
 export enum Color {
   EMPTY = 0,
@@ -50,6 +51,7 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
   protected last_move = "";
   /** after game ends, this is black points - white points */
   public numeric_result?: number;
+  protected sgf?: SgfRecorder;
 
   constructor(config: BadukConfig) {
     super(isLegacyBadukConfig(config) ? mapToNewConfig(config) : config);
@@ -63,6 +65,8 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
         this.config.board.width,
         this.config.board.height,
       ).fill(Color.EMPTY);
+
+      this.sgf = new SgfRecorder("baduk", this.config.board, config.komi);
     } else {
       const intersections = createBoard(this.config.board, Intersection);
       this.board = new GraphWrapper(createGraph(intersections, Color.EMPTY));
@@ -95,6 +99,8 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
     if (player != this.next_to_play) {
       throw Error(`It's not player ${player}'s turn!`);
     }
+
+    this.sgf?.recordMove(move, player);
 
     if (move === "resign") {
       this.phase = "gameover";

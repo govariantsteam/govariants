@@ -227,6 +227,10 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
     this.phase = "gameover";
   }
 
+  override getSGF(): string {
+    return this.sgf?.sgfContent ?? "non-rectangular";
+  }
+
   static defaultConfig(): NewGridBadukConfig {
     return {
       komi: 6.5,

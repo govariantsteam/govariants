@@ -7,7 +7,6 @@ export class SgfRecorder {
   private result_?: string;
 
   constructor(
-    public variant: string = "",
     public boardSize: { width: number; height: number } = { width: 19, height: 19 },
     public komi: number = 0,
   ) {}
@@ -38,8 +37,7 @@ EV[GO Variants]
 PB[Player Black]
 PW[Player White]
 SZ[${szString}]
-KM[${this.komi}]
-VS[${this.variant}]\n`;
+KM[${this.komi}]\n`;
     if (this.result_ != null) {
         header += `RE[${this.result_}]\n`
     }

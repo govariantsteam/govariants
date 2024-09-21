@@ -66,7 +66,7 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
         this.config.board.height,
       ).fill(Color.EMPTY);
 
-      this.sgf = new SgfRecorder("baduk", this.config.board, config.komi);
+      this.sgf = new SgfRecorder(this.config.board, config.komi);
     } else {
       const intersections = createBoard(this.config.board, Intersection);
       this.board = new GraphWrapper(createGraph(intersections, Color.EMPTY));

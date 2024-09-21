@@ -1,7 +1,7 @@
 export class SgfRecorder {
   private body_: string = "";
   get sgfContent() {
-    return this.makeHeader() + this.body_;
+    return this.makeHeader() + this.body_ + "\n\n)";
   }
 
   private result_?: string;

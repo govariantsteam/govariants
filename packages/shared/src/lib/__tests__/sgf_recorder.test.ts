@@ -23,8 +23,7 @@ test("Can write moves", () => {
 });
 
 test("Can handle resignation", () => {
-    const detector = new SgfRecorder({ width: 9, height: 9 }, 7.5);
-    detector.recordMove("resign", 0);
-    expect(detector.sgfContent).toContain("RE[W+R]");
-  });
-  
+  const detector = new SgfRecorder({ width: 9, height: 9 }, 7.5);
+  detector.recordMove("resign", 0);
+  expect(detector.sgfContent).toContain("RE[W+R]");
+});

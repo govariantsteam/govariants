@@ -7,7 +7,10 @@ export class SgfRecorder {
   private result_?: string;
 
   constructor(
-    public boardSize: { width: number; height: number } = { width: 19, height: 19 },
+    public boardSize: { width: number; height: number } = {
+      width: 19,
+      height: 19,
+    },
     public komi: number = 0,
   ) {}
 
@@ -18,7 +21,7 @@ export class SgfRecorder {
     }
 
     if (move === "timeout") {
-      this.result_ = `${player === 0 ? "W+T" : "B+T"}`
+      this.result_ = `${player === 0 ? "W+T" : "B+T"}`;
       return;
     }
 
@@ -39,7 +42,7 @@ PW[Player White]
 SZ[${szString}]
 KM[${this.komi}]\n`;
     if (this.result_ != null) {
-        header += `RE[${this.result_}]\n`
+      header += `RE[${this.result_}]\n`;
     }
     header += "\n";
     return header;

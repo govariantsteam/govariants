@@ -18,7 +18,7 @@
     "@types/jsdom": "^21.1.1",
     "@types/passport": "^1.0.12",
     "@types/passport-local": "^1.0.35",
-    "body-parser": "^1.20.2",
+    "body-parser": "^1.20.3",
     "connect-mongo": "^5.0.0",
     "express": "^4.18.2",
     "express-session": "^1.17.3",

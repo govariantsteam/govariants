@@ -120,7 +120,7 @@ export class Fractional extends AbstractBaduk<
         intersection.stone ? Array.from(intersection.stone.colors) : null,
       ),
       ...stagedMove,
-      lastMoves: this.lastMoves.map((move, playerNr) =>
+      lastMoves: this.lastMoves.map((move) =>
         move ? this.intersections.indexOf(move) : null,
       ),
     };

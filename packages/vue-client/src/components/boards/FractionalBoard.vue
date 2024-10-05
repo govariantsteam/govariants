@@ -110,7 +110,8 @@ const stagedMove = computed(() =>
           v-bind:cx="intersection.position.X"
           v-bind:cy="intersection.position.Y"
           r="0.3"
-          fill="#dbdbdb"
+          stroke="#dbdbdb"
+          stroke-width="0.05"
           class="last-move-indicator"
         />
       </g>

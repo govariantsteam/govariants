@@ -40,6 +40,8 @@ export interface FractionalConfig extends AbstractBadukConfig {
 export interface FractionalState {
   boardState: (Color[] | null)[];
   stagedMove?: { intersectionID: number; colors: Color[] };
+  // number representing index of intersection
+  lastMoves: (number | null)[];
 }
 
 export class Fractional extends AbstractBaduk<
@@ -49,10 +51,12 @@ export class Fractional extends AbstractBaduk<
   FractionalState
 > {
   private stagedMoves: (FractionalIntersection | null)[];
+  private lastMoves: (FractionalIntersection | null)[];
 
   constructor(config: FractionalConfig) {
     super(config);
     this.stagedMoves = this.stagedMovesDefaults();
+    this.lastMoves = this.lastMovesDefaults();
   }
 
   playMove(p: number, m: string): void {
@@ -93,6 +97,7 @@ export class Fractional extends AbstractBaduk<
 
       this.removeChains(false);
 
+      this.lastMoves = this.stagedMoves;
       this.stagedMoves = this.stagedMovesDefaults();
       super.increaseRound();
     }
@@ -115,6 +120,9 @@ export class Fractional extends AbstractBaduk<
         intersection.stone ? Array.from(intersection.stone.colors) : null,
       ),
       ...stagedMove,
+      lastMoves: this.lastMoves.map((move) =>
+        move ? this.intersections.indexOf(move) : null,
+      ),
     };
   }
 
@@ -147,6 +155,12 @@ export class Fractional extends AbstractBaduk<
   }
 
   private stagedMovesDefaults(): (FractionalIntersection | null)[] {
+    return new Array<FractionalIntersection | null>(this.numPlayers()).fill(
+      null,
+    );
+  }
+
+  private lastMovesDefaults(): (FractionalIntersection | null)[] {
     return new Array<FractionalIntersection | null>(this.numPlayers()).fill(
       null,
     );

@@ -105,6 +105,15 @@ const stagedMove = computed(() =>
           v-bind:cy="intersection.position.Y"
           r="0.47"
         />
+        <circle
+          v-if="$props.gamestate.lastMoves.includes(index)"
+          v-bind:cx="intersection.position.X"
+          v-bind:cy="intersection.position.Y"
+          r="0.3"
+          stroke="#dbdbdb"
+          stroke-width="0.05"
+          class="last-move-indicator"
+        />
       </g>
     </g>
     <TaegeukStone
@@ -130,5 +139,9 @@ line {
 
 .click-placeholder {
   opacity: 0;
+}
+
+.last-move-indicator {
+  mix-blend-mode: difference;
 }
 </style>

@@ -126,7 +126,7 @@ const setPlayingAs = (seat: number) => {
   }
 
   playing_as.value = seat;
-  socket.emit("select_seat", [props.gameId, seat, players.value.length]);
+  socket.emit("unique_subscribe", [props.gameId, seat, players.value.length]);
 };
 
 function makeMove(move_str: string) {

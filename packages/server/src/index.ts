@@ -134,7 +134,7 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("select_seat", async ([game_id, seat, nr_of_players]) => {
+  socket.on("unique_subscribe", async ([game_id, seat, nr_of_players]) => {
     // unsubscribe from all seats
     for (let i = 0; i < nr_of_players; i++) {
       await socket.leave(`game/${game_id}/${i}`);

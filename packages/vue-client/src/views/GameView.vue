@@ -114,28 +114,19 @@ const leave = (seat: number) => {
     });
 };
 
-function unsubscribeAllSeats(): void {
-  if (players.value) {
-    socket.emit(
-      "unsubscribe",
-      players.value.map((_, index) => `game/${props.gameId}/${index}`),
-    );
-  }
-}
-
 const setPlayingAs = (seat: number) => {
-  if (!user.value) {
+  if (!user.value || !players.value) {
     return;
   }
-  unsubscribeAllSeats();
+
   if (playing_as.value === seat) {
     playing_as.value = undefined;
+    socket.emit("unsubscribe", [`game/${props.gameId}/${seat}`]);
     return;
   }
-  if (players.value && players.value[seat]?.id === user.value.id) {
-    playing_as.value = seat;
-    socket.emit("subscribe", [`game/${props.gameId}/${seat}`]);
-  }
+
+  playing_as.value = seat;
+  socket.emit("select_seat", [props.gameId, seat, players.value.length]);
 };
 
 function makeMove(move_str: string) {

@@ -133,6 +133,16 @@ io.on("connection", (socket) => {
       await socket.leave(topic);
     }
   });
+
+  socket.on("select_seat", async ([game_id, seat, nr_of_players]) => {
+    // unsubscribe from all seats
+    for (let i = 0; i < nr_of_players; i++) {
+      await socket.leave(`game/${game_id}/${i}`);
+    }
+
+    // subscribe to new seat
+    await socket.join(`game/${game_id}/${seat}`);
+  });
 });
 
 // If production, serve the React repo!

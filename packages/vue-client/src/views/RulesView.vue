@@ -4,7 +4,7 @@ import { computed } from "vue";
 
 const props = defineProps<{ variant: string }>();
 
-const variantRulesMapping: Record<string, any> = {
+const variantRulesMapping: Record<string, object> = {
   fractional: FractionalRules,
 };
 

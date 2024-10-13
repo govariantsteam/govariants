@@ -1,11 +1,6 @@
 import { SFractional } from "../s_fractional";
 
-// These variables just make the boards a little prettier
-const B = 0;
-const _ = null;
-const W = 1;
-
-test("Play a game", () => {
+test("grid board test", () => {
   const game = new SFractional({
     komi: 0,
     board: {
@@ -37,4 +32,29 @@ test("Play a game", () => {
     [{ x: 0, y: 1 }, ["black", "green"]],
     [{ x: 1, y: 1 }, ["white", "red"]],
   ]);
+});
+
+test("graph board test", () => {
+  const game = new SFractional({
+    komi: 0,
+    board: {
+      type: "gridWithHoles",
+      bitmap: [
+        [3, 3, 3, 3, 2],
+        [3, 3, 1, 3, 2],
+        [3, 2, 0, 3, 2],
+        [3, 3, 3, 3, 2],
+        [1, 1, 1, 1, 4],
+      ],
+    },
+    secondary_colors: ["red", "green"],
+  });
+
+  //  [_ _ _ _ _],
+  //  [_ _ _ _ _],
+  //  [_ _ # _ _],
+  //  [_ _ _ _ _],
+  //  [_ _ _ _ _],
+
+  expect(() => game.playMove(0, "cc")).toThrow();
 });

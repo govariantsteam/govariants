@@ -1,16 +1,10 @@
 <script setup lang="ts">
-import FractionalRules from "@/components/RuleDescriptions/FractionalRules.vue";
+import { getRulesDescription } from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
 
 const props = defineProps<{ variant: string }>();
 
-const variantRulesMapping: Record<string, object> = {
-  fractional: FractionalRules,
-};
-
-const variantRulesComponent = computed(
-  () => variantRulesMapping[props.variant],
-);
+const rulesDescription = computed(() => getRulesDescription(props.variant));
 
 function toUpperCaseFirstLetter(string: string) {
   if (string.length === 0) {
@@ -24,11 +18,8 @@ function toUpperCaseFirstLetter(string: string) {
 <template>
   <div class="rules-page">
     <h1>{{ toUpperCaseFirstLetter(props.variant) }} Variant Rules</h1>
-    <p v-if="!variantRulesComponent">Under Construction</p>
-    <component
-      v-if="variantRulesComponent"
-      v-bind:is="variantRulesComponent"
-    ></component>
+    <p v-if="!rulesDescription">Under Construction</p>
+    <component v-if="rulesDescription" v-html="rulesDescription"></component>
   </div>
 </template>
 

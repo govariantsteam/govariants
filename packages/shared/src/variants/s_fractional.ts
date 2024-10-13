@@ -226,8 +226,8 @@ export class SFractional extends AbstractGame<
     const board = this.board;
 
     // setup vars and functions
-    var potentialOwnerColors: Color[] = ["black", "white"];
-    var territoryContainer: { x: number; y: number }[] = [];
+    let potentialOwnerColors: Color[] = ["black", "white"];
+    let territoryContainer: { x: number; y: number }[] = [];
     function resetVars(): void {
       potentialOwnerColors = ["black", "white"];
       territoryContainer = [];

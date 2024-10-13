@@ -130,7 +130,7 @@ export class SFractional extends AbstractGame<
     this.board.set(move, stoneColors);
 
     // calculate captures
-    var groupsWithoutLiberties: { x: number; y: number }[][] = [];
+    let groupsWithoutLiberties: { x: number; y: number }[][] = [];
 
     this.board.neighbors(move).forEach((pos) => {
       const neighborStoneColors = this.board.at(pos);
@@ -182,7 +182,7 @@ export class SFractional extends AbstractGame<
     color: Color,
   ): { members: { x: number; y: number }[]; liberties: number } {
     const members: { x: number; y: number }[] = [];
-    var liberties = 0;
+    let liberties = 0;
     const board = this.board;
     const visited = this.board.map(() => false);
 

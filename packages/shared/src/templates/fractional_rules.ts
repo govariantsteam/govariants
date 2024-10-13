@@ -2,10 +2,10 @@ export const fractionalRulesDescription = `
 
 <h2>Introduction</h2>
 <p>
-  Fractional is a variant with a wide range of possible game configurations. It supports any number of players and combines the modifications of <strong>Parallel Moves</strong> and <strong>Fractional Stones</strong>.
+  Fractional is a variant featuring <strong>Parallel Moves</strong> and <strong>Fractional Stones</strong>. It supports a wide range of game configurations and can be played with any number of players.
 </p>
 <p>
-  Understanding the rules of Baduk (Go) are a prerequisite for this description.
+  Understanding the rules of Baduk (Go) are a prerequisite for this rules description.
 </p>
 
 <h2>Objective</h2>

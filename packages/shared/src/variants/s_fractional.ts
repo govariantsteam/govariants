@@ -147,6 +147,10 @@ export class SFractional extends AbstractGame<
         (color) => !stoneColors.includes(color),
       )) {
         const examResult = this.examineGroup(pos, color);
+        console.log(
+          `pos: (${pos.x}, ${pos.y}), color: ${color}, liberties: ${examResult.liberties}`,
+        );
+        console.log(JSON.stringify(examResult.members));
         if (examResult.liberties === 0) {
           groupsWithoutLiberties.push(examResult.members);
         }
@@ -194,14 +198,14 @@ export class SFractional extends AbstractGame<
         return;
       }
 
+      visited.set(index, true);
+
       if (stoneColors.length === 0) {
         liberties++;
       } else if (stoneColors.includes(color)) {
         members.push(index);
+        board.neighbors(index).forEach(searchHelper);
       }
-
-      visited.set(index, true);
-      board.neighbors(index).forEach(searchHelper);
     }
 
     searchHelper(index);

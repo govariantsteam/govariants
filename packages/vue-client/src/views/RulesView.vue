@@ -19,7 +19,7 @@ function toUpperCaseFirstLetter(string: string) {
   <div class="rules-page">
     <h1>{{ toUpperCaseFirstLetter(props.variant) }} Variant Rules</h1>
     <p v-if="!rulesDescription">Under Construction</p>
-    <component v-if="rulesDescription" v-html="rulesDescription"></component>
+    <div v-if="rulesDescription" v-html="rulesDescription"></div>
   </div>
 </template>
 

@@ -75,9 +75,15 @@ export class SFractional extends AbstractGame<
   }
 
   override playMove(player: number, move: string): void {
-    if (move === "resign" || move === "timeout") {
+    if (move === "resign") {
       this.phase = "gameover";
       this.result = player === 0 ? "W+R" : "B+R";
+      return;
+    }
+
+    if (move === "timeout") {
+      this.phase = "gameover";
+      this.result = player === 0 ? "W+T" : "B+T";
       return;
     }
 
@@ -241,16 +247,19 @@ export class SFractional extends AbstractGame<
       }
 
       if (stoneColors.length === 0) {
+        visited.set(index, true);
         territoryContainer.push(index);
+        board.neighbors(index).forEach(territoryIdentifier);
       } else {
-        potentialOwnerColors.filter((color) => stoneColors.includes(color));
+        potentialOwnerColors = potentialOwnerColors.filter((color) =>
+          stoneColors.includes(color),
+        );
       }
-
-      visited.set(index, true);
-      board.neighbors(index).forEach(territoryIdentifier);
     }
 
-    // identify territory over the board
+    let scoreDiff = -this.config.komi;
+
+    // identify territory over the board and calculate score
     this.board.forEach((placementColors, index) => {
       if (this.isOccupied(placementColors)) {
         return;
@@ -259,13 +268,20 @@ export class SFractional extends AbstractGame<
       territoryIdentifier(index);
       if (potentialOwnerColors.length === 1) {
         const owner = potentialOwnerColors[0];
-        territoryContainer.forEach((coord) =>
-          scorePlacements.push([coord, owner]),
-        );
+        territoryContainer.forEach((coord) => {
+          scorePlacements.push([coord, owner]);
+          scoreDiff += owner === "black" ? 1 : -1;
+        });
       }
       resetVars();
     });
 
+    this.scorePlacements = scorePlacements;
+    if (scoreDiff === 0) {
+      this.result = "Tie";
+    } else {
+      this.result = scoreDiff > 0 ? `B+${scoreDiff}` : `W+${-scoreDiff}`;
+    }
     this.phase = "gameover";
   }
 

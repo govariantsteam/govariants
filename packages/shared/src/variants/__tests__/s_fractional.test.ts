@@ -23,8 +23,6 @@ test("grid board test", () => {
 
   const state = game.exportState();
 
-  console.log(JSON.stringify(state.stonePlacements));
-
   expect(state.lastMove).toEqual("ba");
 
   expect(state.stonePlacements).toEqual([

@@ -147,10 +147,6 @@ export class SFractional extends AbstractGame<
         (color) => !stoneColors.includes(color),
       )) {
         const examResult = this.examineGroup(pos, color);
-        console.log(
-          `pos: (${pos.x}, ${pos.y}), color: ${color}, liberties: ${examResult.liberties}`,
-        );
-        console.log(JSON.stringify(examResult.members));
         if (examResult.liberties === 0) {
           groupsWithoutLiberties.push(examResult.members);
         }

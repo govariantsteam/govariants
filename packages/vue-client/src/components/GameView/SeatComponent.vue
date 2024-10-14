@@ -6,6 +6,7 @@ import type {
 } from "@ogfcommunity/variants-shared";
 import { computed, getCurrentInstance } from "vue";
 import GameTimer from "../GameTimer.vue";
+import PlayerSymbol from "./PlayerSymbol.vue";
 
 defineProps<{
   user_id?: string;
@@ -15,6 +16,9 @@ defineProps<{
   time_control: IPerPlayerTimeControlBase | null;
   time_config?: ITimeControlConfig;
   is_players_turn: boolean;
+  variant: string;
+  config: unknown;
+  gamestate: unknown;
 }>();
 
 defineEmits<{
@@ -64,6 +68,12 @@ const hasLeaveCallback = computed(
         </button>
       </div>
     </div>
+    <PlayerSymbol
+      v-bind:variant="variant"
+      v-bind:config="config"
+      v-bind:gamestate="gamestate"
+      v-bind:player_nr="player_n"
+    ></PlayerSymbol>
   </div>
 </template>
 

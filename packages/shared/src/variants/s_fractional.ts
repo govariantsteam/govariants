@@ -237,7 +237,7 @@ export class SFractional extends AbstractGame<
       territoryContainer = [];
     }
     function territoryIdentifier(index: { x: number; y: number }): void {
-      if (visited.at(index) || potentialOwnerColors.length === 0) {
+      if (visited.at(index)) {
         return;
       }
 

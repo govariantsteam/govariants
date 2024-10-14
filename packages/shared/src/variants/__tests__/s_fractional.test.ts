@@ -13,8 +13,8 @@ test("grid board test", () => {
 
   game.playMove(0, "aa");
   game.playMove(1, "bb");
-  game.playMove(0, "ab");
-  game.playMove(1, "ba");
+  game.playMove(0, "ba");
+  game.playMove(1, "ab");
 
   //  [(B,R) (B,G) _ _],
   //  [(W,G) (W,R) _ _],
@@ -23,12 +23,13 @@ test("grid board test", () => {
 
   const state = game.exportState();
 
-  expect(state.lastMove).toEqual("ba");
+  expect(state.lastMove).toEqual("ab");
 
   expect(state.board).toEqual([
-    [{ x: 1, y: 0 }, ["white", "green"]],
-    [{ x: 0, y: 1 }, ["black", "green"]],
-    [{ x: 1, y: 1 }, ["white", "red"]],
+    [[], ["black", "green"], [], []],
+    [["white", "green"], ["white", "red"], [], []],
+    [[], [], [], []],
+    [[], [], [], []],
   ]);
 });
 
@@ -68,14 +69,14 @@ test("territory test", () => {
     secondary_colors: ["red", "green"],
   });
 
-  game.playMove(0, "ab");
-  game.playMove(1, "ac");
+  game.playMove(0, "ba");
+  game.playMove(1, "ca");
   game.playMove(0, "bb");
-  game.playMove(1, "bc");
-  game.playMove(0, "cb");
+  game.playMove(1, "cb");
+  game.playMove(0, "bc");
   game.playMove(1, "cc");
-  game.playMove(0, "db");
-  game.playMove(1, "cd");
+  game.playMove(0, "bd");
+  game.playMove(1, "dc");
   game.playMove(0, "pass");
   game.playMove(1, "pass");
 
@@ -90,11 +91,9 @@ test("territory test", () => {
   expect(game.result).toBe("B+1.5");
 
   expect(state.scoreBoard).toEqual([
-    [{ x: 0, y: 0 }, "black"],
-    [{ x: 1, y: 0 }, "black"],
-    [{ x: 2, y: 0 }, "black"],
-    [{ x: 3, y: 0 }, "black"],
-    [{ x: 0, y: 3 }, "white"],
-    [{ x: 1, y: 3 }, "white"],
+    ["black", "", "", "white"],
+    ["black", "", "", "white"],
+    ["black", "", "", ""],
+    ["black", "", "", ""],
   ]);
 });

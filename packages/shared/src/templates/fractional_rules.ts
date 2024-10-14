@@ -2,10 +2,10 @@ export const fractionalRulesDescription = `
 
 <h2>Introduction</h2>
 <p>
-  Fractional is a variant featuring <strong>Parallel Moves</strong> and <strong>Fractional Stones</strong>. It supports a wide range of game configurations and can be played with any number of players.
+  Fractional is a variant of the classical game of Baduk (Go) featuring <strong>Parallel Moves</strong> and <strong>Fractional Stones</strong>. It supports a wide range of game configurations and can be played with any number of players.
 </p>
 <p>
-  Understanding the rules of Baduk (Go) are a prerequisite for this rules description.
+  Understanding the rules of Baduk is a prerequisite for this rules description.
 </p>
 
 <h2>Objective</h2>
@@ -38,11 +38,10 @@ export const fractionalRulesDescription = `
     <strong>New Chains</strong> are those including a stone placed this round.
   </li>
   <li>
-    <strong>Old Chains</strong> are those that don’t include a stone placed this
-    round.
+    <strong>Old Chains</strong> are those that don’t include a stone placed this round.
   </li>
 </ul>
 
 <p>
-  Note that removing Old Chains might free up liberties of New Chains, allowing them to avoid capture (like in baduk, a stone that captures a Ko).
+  Note that removing Old Chains might free up liberties of New Chains, allowing them to avoid capture (like in Baduk when a stone captures a Ko).
 </p>`;

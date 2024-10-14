@@ -100,6 +100,7 @@ export class SFractional extends AbstractGame<
       }
 
       this.playMoveInternal(decoded_move);
+      this.postValidateMove();
     }
     this.prepareForNextMove(move);
     super.increaseRound();
@@ -207,7 +208,7 @@ export class SFractional extends AbstractGame<
     return { members: members, liberties: liberties };
   }
 
-  protected postValidateMove(move: Coordinate): void {
+  protected postValidateMove(): void {
     // situational superko
     this.ko_detector.push({
       board: this.board,

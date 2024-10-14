@@ -74,3 +74,7 @@ export function supportsSGF(variant: string) {
 export function getDescription(variant: string) {
   return variant_map[variant]?.description ?? "";
 }
+
+export function getRulesDescription(variant: string): string | undefined {
+  return variant_map[variant]?.rulesDescription;
+}

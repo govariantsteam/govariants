@@ -129,6 +129,7 @@ export class SFractional extends AbstractGame<
     // calculate captures
     let groupsWithoutLiberties: { x: number; y: number }[][] = [];
 
+    // check neighbours for captured groups not connected to the placed stone
     this.board.neighbors(move).forEach((pos) => {
       const neighborStoneColors = this.board.at(pos);
 
@@ -139,7 +140,6 @@ export class SFractional extends AbstractGame<
         return;
       }
 
-      // check neighbours for captured groups not connected to the placed stone
       for (const color of neighborStoneColors.filter(
         (color) => !stoneColors.includes(color),
       )) {
@@ -148,26 +148,26 @@ export class SFractional extends AbstractGame<
           groupsWithoutLiberties.push(examResult.members);
         }
       }
-
-      // remove neighbouring groups without liberties
-      for (const coord of groupsWithoutLiberties.flat()) {
-        this.board.set(coord, []);
-      }
-      groupsWithoutLiberties = [];
-
-      // check placed stone for self capture, which is allowed
-      for (const color of stoneColors) {
-        const examResult = this.examineGroup(move, color);
-        if (examResult.liberties === 0) {
-          groupsWithoutLiberties.push(examResult.members);
-        }
-      }
-
-      // remove self-capture groups
-      for (const coord of groupsWithoutLiberties.flat()) {
-        this.board.set(coord, []);
-      }
     });
+
+    // remove neighbouring groups without liberties
+    for (const coord of groupsWithoutLiberties.flat()) {
+      this.board.set(coord, []);
+    }
+    groupsWithoutLiberties = [];
+
+    // check placed stone for self capture, which is allowed
+    for (const color of stoneColors) {
+      const examResult = this.examineGroup(move, color);
+      if (examResult.liberties === 0) {
+        groupsWithoutLiberties.push(examResult.members);
+      }
+    }
+
+    // remove self-capture groups
+    for (const coord of groupsWithoutLiberties.flat()) {
+      this.board.set(coord, []);
+    }
   }
 
   private examineGroup(

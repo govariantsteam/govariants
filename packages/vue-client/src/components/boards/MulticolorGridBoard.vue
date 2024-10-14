@@ -1,16 +1,10 @@
-<script lang="ts">
-interface MulticolorStone {
-  colors: string[];
-  annotation?: "CR" | "MA";
-}
-</script>
-
 <script setup lang="ts">
 import { computed, ref, type Ref } from "vue";
 import TaegeukStone from "../TaegeukStone.vue";
 import IntersectionAnnotation from "../IntersectionAnnotation.vue";
 import { Coordinate } from "@ogfcommunity/variants-shared";
 import { positionsGetter } from "./board_utils";
+import { MulticolorStone } from "./board_types";
 
 const props = defineProps<{
   board: (MulticolorStone | null)[][];

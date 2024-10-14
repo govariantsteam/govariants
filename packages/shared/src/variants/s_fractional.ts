@@ -10,18 +10,17 @@ import { BadukBoard } from "./baduk";
 import { Intersection } from "../lib/abstractBoard/intersection";
 import { GraphWrapper } from "../lib/graph";
 import { Grid } from "../lib/grid";
+import { Variant } from "../variant";
 
 declare type Color = string;
 declare type PlacementColors = [Color, Color] | [];
-declare type StonePlacement = [{ x: number; y: number }, [Color, Color]];
-declare type ScorePlacement = [{ x: number; y: number }, Color];
 
 export type SFractionalConfig = NewBadukConfig & { secondary_colors: Color[] };
 
 export type SFractionalState = {
-  stonePlacements: StonePlacement[];
+  board: PlacementColors[][];
   lastMove: string;
-  scorePlacements?: ScorePlacement[];
+  scoreBoard?: Color[][];
 };
 
 export class SFractional extends AbstractGame<
@@ -30,7 +29,7 @@ export class SFractional extends AbstractGame<
 > {
   protected last_move = "";
   public board: BadukBoard<PlacementColors>;
-  public scorePlacements?: ScorePlacement[];
+  public scoreBoard?: BadukBoard<Color>;
 
   constructor(config: SFractionalConfig) {
     super(config);
@@ -55,18 +54,10 @@ export class SFractional extends AbstractGame<
   }
 
   override exportState(): SFractionalState {
-    const stonePlacements: StonePlacement[] = [];
-
-    this.board.forEach((placementColors, index) => {
-      if (this.isOccupied(placementColors)) {
-        stonePlacements.push([{ x: index.x, y: index.y }, placementColors]);
-      }
-    });
-
     return {
-      stonePlacements: stonePlacements,
+      board: this.board.serialize(),
       lastMove: this.last_move,
-      ...(this.scorePlacements && { scorePlacements: this.scorePlacements }),
+      ...(this.scoreBoard && { scoreBoard: this.scoreBoard.serialize() }),
     };
   }
 
@@ -223,7 +214,7 @@ export class SFractional extends AbstractGame<
   }
 
   private finalizeScore(): void {
-    const scorePlacements: ScorePlacement[] = [];
+    const scoreBoard = this.board.map((_) => "");
     const visited = this.board.map((_) => false);
     const board = this.board;
 
@@ -269,14 +260,14 @@ export class SFractional extends AbstractGame<
       if (potentialOwnerColors.length === 1) {
         const owner = potentialOwnerColors[0];
         territoryContainer.forEach((coord) => {
-          scorePlacements.push([coord, owner]);
+          scoreBoard.set(coord, owner);
           scoreDiff += owner === "black" ? 1 : -1;
         });
       }
       resetVars();
     });
 
-    this.scorePlacements = scorePlacements;
+    this.scoreBoard = scoreBoard;
     if (scoreDiff === 0) {
       this.result = "Tie";
     } else {
@@ -293,7 +284,7 @@ export class SFractional extends AbstractGame<
     return { pass: "Pass", resign: "Resign" };
   }
 
-  defaultConfig(): SFractionalConfig {
+  static defaultConfig(): SFractionalConfig {
     return {
       komi: 7.5,
       board: {
@@ -305,3 +296,10 @@ export class SFractional extends AbstractGame<
     };
   }
 }
+
+export const sFractionalVariant: Variant<SFractionalConfig> = {
+  gameClass: SFractional,
+  defaultConfig: SFractional.defaultConfig,
+  description:
+    "Stones have a secondary colour that also requires liberties to avoid capture.",
+};

@@ -23,5 +23,6 @@ export * from "./variants/drift";
 export * from "./variants/baduk_utils";
 export * from "./lib/abstractBoard/boardFactory";
 export * from "./lib/abstractBoard/intersection";
+export * from "./variants/s_fractional";
 
 export const SITE_NAME = "Go Variants";

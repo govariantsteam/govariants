@@ -25,7 +25,7 @@ test("grid board test", () => {
 
   expect(state.lastMove).toEqual("ba");
 
-  expect(state.stonePlacements).toEqual([
+  expect(state.board).toEqual([
     [{ x: 1, y: 0 }, ["white", "green"]],
     [{ x: 0, y: 1 }, ["black", "green"]],
     [{ x: 1, y: 1 }, ["white", "red"]],
@@ -89,7 +89,7 @@ test("territory test", () => {
   expect(game.phase).toBe("gameover");
   expect(game.result).toBe("B+1.5");
 
-  expect(state.scorePlacements).toEqual([
+  expect(state.scoreBoard).toEqual([
     [{ x: 0, y: 0 }, "black"],
     [{ x: 1, y: 0 }, "black"],
     [{ x: 2, y: 0 }, "black"],

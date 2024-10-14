@@ -11,6 +11,7 @@ import { Intersection } from "../lib/abstractBoard/intersection";
 import { GraphWrapper } from "../lib/graph";
 import { Grid } from "../lib/grid";
 import { Variant } from "../variant";
+import { SuperKoDetector } from "../lib/ko_detector";
 
 declare type Color = string;
 declare type PlacementColors = [Color, Color] | [];
@@ -30,6 +31,7 @@ export class SFractional extends AbstractGame<
   protected last_move = "";
   public board: BadukBoard<PlacementColors>;
   public scoreBoard?: BadukBoard<Color>;
+  private ko_detector = new SuperKoDetector();
 
   constructor(config: SFractionalConfig) {
     super(config);
@@ -205,6 +207,14 @@ export class SFractional extends AbstractGame<
     return { members: members, liberties: liberties };
   }
 
+  protected postValidateMove(move: Coordinate): void {
+    // situational superko
+    this.ko_detector.push({
+      board: this.board,
+      cyclic_move_index: this.round % (2 * this.config.secondary_colors.length),
+    });
+  }
+
   protected prepareForNextMove(move: string): void {
     if (move == "pass" && this.last_move === "pass") {
       this.finalizeScore();
@@ -292,7 +302,7 @@ export class SFractional extends AbstractGame<
         width: 19,
         height: 19,
       },
-      secondary_colors: ["blue", "red"],
+      secondary_colors: ["#0000FF", "#FF0000"],
     };
   }
 }

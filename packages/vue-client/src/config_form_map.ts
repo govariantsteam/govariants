@@ -4,6 +4,7 @@ import BadukWithAbstractBoardConfigForm from "@/components/GameCreation/BadukWit
 import ParalleGoConfigForm from "@/components/GameCreation/ParallelGoConfigForm.vue";
 import DriftGoConfigFormVue from "./components/GameCreation/DriftGoConfigForm.vue";
 import GridBadukConfigForm from "./components/GameCreation/GridBadukConfigForm.vue";
+import SFractionalConfigForm from "./components/GameCreation/SFractionalConfigForm.vue";
 
 export const config_form_map: {
   [variant: string]: Component<{ initialConfig: object }>;
@@ -21,4 +22,5 @@ export const config_form_map: {
   "one color": BadukConfigForm,
   drift: DriftGoConfigFormVue,
   quantum: BadukConfigForm,
+  sfractional: SFractionalConfigForm,
 };

@@ -74,3 +74,15 @@ export function supportsSGF(variant: string) {
 export function getDescription(variant: string) {
   return variant_map[variant]?.description ?? "";
 }
+
+export function getPlayerColors(
+  variant: string,
+  config: object,
+  playerNr: number,
+): string[] {
+  const variant_object = variant_map[variant];
+  if (!variant_object || !variant_object.getPlayerColors) {
+    return [];
+  }
+  return variant_object.getPlayerColors(config, playerNr);
+}

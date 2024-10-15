@@ -165,6 +165,11 @@ export class Fractional extends AbstractBaduk<
       null,
     );
   }
+
+  static getPlayerColors(config: FractionalConfig, playerNr: number): string[] {
+    const playerConfig = config.players.at(playerNr);
+    return playerConfig ? Object.values(playerConfig) : [];
+  }
 }
 
 export const fractionalVariant: Variant<FractionalConfig> = {
@@ -183,4 +188,5 @@ export const fractionalVariant: Variant<FractionalConfig> = {
       board: { type: BoardPattern.Grid, width: 19, height: 19 },
     };
   },
+  getPlayerColors: Fractional.getPlayerColors,
 };

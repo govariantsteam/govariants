@@ -2,23 +2,21 @@
 import type {
   User,
   IPerPlayerTimeControlBase,
-  ITimeControlConfig,
+  IConfigWithTimeControl,
 } from "@ogfcommunity/variants-shared";
 import { computed, getCurrentInstance } from "vue";
 import GameTimer from "../GameTimer.vue";
 import PlayerSymbol from "./PlayerSymbol.vue";
 
-defineProps<{
+const props = defineProps<{
   user_id?: string;
   occupant?: User;
   player_n: number;
   selected?: number;
   time_control: IPerPlayerTimeControlBase | null;
-  time_config?: ITimeControlConfig;
   is_players_turn: boolean;
   variant: string;
-  config: unknown;
-  gamestate: unknown;
+  config: object | undefined;
 }>();
 
 defineEmits<{
@@ -29,6 +27,9 @@ defineEmits<{
 const hasLeaveCallback = computed(
   // https://stackoverflow.com/a/76208995/5001502
   () => !!getCurrentInstance()?.vnode.props?.onLeave,
+);
+const time_config = computed(
+  () => (props.config as IConfigWithTimeControl).time_control,
 );
 </script>
 
@@ -70,9 +71,8 @@ const hasLeaveCallback = computed(
     </div>
     <PlayerSymbol
       v-bind:variant="variant"
-      v-bind:config="config"
-      v-bind:gamestate="gamestate"
       v-bind:player_nr="player_n"
+      v-bind:config="config"
     ></PlayerSymbol>
   </div>
 </template>

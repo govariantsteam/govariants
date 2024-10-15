@@ -72,4 +72,5 @@ export const badukWithAbstractBoardVariant: Variant<BadukWithAbstractBoardConfig
         pattern: BoardPattern.Rectangular,
       };
     },
+    getPlayerColors: Baduk.getPlayerColors,
   };

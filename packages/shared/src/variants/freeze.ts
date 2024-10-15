@@ -45,4 +45,5 @@ export const freezeGoVariant: Variant<BadukConfig> = {
   gameClass: FreezeGo,
   description: "Baduk but after an Atari, stones can't be captured",
   defaultConfig: Baduk.defaultConfig,
+  getPlayerColors: Baduk.getPlayerColors,
 };

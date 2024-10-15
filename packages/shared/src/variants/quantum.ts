@@ -307,4 +307,5 @@ export const quantumVariant: Variant<BadukConfig> = {
       komi: 7.5,
     };
   },
+  getPlayerColors: Baduk.getPlayerColors,
 };

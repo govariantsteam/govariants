@@ -34,4 +34,5 @@ export const phantomVariant: Variant<BadukConfig> = {
   gameClass: Phantom,
   description: "Baduk but other players stones are invisible",
   defaultConfig: Baduk.defaultConfig,
+  getPlayerColors: Baduk.getPlayerColors,
 };

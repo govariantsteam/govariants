@@ -83,3 +83,15 @@ export function getRulesDescription(variant: string): string | undefined {
   }
   return markdownit("commonmark").render(description);
 }
+
+export function getPlayerColors(
+  variant: string,
+  config: object,
+  playerNr: number,
+): string[] {
+  const variant_object = variant_map[variant];
+  if (!variant_object || !variant_object.getPlayerColors) {
+    return [];
+  }
+  return variant_object.getPlayerColors(config, playerNr);
+}

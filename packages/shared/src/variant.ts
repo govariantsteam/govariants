@@ -7,4 +7,5 @@ export interface Variant<ConfigT extends object = object> {
   rulesDescription?: string;
   deprecated?: boolean;
   defaultConfig: () => ConfigT;
+  getPlayerColors?: (config: ConfigT, playerNr: number) => string[];
 }

@@ -36,4 +36,5 @@ export const thueMorseVariant: Variant<BadukConfig> = {
   gameClass: ThueMorse,
   description: "Baduk with move order according to Thue-Morse sequence",
   defaultConfig: Baduk.defaultConfig,
+  getPlayerColors: Baduk.getPlayerColors,
 };

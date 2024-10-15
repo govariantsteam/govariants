@@ -234,8 +234,9 @@ const createTimeControlPreview = (
           game_state?.timeControl?.forPlayer[idx] ??
           createTimeControlPreview(config)
         "
-        :time_config="(config as IConfigWithTimeControl).time_control"
         :is_players_turn="game_state?.next_to_play?.includes(idx) ?? false"
+        :variant="variant"
+        :config="config"
       />
     </div>
 

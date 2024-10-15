@@ -3,6 +3,8 @@ import { BoardConfig, SFractionalConfig } from "@ogfcommunity/variants-shared";
 import BoardConfigForm from "./BoardConfigForms/BoardConfigForm.vue";
 import { reactive } from "vue";
 
+const maxNrOfSecondaryColors = 16;
+
 const props = defineProps<{
   initialConfig: SFractionalConfig;
 }>();
@@ -45,8 +47,20 @@ function removeSecondaryColor(): void {
     <input type="number" step="0.5" v-model="config.komi" />
     <div class="row">
       <label class="grow">Secondary Colors</label>
-      <button class="no-flex" v-on:click="addSecondaryColor()">+</button>
-      <button class="no-flex" v-on:click="removeSecondaryColor()">-</button>
+      <button
+        class="no-flex"
+        v-on:click="addSecondaryColor()"
+        :disabled="config.secondary_colors.length >= maxNrOfSecondaryColors"
+      >
+        +
+      </button>
+      <button
+        class="no-flex"
+        v-on:click="removeSecondaryColor()"
+        :disabled="config.secondary_colors.length <= 1"
+      >
+        -
+      </button>
     </div>
     <input
       type="color"

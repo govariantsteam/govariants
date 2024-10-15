@@ -85,6 +85,13 @@ router.get("/games", async (req, res) => {
 router.post("/games", async (req, res) => {
   const data = req.body;
 
+  if (!req.user) {
+    // unauthorized
+    res.status(401);
+    res.json("To create a game, please register an account.");
+    return;
+  }
+
   try {
     const game: GameResponse = await createGame(data.variant, data.config);
     res.send(game);

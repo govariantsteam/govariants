@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import { BoardConfig, SFractionalConfig } from "@ogfcommunity/variants-shared";
 import BoardConfigForm from "./BoardConfigForms/BoardConfigForm.vue";
+import { reactive } from "vue";
 
 const props = defineProps<{
   initialConfig: SFractionalConfig;
 }>();
 
-const config: SFractionalConfig = {
+const config: SFractionalConfig = reactive({
   ...props.initialConfig,
   board: { ...props.initialConfig.board },
   secondary_colors: [...props.initialConfig.secondary_colors],
-};
+});
 
 const emit = defineEmits<{
   (e: "configChanged", config: SFractionalConfig): void;
@@ -25,7 +26,6 @@ function setBoardConfig(boardConfig: BoardConfig): void {
   emitConfigChange();
 }
 
-/* TODO: Figure out how to make this work with vues reactivity
 function addSecondaryColor(): void {
   config.secondary_colors.push("#008000");
 }
@@ -36,7 +36,6 @@ function removeSecondaryColor(): void {
     config.secondary_colors.length - 1,
   );
 }
-*/
 </script>
 
 <template>
@@ -44,7 +43,11 @@ function removeSecondaryColor(): void {
     <BoardConfigForm @config-changed="setBoardConfig($event)" />
     <label>Komi</label>
     <input type="number" step="0.5" v-model="config.komi" />
-    <label>Secondary Colors</label>
+    <div class="row">
+      <label class="grow">Secondary Colors</label>
+      <button class="no-flex" v-on:click="addSecondaryColor()">+</button>
+      <button class="no-flex" v-on:click="removeSecondaryColor()">-</button>
+    </div>
     <input
       type="color"
       v-for="(_, index) in config.secondary_colors"
@@ -52,13 +55,25 @@ function removeSecondaryColor(): void {
       v-model="config.secondary_colors[index]"
     />
   </form>
-  <!-- <button v-on:click="addSecondaryColor()">+</button> -->
-  <!-- <button v-on:click="removeSecondaryColor()">-</button> -->
 </template>
 
 <style scoped>
+.config-form-column {
+  gap: 5px;
+  max-width: 300px;
+}
 input,
 select {
   width: 100%;
+}
+.row {
+  display: flex;
+  flex-direction: row;
+}
+.no-flex {
+  flex-grow: 0;
+}
+.grow {
+  flex-grow: 1;
 }
 </style>

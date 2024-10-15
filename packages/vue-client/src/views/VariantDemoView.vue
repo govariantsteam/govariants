@@ -159,6 +159,8 @@ function onConfigChange(c: object) {
         :selected="playing_as"
         :time_control="null"
         :is_players_turn="game.next_to_play?.includes(idx) ?? false"
+        :variant="variant"
+        :config="config"
       />
     </div>
 

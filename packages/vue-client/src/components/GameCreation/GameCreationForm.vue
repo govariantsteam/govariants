@@ -119,6 +119,5 @@ textarea {
 }
 .game-creation-form {
   margin-bottom: 0.5rem;
-  width: 300px;
 }
 </style>

@@ -88,7 +88,7 @@ watch(patternRef, () => {
   </div>
 </template>
 
-<style scoped>
+<style>
 input {
   width: fit-content;
 }

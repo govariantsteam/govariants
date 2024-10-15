@@ -36,7 +36,7 @@ function setBoardConfig(boardConfig: BoardConfig): void {
   </form>
 </template>
 
-<style scoped>
+<style>
 input {
   width: fit-content;
 }

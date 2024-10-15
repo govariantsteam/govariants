@@ -25,7 +25,7 @@ function emitConfigChange(config: BoardConfig) {
 </script>
 
 <template>
-  <div class="config-form-column">
+  <div class="config-form-column" style="width: fit-content">
     <template v-if="$props.gridOnly !== true">
       <label>Pattern</label>
       <select v-model="board_type">

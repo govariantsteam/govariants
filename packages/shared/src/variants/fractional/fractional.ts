@@ -6,6 +6,7 @@ import {
 import { FractionalStone } from "./fractionalStone";
 import { BoardPattern } from "../../lib/abstractBoard/boardFactory";
 import { Variant } from "../../variant";
+import { fractionalRulesDescription } from "../../templates/fractional_rules";
 
 export type Color =
   | "black"
@@ -175,6 +176,7 @@ export class Fractional extends AbstractBaduk<
 export const fractionalVariant: Variant<FractionalConfig> = {
   gameClass: Fractional,
   description: "Multiplayer Baduk with multicolored stones and parallel moves",
+  rulesDescription: fractionalRulesDescription,
   defaultConfig(): FractionalConfig {
     return {
       players: [

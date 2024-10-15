@@ -71,4 +71,5 @@ export const keimaVariant: Variant<BadukConfig> = {
   description:
     "Baduk but players play two moves that must form a Keima (Knight's move) shape",
   defaultConfig: Baduk.defaultConfig,
+  getPlayerColors: Baduk.getPlayerColors,
 };

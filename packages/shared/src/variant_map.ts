@@ -15,6 +15,7 @@ import { driftVariant } from "./variants/drift";
 import { quantumVariant } from "./variants/quantum";
 import { badukVariant } from "./variants/baduk";
 import { Variant } from "./variant";
+import markdownit from "markdown-it";
 import { sFractionalVariant } from "./variants/s_fractional";
 
 const variant_map: {
@@ -75,4 +76,24 @@ export function supportsSGF(variant: string) {
 
 export function getDescription(variant: string) {
   return variant_map[variant]?.description ?? "";
+}
+
+export function getRulesDescription(variant: string): string | undefined {
+  const description = variant_map[variant]?.rulesDescription;
+  if (description == null) {
+    return "";
+  }
+  return markdownit("commonmark").render(description);
+}
+
+export function getPlayerColors(
+  variant: string,
+  config: object,
+  playerNr: number,
+): string[] {
+  const variant_object = variant_map[variant];
+  if (!variant_object || !variant_object.getPlayerColors) {
+    return [];
+  }
+  return variant_object.getPlayerColors(config, playerNr);
 }

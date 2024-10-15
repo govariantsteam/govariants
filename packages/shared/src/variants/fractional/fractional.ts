@@ -6,6 +6,7 @@ import {
 import { FractionalStone } from "./fractionalStone";
 import { BoardPattern } from "../../lib/abstractBoard/boardFactory";
 import { Variant } from "../../variant";
+import { fractionalRulesDescription } from "../../templates/fractional_rules";
 
 export type Color =
   | "black"
@@ -165,11 +166,17 @@ export class Fractional extends AbstractBaduk<
       null,
     );
   }
+
+  static getPlayerColors(config: FractionalConfig, playerNr: number): string[] {
+    const playerConfig = config.players.at(playerNr);
+    return playerConfig ? Object.values(playerConfig) : [];
+  }
 }
 
 export const fractionalVariant: Variant<FractionalConfig> = {
   gameClass: Fractional,
   description: "Multiplayer Baduk with multicolored stones and parallel moves",
+  rulesDescription: fractionalRulesDescription,
   defaultConfig(): FractionalConfig {
     return {
       players: [
@@ -183,4 +190,5 @@ export const fractionalVariant: Variant<FractionalConfig> = {
       board: { type: BoardPattern.Grid, width: 19, height: 19 },
     };
   },
+  getPlayerColors: Fractional.getPlayerColors,
 };

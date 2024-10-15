@@ -17,4 +17,5 @@ export const tetrisVariant: Variant<BadukConfig> = {
   gameClass: TetrisGo,
   description: "Baduk but players can't play Tetris shapes",
   defaultConfig: Baduk.defaultConfig,
+  getPlayerColors: Baduk.getPlayerColors,
 };

@@ -6,12 +6,13 @@ import {
 } from "../lib/abstractBoard/boardFactory";
 import { NewBadukConfig } from "./baduk_utils";
 import { AbstractGame } from "../abstract_game";
-import { BadukBoard } from "./baduk";
+import { Baduk, BadukBoard } from "./baduk";
 import { Intersection } from "../lib/abstractBoard/intersection";
 import { GraphWrapper } from "../lib/graph";
 import { Grid } from "../lib/grid";
 import { Variant } from "../variant";
 import { SuperKoDetector } from "../lib/ko_detector";
+import { getPlayerColors } from "../variant_map";
 
 declare type Color = string;
 declare type PlacementColors = [Color, Color] | [];
@@ -315,4 +316,5 @@ export const sFractionalVariant: Variant<SFractionalConfig> = {
   defaultConfig: SFractional.defaultConfig,
   description:
     "Stones have a secondary colour that also requires liberties to avoid capture.",
+  getPlayerColors: Baduk.getPlayerColors,
 };

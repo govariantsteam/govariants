@@ -7,6 +7,7 @@ import KeimaBoard from "@/components/boards/KeimaBoard.vue";
 import type { Component } from "vue";
 import QuantumBoard from "@/components/boards/QuantumBoard.vue";
 import BadukBoardSelector from "./components/boards/BadukBoardSelector.vue";
+import SFractionalBoardSelector from "./components/boards/SFractional/SFractionalBoardSelector.vue";
 
 export const board_map: {
   [variant: string]: Component<{ config: unknown; gamestate: unknown }>;
@@ -26,4 +27,5 @@ export const board_map: {
   "one color": BadukBoardSelector,
   drift: BadukBoardSelector,
   quantum: QuantumBoard,
+  sfractional: SFractionalBoardSelector,
 };

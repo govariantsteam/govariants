@@ -16,6 +16,7 @@ import { quantumVariant } from "./variants/quantum";
 import { badukVariant } from "./variants/baduk";
 import { Variant } from "./variant";
 import markdownit from "markdown-it";
+import { sFractionalVariant } from "./variants/s_fractional";
 
 const variant_map: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -36,6 +37,7 @@ const variant_map: {
   "one color": oneColorGoVariant,
   drift: driftVariant,
   quantum: quantumVariant,
+  sfractional: sFractionalVariant,
 };
 
 class ConfigError extends Error {

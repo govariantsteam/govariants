@@ -114,27 +114,19 @@ const leave = (seat: number) => {
     });
 };
 
-function unsubscribeAllSeats(): void {
-  if (players.value) {
-    socket.emit(
-      "unsubscribe",
-      players.value.map((_, index) => `game/${props.gameId}/${index}`),
-    );
-  }
-}
-
 const setPlayingAs = (seat: number) => {
   if (!user.value) {
+    playing_as.value = undefined;
     return;
   }
-  unsubscribeAllSeats();
   if (playing_as.value === seat) {
     playing_as.value = undefined;
     return;
   }
   if (players.value && players.value[seat]?.id === user.value.id) {
     playing_as.value = seat;
-    socket.emit("subscribe", [`game/${props.gameId}/${seat}`]);
+  } else {
+    playing_as.value = undefined;
   }
 };
 
@@ -155,25 +147,41 @@ function makeMove(move_str: string) {
   requests.post(`/games/${props.gameId}/move`, move).catch(alert);
 }
 
+// subscribe to seat changes
 watchEffect((onCleanup) => {
-  if (!props.gameId) {
-    return;
-  }
-  const topic = `game/${props.gameId}`;
-  socket.emit("subscribe", [topic]);
-  socket.on("move", (state: GameStateResponse) => {
-    setNewState(state);
-  });
-
   const seatsMessage = `game/${props.gameId}/seats`;
   socket.on(seatsMessage, (data) => {
     players.value = data;
   });
+  onCleanup(() => {
+    socket.off(seatsMessage);
+  });
+});
+
+// subscribe to game updates for specific seat
+watchEffect((onCleanup) => {
+  if (!props.gameId) {
+    return;
+  }
+  const topic =
+    playing_as.value == null
+      ? `game/${props.gameId}`
+      : `game/${props.gameId}/${playing_as.value}`;
+  socket.emit("subscribe", [topic]);
 
   onCleanup(() => {
     socket.emit("unsubscribe", [topic]);
+  });
+});
+
+// subscribe to state events
+watchEffect((onCleanup) => {
+  socket.on("move", (state: GameStateResponse) => {
+    setNewState(state);
+  });
+
+  onCleanup(() => {
     socket.off("move");
-    socket.off(seatsMessage);
   });
 });
 

@@ -12,7 +12,6 @@ import { GraphWrapper } from "../lib/graph";
 import { Grid } from "../lib/grid";
 import { Variant } from "../variant";
 import { SuperKoDetector } from "../lib/ko_detector";
-import { getPlayerColors } from "../variant_map";
 
 declare type Color = string;
 declare type PlacementColors = [Color, Color] | [];

@@ -38,7 +38,9 @@ export class SFractional extends AbstractGame<
 
     if (this.config.board.type === "grid") {
       if (this.config.board.width >= 52 || this.config.board.height >= 52) {
-        throw new Error("Baduk does not support sizes greater than 52");
+        throw new Error(
+          "Rectangular board does not support sizes greater than 52",
+        );
       }
 
       this.board = new Grid<PlacementColors>(

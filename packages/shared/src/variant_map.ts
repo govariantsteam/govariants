@@ -15,6 +15,7 @@ import { driftVariant } from "./variants/drift";
 import { quantumVariant } from "./variants/quantum";
 import { badukVariant } from "./variants/baduk";
 import { Variant } from "./variant";
+import markdownit from "markdown-it";
 
 const variant_map: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -76,5 +77,21 @@ export function getDescription(variant: string) {
 }
 
 export function getRulesDescription(variant: string): string | undefined {
-  return variant_map[variant]?.rulesDescription;
+  const description = variant_map[variant]?.rulesDescription;
+  if (description == null) {
+    return "";
+  }
+  return markdownit("commonmark").render(description);
+}
+
+export function getPlayerColors(
+  variant: string,
+  config: object,
+  playerNr: number,
+): string[] {
+  const variant_object = variant_map[variant];
+  if (!variant_object || !variant_object.getPlayerColors) {
+    return [];
+  }
+  return variant_object.getPlayerColors(config, playerNr);
 }

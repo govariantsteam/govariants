@@ -50,4 +50,5 @@ export const pyramidVariant: Variant<GridBadukConfig> = {
   description:
     "Baduk with pyramid scoring\n Center is worth most points, edge the least",
   defaultConfig: Baduk.defaultConfig,
+  getPlayerColors: Baduk.getPlayerColors,
 };

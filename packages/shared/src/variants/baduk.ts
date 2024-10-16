@@ -241,6 +241,17 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
       },
     };
   }
+
+  static getPlayerColors(_: BadukConfig, playerNr: number): string[] {
+    switch (playerNr) {
+      case 0:
+        return ["black"];
+      case 1:
+        return ["white"];
+      default:
+        return [];
+    }
+  }
 }
 
 /** Returns true if the group containing (x, y) has at least one liberty. */
@@ -276,4 +287,5 @@ export const badukVariant: Variant<BadukConfig> = {
   description:
     "Traditional game of Baduk a.k.a. Go, Weiqi\n Surround stones to capture them\n Secure more territory + captures to win",
   defaultConfig: Baduk.defaultConfig,
+  getPlayerColors: Baduk.getPlayerColors,
 };

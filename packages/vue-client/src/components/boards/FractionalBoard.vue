@@ -98,14 +98,6 @@ const stagedMove = computed(() =>
           :r="0.47"
         />
         <circle
-          v-else
-          class="click-placeholder"
-          v-on:click="intersectionClicked(index)"
-          v-bind:cx="intersection.position.X"
-          v-bind:cy="intersection.position.Y"
-          r="0.47"
-        />
-        <circle
           v-if="$props.gamestate.lastMoves.includes(index)"
           v-bind:cx="intersection.position.X"
           v-bind:cy="intersection.position.Y"
@@ -113,6 +105,14 @@ const stagedMove = computed(() =>
           stroke="#dbdbdb"
           stroke-width="0.05"
           class="last-move-indicator"
+        />
+        <circle
+          v-if="!$props.gamestate.boardState.at(index)"
+          class="click-placeholder"
+          v-on:click="intersectionClicked(index)"
+          v-bind:cx="intersection.position.X"
+          v-bind:cy="intersection.position.Y"
+          r="0.47"
         />
       </g>
     </g>

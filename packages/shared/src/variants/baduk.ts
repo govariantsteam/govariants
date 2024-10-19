@@ -87,7 +87,7 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
     return this.phase === "gameover" ? [] : [this.next_to_play];
   }
 
-  private decodeMove(move: string): Coordinate {
+  protected decodeMove(move: string): Coordinate {
     if (isGridBadukConfig(this.config)) {
       return Coordinate.fromSgfRepr(move);
     }

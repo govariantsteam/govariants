@@ -17,7 +17,7 @@ export const config_form_map: {
   tetris: BadukConfigForm,
   pyramid: GridBadukConfigForm,
   "thue-morse": BadukConfigForm,
-  freeze: GridBadukConfigForm,
+  freeze: BadukConfigForm,
   keima: GridBadukConfigForm,
   "one color": BadukConfigForm,
   drift: DriftGoConfigFormVue,

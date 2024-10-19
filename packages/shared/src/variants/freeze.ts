@@ -1,4 +1,4 @@
-import { Coordinate, CoordinateLike } from "../lib/coordinate";
+import { CoordinateLike } from "../lib/coordinate";
 import { getGroup, getOuterBorder } from "../lib/group_utils";
 import { Variant } from "../variant";
 import { Baduk, BadukBoard, BadukConfig, BadukState, Color } from "./baduk";

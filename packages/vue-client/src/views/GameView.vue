@@ -15,11 +15,11 @@ import type {
   GameStateResponse,
 } from "@ogfcommunity/variants-shared";
 import { computed, ref, watchEffect, type Ref } from "vue";
-import { board_map } from "@/board_map";
 import { socket } from "../requests";
 import NavButtons from "@/components/GameView/NavButtons.vue";
 import PlayersToMove from "@/components/GameView/PlayersToMove.vue";
 import DownloadSGF from "@/components/GameView/DownloadSGF.vue";
+import { playing_table_map } from "@/playing_table_map";
 
 const props = defineProps<{ gameId: string }>();
 
@@ -32,7 +32,7 @@ const players = ref<User[]>();
 // null <-> viewing the latest round
 // while viewing history of game, maybe we should prevent player from making a move (accidentally)
 const view_round: Ref<number | null> = ref(null);
-const variantGameView = computed(() => board_map[variant.value]);
+const variantPlayingTable = computed(() => playing_table_map[variant.value]);
 const variantDescriptionShort = computed(() => getDescription(variant.value));
 const user = useCurrentUser();
 const playing_as = ref<undefined | number>(undefined);
@@ -206,8 +206,8 @@ const createTimeControlPreview = (
 <template>
   <div>
     <component
-      v-if="variantGameView && game_state?.state"
-      v-bind:is="variantGameView"
+      v-if="variantPlayingTable && game_state?.state"
+      v-bind:is="variantPlayingTable"
       v-bind:gamestate="game_state.state"
       v-bind:config="config"
       v-on:move="makeMove"

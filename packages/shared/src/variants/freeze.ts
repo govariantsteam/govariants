@@ -1,4 +1,4 @@
-import { Coordinate, CoordinateLike } from "../lib/coordinate";
+import { CoordinateLike } from "../lib/coordinate";
 import { getGroup, getOuterBorder } from "../lib/group_utils";
 import { Variant } from "../variant";
 import { Baduk, BadukBoard, BadukConfig, BadukState, Color } from "./baduk";
@@ -21,7 +21,7 @@ export class FreezeGo extends Baduk {
 
     const opponent = player === 0 ? Color.WHITE : Color.BLACK;
     this.frozen = this.board
-      .neighbors(Coordinate.fromSgfRepr(move))
+      .neighbors(this.decodeMove(move))
       .some(
         (pos) =>
           this.board.at(pos) === opponent && is_in_atari(pos, this.board),

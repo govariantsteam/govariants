@@ -33,7 +33,7 @@ const players = ref<User[]>();
 // null <-> viewing the latest round
 // while viewing history of game, maybe we should prevent player from making a move (accidentally)
 const view_round: Ref<number | null> = ref(null);
-const variantPlayingTable = computed(
+const variantGameView = computed(
   () => playing_table_map[variant.value] ?? board_map[variant.value],
 );
 const variantDescriptionShort = computed(() => getDescription(variant.value));
@@ -209,8 +209,8 @@ const createTimeControlPreview = (
 <template>
   <div>
     <component
-      v-if="variantPlayingTable && game_state?.state"
-      v-bind:is="variantPlayingTable"
+      v-if="variantGameView && game_state?.state"
+      v-bind:is="variantGameView"
       v-bind:gamestate="game_state.state"
       v-bind:config="config"
       v-on:move="makeMove"

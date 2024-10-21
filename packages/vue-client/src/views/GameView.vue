@@ -39,6 +39,7 @@ const variantGameView = computed(
 const variantDescriptionShort = computed(() => getDescription(variant.value));
 const user = useCurrentUser();
 const playing_as = ref<undefined | number>(undefined);
+const displayed_round = computed(() => view_round.value ?? current_round.value);
 
 function setNewState(stateResponse: GameStateResponse): void {
   state_map.set(
@@ -49,9 +50,7 @@ function setNewState(stateResponse: GameStateResponse): void {
     current_round.value = stateResponse.round;
   }
   if (
-    (view_round.value === stateResponse.round ||
-      (view_round.value === null &&
-        stateResponse.round === current_round.value)) &&
+    stateResponse.round === displayed_round.value &&
     playing_as.value === (stateResponse.seat ?? undefined)
   ) {
     game_state.value = stateResponse;
@@ -213,6 +212,7 @@ const createTimeControlPreview = (
       v-bind:is="variantGameView"
       v-bind:gamestate="game_state.state"
       v-bind:config="config"
+      v-bind:displayed_round="displayed_round"
       v-on:move="makeMove"
     />
     <NavButtons :gameRound="current_round" v-model="view_round" />

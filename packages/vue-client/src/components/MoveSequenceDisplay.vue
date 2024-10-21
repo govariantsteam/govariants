@@ -15,7 +15,7 @@ const props = defineProps<{
 
 const colors_range = computed(() => {
   const result = [];
-  for (var i = 0; i < props.length; i++) {
+  for (let i = 0; i < props.length; i++) {
     result.push(props.getColors(props.round + i));
   }
   return result;
@@ -25,7 +25,8 @@ const colors_range = computed(() => {
   <div class="moveSequenceDisplay">
     <font-awesome-icon icon="fa-solid fa-arrow-right" />
     <svg
-      v-for="colors of colors_range"
+      v-for="(colors, index) of colors_range"
+      v-bind:key="index"
       v-bind:viewBox="`0 0 2 2`"
       class="stone_preview"
     >

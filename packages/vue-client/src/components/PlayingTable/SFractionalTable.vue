@@ -33,7 +33,7 @@ function move(move: string) {
   />
   <div class="center_aligner">
     <MoveSequenceDisplay
-      :length="config.secondary_colors.length * 2"
+      :length="Math.min(8, config.secondary_colors.length * 2)"
       :round="displayed_round"
       :get-colors="getMoveColor"
     />

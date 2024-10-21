@@ -40,6 +40,7 @@ const colors_range = computed(() => {
   flex-direction: row;
   gap: 5px;
   align-items: center;
+  flex-wrap: wrap;
 }
 .stone_preview {
   margin: 10px;

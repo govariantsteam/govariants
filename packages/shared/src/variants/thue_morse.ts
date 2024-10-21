@@ -1,5 +1,5 @@
 import { Variant } from "../variant";
-import { Baduk, BadukConfig } from "./baduk";
+import { Baduk, BadukConfig, badukVariant } from "./baduk";
 
 export class ThueMorse extends Baduk {
   private move_number = 0;
@@ -33,8 +33,7 @@ function count_binary_ones(n: number) {
 }
 
 export const thueMorseVariant: Variant<BadukConfig> = {
+  ...badukVariant,
   gameClass: ThueMorse,
   description: "Baduk with move order according to Thue-Morse sequence",
-  defaultConfig: Baduk.defaultConfig,
-  getPlayerColors: Baduk.getPlayerColors,
 };

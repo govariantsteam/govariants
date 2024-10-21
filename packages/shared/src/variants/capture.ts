@@ -1,5 +1,5 @@
 import { Variant } from "../variant";
-import { Baduk, BadukConfig } from "./baduk";
+import { Baduk, BadukConfig, badukVariant } from "./baduk";
 
 export class Capture extends Baduk {
   playMove(player: number, move: string): void {
@@ -16,8 +16,7 @@ export class Capture extends Baduk {
 }
 
 export const captureVariant: Variant<BadukConfig> = {
+  ...badukVariant,
   gameClass: Capture,
   description: "Baduk but the first player who captures a stone wins",
-  defaultConfig: Baduk.defaultConfig,
-  getPlayerColors: Baduk.getPlayerColors,
 };

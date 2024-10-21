@@ -1,4 +1,4 @@
-import { Baduk, BadukConfig } from "./baduk";
+import { Baduk, BadukConfig, badukVariant } from "./baduk";
 import { Coordinate } from "../lib/coordinate";
 import { getGroup } from "../lib/group_utils";
 import { Variant } from "../variant";
@@ -14,8 +14,7 @@ export class TetrisGo extends Baduk {
 }
 
 export const tetrisVariant: Variant<BadukConfig> = {
+  ...badukVariant,
   gameClass: TetrisGo,
   description: "Baduk but players can't play Tetris shapes",
-  defaultConfig: Baduk.defaultConfig,
-  getPlayerColors: Baduk.getPlayerColors,
 };

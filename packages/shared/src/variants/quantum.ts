@@ -2,7 +2,7 @@ import { AbstractGame } from "../abstract_game";
 import { BoardPattern } from "../lib/abstractBoard/boardFactory";
 import { Coordinate, CoordinateLike } from "../lib/coordinate";
 import { Variant } from "../variant";
-import { Baduk, BadukBoard, BadukConfig, Color } from "./baduk";
+import { Baduk, BadukBoard, BadukConfig, badukVariant, Color } from "./baduk";
 import {
   NewBadukConfig,
   NewGridBadukConfig,
@@ -299,6 +299,7 @@ function copyBoard(game: Baduk): BadukBoard<Color> {
 }
 
 export const quantumVariant: Variant<BadukConfig> = {
+  ...badukVariant,
   gameClass: QuantumGo,
   description: "Two boards whose stones are entangled",
   defaultConfig(): NewGridBadukConfig {
@@ -307,5 +308,4 @@ export const quantumVariant: Variant<BadukConfig> = {
       komi: 7.5,
     };
   },
-  getPlayerColors: Baduk.getPlayerColors,
 };

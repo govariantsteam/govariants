@@ -8,12 +8,13 @@ import {
   Intersection,
   createGraph,
 } from "@ogfcommunity/variants-shared";
-import { MulticolorStone } from "./board_types";
+import { MulticolorStone, UnicolorStone } from "./board_types";
 
 const props = defineProps<{
   board: (MulticolorStone | null)[];
   background_color?: string;
   board_config: BoardConfig;
+  score_board?: (UnicolorStone | null)[];
 }>();
 
 const intersections = computed(() =>
@@ -103,6 +104,21 @@ const viewBox = computed(() => {
         :r="0.48"
         :annotation="props.board.at(index)?.annotation!"
       />
+    </g>
+    <g v-if="score_board">
+      <template v-for="(intersection, index) in intersections" :key="index">
+        <rect
+          v-if="score_board?.at(index)"
+          v-bind:x="intersection.position.X - 0.2"
+          v-bind:y="intersection.position.Y - 0.2"
+          v-bind:fill="score_board[index]?.color"
+          stroke="gray"
+          stroke-width="0.05"
+          width="0.4"
+          height="0.4"
+          opacity="0.6"
+        />
+      </template>
     </g>
     <g>
       <rect

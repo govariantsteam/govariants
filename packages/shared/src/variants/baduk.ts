@@ -54,7 +54,7 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
   protected sgf?: SgfRecorder;
 
   constructor(config: BadukConfig) {
-    super(isLegacyBadukConfig(config) ? mapToNewConfig(config) : config);
+    super(Baduk.sanitizeConfig(config));
 
     if (isGridBadukConfig(this.config)) {
       if (this.config.board.width >= 52 || this.config.board.height >= 52) {
@@ -252,6 +252,15 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
         return [];
     }
   }
+
+  static sanitizeConfig(config: unknown): NewBadukConfig {
+    const badukConfig = config as BadukConfig;
+    return (
+      isLegacyBadukConfig(badukConfig)
+        ? mapToNewConfig(badukConfig)
+        : badukConfig
+    ) as NewBadukConfig;
+  }
 }
 
 /** Returns true if the group containing (x, y) has at least one liberty. */
@@ -282,10 +291,13 @@ export class GridBaduk extends Baduk {
   }
 }
 
-export const badukVariant: Variant<BadukConfig> = {
+export const badukVariant: Variant<NewBadukConfig> = {
   gameClass: Baduk,
   description:
     "Traditional game of Baduk a.k.a. Go, Weiqi\n Surround stones to capture them\n Secure more territory + captures to win",
   defaultConfig: Baduk.defaultConfig,
   getPlayerColors: Baduk.getPlayerColors,
+  sanitizeConfig: Baduk.sanitizeConfig,
 };
+
+export const gridBadukVariant = badukVariant as Variant<NewGridBadukConfig>;

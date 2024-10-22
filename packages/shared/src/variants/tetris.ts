@@ -1,7 +1,8 @@
-import { Baduk, BadukConfig, badukVariant } from "./baduk";
+import { Baduk, badukVariant } from "./baduk";
 import { Coordinate } from "../lib/coordinate";
 import { getGroup } from "../lib/group_utils";
 import { Variant } from "../variant";
+import { NewBadukConfig } from "./baduk_utils";
 
 export class TetrisGo extends Baduk {
   protected postValidateMove(move: Coordinate): void {
@@ -13,7 +14,7 @@ export class TetrisGo extends Baduk {
   }
 }
 
-export const tetrisVariant: Variant<BadukConfig> = {
+export const tetrisVariant: Variant<NewBadukConfig> = {
   ...badukVariant,
   gameClass: TetrisGo,
   description: "Baduk but players can't play Tetris shapes",

@@ -8,4 +8,5 @@ export interface Variant<ConfigT extends object = object> {
   deprecated?: boolean;
   defaultConfig: () => ConfigT;
   getPlayerColors?: (config: ConfigT, playerNr: number) => string[];
+  sanitizeConfig?: (config: object) => ConfigT;
 }

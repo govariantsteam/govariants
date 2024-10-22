@@ -8,6 +8,7 @@ import {
   GamesFilter,
   AbstractGame,
   GameStateResponse,
+  sanitizeConfig,
 } from "@ogfcommunity/variants-shared";
 import { ObjectId, WithId, Document, Filter } from "mongodb";
 import { getDb } from "./db";
@@ -331,11 +332,12 @@ async function BACKFILL_addEmptyPlayersArray(game: GameResponse) {
 }
 
 function outwardFacingGame(db_game: WithId<Document>): GameResponse {
+  const config = sanitizeConfig(db_game.variant, db_game.config);
   return {
     id: db_game._id.toString(),
     variant: db_game.variant,
     moves: db_game.moves,
-    config: db_game.config,
+    config,
     players: db_game.players,
     time_control: db_game.time_control,
   };

@@ -1,14 +1,8 @@
 import { CoordinateLike } from "../lib/coordinate";
 import { getGroup, getOuterBorder } from "../lib/group_utils";
 import { Variant } from "../variant";
-import {
-  Baduk,
-  BadukBoard,
-  BadukConfig,
-  BadukState,
-  badukVariant,
-  Color,
-} from "./baduk";
+import { Baduk, BadukBoard, BadukState, badukVariant, Color } from "./baduk";
+import { NewBadukConfig } from "./baduk_utils";
 
 export interface FreezeGoState extends BadukState {
   frozen: boolean;
@@ -48,7 +42,7 @@ function is_in_atari(pos: CoordinateLike, board: BadukBoard<Color>) {
   return num_liberties === 1;
 }
 
-export const freezeGoVariant: Variant<BadukConfig> = {
+export const freezeGoVariant: Variant<NewBadukConfig> = {
   ...badukVariant,
   gameClass: FreezeGo,
   description: "Baduk but after an Atari, stones can't be captured",

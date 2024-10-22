@@ -3,6 +3,7 @@ import {
   getDescription,
   getVariantList,
   makeGameObject,
+  sanitizeConfig,
   supportsSGF,
 } from "../variant_map";
 
@@ -16,8 +17,10 @@ test.each(getVariantList())("Build %s from default config", (variant) => {
 
 test("invalid variants", () => {
   const variant = "invalid_variant";
+  const config = { foo: "bar " };
   expect(getDescription(variant)).toBe("");
   expect(supportsSGF(variant)).toBe(false);
+  expect(sanitizeConfig(variant, config)).toEqual(config);
 });
 
 test("deprecated field contains baduk", () => {

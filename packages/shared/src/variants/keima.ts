@@ -1,6 +1,7 @@
 import { Coordinate } from "../lib/coordinate";
 import { Variant } from "../variant";
-import { BadukConfig, BadukState, badukVariant, GridBaduk } from "./baduk";
+import { BadukState, badukVariant, GridBaduk } from "./baduk";
+import { NewBadukConfig } from "./baduk_utils";
 
 export interface KeimaState extends BadukState {
   keima?: string;
@@ -66,7 +67,7 @@ function is_keima_shape(a: Coordinate, b: Coordinate) {
   return false;
 }
 
-export const keimaVariant: Variant<BadukConfig> = {
+export const keimaVariant: Variant<NewBadukConfig> = {
   ...badukVariant,
   gameClass: Keima,
   description:

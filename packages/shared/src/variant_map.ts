@@ -70,6 +70,17 @@ export function getDefaultConfig(variant: string): object {
   return variant_map[variant]?.defaultConfig();
 }
 
+export function sanitizeConfig(
+  variant: string,
+  config: object,
+): object | undefined {
+  const sanitize = variant_map[variant]?.sanitizeConfig;
+  if (sanitize == null) {
+    return config;
+  }
+  return sanitize(config);
+}
+
 export function supportsSGF(variant: string) {
   return Boolean(variant_map[variant]?.gameClass.prototype.getSGF);
 }

@@ -24,7 +24,7 @@ export interface QuantumGoState {
 class BadukHelper {
   public badukGame: Baduk;
 
-  constructor(config: BadukConfig) {
+  constructor(config: NewBadukConfig) {
     this.badukGame = new Baduk(config);
   }
 
@@ -298,7 +298,7 @@ function copyBoard(game: Baduk): BadukBoard<Color> {
   return game.board.map((color) => color);
 }
 
-export const quantumVariant: Variant<BadukConfig> = {
+export const quantumVariant: Variant<NewBadukConfig> = {
   ...badukVariant,
   gameClass: QuantumGo,
   description: "Two boards whose stones are entangled",

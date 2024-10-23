@@ -255,11 +255,9 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
 
   static sanitizeConfig(config: unknown): NewBadukConfig {
     const badukConfig = config as BadukConfig;
-    return (
-      isLegacyBadukConfig(badukConfig)
-        ? mapToNewConfig(badukConfig)
-        : badukConfig
-    ) as NewBadukConfig;
+    return isLegacyBadukConfig(badukConfig)
+      ? mapToNewConfig(badukConfig)
+      : badukConfig;
   }
 }
 

@@ -49,9 +49,7 @@ export function isLegacyBadukConfig(
   );
 }
 
-export function mapToNewConfig<ConfigT extends LegacyBadukConfig>(
-  config: LegacyBadukConfig,
-): ConfigT & NewGridBadukConfig {
+export function mapToNewConfig(config: LegacyBadukConfig): NewGridBadukConfig {
   return {
     ...config,
     board: {
@@ -59,7 +57,5 @@ export function mapToNewConfig<ConfigT extends LegacyBadukConfig>(
       width: config.width,
       height: config.height,
     },
-  } as ConfigT & NewGridBadukConfig;
-  // Generally `as` is not great in TypeScript, but I believe it's true that
-  // the output of this function will be the intersection of ConfigT and NewGridBadukConfig
+  };
 }

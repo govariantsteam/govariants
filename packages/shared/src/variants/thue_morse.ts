@@ -25,7 +25,12 @@ export class ThueMorse extends Baduk {
   }
 }
 
-function count_binary_ones(n: number) {
+/**
+ * Returns number of 1s in binary representation.
+ * Can be used to calculate the Thue-Morse sequence.
+ * @param n number to process
+ */
+export function count_binary_ones(n: number) {
   return n
     .toString(2)
     .split("")

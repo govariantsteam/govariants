@@ -33,6 +33,7 @@ svg {
   margin: 10px;
   width: 40px;
   height: 40px;
-  filter: drop-shadow(3px 5px 6px rgb(0 0 0 / 0.4));
+  filter: drop-shadow(3px 5px 6px rgb(0 0 0 / 0.4))
+    drop-shadow(-3px -5px 6px rgb(255 255 255 / 0.4));
 }
 </style>

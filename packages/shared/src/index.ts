@@ -24,5 +24,7 @@ export * from "./variants/baduk_utils";
 export * from "./lib/abstractBoard/boardFactory";
 export * from "./lib/abstractBoard/intersection";
 export * from "./variants/s_fractional";
+export { count_binary_ones } from "./variants/thue_morse";
+export { sFractionalMoveColors } from "./variants/s_fractional";
 
 export const SITE_NAME = "Go Variants";

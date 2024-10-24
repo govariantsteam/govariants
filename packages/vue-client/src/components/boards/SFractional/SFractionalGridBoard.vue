@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { SFractionalState } from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
-import { MulticolorStone } from "../board_types";
+import { MulticolorStone, UnicolorStone } from "../board_types";
 import MulticolorGridBoard from "../MulticolorGridBoard.vue";
 import { Coordinate, GridBoardConfig } from "@ogfcommunity/variants-shared";
 
@@ -21,6 +21,18 @@ const board = computed(() => {
   );
 });
 
+const score_board = computed(() => {
+  if (!props.gamestate.scoreBoard) {
+    return undefined;
+  }
+
+  return props.gamestate.scoreBoard.map((row) =>
+    row.map((color): UnicolorStone | null =>
+      color !== "" ? { color: color } : null,
+    ),
+  );
+});
+
 const emit = defineEmits<{
   (e: "move", move: string): void;
 }>();
@@ -34,6 +46,7 @@ function click(pos: Coordinate) {
   <MulticolorGridBoard
     :board_dimensions="board_dimensions"
     :board="board"
+    :score_board="score_board"
     @click="click"
   />
 </template>

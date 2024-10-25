@@ -1,4 +1,8 @@
-export class SuperKoDetector<T> {
+export interface KoDetector {
+  push(state: object): void;
+}
+
+export class SuperKoDetector<T extends object> implements KoDetector {
   seen = new Set<string>();
 
   push(state: T): void {
@@ -10,4 +14,8 @@ export class SuperKoDetector<T> {
 
 export class KoError extends Error {
   name = "KoError";
+}
+
+export class NoKoRuleDetector implements KoDetector {
+  push(_: object): void {}
 }

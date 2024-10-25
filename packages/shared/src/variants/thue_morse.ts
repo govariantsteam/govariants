@@ -1,7 +1,6 @@
-import { Coordinate } from "../lib/coordinate";
-import { getGroup } from "../lib/group_utils";
+import { KoDetector, NoKoRuleDetector } from "../lib/ko_detector";
 import { Variant } from "../variant";
-import { Baduk, badukVariant, groupHasLiberties } from "./baduk";
+import { Baduk, badukVariant } from "./baduk";
 import { NewBadukConfig } from "./baduk_utils";
 
 export class ThueMorse extends Baduk {
@@ -27,12 +26,8 @@ export class ThueMorse extends Baduk {
     this.next_to_play = count_binary_ones(this.move_number) % 2 ? 1 : 0;
   }
 
-  // This override is to avoid the Ko detection of base class Baduk
-  protected postValidateMove(move: Coordinate): void {
-    // Detect suicide
-    if (!groupHasLiberties(getGroup(move, this.board), this.board)) {
-      throw Error("Move is suicidal!");
-    }
+  protected override instantiateKoDetector(): KoDetector {
+    return new NoKoRuleDetector();
   }
 }
 

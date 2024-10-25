@@ -23,7 +23,7 @@ function toUpperCaseFirstLetter(string: string) {
   </div>
 </template>
 
-<style>
+<style scoped>
 .rules-page {
   font-family: "helvetica", "arial", "sans-serif";
 }

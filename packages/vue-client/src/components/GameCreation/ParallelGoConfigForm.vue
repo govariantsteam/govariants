@@ -30,7 +30,7 @@ function emitConfigChange() {
   </form>
 </template>
 
-<style>
+<style scoped>
 input {
   width: fit-content;
 }

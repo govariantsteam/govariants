@@ -18,5 +18,6 @@ module.exports = {
         varsIgnorePattern: "^_",
       },
     ],
+    "vue/enforce-style-attribute": "error",
   },
 };

@@ -77,7 +77,7 @@ const time_config = computed(
   </div>
 </template>
 
-<style>
+<style scoped>
 .seat {
   border-radius: 10px;
   border: 2px solid gray;

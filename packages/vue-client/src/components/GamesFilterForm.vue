@@ -42,7 +42,7 @@ const filter = computed(() => {
   </form>
 </template>
 
-<style>
+<style scoped>
 .gamesFilterForm {
   display: flex;
   flex-direction: row;

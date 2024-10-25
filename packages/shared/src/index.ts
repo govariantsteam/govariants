@@ -18,7 +18,7 @@ export {
   type FractionalConfig,
   type FractionalState,
 } from "./variants/fractional";
-export { type KeimaState } from "./variants/keima";
+export { type KeimaState, getKeimaMoves } from "./variants/keima";
 export * from "./variants/drift";
 export * from "./variants/baduk_utils";
 export * from "./lib/abstractBoard/boardFactory";

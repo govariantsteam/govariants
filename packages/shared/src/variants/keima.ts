@@ -1,6 +1,14 @@
 import { Coordinate } from "../lib/coordinate";
+import { Grid } from "../lib/grid";
+import { getGroup } from "../lib/group_utils";
 import { Variant } from "../variant";
-import { BadukState, badukVariant, GridBaduk } from "./baduk";
+import {
+  BadukState,
+  badukVariant,
+  Color,
+  GridBaduk,
+  groupHasLiberties,
+} from "./baduk";
 import { NewBadukConfig } from "./baduk_utils";
 
 export interface KeimaState extends BadukState {
@@ -12,15 +20,19 @@ export class Keima extends GridBaduk {
 
   playMove(player: number, move: string): void {
     super.playMove(player, move);
+    if (move === "pass") {
+      if (is_keima_move_number(this.move_number)) {
+        throw new Error("Can't pass during keima move");
+      }
+      // increment an additional time, so pass is handled like one
+      // keima (i.e. two moves)
+      this.move_number++;
+    }
     this.increment_next_to_play();
   }
 
   protected postValidateMove(move: Coordinate): void {
     super.postValidateMove(move);
-
-    if (this.last_move === "pass") {
-      return;
-    }
 
     if (is_keima_move_number(this.move_number)) {
       const curr = move;
@@ -30,6 +42,24 @@ export class Keima extends GridBaduk {
           "Second move must form a Keima (Knight's move) with the first move!",
         );
       }
+    } else if (
+      // check if there are any legal follow-up moves
+      getKeimaMoves(move, this.board).every((pos) => {
+        const boardCopy = this.board.map((x) => x);
+        // simulate a move
+        this.playMoveInternal(pos);
+        // this only checks if the follow-up move is suicidal, but it could also
+        // potentially be illegal due to ko.
+        const isSuicidal = !groupHasLiberties(
+          getGroup(pos, this.board),
+          this.board,
+        );
+        // reset board
+        this.board = boardCopy;
+        return isSuicidal;
+      })
+    ) {
+      throw new Error("There is no legal follow-up move.");
     }
   }
 
@@ -46,6 +76,12 @@ export class Keima extends GridBaduk {
           ? this.last_move
           : undefined,
     };
+  }
+
+  specialMoves(): { [key: string]: string } {
+    return is_keima_move_number(this.move_number)
+      ? { resign: "Resign" }
+      : super.specialMoves();
   }
 }
 
@@ -65,6 +101,25 @@ function is_keima_shape(a: Coordinate, b: Coordinate) {
     return true;
   }
   return false;
+}
+
+export function getKeimaMoves(
+  { x, y }: Coordinate,
+  board: Grid<Color>,
+): Coordinate[] {
+  const moves = [
+    new Coordinate(x + 1, y + 2),
+    new Coordinate(x - 1, y + 2),
+    new Coordinate(x + 1, y - 2),
+    new Coordinate(x - 1, y - 2),
+    new Coordinate(x + 2, y + 1),
+    new Coordinate(x - 2, y + 1),
+    new Coordinate(x + 2, y - 1),
+    new Coordinate(x - 2, y - 1),
+  ];
+  return moves
+    .filter((pos) => board.isInBounds(pos))
+    .filter((pos) => board.at(pos) === Color.EMPTY);
 }
 
 export const keimaVariant: Variant<NewBadukConfig> = {

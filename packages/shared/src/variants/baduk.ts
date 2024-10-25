@@ -145,7 +145,7 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
     return { pass: "Pass", resign: "Resign" };
   }
 
-  private playMoveInternal(move: Coordinate): void {
+  protected playMoveInternal(move: Coordinate): void {
     this.board.set(move, this.next_to_play === 0 ? Color.BLACK : Color.WHITE);
 
     const opponent_color = this.next_to_play === 0 ? Color.WHITE : Color.BLACK;

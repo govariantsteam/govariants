@@ -111,7 +111,7 @@ const setTimeControlConfig = (
   </div>
 </template>
 
-<style>
+<style scoped>
 textarea {
   width: 300px;
   height: 150px;

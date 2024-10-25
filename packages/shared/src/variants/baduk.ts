@@ -148,7 +148,7 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
   /**
    * Places a stone at the board and resolves captures.
    * Mutates only the internal board property (important for
-   * certain inheriting classes)
+   * some inheriting classes e.g. keima)
    * @param move the coordinate of the added stone
    */
   protected playMoveInternal(move: Coordinate): void {

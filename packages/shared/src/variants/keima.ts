@@ -3,6 +3,7 @@ import { Grid } from "../lib/grid";
 import { getGroup } from "../lib/group_utils";
 import { Variant } from "../variant";
 import {
+  BadukConfig,
   BadukState,
   badukVariant,
   Color,
@@ -17,6 +18,13 @@ export interface KeimaState extends BadukState {
 
 export class Keima extends GridBaduk {
   private move_number = 0;
+
+  constructor(config: BadukConfig) {
+    super(config);
+    if (this.config.board.height < 3 && this.config.board.width < 3) {
+      throw new Error("Minimum board vor Keima is 3x2");
+    }
+  }
 
   playMove(player: number, move: string): void {
     super.playMove(player, move);

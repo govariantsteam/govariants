@@ -99,7 +99,7 @@ function positionHovered(pos: Coordinate) {
     <g v-if="score_board">
       <ScoreMark
         v-for="pos in positions.filter((pos) => score_board![pos.y][pos.x] !== null)"
-        :colors="score_board![pos.y][pos.x]"
+        :colors="score_board![pos.y][pos.x]!"
         :cx="pos.x"
         :cy="pos.y"
       />

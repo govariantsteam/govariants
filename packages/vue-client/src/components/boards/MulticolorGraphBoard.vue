@@ -110,7 +110,7 @@ const viewBox = computed(() => {
       <template v-for="(intersection, index) in intersections" :key="index">
         <ScoreMark
           v-if="score_board?.at(index)"
-          :colors="score_board[index]"
+          :colors="score_board[index]!"
           :cx="intersection.position.X"
           :cy="intersection.position.Y"
         />

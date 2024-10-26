@@ -1,21 +1,3 @@
-<script lang="ts">
-function getKeimaMoves({ x, y }: Coordinate, board: Grid<Color>): Coordinate[] {
-  const moves = [
-    new Coordinate(x + 1, y + 2),
-    new Coordinate(x - 1, y + 2),
-    new Coordinate(x + 1, y - 2),
-    new Coordinate(x - 1, y - 2),
-    new Coordinate(x + 2, y + 1),
-    new Coordinate(x - 2, y + 1),
-    new Coordinate(x + 2, y - 1),
-    new Coordinate(x - 2, y - 1),
-  ];
-  return moves
-    .filter((pos) => board.isInBounds(pos))
-    .filter((pos) => board.at(pos) === Color.EMPTY);
-}
-</script>
-
 <script setup lang="ts">
 import MulticolorGridBoard from "./MulticolorGridBoard.vue";
 import {
@@ -24,6 +6,7 @@ import {
   Grid,
   Color,
   getWidthAndHeight,
+  getKeimaMoves,
 } from "@ogfcommunity/variants-shared";
 import { GridBadukConfig } from "@ogfcommunity/variants-shared";
 import { computed } from "vue";

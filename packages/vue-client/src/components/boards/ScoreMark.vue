@@ -28,8 +28,8 @@ const segmentHeight = computed(() => +(height / props.colors.length));
   <rect
     v-for="(color, index) of colors"
     v-bind:key="index"
-    v-bind:x="cx - 0.2"
-    v-bind:y="cy - 0.2 + segmentHeight * index"
+    v-bind:x="cx - width / 2"
+    v-bind:y="cy - width / 2 + segmentHeight * index"
     v-bind:fill="color"
     v-bind:width="width"
     v-bind:height="segmentHeight"

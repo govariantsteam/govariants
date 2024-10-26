@@ -145,7 +145,13 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
     return { pass: "Pass", resign: "Resign" };
   }
 
-  private playMoveInternal(move: Coordinate): void {
+  /**
+   * Places a stone at the board and resolves captures.
+   * Mutates only the internal board property (important for
+   * some inheriting classes e.g. keima)
+   * @param move the coordinate of the added stone
+   */
+  protected playMoveInternal(move: Coordinate): void {
     this.board.set(move, this.next_to_play === 0 ? Color.BLACK : Color.WHITE);
 
     const opponent_color = this.next_to_play === 0 ? Color.WHITE : Color.BLACK;

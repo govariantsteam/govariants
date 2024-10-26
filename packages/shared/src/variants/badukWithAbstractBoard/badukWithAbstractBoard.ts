@@ -1,6 +1,7 @@
-import { Baduk, BadukConfig } from "../baduk";
+import { Baduk } from "../baduk";
 import { BoardConfig } from "../../lib/abstractBoard/boardFactory";
 import { Variant } from "../../variant";
+import { NewBadukConfig } from "../baduk_utils";
 
 export enum BoardPattern {
   Unknown = 0,
@@ -48,7 +49,7 @@ function mapToNewBoardConfig(
 
 export function mapToNewBadukConfig(
   config: BadukWithAbstractBoardConfig,
-): BadukConfig {
+): NewBadukConfig {
   return { komi: config.komi, board: mapToNewBoardConfig(config) };
 }
 

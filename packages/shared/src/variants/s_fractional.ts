@@ -117,14 +117,7 @@ export class SFractional extends AbstractGame<
   }
 
   private nextStoneColors(): [Color, Color] {
-    const primaryColor = this.round % 2 === 0 ? "black" : "white";
-
-    const pairedRoundsIndex = Math.floor(this.round / 2);
-    const secondaryColor =
-      this.config.secondary_colors[
-        pairedRoundsIndex % this.config.secondary_colors.length
-      ];
-    return [primaryColor, secondaryColor];
+    return sFractionalMoveColors(this.round, this.config);
   }
 
   private playMoveInternal(move: Coordinate): void {
@@ -308,6 +301,23 @@ export class SFractional extends AbstractGame<
       secondary_colors: ["#0000FF", "#FF0000"],
     };
   }
+}
+
+/**
+ * Determines the colors of a stone in variant sfractional.
+ * @param round number of round when stone is or will be played.
+ * @param config config of a game instance
+ */
+export function sFractionalMoveColors(
+  round: number,
+  config: SFractionalConfig,
+): [Color, Color] {
+  const primaryColor = round % 2 === 0 ? "black" : "white";
+
+  const pairedRoundsIndex = Math.floor(round / 2);
+  const secondaryColor =
+    config.secondary_colors[pairedRoundsIndex % config.secondary_colors.length];
+  return [primaryColor, secondaryColor];
 }
 
 export const sFractionalVariant: Variant<SFractionalConfig> = {

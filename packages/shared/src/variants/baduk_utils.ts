@@ -49,7 +49,9 @@ export function isLegacyBadukConfig(
   );
 }
 
-export function mapToNewConfig(config: LegacyBadukConfig): NewBadukConfig {
+export function mapToNewConfig<ConfigT extends LegacyBadukConfig>(
+  config: ConfigT,
+): ConfigT & NewGridBadukConfig {
   return {
     ...config,
     board: {

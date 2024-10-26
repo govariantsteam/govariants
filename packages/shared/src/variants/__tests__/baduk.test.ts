@@ -1,4 +1,5 @@
 import { Baduk, Color } from "../baduk";
+import { mapToNewConfig } from "../baduk_utils";
 import { KoError } from "../../lib/ko_detector";
 
 const B = Color.BLACK;
@@ -199,4 +200,15 @@ test("Capture test", () => {
 test("Board too big", () => {
   // SGF encoding only supports up to 52
   expect(() => new Baduk({ width: 500, height: 500, komi: 0 })).toThrow();
+});
+
+test("mapToNewConfig preserves extra fields", () => {
+  const legacyConfig = {
+    extra: "data",
+    width: 2,
+    height: 3,
+    komi: 5.5,
+  };
+  const newConfig = mapToNewConfig(legacyConfig);
+  expect(newConfig.extra).toEqual("data");
 });

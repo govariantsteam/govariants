@@ -55,7 +55,7 @@ const submit = () =>
   </main>
 </template>
 
-<style>
+<style scoped>
 .error {
   color: red;
 }

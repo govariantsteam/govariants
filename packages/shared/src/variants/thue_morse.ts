@@ -1,5 +1,6 @@
 import { Variant } from "../variant";
-import { Baduk, BadukConfig, badukVariant } from "./baduk";
+import { Baduk, badukVariant } from "./baduk";
+import { NewBadukConfig } from "./baduk_utils";
 
 export class ThueMorse extends Baduk {
   private move_number = 0;
@@ -25,14 +26,19 @@ export class ThueMorse extends Baduk {
   }
 }
 
-function count_binary_ones(n: number) {
+/**
+ * Returns number of 1s in binary representation.
+ * Can be used to calculate the Thue-Morse sequence.
+ * @param n number to process
+ */
+export function count_binary_ones(n: number) {
   return n
     .toString(2)
     .split("")
     .filter((digit) => digit === "1").length;
 }
 
-export const thueMorseVariant: Variant<BadukConfig> = {
+export const thueMorseVariant: Variant<NewBadukConfig> = {
   ...badukVariant,
   gameClass: ThueMorse,
   description: "Baduk with move order according to Thue-Morse sequence",

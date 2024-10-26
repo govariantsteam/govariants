@@ -4,13 +4,14 @@ import TaegeukStone from "../TaegeukStone.vue";
 import IntersectionAnnotation from "../IntersectionAnnotation.vue";
 import { Coordinate } from "@ogfcommunity/variants-shared";
 import { positionsGetter } from "./board_utils";
-import { MulticolorStone, UnicolorStone } from "./board_types";
+import { MulticolorStone } from "./board_types";
+import ScoreMark from "./ScoreMark.vue";
 
 const props = defineProps<{
   board: (MulticolorStone | null)[][];
   background_color?: string;
   board_dimensions: { width: number; height: number };
-  score_board?: (UnicolorStone | null)[][];
+  score_board?: (string[] | null)[][];
 }>();
 
 const width = computed(() => props.board_dimensions.width);
@@ -96,17 +97,11 @@ function positionHovered(pos: Coordinate) {
       />
     </g>
     <g v-if="score_board">
-      <rect
+      <ScoreMark
         v-for="pos in positions.filter((pos) => score_board![pos.y][pos.x] !== null)"
-        :key="`${pos.x}${pos.y}`"
-        v-bind:x="pos.x - 0.2"
-        v-bind:y="pos.y - 0.2"
-        v-bind:fill="score_board![pos.y][pos.x]!.color"
-        stroke="gray"
-        stroke-width="0.05"
-        width="0.4"
-        height="0.4"
-        opacity="0.6"
+        :colors="score_board![pos.y][pos.x]"
+        :cx="pos.x"
+        :cy="pos.y"
       />
     </g>
     <g>

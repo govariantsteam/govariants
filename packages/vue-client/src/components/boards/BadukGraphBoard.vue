@@ -6,7 +6,6 @@ import {
 } from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
 import MulticolorGraphBoard from "./MulticolorGraphBoard.vue";
-import { UnicolorStone } from "./board_types";
 
 const props = defineProps<{
   gamestate: BadukState;
@@ -34,12 +33,12 @@ const score_board = computed(() => {
   }
 
   return (props.gamestate.score_board.at(0) ?? []).map(
-    (color): UnicolorStone | null => {
+    (color): string[] | null => {
       switch (color) {
         case Color.BLACK:
-          return { color: "black", annotation: undefined };
+          return ["black"];
         case Color.WHITE:
-          return { color: "white", annotation: undefined };
+          return ["white"];
         case Color.EMPTY:
           return null;
       }

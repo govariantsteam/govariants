@@ -8,13 +8,14 @@ import {
   Intersection,
   createGraph,
 } from "@ogfcommunity/variants-shared";
-import { MulticolorStone, UnicolorStone } from "./board_types";
+import { MulticolorStone } from "./board_types";
+import ScoreMark from "./ScoreMark.vue";
 
 const props = defineProps<{
   board: (MulticolorStone | null)[];
   background_color?: string;
   board_config: BoardConfig;
-  score_board?: (UnicolorStone | null)[];
+  score_board?: (string[] | null)[];
 }>();
 
 const intersections = computed(() =>
@@ -107,16 +108,11 @@ const viewBox = computed(() => {
     </g>
     <g v-if="score_board">
       <template v-for="(intersection, index) in intersections" :key="index">
-        <rect
+        <ScoreMark
           v-if="score_board?.at(index)"
-          v-bind:x="intersection.position.X - 0.2"
-          v-bind:y="intersection.position.Y - 0.2"
-          v-bind:fill="score_board[index]?.color"
-          stroke="gray"
-          stroke-width="0.05"
-          width="0.4"
-          height="0.4"
-          opacity="0.6"
+          :colors="score_board[index]"
+          :cx="intersection.position.X"
+          :cy="intersection.position.Y"
         />
       </template>
     </g>

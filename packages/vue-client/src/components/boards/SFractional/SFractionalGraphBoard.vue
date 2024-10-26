@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { SFractionalState } from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
-import { MulticolorStone, UnicolorStone } from "../board_types";
+import { MulticolorStone } from "../board_types";
 import MulticolorGraphBoard from "../MulticolorGraphBoard.vue";
 import { BoardConfig } from "@ogfcommunity/variants-shared";
 
@@ -25,7 +25,7 @@ const score_board = computed(() => {
   }
 
   return (props.gamestate.scoreBoard.at(0) ?? []).map(
-    (color): UnicolorStone | null => (color !== "" ? { color: color } : null),
+    (color): string[] | null => (color !== "" ? [color] : null),
   );
 });
 

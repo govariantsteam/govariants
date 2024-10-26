@@ -11,9 +11,7 @@ const props = defineProps<{
   cy: number;
 }>();
 
-const segmentHeight = computed(
-  () => +(height / props.colors.length).toFixed(3),
-);
+const segmentHeight = computed(() => +(height / props.colors.length));
 </script>
 
 <template>
@@ -29,6 +27,7 @@ const segmentHeight = computed(
   />
   <rect
     v-for="(color, index) of colors"
+    v-bind:key="index"
     v-bind:x="cx - 0.2"
     v-bind:y="cy - 0.2 + segmentHeight * index"
     v-bind:fill="color"

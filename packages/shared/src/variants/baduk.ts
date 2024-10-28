@@ -1,7 +1,7 @@
 import { Coordinate, CoordinateLike } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
 import { getGroup, getOuterBorder } from "../lib/group_utils";
-import { SuperKoDetector } from "../lib/ko_detector";
+import { KoDetector, SuperKoDetector } from "../lib/ko_detector";
 import { AbstractGame } from "../abstract_game";
 import {
   BoardPattern,
@@ -44,7 +44,7 @@ export declare type BadukBoard<TColor> = Grid<TColor> | GraphWrapper<TColor>;
 
 export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
   protected captures = { 0: 0, 1: 0 };
-  private ko_detector = new SuperKoDetector();
+  private ko_detector: KoDetector;
   protected score_board?: BadukBoard<Color>;
   public board: BadukBoard<Color>;
   protected next_to_play: 0 | 1 = 0;
@@ -55,6 +55,8 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
 
   constructor(config: BadukConfig) {
     super(Baduk.sanitizeConfig(config));
+
+    this.ko_detector = this.instantiateKoDetector();
 
     if (isGridBadukConfig(this.config)) {
       if (this.config.board.width >= 52 || this.config.board.height >= 52) {
@@ -235,6 +237,10 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
 
   override getSGF(): string {
     return this.sgf?.sgfContent ?? "non-rectangular";
+  }
+
+  protected instantiateKoDetector(): KoDetector {
+    return new SuperKoDetector();
   }
 
   static defaultConfig(): NewGridBadukConfig {

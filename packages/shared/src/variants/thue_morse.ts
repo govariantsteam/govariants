@@ -1,3 +1,4 @@
+import { KoDetector, NoKoRuleDetector } from "../lib/ko_detector";
 import { Variant } from "../variant";
 import { Baduk, badukVariant } from "./baduk";
 import { NewBadukConfig } from "./baduk_utils";
@@ -23,6 +24,10 @@ export class ThueMorse extends Baduk {
   increment_next_to_play() {
     this.move_number++;
     this.next_to_play = count_binary_ones(this.move_number) % 2 ? 1 : 0;
+  }
+
+  protected override instantiateKoDetector(): KoDetector {
+    return new NoKoRuleDetector();
   }
 }
 

@@ -5,11 +5,13 @@ import IntersectionAnnotation from "../IntersectionAnnotation.vue";
 import { Coordinate } from "@ogfcommunity/variants-shared";
 import { positionsGetter } from "./board_utils";
 import { MulticolorStone } from "./board_types";
+import ScoreMark from "./ScoreMark.vue";
 
 const props = defineProps<{
   board: (MulticolorStone | null)[][];
   background_color?: string;
   board_dimensions: { width: number; height: number };
+  score_board?: (string[] | null)[][];
 }>();
 
 const width = computed(() => props.board_dimensions.width);
@@ -92,6 +94,15 @@ function positionHovered(pos: Coordinate) {
         :cy="y"
         :r="0.48"
         :annotation="props.board[y][x]?.annotation!"
+      />
+    </g>
+    <g v-if="score_board">
+      <ScoreMark
+        v-for="(pos, index) in positions.filter((pos) => score_board![pos.y][pos.x] !== null)"
+        v-bind:key="index"
+        :colors="score_board![pos.y][pos.x]!"
+        :cx="pos.x"
+        :cy="pos.y"
       />
     </g>
     <g>

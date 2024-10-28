@@ -21,6 +21,16 @@ const board = computed(() => {
   );
 });
 
+const score_board = computed(() => {
+  if (!props.gamestate.scoreBoard) {
+    return undefined;
+  }
+
+  return props.gamestate.scoreBoard.map((row) =>
+    row.map((color): string[] | null => (color !== "" ? [color] : null)),
+  );
+});
+
 const emit = defineEmits<{
   (e: "move", move: string): void;
 }>();
@@ -34,6 +44,7 @@ function click(pos: Coordinate) {
   <MulticolorGridBoard
     :board_dimensions="board_dimensions"
     :board="board"
+    :score_board="score_board"
     @click="click"
   />
 </template>

@@ -27,6 +27,25 @@ const board = computed(() => {
   });
 });
 
+const score_board = computed(() => {
+  if (!props.gamestate.score_board) {
+    return undefined;
+  }
+
+  return (props.gamestate.score_board.at(0) ?? []).map(
+    (color): string[] | null => {
+      switch (color) {
+        case Color.BLACK:
+          return ["black"];
+        case Color.WHITE:
+          return ["white"];
+        case Color.EMPTY:
+          return null;
+      }
+    },
+  );
+});
+
 const emit = defineEmits<{
   (e: "move", move: string): void;
 }>();
@@ -40,6 +59,7 @@ function click(index: number) {
   <MulticolorGraphBoard
     :board="board"
     :board_config="$props.config.board"
+    :score_board="score_board"
     @click="click"
   />
 </template>

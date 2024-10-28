@@ -9,11 +9,13 @@ import {
   createGraph,
 } from "@ogfcommunity/variants-shared";
 import { MulticolorStone } from "./board_types";
+import ScoreMark from "./ScoreMark.vue";
 
 const props = defineProps<{
   board: (MulticolorStone | null)[];
   background_color?: string;
   board_config: BoardConfig;
+  score_board?: (string[] | null)[];
 }>();
 
 const intersections = computed(() =>
@@ -103,6 +105,16 @@ const viewBox = computed(() => {
         :r="0.48"
         :annotation="props.board.at(index)?.annotation!"
       />
+    </g>
+    <g v-if="score_board">
+      <template v-for="(intersection, index) in intersections" :key="index">
+        <ScoreMark
+          v-if="score_board?.at(index)"
+          :colors="score_board[index]!"
+          :cx="intersection.position.X"
+          :cy="intersection.position.Y"
+        />
+      </template>
     </g>
     <g>
       <rect

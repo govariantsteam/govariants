@@ -2,7 +2,7 @@
 import { computed, ref, type Ref } from "vue";
 import TaegeukStone from "../TaegeukStone.vue";
 import IntersectionAnnotation from "../IntersectionAnnotation.vue";
-import { Coordinate } from "@ogfcommunity/variants-shared";
+import { Coordinate, getHoshi } from "@ogfcommunity/variants-shared";
 import { positionsGetter } from "./board_utils";
 import { MulticolorStone } from "./board_types";
 import ScoreMark from "./ScoreMark.vue";
@@ -70,6 +70,14 @@ function positionHovered(pos: Coordinate) {
         v-bind:y2="y - 1"
         stroke="pink"
         stroke-width="0.02"
+      />
+
+      <circle
+        v-for="{ x, y } in getHoshi(width, height)"
+        :key="`${x},${y}`"
+        :cx="x"
+        :cy="y"
+        r="0.12"
       />
     </g>
     <g>

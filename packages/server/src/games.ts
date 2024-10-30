@@ -9,6 +9,7 @@ import {
   AbstractGame,
   GameStateResponse,
   sanitizeConfig,
+  ITimeControlBase,
 } from "@ogfcommunity/variants-shared";
 import { ObjectId, WithId, Document, Filter } from "mongodb";
 import { getDb } from "./db";
@@ -196,7 +197,7 @@ export async function handleMoveAndTime(
 
   game.moves.push(moves);
 
-  emitGame(game.id, game.players?.length ?? 0, game_obj);
+  emitGame(game.id, game.players?.length ?? 0, game_obj, timeControl);
 
   return game;
 }
@@ -205,6 +206,7 @@ function emitGame(
   game_id: string,
   num_players: number,
   game_obj: AbstractGame,
+  time_control: ITimeControlBase,
 ): void {
   const next_to_play = game_obj.nextToPlay();
   const specialMoves = game_obj.specialMoves();
@@ -218,6 +220,7 @@ function emitGame(
       special_moves: specialMoves,
       result: game_obj.result,
       seat: null,
+      timeControl: time_control,
     });
 
   for (let seat = 0; seat < num_players; seat++) {
@@ -228,6 +231,7 @@ function emitGame(
       special_moves: specialMoves,
       result: game_obj.result,
       seat: seat,
+      timeControl: time_control,
     };
     io().to(`game/${game_id}/${seat}`).emit("move", gameStateResponse);
   }

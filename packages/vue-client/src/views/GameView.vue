@@ -13,6 +13,7 @@ import type {
   IPerPlayerTimeControlBase,
   IConfigWithTimeControl,
   GameStateResponse,
+  ITimeControlBase,
 } from "@ogfcommunity/variants-shared";
 import { computed, ref, watchEffect, type Ref } from "vue";
 import { socket } from "../requests";
@@ -24,7 +25,7 @@ import { board_map } from "@/board_map";
 
 const props = defineProps<{ gameId: string }>();
 
-const state_map = new Map<string, GameStateResponse>();
+const state_map = new Map<string, Omit<GameStateResponse, "timeControl">>();
 const game_state = ref<GameStateResponse | undefined>();
 const current_round = ref(0);
 const variant = ref("");
@@ -40,11 +41,15 @@ const variantDescriptionShort = computed(() => getDescription(variant.value));
 const user = useCurrentUser();
 const playing_as = ref<undefined | number>(undefined);
 const displayed_round = computed(() => view_round.value ?? current_round.value);
+const time_control = ref<ITimeControlBase | null>(null);
 
 function setNewState(stateResponse: GameStateResponse): void {
+  const { timeControl: timeControl, ...state } = stateResponse;
+  if (timeControl) time_control.value = timeControl ?? null;
+
   state_map.set(
     encodeSeatAndRound(stateResponse.round, stateResponse.seat),
-    stateResponse,
+    state,
   );
   if (current_round.value < stateResponse.round) {
     current_round.value = stateResponse.round;
@@ -242,8 +247,7 @@ const createTimeControlPreview = (
         @select="setPlayingAs(idx)"
         :selected="playing_as"
         :time_control="
-          game_state?.timeControl?.forPlayer[idx] ??
-          createTimeControlPreview(config)
+          time_control?.forPlayer[idx] ?? createTimeControlPreview(config)
         "
         :is_players_turn="game_state?.next_to_play?.includes(idx) ?? false"
         :variant="variant"

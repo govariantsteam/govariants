@@ -45,7 +45,9 @@ const time_control = ref<ITimeControlBase | null>(null);
 
 function setNewState(stateResponse: GameStateResponse): void {
   const { timeControl: timeControl, ...state } = stateResponse;
-  if (timeControl) time_control.value = timeControl ?? null;
+  if (timeControl) {
+    time_control.value = timeControl;
+  }
 
   state_map.set(
     encodeSeatAndRound(stateResponse.round, stateResponse.seat),

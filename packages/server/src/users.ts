@@ -14,6 +14,25 @@ export interface PersistentUser extends UserResponse {
   username: string;
   password_hash: string;
   login_type: "persistent";
+  rating?: number;
+}
+
+export async function updateUserRating(id: string, new_rating: number): Promise<void> {
+  if((await getUserBySessionId(id)).login_type == 'guest'){
+    throw new Error("Guest users cannot have ratings");
+  } else {
+    await usersCollection().updateOne(
+      { _id: new ObjectId(id) },
+      { $set: {rating: new_rating} }
+    );
+  }
+}
+
+export async function updateUsername(id: string, new_username: string): Promise<void> {
+  await usersCollection().updateOne(
+    { _id: new ObjectId(id) },
+    { $set: {username: new_username} }
+  );
 }
 
 function usersCollection(): Collection<GuestUser | PersistentUser> {

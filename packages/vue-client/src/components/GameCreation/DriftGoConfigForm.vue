@@ -36,9 +36,3 @@ function emitConfigChange() {
     <input type="number" step="1" v-model="config.yShift" />
   </form>
 </template>
-
-<style scoped>
-input {
-  width: fit-content;
-}
-</style>

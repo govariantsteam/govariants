@@ -35,9 +35,3 @@ function setBoardConfig(boardConfig: BoardConfig): void {
     <input type="number" step="0.5" v-model="config.komi" />
   </form>
 </template>
-
-<style scoped>
-input {
-  width: fit-content;
-}
-</style>

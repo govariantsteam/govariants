@@ -51,7 +51,7 @@ watch(patternRef, () => {
 <template>
   <div class="config-form-column">
     <label>Pattern</label>
-    <select v-model="patternRef" style="width: fit-content">
+    <select v-model="patternRef">
       <option :value="BoardPattern.Rectangular">Rectangular</option>
       <option :value="BoardPattern.Polygonal">Polygonal</option>
       <option :value="BoardPattern.Circular">Circular</option>
@@ -87,9 +87,3 @@ watch(patternRef, () => {
     <input type="number" step="0.5" v-model="komiRef" />
   </div>
 </template>
-
-<style scoped>
-input {
-  width: fit-content;
-}
-</style>

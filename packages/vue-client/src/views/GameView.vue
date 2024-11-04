@@ -293,5 +293,8 @@ const createTimeControlPreview = (
   .seat-list {
     max-height: var(--board-side-length);
   }
+  .info-attribute {
+    white-space: pre-wrap;
+  }
 }
 </style>

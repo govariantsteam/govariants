@@ -22,16 +22,10 @@ function emitConfigChange() {
     <label>Number of players</label>
     <input type="number" min="1" v-model="config.num_players" />
     <label>Collision Handling</label>
-    <select v-model="config.collision_handling" style="width: fit-content">
+    <select v-model="config.collision_handling">
       <option :value="'merge'">Merge</option>
       <option :value="'pass'">Pass</option>
       <option :value="'ko'">Ko</option>
     </select>
   </form>
 </template>
-
-<style scoped>
-input {
-  width: fit-content;
-}
-</style>

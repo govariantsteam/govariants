@@ -28,6 +28,7 @@
 .config-form-column {
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .navElement,
@@ -113,4 +114,9 @@ a,
 .info-label {
   font-weight: bold;
   margin-right: 0.5em;
+}
+
+.large-button {
+  width: 100%;
+  padding: 0.4em 0.8em;
 }

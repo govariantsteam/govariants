@@ -1,10 +1,10 @@
 import { Intersection } from "./intersection";
-import { Intersection as IntersectionOld } from "../../variants/badukWithAbstractBoard/abstractBoard/intersection";
-import { Vector2D } from "../../variants/badukWithAbstractBoard/abstractBoard/Vector2D";
-import { CreatePolygonalBoard as createPolygonalBoard } from "../../variants/badukWithAbstractBoard/abstractBoard/PolygonalBoardHelper";
-import { CreateCircularBoard } from "../../variants/badukWithAbstractBoard/abstractBoard/CircularBoardHelper";
-import { TrihexagonalBoardHelper } from "../../variants/badukWithAbstractBoard/abstractBoard/TrihexagonalBoardHelper";
-import { createSierpinskyBoard as createSierpinskyBoardExternal } from "../../variants/badukWithAbstractBoard/abstractBoard/SierpinskyBoard";
+import { Intersection as IntersectionOld } from "./helper/types/intersection";
+import { Vector2D } from "./helper/types/Vector2D";
+import { CreatePolygonalBoard as createPolygonalBoard } from "./helper/PolygonalBoardHelper";
+import { CreateCircularBoard } from "./helper/CircularBoardHelper";
+import { TrihexagonalBoardHelper } from "./helper/TrihexagonalBoardHelper";
+import { createSierpinskyBoard as createSierpinskyBoardExternal } from "./helper/SierpinskyBoard";
 import { Graph } from "../graph";
 import { Grid } from "../grid";
 

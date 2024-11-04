@@ -1,5 +1,5 @@
-import { Vector2D } from "./Vector2D";
-import { Intersection } from "./intersection";
+import { Vector2D } from "./types/Vector2D";
+import { Intersection } from "./types/intersection";
 
 export function createSierpinskyBoard(depth: number): Intersection[] {
   const sideLength = Math.pow(2, depth + 1);

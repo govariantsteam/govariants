@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { BadukState } from "@ogfcommunity/variants-shared";
 import {
+  BadukState,
   mapToNewBadukConfig,
   type BadukWithAbstractBoardConfig,
-} from "@ogfcommunity/variants-shared/src/variants/badukWithAbstractBoard";
+} from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
 import BadukBoardSelector from "./BadukBoardSelector.vue";
 

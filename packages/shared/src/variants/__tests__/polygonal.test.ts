@@ -1,4 +1,4 @@
-import { CreatePolygonalBoard } from "../badukWithAbstractBoard/abstractBoard/PolygonalBoardHelper";
+import { CreatePolygonalBoard } from "../../lib/abstractBoard/helper/PolygonalBoardHelper";
 
 test("Polygonal board has correct number of tiles", () => {
   const numberOfFullRings = 20;

@@ -7,7 +7,7 @@ import {
 export interface User {
   username?: string;
   id: string;
-  rating?: number
+  rating?: number;
 }
 export interface GameResponse {
   id: string;

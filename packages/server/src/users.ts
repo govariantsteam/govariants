@@ -6,7 +6,7 @@ import { randomBytes, scrypt } from "node:crypto";
 export interface GuestUser extends UserResponse {
   token: string;
   login_type: "guest";
-  rating?: number
+  rating?: number;
 }
 
 // Not currently used, but the plan is to use LocalStrategy from Password.js
@@ -15,15 +15,17 @@ export interface PersistentUser extends UserResponse {
   username: string;
   password_hash: string;
   login_type: "persistent";
-  rating?: number
+  rating?: number;
 }
 
-export async function updateUserRating(user_id: string, new_rating: number): Promise<UpdateResult<GuestUser | PersistentUser>> {
+export async function updateUserRating(
+  user_id: string,
+  new_rating: number,
+): Promise<UpdateResult<GuestUser | PersistentUser>> {
   return usersCollection().updateOne(
     { _id: new ObjectId(user_id) },
-    { $set: {rating: new_rating} }
+    { $set: { rating: new_rating } },
   );
-
 }
 
 function usersCollection(): Collection<GuestUser | PersistentUser> {
@@ -47,7 +49,9 @@ export async function getUserByName(username: string): Promise<PersistentUser> {
   };
 }
 
-export async function getUserByUserID(user_id: string): Promise<PersistentUser> {
+export async function getUserByUserID(
+  user_id: string,
+): Promise<PersistentUser> {
   const db_user = (await usersCollection().findOne({
     _id: { $eq: new ObjectId(user_id) },
   })) as WithId<PersistentUser>;
@@ -60,7 +64,7 @@ export async function getUserByUserID(user_id: string): Promise<PersistentUser> 
     username: db_user.username,
     password_hash: db_user.password_hash,
     login_type: db_user.login_type,
-    rating: db_user.rating
+    rating: db_user.rating,
   };
 }
 

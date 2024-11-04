@@ -22,6 +22,7 @@ export interface UserResponse {
   id?: string;
   login_type: "guest" | "persistent";
   username?: string;
+  rating?: number;
 }
 
 export type GamesFilter = {

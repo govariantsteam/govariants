@@ -49,25 +49,6 @@ export async function getUserByName(username: string): Promise<PersistentUser> {
   };
 }
 
-export async function getUserByUserID(
-  user_id: string,
-): Promise<PersistentUser> {
-  const db_user = (await usersCollection().findOne({
-    _id: { $eq: new ObjectId(user_id) },
-  })) as WithId<PersistentUser>;
-
-  if (!db_user) {
-    return undefined;
-  }
-
-  return {
-    username: db_user.username,
-    password_hash: db_user.password_hash,
-    login_type: db_user.login_type,
-    rating: db_user.rating,
-  };
-}
-
 export async function getUserBySessionId(
   session_id: string,
 ): Promise<GuestUser | undefined> {
@@ -198,6 +179,7 @@ function outwardFacingUser(
     id: db_user._id.toString(),
     login_type: db_user.login_type,
     ...(db_user.login_type === "persistent" && { username: db_user.username }),
+    rating: db_user.rating
   };
 }
 

@@ -15,6 +15,8 @@ import {
   createUserWithUsernameAndPassword,
   deleteUser,
   getUserByName,
+  updateUserRating,
+  getUserByUserID,
 } from "./users";
 import {
   getOnlyMove,
@@ -55,13 +57,24 @@ router.get("/game/:gameId/sgf", async (req, res) => {
     }
   } catch (e) {
     res.status(500).json({ error: e.message });
-  }
+  } 
 });
 
 router.get("/games/:gameId", async (req, res) => {
   try {
     const game: GameResponse = await getGame(req.params.gameId);
-    res.send(game);
+
+    //updating player 0 rating to 600
+    const updateStatus = await updateUserRating(game.players[0].id, 600)
+    //accessing user from db to check if update was made
+    const userInfo = await getUserByUserID(game.players[0].id)
+ 
+    res.json({
+      game,
+      updateStatus,
+      userInfo,
+    });
+
   } catch (e) {
     res.status(500);
     res.json(e.message);

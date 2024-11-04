@@ -1,11 +1,12 @@
 import { getDb } from "./db";
 import { UserResponse } from "@ogfcommunity/variants-shared";
-import { Collection, WithId, ObjectId } from "mongodb";
+import { Collection, WithId, ObjectId, UpdateResult } from "mongodb";
 import { randomBytes, scrypt } from "node:crypto";
 
 export interface GuestUser extends UserResponse {
   token: string;
   login_type: "guest";
+  rating?: number
 }
 
 // Not currently used, but the plan is to use LocalStrategy from Password.js
@@ -14,25 +15,15 @@ export interface PersistentUser extends UserResponse {
   username: string;
   password_hash: string;
   login_type: "persistent";
-  rating?: number;
+  rating?: number
 }
 
-export async function updateUserRating(id: string, new_rating: number): Promise<void> {
-  if((await getUserBySessionId(id)).login_type == 'guest'){
-    throw new Error("Guest users cannot have ratings");
-  } else {
-    await usersCollection().updateOne(
-      { _id: new ObjectId(id) },
-      { $set: {rating: new_rating} }
-    );
-  }
-}
-
-export async function updateUsername(id: string, new_username: string): Promise<void> {
-  await usersCollection().updateOne(
-    { _id: new ObjectId(id) },
-    { $set: {username: new_username} }
+export async function updateUserRating(user_id: string, new_rating: number): Promise<UpdateResult<GuestUser | PersistentUser>> {
+  return usersCollection().updateOne(
+    { _id: new ObjectId(user_id) },
+    { $set: {rating: new_rating} }
   );
+
 }
 
 function usersCollection(): Collection<GuestUser | PersistentUser> {
@@ -56,11 +47,28 @@ export async function getUserByName(username: string): Promise<PersistentUser> {
   };
 }
 
+export async function getUserByUserID(user_id: string): Promise<PersistentUser> {
+  const db_user = (await usersCollection().findOne({
+    _id: { $eq: new ObjectId(user_id) },
+  })) as WithId<PersistentUser>;
+
+  if (!db_user) {
+    return undefined;
+  }
+
+  return {
+    username: db_user.username,
+    password_hash: db_user.password_hash,
+    login_type: db_user.login_type,
+    rating: db_user.rating
+  };
+}
+
 export async function getUserBySessionId(
-  id: string,
+  session_id: string,
 ): Promise<GuestUser | undefined> {
   const db_user = (await usersCollection().findOne({
-    token: { $eq: id },
+    token: { $eq: session_id },
   })) as WithId<GuestUser>;
 
   if (!db_user) {

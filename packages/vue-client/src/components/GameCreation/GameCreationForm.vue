@@ -101,12 +101,14 @@ const setTimeControlConfig = (
         v-on:configChanged="setConfig"
       />
       <TimeControlConfigForm v-on:config-changed="setTimeControlConfig" />
-      <button v-on:click="createGame">Create Game</button>
+      <button v-on:click="createGame" class="large-button">Create Game</button>
     </template>
     <template v-else>
       <textarea v-model="configString"></textarea>
       <TimeControlConfigForm v-on:config-changed="setTimeControlConfig" />
-      <button v-on:click="parseConfigThenCreateGame">Create Game</button>
+      <button v-on:click="parseConfigThenCreateGame" class="large-button">
+        Create Game
+      </button>
     </template>
   </div>
 </template>
@@ -119,5 +121,9 @@ textarea {
 }
 .game-creation-form {
   margin-bottom: 0.5rem;
+  .large-button {
+    margin-top: 5px;
+    font-size: large;
+  }
 }
 </style>

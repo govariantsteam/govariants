@@ -111,12 +111,6 @@ function emitConfigChange() {
 </template>
 
 <style scoped>
-input {
-  width: fit-content;
-}
-select {
-  width: fit-content;
-}
 .fischerCappedToggle {
   display: flex;
   flex-direction: row;

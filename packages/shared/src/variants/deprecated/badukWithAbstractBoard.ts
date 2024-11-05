@@ -1,4 +1,4 @@
-import { Baduk } from "../baduk";
+import { Baduk, BadukConfig } from "../baduk";
 import { BoardConfig } from "../../lib/abstractBoard/boardFactory";
 import { Variant } from "../../variant";
 import { NewBadukConfig } from "../baduk_utils";
@@ -47,31 +47,23 @@ function mapToNewBoardConfig(
   return { type: "grid", width: 19, height: 19 };
 }
 
-export function mapToNewBadukConfig(
-  config: BadukWithAbstractBoardConfig,
-): NewBadukConfig {
-  return { komi: config.komi, board: mapToNewBoardConfig(config) };
+export function mapToNewBadukConfig(config: unknown): NewBadukConfig {
+  const typedConfig = config as BadukWithAbstractBoardConfig;
+  return { komi: typedConfig.komi, board: mapToNewBoardConfig(typedConfig) };
 }
 
-export class BadukWithAbstractBoard extends Baduk {
-  constructor(config: BadukWithAbstractBoardConfig) {
-    const mapped_config = mapToNewBadukConfig(config);
-    super(mapped_config);
-  }
-}
-
-export const badukWithAbstractBoardVariant: Variant<BadukWithAbstractBoardConfig> =
-  {
-    gameClass: BadukWithAbstractBoard,
-    description: "Baduk with varying board patterns",
-    deprecated: true,
-    defaultConfig() {
-      return {
-        width: 19,
-        height: 19,
-        komi: 6.5,
-        pattern: BoardPattern.Rectangular,
-      };
-    },
-    getPlayerColors: Baduk.getPlayerColors,
-  };
+export const badukWithAbstractBoardVariant: Variant<BadukConfig> = {
+  gameClass: Baduk,
+  description: "Baduk with varying board patterns",
+  deprecated: true,
+  sanitizeConfig: mapToNewBadukConfig,
+  defaultConfig() {
+    return {
+      width: 19,
+      height: 19,
+      komi: 6.5,
+      pattern: BoardPattern.Rectangular,
+    };
+  },
+  getPlayerColors: Baduk.getPlayerColors,
+};

@@ -1,4 +1,3 @@
-import BadukBoardAbstract from "@/components/boards/BadukBoardAbstract.vue";
 import ParallelGoBoard from "@/components/boards/ParallelGoBoard.vue";
 import FreezeGoBoard from "@/components/boards/FreezeGoBoard.vue";
 import ChessBoard from "@/components/boards/ChessBoard.vue";
@@ -14,7 +13,6 @@ export const board_map: {
 } = {
   baduk: BadukBoardSelector,
   phantom: BadukBoardSelector,
-  badukWithAbstractBoard: BadukBoardAbstract,
   parallel: ParallelGoBoard,
   capture: BadukBoardSelector,
   chess: ChessBoard,
@@ -28,4 +26,6 @@ export const board_map: {
   drift: BadukBoardSelector,
   quantum: QuantumBoard,
   sfractional: SFractionalBoardSelector,
+  // deprecated
+  badukWithAbstractBoard: BadukBoardSelector,
 };

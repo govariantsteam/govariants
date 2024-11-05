@@ -27,9 +27,7 @@ function toUpperCaseFirstLetter(string: string) {
 .rules-page {
   font-family: "helvetica", "arial", "sans-serif";
 }
-strong,
-h1,
-h2 {
+:deep(strong, h1, h2) {
   font-weight: bold;
 }
 </style>

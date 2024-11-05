@@ -3,7 +3,7 @@ import { BoardConfig } from "../../lib/abstractBoard/boardFactory";
 import { Variant } from "../../variant";
 import { NewBadukConfig } from "../baduk_utils";
 
-export enum BoardPattern {
+enum BoardPattern {
   Unknown = 0,
   Rectangular = 1,
   Polygonal = 2,

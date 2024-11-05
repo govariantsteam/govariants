@@ -1,5 +1,5 @@
-import { Intersection } from "./intersection";
-import { Vector2D } from "./Vector2D";
+import { Intersection } from "./types/intersection";
+import { Vector2D } from "./types/Vector2D";
 
 export function CreateCircularBoard(
   number_of_rings: number,

@@ -1,5 +1,5 @@
 import { Intersection } from "../abstractBoard/intersection";
-import { Vector2D } from "../../variants/badukWithAbstractBoard/abstractBoard/Vector2D";
+import { Vector2D } from "../abstractBoard/helper/types/Vector2D";
 
 export interface AbstractBadukStone<TChainType> {
   isNew: boolean;

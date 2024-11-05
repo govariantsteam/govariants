@@ -1,5 +1,5 @@
-import { Vector2D } from "./Vector2D";
-import { Intersection } from "./intersection";
+import { Vector2D } from "./types/Vector2D";
+import { Intersection } from "./types/intersection";
 
 //-----------------------------------------------------
 //-----------------------------------------------------

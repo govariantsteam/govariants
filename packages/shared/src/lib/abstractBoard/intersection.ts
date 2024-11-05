@@ -1,4 +1,4 @@
-import type { Vector2D } from "../../variants/badukWithAbstractBoard/abstractBoard/Vector2D";
+import type { Vector2D } from "./helper/types/Vector2D";
 
 /*
   TODO: Maybe simply interface Stone { colors: Set<Color> } is good enough?

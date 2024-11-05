@@ -1,6 +1,6 @@
-import { Grid } from "../../../lib/grid";
-import { Vector2D } from "./Vector2D";
-import { Intersection } from "./intersection";
+import { Grid } from "../../grid";
+import { Vector2D } from "./types/Vector2D";
+import { Intersection } from "./types/intersection";
 
 export class TrihexagonalBoardHelper {
   private readonly x_base_vector: Vector2D;

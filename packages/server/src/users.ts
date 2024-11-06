@@ -152,12 +152,18 @@ export async function authenticateUser(
   throw new Error("invalid password");
 }
 
-export async function createUserWithSessionId(session_id: string): Promise<GuestUser> {
+export async function createUserWithSessionId(
+  session_id: string,
+): Promise<GuestUser> {
   const result = await usersCollection().insertOne({
     token: session_id,
     login_type: "guest",
   });
-  return { id: result.insertedId.toString(), token: session_id, login_type: "guest" };
+  return {
+    id: result.insertedId.toString(),
+    token: session_id,
+    login_type: "guest",
+  };
 }
 
 export async function getUser(user_id: string): Promise<UserResponse> {

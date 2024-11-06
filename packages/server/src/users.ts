@@ -1,6 +1,6 @@
 import { getDb } from "./db";
 import { UserResponse } from "@ogfcommunity/variants-shared";
-import { Collection, WithId, ObjectId, UpdateResult } from "mongodb";
+import { Collection, WithId, ObjectId } from "mongodb";
 import { randomBytes, scrypt } from "node:crypto";
 
 export interface GuestUser extends UserResponse {
@@ -22,7 +22,7 @@ export async function updateUserRating(
   user_id: string,
   new_rating: number,
 ): Promise<void> {
-  usersCollection().updateOne(
+  await usersCollection().updateOne(
     { _id: new ObjectId(user_id) },
     { $set: { rating: new_rating } },
   );

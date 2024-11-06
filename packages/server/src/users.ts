@@ -21,8 +21,8 @@ export interface PersistentUser extends UserResponse {
 export async function updateUserRating(
   user_id: string,
   new_rating: number,
-): Promise<UpdateResult<GuestUser | PersistentUser>> {
-  return usersCollection().updateOne(
+): Promise<void> {
+  usersCollection().updateOne(
     { _id: new ObjectId(user_id) },
     { $set: { rating: new_rating } },
   );
@@ -152,17 +152,17 @@ export async function authenticateUser(
   throw new Error("invalid password");
 }
 
-export async function createUserWithSessionId(id: string): Promise<GuestUser> {
+export async function createUserWithSessionId(session_id: string): Promise<GuestUser> {
   const result = await usersCollection().insertOne({
-    token: id,
+    token: session_id,
     login_type: "guest",
   });
-  return { id: result.insertedId.toString(), token: id, login_type: "guest" };
+  return { id: result.insertedId.toString(), token: session_id, login_type: "guest" };
 }
 
-export async function getUser(id: string): Promise<UserResponse> {
+export async function getUser(user_id: string): Promise<UserResponse> {
   const db_user = await usersCollection().findOne({
-    _id: new ObjectId(id),
+    _id: new ObjectId(user_id),
   });
 
   if (!db_user) {
@@ -179,14 +179,14 @@ function outwardFacingUser(
     id: db_user._id.toString(),
     login_type: db_user.login_type,
     ...(db_user.login_type === "persistent" && { username: db_user.username }),
-    rating: db_user.rating
+    rating: db_user.rating,
   };
 }
 
-export function deleteUser(id: string) {
+export function deleteUser(user_id: string) {
   usersCollection()
     .deleteOne({
-      _id: new ObjectId(id),
+      _id: new ObjectId(user_id),
     })
     .catch(console.error);
 }

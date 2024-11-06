@@ -15,8 +15,6 @@ import {
   createUserWithUsernameAndPassword,
   deleteUser,
   getUserByName,
-  updateUserRating,
-  getUser,
 } from "./users";
 import {
   getOnlyMove,
@@ -63,17 +61,7 @@ router.get("/game/:gameId/sgf", async (req, res) => {
 router.get("/games/:gameId", async (req, res) => {
   try {
     const game: GameResponse = await getGame(req.params.gameId);
-
-    //updating player 0 rating to 700
-    const updateStatus = await updateUserRating(game.players[0].id, 700);
-    //accessing user from db to check if update was made
-    const userInfo = await getUser(game.players[0].id);
-
-    res.json({
-      game,
-      updateStatus,
-      userInfo,
-    });
+    res.send(game);
   } catch (e) {
     res.status(500);
     res.json(e.message);

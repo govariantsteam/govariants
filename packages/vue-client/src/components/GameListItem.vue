@@ -27,12 +27,14 @@ const variantGameView = computed(() => board_map[props.game.variant]);
 <template>
   <li class="game-list-item">
     <RouterLink v-bind:to="{ name: 'game', params: { gameId: props.game.id } }">
-      <component
-        v-if="variantGameView"
-        v-bind:is="variantGameView"
-        v-bind:gamestate="game.state"
-        v-bind:config="props.game.config"
-      />
+      <div class="event-blocker">
+        <component
+          v-if="variantGameView"
+          v-bind:is="variantGameView"
+          v-bind:gamestate="game.state"
+          v-bind:config="props.game.config"
+        />
+      </div>
       <div class="variant-text">{{ props.game.variant }}</div>
     </RouterLink>
   </li>
@@ -44,6 +46,9 @@ li.game-list-item {
   width: 50%;
   list-style-type: none;
   display: inline-block;
+  .event-blocker {
+    pointer-events: none;
+  }
 }
 
 .variant-text {

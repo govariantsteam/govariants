@@ -22,10 +22,13 @@ export async function updateUserRating(
   user_id: string,
   new_rating: number,
 ): Promise<void> {
-  await usersCollection().updateOne(
+  const update_result = await usersCollection().updateOne(
     { _id: new ObjectId(user_id) },
     { $set: { rating: new_rating } },
   );
+  if(update_result.matchedCount == 0){
+    throw new Error("User not found")
+  }
 }
 
 function usersCollection(): Collection<GuestUser | PersistentUser> {

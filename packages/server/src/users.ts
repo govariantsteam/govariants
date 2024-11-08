@@ -6,6 +6,7 @@ import { randomBytes, scrypt } from "node:crypto";
 export interface GuestUser extends UserResponse {
   token: string;
   login_type: "guest";
+  rating?: number;
 }
 
 // Not currently used, but the plan is to use LocalStrategy from Password.js
@@ -14,6 +15,20 @@ export interface PersistentUser extends UserResponse {
   username: string;
   password_hash: string;
   login_type: "persistent";
+  rating?: number;
+}
+
+export async function updateUserRating(
+  user_id: string,
+  new_rating: number,
+): Promise<void> {
+  const update_result = await usersCollection().updateOne(
+    { _id: new ObjectId(user_id) },
+    { $set: { rating: new_rating } },
+  );
+  if (update_result.matchedCount == 0) {
+    throw new Error("User not found");
+  }
 }
 
 function usersCollection(): Collection<GuestUser | PersistentUser> {
@@ -38,10 +53,10 @@ export async function getUserByName(username: string): Promise<PersistentUser> {
 }
 
 export async function getUserBySessionId(
-  id: string,
+  session_id: string,
 ): Promise<GuestUser | undefined> {
   const db_user = (await usersCollection().findOne({
-    token: { $eq: id },
+    token: { $eq: session_id },
   })) as WithId<GuestUser>;
 
   if (!db_user) {
@@ -140,17 +155,23 @@ export async function authenticateUser(
   throw new Error("invalid password");
 }
 
-export async function createUserWithSessionId(id: string): Promise<GuestUser> {
+export async function createUserWithSessionId(
+  session_id: string,
+): Promise<GuestUser> {
   const result = await usersCollection().insertOne({
-    token: id,
+    token: session_id,
     login_type: "guest",
   });
-  return { id: result.insertedId.toString(), token: id, login_type: "guest" };
+  return {
+    id: result.insertedId.toString(),
+    token: session_id,
+    login_type: "guest",
+  };
 }
 
-export async function getUser(id: string): Promise<UserResponse> {
+export async function getUser(user_id: string): Promise<UserResponse> {
   const db_user = await usersCollection().findOne({
-    _id: new ObjectId(id),
+    _id: new ObjectId(user_id),
   });
 
   if (!db_user) {
@@ -167,13 +188,14 @@ function outwardFacingUser(
     id: db_user._id.toString(),
     login_type: db_user.login_type,
     ...(db_user.login_type === "persistent" && { username: db_user.username }),
+    rating: db_user.rating,
   };
 }
 
-export function deleteUser(id: string) {
+export function deleteUser(user_id: string) {
   usersCollection()
     .deleteOne({
-      _id: new ObjectId(id),
+      _id: new ObjectId(user_id),
     })
     .catch(console.error);
 }

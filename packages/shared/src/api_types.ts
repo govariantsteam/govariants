@@ -7,6 +7,7 @@ import {
 export interface User {
   username?: string;
   id: string;
+  rating?: number;
 }
 export interface GameResponse {
   id: string;
@@ -21,6 +22,7 @@ export interface UserResponse {
   id?: string;
   login_type: "guest" | "persistent";
   username?: string;
+  rating?: number;
 }
 
 export type GamesFilter = {

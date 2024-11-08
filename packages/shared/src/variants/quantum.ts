@@ -1,6 +1,7 @@
 import { AbstractGame } from "../abstract_game";
 import { BoardPattern } from "../lib/abstractBoard/boardFactory";
 import { Coordinate, CoordinateLike } from "../lib/coordinate";
+import { quantumRulesDescription } from "../templates/quantum_rules";
 import { Variant } from "../variant";
 import { Baduk, BadukBoard, BadukConfig, badukVariant, Color } from "./baduk";
 import {
@@ -302,6 +303,7 @@ export const quantumVariant: Variant<NewBadukConfig> = {
   ...badukVariant,
   gameClass: QuantumGo,
   description: "Two boards whose stones are entangled",
+  rulesDescription: quantumRulesDescription,
   defaultConfig(): NewGridBadukConfig {
     return {
       board: { type: BoardPattern.Grid, width: 9, height: 9 },

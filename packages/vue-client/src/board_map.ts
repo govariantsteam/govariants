@@ -7,8 +7,9 @@ import type { Component } from "vue";
 import QuantumBoard from "@/components/boards/QuantumBoard.vue";
 import BadukBoardSelector from "./components/boards/BadukBoardSelector.vue";
 import SFractionalBoardSelector from "./components/boards/SFractional/SFractionalBoardSelector.vue";
+import DefaultBoard from "./components/boards/DefaultBoard.vue";
 
-export const board_map: {
+const board_map: {
   [variant: string]: Component<{ config: unknown; gamestate: unknown }>;
 } = {
   baduk: BadukBoardSelector,
@@ -29,3 +30,7 @@ export const board_map: {
   // deprecated
   badukWithAbstractBoard: BadukBoardSelector,
 };
+
+export function getBoard(variant: string) {
+  return board_map[variant] ?? DefaultBoard;
+}

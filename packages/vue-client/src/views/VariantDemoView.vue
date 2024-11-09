@@ -8,11 +8,11 @@ import {
 import SeatComponent from "@/components/GameView/SeatComponent.vue";
 import { useCurrentUser } from "../stores/user";
 import { computed, reactive, ref, type Ref } from "vue";
-import { board_map } from "@/board_map";
 import type { MovesType } from "@ogfcommunity/variants-shared";
 import NavButtons from "@/components/GameView/NavButtons.vue";
 import PlayersToMove from "@/components/GameView/PlayersToMove.vue";
 import { config_form_map } from "@/config_form_map";
+import { getPlayingTable } from "@/playing_table_map";
 
 const props = defineProps<{ variant: string }>();
 
@@ -79,7 +79,7 @@ const specialMoves = computed(() =>
     ? {}
     : makeGameObject(props.variant, config.value).specialMoves(),
 );
-const variantGameView = computed(() => board_map[props.variant]);
+const variantGameView = computed(() => getPlayingTable(props.variant));
 const variantDescriptionShort = computed(() => getDescription(props.variant));
 
 const user = useCurrentUser();

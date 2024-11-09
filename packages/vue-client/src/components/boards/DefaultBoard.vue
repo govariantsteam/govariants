@@ -12,7 +12,7 @@ import {
   DefaultBoardConfig,
   DefaultBoardState,
   MulticolorStone,
-} from "@ogfcommunity/variants-shared/src/lib/board_types";
+} from "@ogfcommunity/variants-shared";
 
 const props = defineProps<{
   config: DefaultBoardConfig;

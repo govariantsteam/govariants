@@ -1,12 +1,20 @@
 import { CoordinateLike } from "../lib/coordinate";
+import { Grid } from "../lib/grid";
 import { getGroup, getOuterBorder } from "../lib/group_utils";
 import { Variant } from "../variant";
 import { Baduk, BadukBoard, BadukState, badukVariant, Color } from "./baduk";
-import { NewBadukConfig } from "./baduk_utils";
+import { isGridBadukConfig, NewBadukConfig } from "./baduk_utils";
 
 export interface FreezeGoState extends BadukState {
   frozen: boolean;
 }
+
+const NORMAL_COLORS = { background: undefined, black: "black", white: "white" };
+const FROZEN_COLORS = {
+  background: "#5cdcdc",
+  black: "#0f2240",
+  white: "#dae4f2",
+};
 
 export class FreezeGo extends Baduk {
   private frozen = false;
@@ -32,6 +40,34 @@ export class FreezeGo extends Baduk {
   override exportState(): FreezeGoState {
     return { ...super.exportState(), frozen: this.frozen };
   }
+
+  static uiTransform(config: NewBadukConfig, state: FreezeGoState) {
+    const mapIntersection = (color: Color) => {
+      const theme = state.frozen ? FROZEN_COLORS : NORMAL_COLORS;
+      switch (color) {
+        case Color.EMPTY:
+          return { colors: [] };
+        case Color.BLACK:
+          return { colors: [theme.black] };
+        case Color.WHITE:
+          return { colors: [theme.white] };
+      }
+    };
+
+    const board = isGridBadukConfig(config)
+      ? Grid.from2DArray(state.board).map(mapIntersection).to2DArray()
+      : (state.board.at(0) ?? []).map(mapIntersection);
+
+    return {
+      config,
+      gamestate: {
+        board,
+        backgroundColor: state.frozen
+          ? FROZEN_COLORS.background
+          : NORMAL_COLORS.background,
+      },
+    };
+  }
 }
 
 function is_in_atari(pos: CoordinateLike, board: BadukBoard<Color>) {
@@ -42,8 +78,9 @@ function is_in_atari(pos: CoordinateLike, board: BadukBoard<Color>) {
   return num_liberties === 1;
 }
 
-export const freezeGoVariant: Variant<NewBadukConfig> = {
+export const freezeGoVariant: Variant<NewBadukConfig, FreezeGoState> = {
   ...badukVariant,
   gameClass: FreezeGo,
   description: "Baduk but after an Atari, stones can't be captured",
+  uiTransform: FreezeGo.uiTransform,
 };

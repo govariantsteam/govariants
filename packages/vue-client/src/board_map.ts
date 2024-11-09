@@ -1,5 +1,4 @@
 import ParallelGoBoard from "@/components/boards/ParallelGoBoard.vue";
-import FreezeGoBoard from "@/components/boards/FreezeGoBoard.vue";
 import ChessBoard from "@/components/boards/ChessBoard.vue";
 import FractionalBoard from "@/components/boards/FractionalBoard.vue";
 import KeimaBoard from "@/components/boards/KeimaBoard.vue";
@@ -20,7 +19,6 @@ const board_map: {
   tetris: BadukBoardSelector,
   pyramid: BadukBoardSelector,
   "thue-morse": BadukBoardSelector,
-  freeze: FreezeGoBoard,
   fractional: FractionalBoard,
   keima: KeimaBoard,
   "one color": BadukBoardSelector,

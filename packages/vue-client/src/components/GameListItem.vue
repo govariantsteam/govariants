@@ -3,6 +3,7 @@ import {
   makeGameObject,
   type GameResponse,
   getOnlyMove,
+  uiTransform,
 } from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
 import { getBoard } from "@/board_map";
@@ -21,6 +22,10 @@ const game = computed(() => {
   };
 });
 
+const transformedGameData = computed(() =>
+  uiTransform(props.game.variant, props.game.config, game.value.state),
+);
+
 const variantGameView = computed(() => getBoard(props.game.variant));
 </script>
 
@@ -31,8 +36,8 @@ const variantGameView = computed(() => getBoard(props.game.variant));
         <component
           v-if="variantGameView"
           v-bind:is="variantGameView"
-          v-bind:gamestate="game.state"
-          v-bind:config="props.game.config"
+          v-bind:gamestate="transformedGameData.gamestate"
+          v-bind:config="transformedGameData.config"
         />
       </div>
       <div class="variant-text">{{ props.game.variant }}</div>

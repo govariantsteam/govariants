@@ -4,6 +4,7 @@ import {
   getOnlyMove,
   getDefaultConfig,
   getDescription,
+  uiTransform,
 } from "@ogfcommunity/variants-shared";
 import SeatComponent from "@/components/GameView/SeatComponent.vue";
 import { useCurrentUser } from "../stores/user";
@@ -21,6 +22,9 @@ const props = defineProps<{ variant: string }>();
 const view_round: Ref<number | null> = ref(null);
 
 const config = ref(getDefaultConfig(props.variant));
+const transformedGameData = computed(() =>
+  uiTransform(props.variant, config.value, game.value.state),
+);
 const variantConfigForm = computed(() => config_form_map[props.variant]);
 const moves = reactive<Array<MovesType>>([]);
 const playing_as = ref<undefined | number>(undefined);
@@ -50,7 +54,7 @@ function getGame(
 ) {
   const game_obj = makeGameObject(variant, config);
 
-  let state: unknown = null;
+  let state: object | null = null;
   for (let i = 0; i < moves.length; i++) {
     if (viewRound !== null && state === null && game_obj.round === viewRound) {
       state = structuredClone(game_obj.exportState(playingAs));
@@ -129,8 +133,8 @@ function onConfigChange(c: object) {
     <component
       v-if="variantGameView && game.state"
       v-bind:is="variantGameView"
-      v-bind:gamestate="game.state"
-      v-bind:config="config"
+      v-bind:gamestate="transformedGameData.gamestate"
+      v-bind:config="transformedGameData.config"
       v-on:move="makeMove"
     />
     <NavButtons v-model="view_round" :gameRound="game.round" />

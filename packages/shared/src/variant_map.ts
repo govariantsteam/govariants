@@ -20,7 +20,7 @@ import { sFractionalVariant } from "./variants/s_fractional";
 
 const variant_map: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [variant: string]: Variant<any>;
+  [variant: string]: Variant<any, any>;
 } = {
   baduk: badukVariant,
   badukWithAbstractBoard: badukWithAbstractBoardVariant,
@@ -107,4 +107,12 @@ export function getPlayerColors(
     return [];
   }
   return variant_object.getPlayerColors(config, playerNr);
+}
+
+export function uiTransform(variant: string, config: object, state: object) {
+  const variant_object = variant_map[variant];
+  if (!variant_object || !variant_object.uiTransform) {
+    return { config, gamestate: state };
+  }
+  return variant_object.uiTransform(config, state);
 }

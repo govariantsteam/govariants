@@ -31,7 +31,7 @@ export type GamesFilter = {
 };
 
 export type GameStateResponse = {
-  state: unknown;
+  state: object;
   round: number;
   next_to_play: number[];
   special_moves: { [key: string]: string };

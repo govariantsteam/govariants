@@ -5,7 +5,7 @@ import {
   getOnlyMove,
 } from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
-import { board_map } from "@/board_map";
+import { getBoard } from "@/board_map";
 
 const props = defineProps<{ game: GameResponse }>();
 
@@ -21,7 +21,7 @@ const game = computed(() => {
   };
 });
 
-const variantGameView = computed(() => board_map[props.game.variant]);
+const variantGameView = computed(() => getBoard(props.game.variant));
 </script>
 
 <template>

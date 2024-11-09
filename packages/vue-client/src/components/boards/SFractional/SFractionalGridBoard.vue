@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { SFractionalState } from "@ogfcommunity/variants-shared";
+import {
+  SFractionalState,
+  MulticolorStone,
+} from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
-import { MulticolorStone } from "../board_types";
 import MulticolorGridBoard from "../MulticolorGridBoard.vue";
 import { Coordinate, GridBoardConfig } from "@ogfcommunity/variants-shared";
 

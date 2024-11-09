@@ -2,9 +2,12 @@
 import { computed, ref, type Ref } from "vue";
 import TaegeukStone from "../TaegeukStone.vue";
 import IntersectionAnnotation from "../IntersectionAnnotation.vue";
-import { Coordinate, getHoshi } from "@ogfcommunity/variants-shared";
+import {
+  Coordinate,
+  getHoshi,
+  MulticolorStone,
+} from "@ogfcommunity/variants-shared";
 import { positionsGetter } from "./board_utils";
-import { MulticolorStone } from "./board_types";
 import ScoreMark from "./ScoreMark.vue";
 
 const props = defineProps<{

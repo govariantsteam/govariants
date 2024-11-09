@@ -7,8 +7,8 @@ import {
   createBoard,
   Intersection,
   createGraph,
+  MulticolorStone,
 } from "@ogfcommunity/variants-shared";
-import { MulticolorStone } from "./board_types";
 import ScoreMark from "./ScoreMark.vue";
 
 const props = defineProps<{

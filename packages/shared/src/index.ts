@@ -8,6 +8,8 @@ export * from "./variant_map";
 export * from "./api_types";
 export * from "./lib/grid";
 export * from "./lib/coordinate";
+export * from "./lib/grid_compat";
+export * from "./lib/board_types";
 export * from "./time_control";
 export * from "./lib/utils";
 export * from "./lib/hoshi";

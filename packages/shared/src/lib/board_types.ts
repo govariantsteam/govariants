@@ -14,5 +14,5 @@ export type DefaultBoardConfig = {
 
 export type DefaultBoardState = {
   board: MulticolorStone[] | MulticolorStone[][];
-  backgroundColor: string;
+  backgroundColor?: string;
 };

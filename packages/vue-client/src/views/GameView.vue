@@ -4,6 +4,7 @@ import {
   timeControlMap,
   supportsSGF,
   getDescription,
+  uiTransform,
 } from "@ogfcommunity/variants-shared";
 import * as requests from "../requests";
 import SeatComponent from "@/components/GameView/SeatComponent.vue";
@@ -29,6 +30,12 @@ const game_state = ref<GameStateResponse | undefined>();
 const current_round = ref(0);
 const variant = ref("");
 const config: Ref<object | undefined> = ref();
+const transformedGameData = computed(() => {
+  if (variant.value && config.value && game_state.value) {
+    return uiTransform(variant.value, config.value, game_state.value.state);
+  }
+  return undefined;
+});
 const players = ref<User[]>();
 // null <-> viewing the latest round
 // while viewing history of game, maybe we should prevent player from making a move (accidentally)
@@ -212,10 +219,10 @@ const createTimeControlPreview = (
 <template>
   <div>
     <component
-      v-if="variantGameView && game_state?.state"
+      v-if="variantGameView && transformedGameData"
       v-bind:is="variantGameView"
-      v-bind:gamestate="game_state.state"
-      v-bind:config="config"
+      v-bind:gamestate="transformedGameData.gamestate"
+      v-bind:config="transformedGameData.config"
       v-bind:displayed_round="displayed_round"
       v-on:move="makeMove"
     />

@@ -16,7 +16,7 @@ import {
 
 const props = defineProps<{
   config: DefaultBoardConfig;
-  gameState: DefaultBoardState;
+  gamestate: DefaultBoardState;
 }>();
 
 const emit = defineEmits<{
@@ -31,16 +31,16 @@ function positionClicked(pos: Coordinate | number) {
 <template>
   <MulticolorGridBoard
     v-if="props.config.board.type === 'grid'"
-    :board="props.gameState.board as (MulticolorStone | null)[][]"
+    :board="props.gamestate.board as (MulticolorStone | null)[][]"
     :board_dimensions="props.config.board"
-    :background_color="props.gameState.backgroundColor"
+    :background_color="props.gamestate.backgroundColor"
     @click="positionClicked"
   />
   <MulticolorGraphBoard
     v-else
-    :board="props.gameState.board as (MulticolorStone | null)[]"
+    :board="props.gamestate.board as (MulticolorStone | null)[]"
     :board_config="$props.config.board"
     @click="positionClicked"
-    :background_color="props.gameState.backgroundColor"
+    :background_color="props.gamestate.backgroundColor"
   />
 </template>

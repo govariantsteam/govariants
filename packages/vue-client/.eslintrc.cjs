@@ -19,5 +19,11 @@ module.exports = {
       },
     ],
     "vue/enforce-style-attribute": "error",
+    "no-restricted-imports": [
+      "error",
+      {
+        patterns: ["@ogfcommunity/variants-shared/src/*"],
+      },
+    ],
   },
 };

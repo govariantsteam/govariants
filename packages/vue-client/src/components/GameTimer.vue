@@ -3,9 +3,9 @@ import { ref, watch, computed } from "vue";
 import {
   type IPerPlayerTimeControlBase,
   timeControlMap,
+  type ITimeControlConfig,
 } from "@ogfcommunity/variants-shared";
 import { isDefined } from "@vueuse/core";
-import type { ITimeControlConfig } from "@ogfcommunity/variants-shared/src/time_control";
 
 const props = defineProps<{
   time_control: IPerPlayerTimeControlBase;

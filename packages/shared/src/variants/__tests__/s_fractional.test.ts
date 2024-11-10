@@ -91,9 +91,9 @@ test("territory test", () => {
   expect(game.result).toBe("B+1.5");
 
   expect(state.scoreBoard).toEqual([
-    ["black", "", "", "white"],
-    ["black", "", "", "white"],
-    ["black", "", "", ""],
-    ["black", "", "", ""],
+    ["black", "black", "white", "white"],
+    ["black", "black", "white", "white"],
+    ["black", "black", "white", "white"],
+    ["black", "black", "", ""],
   ]);
 });

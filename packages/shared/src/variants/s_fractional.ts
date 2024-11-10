@@ -259,6 +259,12 @@ export class SFractional extends AbstractGame<
     // identify territory over the board and calculate score
     this.board.forEach((placementColors, index) => {
       if (this.isOccupied(placementColors)) {
+        // area scoring
+        if (placementColors.includes("black")) {
+          scoreBoard.set(index, "black");
+        } else if (placementColors.includes("white")) {
+          scoreBoard.set(index, "white");
+        }
         return;
       }
 

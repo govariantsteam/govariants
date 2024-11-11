@@ -44,6 +44,7 @@ const game = computed(() =>
     playing_as.value,
   ),
 );
+const displayed_round = computed(() => view_round.value ?? moves.length);
 
 function getGame(
   variant: string,
@@ -135,6 +136,7 @@ function onConfigChange(c: object) {
       v-bind:is="variantGameView"
       v-bind:gamestate="transformedGameData.gamestate"
       v-bind:config="transformedGameData.config"
+      v-bind:displayed_round="displayed_round"
       v-on:move="makeMove"
     />
     <NavButtons v-model="view_round" :gameRound="game.round" />

@@ -12,6 +12,7 @@ import { GraphWrapper } from "../lib/graph";
 import { Grid } from "../lib/grid";
 import { Variant } from "../variant";
 import { SuperKoDetector } from "../lib/ko_detector";
+import { sfractionalRulesDescription } from "../templates/sfractional_rules";
 
 declare type Color = string;
 declare type PlacementColors = [Color, Color] | [];
@@ -331,5 +332,6 @@ export const sFractionalVariant: Variant<SFractionalConfig> = {
   defaultConfig: SFractional.defaultConfig,
   description:
     "Stones have a secondary colour that also requires liberties to avoid capture.",
+  rulesDescription: sfractionalRulesDescription,
   getPlayerColors: Baduk.getPlayerColors,
 };

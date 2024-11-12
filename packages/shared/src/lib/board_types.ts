@@ -15,4 +15,7 @@ export type DefaultBoardConfig = {
 export type DefaultBoardState = {
   board: MulticolorStone[] | MulticolorStone[][];
   backgroundColor?: string;
+  // TODO: we should probably merge this into board
+  // score would be some field on MulticolorStone
+  score_board?: (string[] | null)[] | (string[] | null)[][];
 };

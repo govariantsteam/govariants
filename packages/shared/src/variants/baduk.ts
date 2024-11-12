@@ -16,10 +16,12 @@ import {
   NewGridBadukConfig,
   isGridBadukConfig,
   isLegacyBadukConfig,
+  mapBoard,
   mapToNewConfig,
 } from "./baduk_utils";
 import { Variant } from "../variant";
 import { SgfRecorder } from "../lib/sgf_recorder";
+import { DefaultBoardState, MulticolorStone } from "../lib/board_types";
 
 export enum Color {
   EMPTY = 0,
@@ -271,6 +273,36 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
       ? mapToNewConfig(badukConfig)
       : badukConfig;
   }
+
+  static uiTransform(
+    config: NewBadukConfig,
+    gamestate: BadukState,
+  ): { config: NewBadukConfig; gamestate: DefaultBoardState } {
+    const boardShape = isGridBadukConfig(config) ? "2d" : "flatten-2d-to-1d";
+    const colorTransform = (color: Color): string[] => {
+      switch (color) {
+        case Color.BLACK:
+          return ["black"];
+        case Color.WHITE:
+          return ["white"];
+        case Color.EMPTY:
+          return [];
+      }
+    };
+    const stoneTransform = (color: Color): MulticolorStone => {
+      return { colors: colorTransform(color) };
+    };
+
+    return {
+      config,
+      gamestate: {
+        board: mapBoard(gamestate.board, stoneTransform, boardShape),
+        score_board: gamestate.score_board
+          ? mapBoard(gamestate.score_board, colorTransform, boardShape)
+          : undefined,
+      },
+    };
+  }
 }
 
 /** Returns true if the group containing (x, y) has at least one liberty. */
@@ -301,13 +333,14 @@ export class GridBaduk extends Baduk {
   }
 }
 
-export const badukVariant: Variant<NewBadukConfig> = {
+export const badukVariant: Variant<NewBadukConfig, BadukState> = {
   gameClass: Baduk,
   description:
     "Traditional game of Baduk a.k.a. Go, Weiqi\n Surround stones to capture them\n Secure more territory + captures to win",
   defaultConfig: Baduk.defaultConfig,
   getPlayerColors: Baduk.getPlayerColors,
   sanitizeConfig: Baduk.sanitizeConfig,
+  uiTransform: Baduk.uiTransform,
 };
 
 export const gridBadukVariant = badukVariant as Variant<NewGridBadukConfig>;

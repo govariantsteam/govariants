@@ -2,7 +2,7 @@ import { Coordinate } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
 import { getGroup } from "../lib/group_utils";
 import { Variant } from "../variant";
-import { Baduk, Color, GridBaduk, groupHasLiberties } from "./baduk";
+import { Baduk, Color, GridBaduk, gridBadukVariant, groupHasLiberties } from "./baduk";
 import { NewGridBadukConfig } from "./baduk_utils";
 
 export type DriftGoConfig = NewGridBadukConfig & {
@@ -63,7 +63,7 @@ export class DriftGo extends GridBaduk {
   }
 }
 
-export const driftVariant: Variant<DriftGoConfig> = {
+export const driftVariant: Variant<DriftGoConfig, BadukState> = {
   gameClass: DriftGo,
   description: "Baduk, but the entire board drifts on every turn",
   defaultConfig(): DriftGoConfig {
@@ -75,4 +75,5 @@ export const driftVariant: Variant<DriftGoConfig> = {
     };
   },
   getPlayerColors: Baduk.getPlayerColors,
+  uiTransform: Baduk.uiTransform<DriftGoConfig>,
 };

@@ -274,10 +274,10 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
       : badukConfig;
   }
 
-  static uiTransform(
-    config: NewBadukConfig,
+  static uiTransform<ConfigT extends NewBadukConfig = NewBadukConfig>(
+    config: ConfigT,
     gamestate: BadukState,
-  ): { config: NewBadukConfig; gamestate: DefaultBoardState } {
+  ): { config: ConfigT; gamestate: DefaultBoardState } {
     const boardShape = isGridBadukConfig(config) ? "2d" : "flatten-2d-to-1d";
     const colorTransform = (color: Color): string[] => {
       switch (color) {

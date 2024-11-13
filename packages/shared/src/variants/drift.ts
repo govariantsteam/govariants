@@ -2,7 +2,13 @@ import { Coordinate } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
 import { getGroup } from "../lib/group_utils";
 import { Variant } from "../variant";
-import { Baduk, Color, GridBaduk, gridBadukVariant, groupHasLiberties } from "./baduk";
+import {
+  Baduk,
+  BadukState,
+  Color,
+  GridBaduk,
+  groupHasLiberties,
+} from "./baduk";
 import { NewGridBadukConfig } from "./baduk_utils";
 
 export type DriftGoConfig = NewGridBadukConfig & {

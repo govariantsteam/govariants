@@ -1,7 +1,5 @@
 import { KoDetector, NoKoRuleDetector } from "../lib/ko_detector";
-import { Variant } from "../variant";
 import { Baduk, badukVariant } from "./baduk";
-import { NewBadukConfig } from "./baduk_utils";
 
 export class ThueMorse extends Baduk {
   private move_number = 0;
@@ -43,7 +41,7 @@ export function count_binary_ones(n: number) {
     .filter((digit) => digit === "1").length;
 }
 
-export const thueMorseVariant: Variant<NewBadukConfig> = {
+export const thueMorseVariant: typeof badukVariant = {
   ...badukVariant,
   gameClass: ThueMorse,
   description: "Baduk with move order according to Thue-Morse sequence",

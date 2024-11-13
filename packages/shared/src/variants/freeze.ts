@@ -41,7 +41,10 @@ export class FreezeGo extends Baduk {
     return { ...super.exportState(), frozen: this.frozen };
   }
 
-  static uiTransform(config: NewBadukConfig, state: FreezeGoState) {
+  static uiTransform<ConfigT extends NewBadukConfig = NewBadukConfig>(
+    config: ConfigT,
+    state: FreezeGoState,
+  ) {
     const mapIntersection = (color: Color) => {
       const theme = state.frozen ? FROZEN_COLORS : NORMAL_COLORS;
       switch (color) {

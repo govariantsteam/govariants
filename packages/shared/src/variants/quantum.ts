@@ -310,4 +310,7 @@ export const quantumVariant: Variant<NewBadukConfig> = {
       komi: 7.5,
     };
   },
+  // quantum uses its own board, so we shouldn't use
+  // Baduk.uiTransform
+  uiTransform: undefined,
 };

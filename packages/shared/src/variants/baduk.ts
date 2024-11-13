@@ -343,4 +343,7 @@ export const badukVariant: Variant<NewBadukConfig, BadukState> = {
   uiTransform: Baduk.uiTransform,
 };
 
-export const gridBadukVariant = badukVariant as Variant<NewGridBadukConfig>;
+export const gridBadukVariant = badukVariant as Variant<
+  NewGridBadukConfig,
+  BadukState
+>;

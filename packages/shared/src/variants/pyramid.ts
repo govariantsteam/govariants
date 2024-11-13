@@ -1,7 +1,6 @@
 import { Color, GridBaduk, gridBadukVariant } from "./baduk";
 import { Grid } from "../lib/grid";
-import { GridBadukConfig, NewGridBadukConfig } from "./baduk_utils";
-import { Variant } from "../variant";
+import { GridBadukConfig } from "./baduk_utils";
 
 export class PyramidGo extends GridBaduk {
   private weights: Grid<number>;
@@ -45,7 +44,7 @@ export class PyramidGo extends GridBaduk {
   }
 }
 
-export const pyramidVariant: Variant<NewGridBadukConfig> = {
+export const pyramidVariant: typeof gridBadukVariant = {
   ...gridBadukVariant,
   gameClass: PyramidGo,
   description:

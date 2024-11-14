@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {
+  DefaultBoardConfig,
   DefaultBoardState,
-  NewGridBadukConfig,
 } from "@ogfcommunity/variants-shared";
 import MoveSequenceDisplay from "../MoveSequenceDisplay.vue";
 import { count_binary_ones } from "@ogfcommunity/variants-shared";
@@ -9,7 +9,7 @@ import DefaultBoard from "../boards/DefaultBoard.vue";
 
 defineProps<{
   gamestate: DefaultBoardState;
-  config: NewGridBadukConfig;
+  config: DefaultBoardConfig;
   displayed_round: number;
 }>();
 

@@ -3,34 +3,21 @@ import { Color, type CoordinateLike } from "@ogfcommunity/variants-shared";
 </script>
 
 <script setup lang="ts">
-import MulticolorGridBoard from "./MulticolorGridBoard.vue";
-import MulticolorGraphBoard from "./MulticolorGraphBoard.vue";
+import DefaultBoard from "./DefaultBoard.vue";
 import {
-  Coordinate,
   type QuantumGoState,
-  getWidthAndHeight,
-  BadukConfig,
+  mapBoard,
   isGridBadukConfig,
+  MulticolorStone,
+  NewBadukConfig,
+  moveToIndex,
 } from "@ogfcommunity/variants-shared";
-import { Grid } from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
 
 const props = defineProps<{
-  config: BadukConfig;
+  config: NewBadukConfig;
   gamestate: QuantumGoState;
 }>();
-
-const gridConfig = computed(() =>
-  isGridBadukConfig(props.config) ? props.config : undefined,
-);
-
-const graphConfig = computed(() =>
-  !isGridBadukConfig(props.config) ? props.config : undefined,
-);
-
-const board_dimensions = computed(() =>
-  gridConfig.value ? getWidthAndHeight(gridConfig.value) : undefined,
-);
 
 const emit = defineEmits<{
   (e: "move", move: string): void;
@@ -40,14 +27,17 @@ function emitMove(move: string) {
   emit("move", move);
 }
 
+type QuantumIndices = CoordinateLike[] | number[];
+
 function board_with_quantum_stones(
   board: Color[][],
-  quantum_stones: Array<CoordinateLike>,
+  quantum_stones: QuantumIndices,
 ) {
-  interface MulticolorStone {
-    colors: string[];
-  }
-  const ret: Grid<MulticolorStone | null> = Grid.from2DArray(board).map(
+  const boardShape = isGridBadukConfig(props.config)
+    ? "2d"
+    : "flatten-2d-to-1d";
+  const multicolor_stone_board = mapBoard(
+    board,
     (color) => {
       switch (color) {
         case Color.BLACK:
@@ -55,100 +45,56 @@ function board_with_quantum_stones(
         case Color.WHITE:
           return { colors: ["white"] };
         case Color.EMPTY:
-          return null;
+          return { colors: [] };
       }
     },
+    boardShape,
   );
+
   quantum_stones.forEach((pos) => {
-    ret.at(pos)?.colors.push("green");
+    // TODO: figure out better types here or add utilities that abstract this
+    // difference in index.
+    if (boardShape === "2d") {
+      pos = pos as CoordinateLike;
+      (multicolor_stone_board as MulticolorStone[][])[pos.y][pos.x].colors.push(
+        "green",
+      );
+    } else {
+      (multicolor_stone_board as MulticolorStone[])[pos as number].colors.push(
+        "green",
+      );
+    }
   });
-  return ret.to2DArray();
+  return { board: multicolor_stone_board };
 }
 
 const board_0 = computed(() => {
   return board_with_quantum_stones(
     props.gamestate.boards[0],
-    props.gamestate.quantum_stones.map((pos) => Coordinate.fromSgfRepr(pos)),
+    props.gamestate.quantum_stones.map(moveToIndex) as QuantumIndices,
   );
 });
 const board_1 = computed(() => {
   return board_with_quantum_stones(
     props.gamestate.boards[1],
-    props.gamestate.quantum_stones.map((pos) => Coordinate.fromSgfRepr(pos)),
+    props.gamestate.quantum_stones.map(moveToIndex) as QuantumIndices,
   );
-});
-
-function graph_board_with_quantum_stones(
-  board: Color[],
-  quantum_stones: number[],
-) {
-  const ret_board = board.map((color) => {
-    switch (color) {
-      case Color.BLACK:
-        return { colors: ["black"], annotation: undefined };
-      case Color.WHITE:
-        return { colors: ["white"], annotation: undefined };
-      case Color.EMPTY:
-        return null;
-    }
-  });
-
-  quantum_stones.forEach((stone) => {
-    ret_board.at(stone)?.colors.push("green");
-  });
-
-  return ret_board;
-}
-
-const graph_boards = computed(() => {
-  const sequence_0 = props.gamestate.boards.at(0)?.at(0) ?? [];
-  const sequence_1 = props.gamestate.boards.at(1)?.at(0) ?? [];
-
-  return {
-    board_0: graph_board_with_quantum_stones(
-      sequence_0,
-      props.gamestate.quantum_stones.map(Number),
-    ),
-    board_1: graph_board_with_quantum_stones(
-      sequence_1,
-      props.gamestate.quantum_stones.map(Number),
-    ),
-  };
 });
 </script>
 
 <template>
-  <template v-if="gridConfig">
-    <div style="width: 50%; height: min-content; display: inline-block">
-      <MulticolorGridBoard
-        :board="board_0"
-        :board_dimensions="board_dimensions!"
-        @click="emitMove($event.toSgfRepr())"
-      />
-    </div>
-    <div style="width: 50%; height: min-content; display: inline-block">
-      <MulticolorGridBoard
-        :board="board_1"
-        :board_dimensions="board_dimensions!"
-        @click="emitMove($event.toSgfRepr())"
-      />
-    </div>
-  </template>
-
-  <template v-if="graphConfig">
-    <div style="width: 50%; height: min-content; display: inline-block">
-      <MulticolorGraphBoard
-        :board="graph_boards.board_0"
-        :board_config="graphConfig!.board"
-        @click="emitMove($event.toString())"
-      />
-    </div>
-    <div style="width: 50%; height: min-content; display: inline-block">
-      <MulticolorGraphBoard
-        :board="graph_boards.board_1"
-        :board_config="graphConfig!.board"
-        @click="emitMove($event.toString())"
-      />
-    </div>
-  </template>
+  <div style="width: 50%; height: min-content; display: inline-block">
+    <DefaultBoard
+      :gamestate="board_0"
+      :config="props.config"
+      v-on:move="emitMove"
+    />
+  </div>
+  <div style="width: 50%; height: min-content; display: inline-block">
+    <DefaultBoard
+      :gamestate="board_1"
+      :config="props.config"
+      v-on:move="emitMove"
+    />
+  </div>
 </template>

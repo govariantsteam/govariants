@@ -90,7 +90,7 @@ test("territory test", () => {
   expect(game.phase).toBe("gameover");
   expect(game.result).toBe("B+1.5");
 
-  expect(state.scoreBoard).toEqual([
+  expect(state.score_board).toEqual([
     ["black", "black", "white", "white"],
     ["black", "black", "white", "white"],
     ["black", "black", "white", "white"],

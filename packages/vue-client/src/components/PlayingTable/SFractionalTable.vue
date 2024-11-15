@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import {
+  DefaultBoardConfig,
+  DefaultBoardState,
   SFractionalConfig,
   sFractionalMoveColors,
-  SFractionalState,
 } from "@ogfcommunity/variants-shared";
 import MoveSequenceDisplay from "../MoveSequenceDisplay.vue";
-import SFractionalBoardSelector from "../boards/SFractional/SFractionalBoardSelector.vue";
+import DefaultBoard from "../boards/DefaultBoard.vue";
 
 const props = defineProps<{
-  gamestate: SFractionalState;
-  config: SFractionalConfig;
+  gamestate: DefaultBoardState;
+  config: SFractionalConfig & DefaultBoardConfig; // return type of SFractional.uiTransform
   displayed_round: number;
 }>();
 
@@ -26,7 +27,7 @@ function move(move: string) {
 }
 </script>
 <template>
-  <SFractionalBoardSelector
+  <DefaultBoard
     :gamestate="$props.gamestate"
     :config="$props.config"
     v-on:move="move"

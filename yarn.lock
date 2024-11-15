@@ -1094,6 +1094,8 @@ __metadata:
 "@ogfcommunity/variants-monorepo@workspace:.":
   version: 0.0.0-use.local
   resolution: "@ogfcommunity/variants-monorepo@workspace:."
+  dependencies:
+    glicko2: ^1.2.1
   languageName: unknown
   linkType: soft
 
@@ -4245,6 +4247,13 @@ __metadata:
   version: 0.0.0
   resolution: "github-from-package@npm:0.0.0"
   checksum: 14e448192a35c1e42efee94c9d01a10f42fe790375891a24b25261246ce9336ab9df5d274585aedd4568f7922246c2a78b8a8cd2571bfe99c693a9718e7dd0e3
+  languageName: node
+  linkType: hard
+
+"glicko2@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "glicko2@npm:1.2.1"
+  checksum: f0c5c15aec1d43daca49cb7b75d49346d36e2f2f239738cdf7d77e1e4459ed98b7638c8f0eba8b112def8e56937eea3eda17fbd71e42996b35e2adddc4efd08b
   languageName: node
   linkType: hard
 

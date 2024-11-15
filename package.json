@@ -24,5 +24,8 @@
   "prettier": {
     "trailingComma": "all",
     "endOfLine": "lf"
+  },
+  "dependencies": {
+    "glicko2": "^1.2.1"
   }
 }

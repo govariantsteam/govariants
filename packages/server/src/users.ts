@@ -3,9 +3,6 @@ import { UserResponse, UserRanking } from "@ogfcommunity/variants-shared";
 import { Collection, WithId, ObjectId } from "mongodb";
 import { randomBytes, scrypt } from "node:crypto";
 
-
-
-
 export interface GuestUser extends UserResponse {
   token: string;
   login_type: "guest";
@@ -138,7 +135,7 @@ export async function createUserWithUsernameAndPassword(
     username,
     password_hash,
     login_type: "persistent",
-    ranking: {rating: 1500, rd: 350, vol: 0.06}
+    ranking: { rating: 1500, rd: 350, vol: 0.06 },
   };
 
   const result = await usersCollection().insertOne(user);

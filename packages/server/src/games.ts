@@ -21,7 +21,7 @@ import {
 } from "./time-control/time-control";
 import { timeControlHandlerMap } from "./time-control/time-handler-map";
 import { Clock } from "./time-control/clock";
-import { updateRatings } from './ratings'
+import { updateRatings } from "./ratings";
 
 export function gamesCollection() {
   return getDb().db().collection("games");
@@ -69,7 +69,6 @@ export async function getGame(id: string): Promise<GameResponse> {
   if (!db_game) {
     throw new Error("Game not found");
   }
-
 
   const game = outwardFacingGame(db_game);
   // Legacy games don't have a players field
@@ -200,8 +199,8 @@ export async function handleMoveAndTime(
   game.moves.push(moves);
 
   emitGame(game.id, game.players?.length ?? 0, game_obj, timeControl);
-  
-  if(game_obj.phase == "gameover" && game.variant == "quantum"){
+
+  if (game_obj.phase == "gameover" && game.variant == "quantum") {
     // user ranking value is only for quantum right now
     await updateRatings(game, game_obj);
   }

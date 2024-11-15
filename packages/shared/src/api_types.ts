@@ -5,9 +5,9 @@ import {
 } from "./time_control/time_control.types";
 
 export interface UserRanking {
-  rating: number
-  rd: number
-  vol: number
+  rating: number;
+  rd: number;
+  vol: number;
 }
 
 export interface User {

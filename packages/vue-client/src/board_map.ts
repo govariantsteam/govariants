@@ -4,7 +4,6 @@ import FractionalBoard from "@/components/boards/FractionalBoard.vue";
 import KeimaBoard from "@/components/boards/KeimaBoard.vue";
 import type { Component } from "vue";
 import QuantumBoard from "@/components/boards/QuantumBoard.vue";
-import SFractionalBoardSelector from "./components/boards/SFractional/SFractionalBoardSelector.vue";
 import DefaultBoard from "./components/boards/DefaultBoard.vue";
 
 const board_map: {
@@ -15,7 +14,6 @@ const board_map: {
   fractional: FractionalBoard,
   keima: KeimaBoard,
   quantum: QuantumBoard,
-  sfractional: SFractionalBoardSelector,
 };
 
 export function getBoard(variant: string) {

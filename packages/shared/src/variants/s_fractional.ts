@@ -4,7 +4,7 @@ import {
   createBoard,
   createGraph,
 } from "../lib/abstractBoard/boardFactory";
-import { NewBadukConfig } from "./baduk_utils";
+import { isGridBadukConfig, mapBoard, NewBadukConfig } from "./baduk_utils";
 import { AbstractGame } from "../abstract_game";
 import { Baduk, BadukBoard } from "./baduk";
 import { Intersection } from "../lib/abstractBoard/intersection";
@@ -13,6 +13,11 @@ import { Grid } from "../lib/grid";
 import { Variant } from "../variant";
 import { SuperKoDetector } from "../lib/ko_detector";
 import { sfractionalRulesDescription } from "../templates/sfractional_rules";
+import {
+  DefaultBoardConfig,
+  DefaultBoardState,
+  MulticolorStone,
+} from "../lib/board_types";
 import { examineGroup } from "../lib/group_utils";
 
 declare type Color = string;
@@ -23,7 +28,7 @@ export type SFractionalConfig = NewBadukConfig & { secondary_colors: Color[] };
 export type SFractionalState = {
   board: PlacementColors[][];
   lastMove: string;
-  scoreBoard?: Color[][];
+  score_board?: Color[][];
 };
 
 export class SFractional extends AbstractGame<
@@ -63,7 +68,7 @@ export class SFractional extends AbstractGame<
     return {
       board: this.board.serialize(),
       lastMove: this.last_move,
-      ...(this.scoreBoard && { scoreBoard: this.scoreBoard.serialize() }),
+      ...(this.scoreBoard && { score_board: this.scoreBoard.serialize() }),
     };
   }
 
@@ -286,6 +291,32 @@ export class SFractional extends AbstractGame<
       secondary_colors: ["#0000FF", "#FF0000"],
     };
   }
+
+  static uiTransform(
+    config: SFractionalConfig,
+    gamestate: SFractionalState,
+  ): {
+    config: SFractionalConfig & DefaultBoardConfig;
+    gamestate: DefaultBoardState;
+  } {
+    const boardShape = isGridBadukConfig(config) ? "2d" : "flatten-2d-to-1d";
+
+    const stoneTransform = (colors: PlacementColors): MulticolorStone => {
+      return { colors: colors };
+    };
+    const scoreTransform = (color: string): string[] | null =>
+      color === "" ? null : [color];
+
+    return {
+      config,
+      gamestate: {
+        board: mapBoard(gamestate.board, stoneTransform, boardShape),
+        score_board: gamestate.score_board
+          ? mapBoard(gamestate.score_board, scoreTransform, boardShape)
+          : undefined,
+      },
+    };
+  }
 }
 
 /**
@@ -305,11 +336,13 @@ export function sFractionalMoveColors(
   return [primaryColor, secondaryColor];
 }
 
-export const sFractionalVariant: Variant<SFractionalConfig> = {
-  gameClass: SFractional,
-  defaultConfig: SFractional.defaultConfig,
-  description:
-    "Stones have a secondary colour that also requires liberties to avoid capture.",
-  rulesDescription: sfractionalRulesDescription,
-  getPlayerColors: Baduk.getPlayerColors,
-};
+export const sFractionalVariant: Variant<SFractionalConfig, SFractionalState> =
+  {
+    gameClass: SFractional,
+    defaultConfig: SFractional.defaultConfig,
+    description:
+      "Stones have a secondary colour that also requires liberties to avoid capture.",
+    rulesDescription: sfractionalRulesDescription,
+    getPlayerColors: Baduk.getPlayerColors,
+    uiTransform: SFractional.uiTransform,
+  };

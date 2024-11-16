@@ -23,28 +23,43 @@ export async function updateRatings(
   game: GameResponse,
   game_obj: AbstractGame<object, object>,
 ) {
-  // Rating system currently only for two player games
-
   const variant = game.variant;
-  const result = game_obj.result[0];
 
   let glicko_outcome;
   let outcome_player_black;
   let outcome_player_white;
 
-  if (result === "B") {
-    glicko_outcome = 1;
-    outcome_player_black = "Win";
-    outcome_player_white = "Loss";
-  } else if (result === "W") {
-    glicko_outcome = 0;
-    outcome_player_black = "Loss";
-    outcome_player_white = "Win";
+  if(game_obj.result.endsWith("R")) {
+
+    if (game_obj.result[0] === "B") {
+      glicko_outcome = 0;
+      outcome_player_black = "Loss";
+      outcome_player_white = "Win";
+    } else if (game_obj.result[0] === "W") {
+      glicko_outcome = 1;
+      outcome_player_black = "Win";
+      outcome_player_white = "Loss";
+    }
+
   } else {
-    glicko_outcome = 0.5;
-    outcome_player_black = "Tie";
-    outcome_player_white = "Tie";
+
+    if (game_obj.result[0] === "B") {
+      glicko_outcome = 1;
+      outcome_player_black = "Win";
+      outcome_player_white = "Loss";
+    } else if (game_obj.result[0] === "W") {
+      glicko_outcome = 0;
+      outcome_player_black = "Loss";
+      outcome_player_white = "Win";
+    } else {
+      glicko_outcome = 0.5;
+      outcome_player_black = "Tie";
+      outcome_player_white = "Tie";
+    }
+
   }
+
+
 
   const player_black_id = game.players[0].id;
   const player_white_id = game.players[1].id;

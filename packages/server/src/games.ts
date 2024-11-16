@@ -200,8 +200,8 @@ export async function handleMoveAndTime(
 
   emitGame(game.id, game.players?.length ?? 0, game_obj, timeControl);
 
-  if (game_obj.phase == "gameover" && game.variant == "quantum") {
-    // user ranking value is only for quantum right now
+  if (game_obj.phase == "gameover" && game.players.length == 2) {
+    // user ranking value is only for two player games
     await updateRatings(game, game_obj);
   }
 

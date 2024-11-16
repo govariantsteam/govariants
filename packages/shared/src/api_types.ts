@@ -5,7 +5,18 @@ import {
 } from "./time_control/time_control.types";
 
 
+export interface GameResults { 
+  [variant: string]: GameResult[]
+}
 
+export interface GameResult {
+  opponentRating: UserRanking;
+  result: "Win" | "Loss" | "Tie";
+}
+
+export interface UserRankings {
+  [variant: string]: UserRanking
+}
 
 export interface UserRanking {
   rating: number;
@@ -13,19 +24,10 @@ export interface UserRanking {
   vol: number;
 }
 
-export interface GameResult {
-  opponentRating: UserRanking;
-  result: "win" | "loss";
-}
-
-export interface GameResults { 
-  [variant: string]: GameResult[]
-}
-
 export interface User {
   username?: string;
   id: string;
-  ranking?: UserRanking;
+  ranking?: UserRankings
   gameHistory?: GameResults
 }
 export interface GameResponse {
@@ -41,7 +43,7 @@ export interface UserResponse {
   id?: string;
   login_type: "guest" | "persistent";
   username?: string;
-  ranking?: UserRanking;
+  ranking?: UserRankings
   gameHistory?: GameResults
 }
 

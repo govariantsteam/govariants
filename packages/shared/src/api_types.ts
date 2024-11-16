@@ -4,16 +4,29 @@ import {
   ITimeControlConfig,
 } from "./time_control/time_control.types";
 
+
+
+
 export interface UserRanking {
   rating: number;
   rd: number;
   vol: number;
 }
 
+export interface GameResult {
+  opponentRating: UserRanking;
+  result: "win" | "loss";
+}
+
+export interface GameResults { 
+  [variant: string]: GameResult[]
+}
+
 export interface User {
   username?: string;
   id: string;
   ranking?: UserRanking;
+  gameHistory?: GameResults
 }
 export interface GameResponse {
   id: string;
@@ -29,6 +42,7 @@ export interface UserResponse {
   login_type: "guest" | "persistent";
   username?: string;
   ranking?: UserRanking;
+  gameHistory?: GameResults
 }
 
 export type GamesFilter = {

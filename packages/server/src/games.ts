@@ -29,7 +29,7 @@ export function gamesCollection() {
 
 /**
  * @param count number of games to return (default = 10, max = 100)
- * @param offset number of games to skip (default = 0)gamesCollection
+ * @param offset number of games to skip (default = 0)
  * @param filter filter settings for the query
  */
 export async function getGames(

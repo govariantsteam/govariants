@@ -67,8 +67,10 @@ import {
       vol: glicko_player_white.getVol(),
     };
   
-    await updateUserRating(player_black_id, player_black_new_ranking);
-    await updateUserRating(player_white_id, player_white_new_ranking);
+    await Promise.all(
+      updateUserRating(player_black_id, player_black_new_ranking),
+      updateUserRating(player_white_id, player_white_new_ranking),
+    )
   
     //any return values?
   }

@@ -75,12 +75,17 @@ export function getInnerBorder<K, V>(group: K[], graph: Fillable<K, V>) {
   );
 }
 
-export function examineGroup<K, V>(
-  index: K,
-  board: Fillable<K, V>,
-  groupIdentifier: (v: V) => boolean,
-  libertyIdentifier: (v: V) => boolean,
-): { members: K[]; adjacent: K[]; liberties: number } {
+export function examineGroup<K, V>(input: {
+  index: K;
+  board: Fillable<K, V>;
+  groupIdentifier: (v: V) => boolean;
+  libertyIdentifier: (v: V) => boolean;
+}): { members: K[]; adjacent: K[]; liberties: number } {
+  const index = input.index;
+  const board = input.board;
+  const groupIdentifier = input.groupIdentifier;
+  const libertyIdentifier = input.libertyIdentifier;
+
   const visited = board.map(() => false);
   const members: K[] = [];
   const adjacent: K[] = [];

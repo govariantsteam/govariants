@@ -16,7 +16,7 @@ import { sfractionalRulesDescription } from "../templates/sfractional_rules";
 import { examineGroup } from "../lib/group_utils";
 
 declare type Color = string;
-declare type PlacementColors = [Color, Color] | [];
+declare type PlacementColors = Color[] & ([Color, Color] | []);
 
 export type SFractionalConfig = NewBadukConfig & { secondary_colors: Color[] };
 
@@ -174,13 +174,12 @@ export class SFractional extends AbstractGame<
     index: CoordinateLike,
     color: Color,
   ): { members: { x: number; y: number }[]; liberties: number } {
-    return examineGroup(
-      index,
-      this.board,
-      (placementColors) =>
-        placementColors.length !== 0 && placementColors.includes(color),
-      (placementColors) => placementColors.length === 0,
-    );
+    return examineGroup({
+      index: index,
+      board: this.board,
+      groupIdentifier: (placementColors) => placementColors.includes(color),
+      libertyIdentifier: (placementColors) => placementColors.length === 0,
+    });
   }
 
   protected postValidateMove(): void {

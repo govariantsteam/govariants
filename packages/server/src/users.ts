@@ -1,12 +1,16 @@
 import { getDb } from "./db";
-import { UserResponse, UserRanking, UserRankings, GameResults } from "@ogfcommunity/variants-shared";
+import {
+  UserResponse,
+  UserRankings,
+  GameResults,
+} from "@ogfcommunity/variants-shared";
 import { Collection, WithId, ObjectId } from "mongodb";
 import { randomBytes, scrypt } from "node:crypto";
 
 export interface GuestUser extends UserResponse {
   token: string;
   login_type: "guest";
-  ranking?: UserRankings
+  ranking?: UserRankings;
   gameHistory?: GameResults;
 }
 
@@ -16,13 +20,13 @@ export interface PersistentUser extends UserResponse {
   username: string;
   password_hash: string;
   login_type: "persistent";
-  ranking?: UserRankings
+  ranking?: UserRankings;
   gameHistory?: GameResults;
 }
 
 export async function updateUserRanking(
   user_id: string,
-  new_ranking: UserRankings
+  new_ranking: UserRankings,
 ): Promise<void> {
   const update_result = await usersCollection().updateOne(
     { _id: new ObjectId(user_id) },

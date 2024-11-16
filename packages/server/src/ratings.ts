@@ -35,8 +35,10 @@ import {
     const player_black_new_ranking = userRatingFromGlickoPlayer(glicko_player_black);
     const player_white_new_ranking = userRatingFromGlickoPlayer(glicko_player_white);
   
-    await updateUserRating(player_black_id, player_black_new_ranking);
-    await updateUserRating(player_white_id, player_white_new_ranking);
+    await Promise.all(
+      updateUserRating(player_black_id, player_black_new_ranking),
+      updateUserRating(player_white_id, player_white_new_ranking),
+    )
   
     //any return values?
   }

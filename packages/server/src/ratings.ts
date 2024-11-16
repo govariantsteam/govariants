@@ -29,8 +29,7 @@ export async function updateRatings(
   let outcome_player_black;
   let outcome_player_white;
 
-  if(game_obj.result.endsWith("R")) {
-
+  if (game_obj.result.endsWith("R")) {
     if (game_obj.result[0] === "B") {
       glicko_outcome = 0;
       outcome_player_black = "Loss";
@@ -40,9 +39,7 @@ export async function updateRatings(
       outcome_player_black = "Win";
       outcome_player_white = "Loss";
     }
-
   } else {
-
     if (game_obj.result[0] === "B") {
       glicko_outcome = 1;
       outcome_player_black = "Win";
@@ -56,10 +53,7 @@ export async function updateRatings(
       outcome_player_black = "Tie";
       outcome_player_white = "Tie";
     }
-
   }
-
-
 
   const player_black_id = game.players[0].id;
   const player_white_id = game.players[1].id;

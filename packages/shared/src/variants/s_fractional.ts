@@ -18,9 +18,10 @@ import {
   DefaultBoardState,
   MulticolorStone,
 } from "../lib/board_types";
+import { examineGroup } from "../lib/group_utils";
 
 declare type Color = string;
-declare type PlacementColors = [Color, Color] | [];
+declare type PlacementColors = Color[] & ([Color, Color] | []);
 
 export type SFractionalConfig = NewBadukConfig & { secondary_colors: Color[] };
 
@@ -178,35 +179,12 @@ export class SFractional extends AbstractGame<
     index: CoordinateLike,
     color: Color,
   ): { members: { x: number; y: number }[]; liberties: number } {
-    const members: { x: number; y: number }[] = [];
-    let liberties = 0;
-    const board = this.board;
-    const visited = this.board.map(() => false);
-
-    function searchHelper(index: { x: number; y: number }): void {
-      if (visited.at(index)) {
-        return;
-      }
-
-      const stoneColors = board.at(index);
-
-      if (stoneColors === undefined) {
-        // should not happen
-        return;
-      }
-
-      visited.set(index, true);
-
-      if (stoneColors.length === 0) {
-        liberties++;
-      } else if (stoneColors.includes(color)) {
-        members.push(index);
-        board.neighbors(index).forEach(searchHelper);
-      }
-    }
-
-    searchHelper(index);
-    return { members: members, liberties: liberties };
+    return examineGroup({
+      index: index,
+      board: this.board,
+      groupIdentifier: (placementColors) => placementColors.includes(color),
+      libertyIdentifier: (placementColors) => placementColors.length === 0,
+    });
   }
 
   protected postValidateMove(): void {

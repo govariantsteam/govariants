@@ -74,3 +74,50 @@ export function getInnerBorder<K, V>(group: K[], graph: Fillable<K, V>) {
     group_on_graph.neighbors(index).some((index) => !group_on_graph.at(index)),
   );
 }
+
+export function examineGroup<K, V>(input: {
+  index: K;
+  board: Fillable<K, V>;
+  groupIdentifier: (v: V) => boolean;
+  libertyIdentifier: (v: V) => boolean;
+}): { members: K[]; adjacent: K[]; liberties: number } {
+  const index = input.index;
+  const board = input.board;
+  const groupIdentifier = input.groupIdentifier;
+  const libertyIdentifier = input.libertyIdentifier;
+
+  const visited = board.map(() => false);
+  const members: K[] = [];
+  const adjacent: K[] = [];
+  let liberties = 0;
+
+  function searchHelper(index: K): void {
+    if (visited.at(index)) {
+      return;
+    }
+
+    const valueAtIndex = board.at(index);
+
+    if (valueAtIndex === undefined) {
+      // should not happen
+      return;
+    }
+
+    visited.set(index, true);
+
+    if (groupIdentifier(valueAtIndex)) {
+      members.push(index);
+
+      board.neighbors(index).forEach(searchHelper);
+    } else {
+      adjacent.push(index);
+
+      if (libertyIdentifier(valueAtIndex)) {
+        liberties++;
+      }
+    }
+  }
+
+  searchHelper(index);
+  return { members: members, adjacent: adjacent, liberties: liberties };
+}

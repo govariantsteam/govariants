@@ -4,93 +4,59 @@ import {
   UserRanking,
   UserRankings,
   UserResponse,
-  GameResult,
-  GameResults,
 } from "@ogfcommunity/variants-shared";
 import { Glicko2, Player } from "glicko2";
-import { updateUserRanking, getUser, updateUserGameHistory } from "./users";
+import { updateUserRanking, getUser } from "./users";
 
-const ranking = new Glicko2({
-  tau: 0.5,
-  rating: 1500,
-  rd: 350,
-  vol: 0.06,
-});
 
-const matches: [Player, Player, number][] = [];
 
 export async function updateRatings(
   game: GameResponse,
   game_obj: AbstractGame<object, object>,
 ) {
+
+  const ranking = new Glicko2({
+    tau: 0.5,
+    rating: 1500,
+    rd: 350,
+    vol: 0.06,
+  });
+
+  const matches: [Player, Player, number][] = [];
+
   const variant = game.variant;
 
   let glicko_outcome;
-  let outcome_player_black;
-  let outcome_player_white;
+  let outcome_player_black: "Win" | "Loss" | "Tie"
+  let outcome_player_white: "Win" | "Loss" | "Tie"
 
-  if (game_obj.result.endsWith("R")) {
-    if (game_obj.result[0] === "B") {
-      glicko_outcome = 0;
-      outcome_player_black = "Loss";
-      outcome_player_white = "Win";
-    } else if (game_obj.result[0] === "W") {
-      glicko_outcome = 1;
-      outcome_player_black = "Win";
-      outcome_player_white = "Loss";
-    }
+  if (game_obj.result[0] === "B") {
+    glicko_outcome = 1;
+    outcome_player_black = "Win";
+    outcome_player_white = "Loss";
+  } else if (game_obj.result[0] === "W") {
+    glicko_outcome = 0;
+    outcome_player_black = "Loss";
+    outcome_player_white = "Win";
   } else {
-    if (game_obj.result[0] === "B") {
-      glicko_outcome = 1;
-      outcome_player_black = "Win";
-      outcome_player_white = "Loss";
-    } else if (game_obj.result[0] === "W") {
-      glicko_outcome = 0;
-      outcome_player_black = "Loss";
-      outcome_player_white = "Win";
-    } else {
-      glicko_outcome = 0.5;
-      outcome_player_black = "Tie";
-      outcome_player_white = "Tie";
-    }
+    glicko_outcome = 0.5;
+    outcome_player_black = "Tie";
+    outcome_player_white = "Tie";
   }
-
+ 
   const player_black_id = game.players[0].id;
   const player_white_id = game.players[1].id;
 
   const db_player_black = await getUser(player_black_id);
   const db_player_white = await getUser(player_white_id);
 
-  if (db_player_black.ranking == undefined) {
-    db_player_black.ranking = {};
-  }
-  if (db_player_white.ranking == undefined) {
-    db_player_white.ranking = {};
-  }
-
-  const new_game_history_player_black = updatedGameHistory(
-    db_player_black,
-    db_player_white.ranking[variant],
-    outcome_player_black,
-    variant,
-  );
-  const new_game_history_player_white = updatedGameHistory(
-    db_player_white,
+  const glicko_player_black = getGlickoPlayer(
     db_player_black.ranking[variant],
-    outcome_player_white,
-    variant,
+    ranking
   );
-
-  await Promise.all([
-    updateUserGameHistory(player_black_id, new_game_history_player_black),
-    updateUserGameHistory(player_white_id, new_game_history_player_white),
-  ]);
-
-  const glicko_player_black = await getGlickoPlayer(
-    db_player_black.ranking[variant],
-  );
-  const glicko_player_white = await getGlickoPlayer(
+  const glicko_player_white = getGlickoPlayer(
     db_player_white.ranking[variant],
+    ranking
   );
 
   matches.push([glicko_player_black, glicko_player_white, glicko_outcome]);
@@ -114,9 +80,10 @@ export async function updateRatings(
   ]);
 }
 
-async function getGlickoPlayer(
+function getGlickoPlayer(
   db_player_ranking: UserRanking,
-): Promise<Player> {
+  ranking: Glicko2
+): Player {
   if (db_player_ranking == undefined) {
     return ranking.makePlayer(1500, 350, 0.06);
   }
@@ -144,26 +111,20 @@ function userRankingFromGlickoPlayer(
   return player_ranking;
 }
 
-function updatedGameHistory(
-  player: UserResponse,
-  opponentRating: UserRanking,
-  game_result: string,
-  variant: string,
-): GameResults {
-  let player_game_history = player.gameHistory;
-
-  if (player_game_history == undefined) {
-    player_game_history = {};
-  }
-  if (player_game_history[variant] == undefined) {
-    player_game_history[variant] = [];
-  }
-
-  const new_game_history: GameResult = {
-    opponentRating: opponentRating,
-    result: game_result as "Win" | "Loss" | "Tie",
-  };
-
-  player_game_history[variant].push(new_game_history);
-  return player_game_history;
+export function supportsRatings(variant: string) {
+  return [
+    "baduk",
+    "phantom",
+    "capture",
+    "tetris",
+    "pyramid",
+    "thue-morse",
+    "freeze",
+    "fractional",
+    "keima",
+    "one color",
+    "drift",
+    "quantum",
+    "sfractional"
+  ].includes(variant);
 }

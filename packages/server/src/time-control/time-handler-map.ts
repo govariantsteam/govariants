@@ -23,4 +23,6 @@ export const timeControlHandlerMap: {
   keima: TimeHandlerSequentialMoves,
   "one color": TimeHandlerSequentialMoves,
   drift: TimeHandlerSequentialMoves,
+  quantum: TimeHandlerSequentialMoves,
+  sfractional: TimeHandlerSequentialMoves,
 };

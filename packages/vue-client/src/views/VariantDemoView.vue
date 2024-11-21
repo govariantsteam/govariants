@@ -8,7 +8,7 @@ import {
 } from "@ogfcommunity/variants-shared";
 import SeatComponent from "@/components/GameView/SeatComponent.vue";
 import { useCurrentUser } from "../stores/user";
-import { computed, reactive, ref, type Ref } from "vue";
+import { computed, reactive, ref, watch, type Ref } from "vue";
 import type { MovesType } from "@ogfcommunity/variants-shared";
 import NavButtons from "@/components/GameView/NavButtons.vue";
 import PlayersToMove from "@/components/GameView/PlayersToMove.vue";
@@ -127,6 +127,16 @@ function onConfigChange(c: object) {
   // so we restart the game
   moves.length = 0;
 }
+
+watch(
+  moves,
+  () => {
+    if (game.value.next_to_play.length === 1) {
+      playing_as.value = game.value.next_to_play[0];
+    }
+  },
+  { immediate: true },
+);
 </script>
 
 <template>

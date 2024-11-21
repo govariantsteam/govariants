@@ -52,40 +52,44 @@ function update_board_state(pos: Coordinate) {
 
 <template>
   <main>
-    <h2>Page to test unused components</h2>
-    <SocketTest />
-    <MulticolorGridBoard
-      :board_dimensions="{ width: 3, height: 4 }"
-      :board="board_state"
-      @click="update_board_state"
-    />
-    <select name="colors" v-model="current_color">
-      <option value="blue">Blue</option>
-      <option value="red">Red</option>
-      <option value="green">Green</option>
-      <option value="yellow">Yellow</option>
-    </select>
-    <svg height="600" width="600" viewBox="-300 -300 600 600">
-      <TaegeukStone
-        v-bind:r="r"
-        v-bind:cx="cx"
-        v-bind:cy="cy"
-        v-bind:colors="distinct_colors.slice(0, num_colors)"
-      />
-    </svg>
-    <div>
-      <label>Number of colors (1-20):</label>
-      <input type="number" v-model="num_colors" />
-    </div>
-    <div>
-      <label>Radius:</label>
-      <input type="number" v-model="r" />
-    </div>
-    <div>
-      <label>cx:</label>
-      <input type="number" v-model="cx" />
-      <label>cy:</label>
-      <input type="number" v-model="cy" />
+    <div class="PageWrapper">
+      <div>
+        <h2>Page to test unused components</h2>
+        <SocketTest />
+        <MulticolorGridBoard
+          :board_dimensions="{ width: 3, height: 4 }"
+          :board="board_state"
+          @click="update_board_state"
+        />
+        <select name="colors" v-model="current_color">
+          <option value="blue">Blue</option>
+          <option value="red">Red</option>
+          <option value="green">Green</option>
+          <option value="yellow">Yellow</option>
+        </select>
+        <svg height="600" width="600" viewBox="-300 -300 600 600">
+          <TaegeukStone
+            v-bind:r="r"
+            v-bind:cx="cx"
+            v-bind:cy="cy"
+            v-bind:colors="distinct_colors.slice(0, num_colors)"
+          />
+        </svg>
+        <div>
+          <label>Number of colors (1-20):</label>
+          <input type="number" v-model="num_colors" />
+        </div>
+        <div>
+          <label>Radius:</label>
+          <input type="number" v-model="r" />
+        </div>
+        <div>
+          <label>cx:</label>
+          <input type="number" v-model="cx" />
+          <label>cy:</label>
+          <input type="number" v-model="cy" />
+        </div>
+      </div>
     </div>
   </main>
 </template>

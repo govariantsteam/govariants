@@ -16,11 +16,17 @@ function toUpperCaseFirstLetter(string: string) {
 </script>
 
 <template>
-  <div class="rules-page">
-    <h1>{{ toUpperCaseFirstLetter(props.variant) }} Variant Rules</h1>
-    <p v-if="!rulesDescription">Under Construction</p>
-    <div v-if="rulesDescription" v-html="rulesDescription"></div>
-  </div>
+  <main>
+    <div class="pageWrapper">
+      <div>
+        <div class="rules-page">
+          <h1>{{ toUpperCaseFirstLetter(props.variant) }} Variant Rules</h1>
+          <p v-if="!rulesDescription">Under Construction</p>
+          <div v-if="rulesDescription" v-html="rulesDescription"></div>
+        </div>
+      </div>
+    </div>
+  </main>
 </template>
 
 <style scoped>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { getRulesDescription } from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
+import VariantDemoView from "./VariantDemoView.vue";
 
 const props = defineProps<{ variant: string }>();
 
@@ -21,6 +22,10 @@ function toUpperCaseFirstLetter(string: string) {
     <p v-if="!rulesDescription">Under Construction</p>
     <div v-if="rulesDescription" v-html="rulesDescription"></div>
   </div>
+  <div class="demo-container">
+    <h1>Demo</h1>
+    <VariantDemoView v-bind:variant="variant" />
+  </div>
 </template>
 
 <style scoped>
@@ -29,5 +34,8 @@ function toUpperCaseFirstLetter(string: string) {
 }
 :deep(strong, h1, h2) {
   font-weight: bold;
+}
+.demo-container {
+  padding: 1rem;
 }
 </style>

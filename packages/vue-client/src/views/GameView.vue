@@ -217,67 +217,81 @@ const createTimeControlPreview = (
 </script>
 
 <template>
-  <div>
-    <component
-      v-if="variantGameView && transformedGameData"
-      v-bind:is="variantGameView"
-      v-bind:gamestate="transformedGameData.gamestate"
-      v-bind:config="transformedGameData.config"
-      v-bind:displayed_round="displayed_round"
-      v-on:move="makeMove"
-    />
-    <NavButtons :gameRound="current_round" v-model="view_round" />
-
-    <div id="variant-info">
+  <main>
+    <div class="grid-page-layout">
       <div>
-        <span class="info-label">Variant:</span>
-        <span class="info-attribute">
-          {{ variant ?? "unknown" }}
-        </span>
+        <!-- Left column -->
+        <component
+          v-if="variantGameView && transformedGameData"
+          v-bind:is="variantGameView"
+          v-bind:gamestate="transformedGameData.gamestate"
+          v-bind:config="transformedGameData.config"
+          v-bind:displayed_round="displayed_round"
+          v-on:move="makeMove"
+        />
+        <NavButtons :gameRound="current_round" v-model="view_round" />
+
+        <div id="variant-info">
+          <div>
+            <span class="info-label">Variant:</span>
+            <span class="info-attribute">
+              {{ variant ?? "unknown" }}
+            </span>
+          </div>
+
+          <div>
+            <span class="info-label">Description:</span>
+            <span class="info-attribute">{{ variantDescriptionShort }}</span>
+          </div>
+        </div>
+
+        <PlayersToMove :next-to-play="game_state?.next_to_play" />
       </div>
 
       <div>
-        <span class="info-label">Description:</span>
-        <span class="info-attribute">{{ variantDescriptionShort }}</span>
+        <!-- Right column -->
+        <div className="seat-list">
+          <div v-for="(player, idx) in players" :key="idx">
+            <SeatComponent
+              :user_id="user?.id"
+              :occupant="player"
+              :player_n="idx"
+              @sit="sit(idx)"
+              @leave="leave(idx)"
+              @select="setPlayingAs(idx)"
+              :selected="playing_as"
+              :time_control="
+                time_control?.forPlayer[idx] ?? createTimeControlPreview(config)
+              "
+              :is_players_turn="
+                game_state?.next_to_play?.includes(idx) ?? false
+              "
+              :variant="variant"
+              :config="config"
+            />
+          </div>
+
+          <div>
+            <button
+              v-for="(value, key) in game_state?.special_moves"
+              :key="key"
+              @click="makeMove(key as string)"
+            >
+              {{ value }}
+            </button>
+          </div>
+        </div>
+
+        <DownloadSGF v-if="supportsSGF(variant)" :gameId="gameId" />
+        <div
+          v-if="game_state?.result"
+          style="font-weight: bold; font-size: 24pt"
+        >
+          Result: {{ game_state?.result }}
+        </div>
       </div>
     </div>
-  </div>
-  <div className="seat-list">
-    <div v-for="(player, idx) in players" :key="idx">
-      <SeatComponent
-        :user_id="user?.id"
-        :occupant="player"
-        :player_n="idx"
-        @sit="sit(idx)"
-        @leave="leave(idx)"
-        @select="setPlayingAs(idx)"
-        :selected="playing_as"
-        :time_control="
-          time_control?.forPlayer[idx] ?? createTimeControlPreview(config)
-        "
-        :is_players_turn="game_state?.next_to_play?.includes(idx) ?? false"
-        :variant="variant"
-        :config="config"
-      />
-    </div>
-
-    <div>
-      <button
-        v-for="(value, key) in game_state?.special_moves"
-        :key="key"
-        @click="makeMove(key as string)"
-      >
-        {{ value }}
-      </button>
-    </div>
-  </div>
-
-  <PlayersToMove :next-to-play="game_state?.next_to_play" />
-
-  <DownloadSGF v-if="supportsSGF(variant)" :gameId="gameId" />
-  <div v-if="game_state?.result" style="font-weight: bold; font-size: 24pt">
-    Result: {{ game_state?.result }}
-  </div>
+  </main>
 </template>
 
 <style scoped>

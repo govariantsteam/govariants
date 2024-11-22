@@ -56,9 +56,7 @@ const toggleMenuFn = (event: MouseEvent) => {
       </div>
     </div>
   </nav>
-  <div class="pageWrapper">
-    <Suspense><RouterView /></Suspense>
-  </div>
+  <Suspense><RouterView /></Suspense>
 </template>
 
 <style scoped>

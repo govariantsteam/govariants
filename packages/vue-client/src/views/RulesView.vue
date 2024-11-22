@@ -17,15 +17,21 @@ function toUpperCaseFirstLetter(string: string) {
 </script>
 
 <template>
-  <div class="rules-page">
-    <h1>{{ toUpperCaseFirstLetter(props.variant) }} Variant Rules</h1>
-    <p v-if="!rulesDescription">Under Construction</p>
-    <div v-if="rulesDescription" v-html="rulesDescription"></div>
-  </div>
-  <div class="demo-container">
-    <h1>Demo</h1>
-    <VariantDemoView v-bind:variant="variant" />
-  </div>
+  <main>
+    <div class="grid-page-layout">
+      <div>
+        <div class="rules-page">
+          <h1>{{ toUpperCaseFirstLetter(props.variant) }} Variant Rules</h1>
+          <p v-if="!rulesDescription">Under Construction</p>
+          <div v-if="rulesDescription" v-html="rulesDescription"></div>
+        </div>
+        <div>
+          <h1>Demo</h1>
+          <VariantDemoView v-bind:variant="variant" />
+        </div>
+      </div>
+    </div>
+  </main>
 </template>
 
 <style scoped>
@@ -34,8 +40,5 @@ function toUpperCaseFirstLetter(string: string) {
 }
 :deep(strong, h1, h2) {
   font-weight: bold;
-}
-.demo-container {
-  padding: 1rem;
 }
 </style>

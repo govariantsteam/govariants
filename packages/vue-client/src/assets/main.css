@@ -5,21 +5,21 @@
   height: 100%;
 }
 
-.pageWrapper {
+.grid-page-layout {
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 2rem;
 }
 
 @media (max-width: 540px) {
-  .pageWrapper {
+  .grid-page-layout {
     padding-left: 0.2rem;
     padding-right: 0.2rem;
   }
 }
 
 @media (min-width: 1024px) {
-  .pageWrapper {
+  .grid-page-layout {
     display: grid;
     grid-template-columns: 1fr 1fr;
   }

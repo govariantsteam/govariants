@@ -6,14 +6,14 @@ import { SITE_NAME } from "@ogfcommunity/variants-shared";
 
 <template>
   <main>
-    <h2>Welcome to {{ SITE_NAME }}!</h2>
-    <div>
-      <GameCreationForm />
-      <hr />
-      <GameList />
-      <!-- <hr />
-      <SocketTest />
-      <hr /> -->
+    <div class="grid-page-layout">
+      <div>
+        <h2>Welcome to {{ SITE_NAME }}!</h2>
+        <GameCreationForm />
+      </div>
+      <div>
+        <GameList />
+      </div>
     </div>
   </main>
 </template>

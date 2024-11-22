@@ -52,7 +52,7 @@ function update_board_state(pos: Coordinate) {
 
 <template>
   <main>
-    <div class="PageWrapper">
+    <div class="grid-page-layout">
       <div>
         <h2>Page to test unused components</h2>
         <SocketTest />

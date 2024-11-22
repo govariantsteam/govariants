@@ -218,7 +218,7 @@ const createTimeControlPreview = (
 
 <template>
   <main>
-    <div class="pageWrapper">
+    <div class="grid-page-layout">
       <div>
         <!-- Left column -->
         <component

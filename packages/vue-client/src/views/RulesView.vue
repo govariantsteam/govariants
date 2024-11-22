@@ -17,7 +17,7 @@ function toUpperCaseFirstLetter(string: string) {
 
 <template>
   <main>
-    <div class="pageWrapper">
+    <div class="grid-page-layout">
       <div>
         <div class="rules-page">
           <h1>{{ toUpperCaseFirstLetter(props.variant) }} Variant Rules</h1>

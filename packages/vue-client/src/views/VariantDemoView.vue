@@ -130,7 +130,7 @@ function onConfigChange(c: object) {
 </script>
 
 <template>
-  <div class="pageWrapper">
+  <div class="grid-page-layout">
     <div>
       <component
         v-if="variantGameView && game.state"

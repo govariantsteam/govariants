@@ -6,7 +6,7 @@ import { SITE_NAME } from "@ogfcommunity/variants-shared";
 
 <template>
   <main>
-    <div class="pageWrapper">
+    <div class="grid-page-layout">
       <div>
         <h2>Welcome to {{ SITE_NAME }}!</h2>
         <GameCreationForm />

@@ -1,11 +1,11 @@
 <template>
   <main>
-    <div class="pageWrapper">
+    <div class="grid-page-layout">
       <div>
         <h2>Who are we?</h2>
         <p>
           <span>Check us out on </span>
-          <a href="https://github.com/benjaminpjones/govariants">Github</a>
+          <a href="https://github.com/govariantsteam/govariants">Github</a>
         </p>
         <p>
           <span>Or post in the </span>

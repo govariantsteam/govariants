@@ -22,7 +22,7 @@ const submit = () =>
 
 <template>
   <main>
-    <div class="pageWrapper">
+    <div class="grid-page-layout">
       <div>
         <div>
           <label for="username">Username</label>

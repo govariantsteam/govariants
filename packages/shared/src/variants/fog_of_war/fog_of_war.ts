@@ -1,8 +1,7 @@
 import { AbstractGame } from "../../abstract_game";
 import { Coordinate } from "../../lib/coordinate";
-import { Grid } from "../../lib/grid";
-import { getGroup } from "../../lib/group_utils";
-import { Color, groupHasLiberties } from "../baduk";
+import { examineGroup } from "../../lib/group_utils";
+import { Color } from "../baduk";
 import { NewGridBadukConfig } from "../baduk_utils";
 import {
   FogOfWarField,
@@ -82,12 +81,14 @@ export class FogOfWar extends AbstractGame<NewGridBadukConfig, FogOfWarState> {
       }
 
       if (this.board.at(position)!.color !== Color.EMPTY) {
+        // TODO: if this field is not visible to the player, we should handle this differently!
         throw Error(
           `Cannot place a stone on top of an existing stone. (${this.board.at(position)!.color} at (${position}))`,
         );
       }
 
       this.playMoveInternal(position);
+      this.postValidateMove(position);
     }
   }
 
@@ -97,15 +98,39 @@ export class FogOfWar extends AbstractGame<NewGridBadukConfig, FogOfWarState> {
     const opponent_color = this.next_to_play === 0 ? Color.WHITE : Color.BLACK;
     this.board.neighbors(move).forEach((pos) => {
       const neighbor_color = this.board.at(pos)!.color;
-      const group = getGroup(pos, this.board);
-      // if (
-      //   neighbor_color === opponent_color &&
-      //   !groupHasLiberties(group, this.board) // TODO
-      // ) {
-      //   group.forEach((pos) => this.board.removeStone(pos));
-      //   //this.captures[this.next_to_play] += group.length;
-      // }
+      const { members: groupMembers, liberties: liberties } = examineGroup({
+        index: move,
+        board: this.board,
+        groupIdentifier: (field) => field.color === neighbor_color,
+        libertyIdentifier: (field) => field.color === Color.EMPTY,
+      });
+      if (neighbor_color === opponent_color && liberties === 0) {
+        groupMembers.forEach((pos) => this.board.removeStone(pos));
+        //this.captures[this.next_to_play] += group.length;
+      }
     });
+  }
+
+  protected postValidateMove(move: Coordinate): void {
+    // TODO: Think about how Suicide and Ko should work with partial information.
+
+    // Detect suicide
+    const move_color = this.next_to_play === 0 ? Color.BLACK : Color.WHITE;
+    const { liberties: liberties } = examineGroup({
+      index: move,
+      board: this.board,
+      groupIdentifier: (field) => field.color === move_color,
+      libertyIdentifier: (field) => field.color === Color.EMPTY,
+    });
+    if (liberties === 0) {
+      throw Error("Move is suicidal!");
+    }
+
+    // situational superko
+    // this.ko_detector.push({
+    //   board: this.board,
+    //   next_to_play: this.next_to_play,
+    // });
   }
 
   static initializeBoardVisibility(

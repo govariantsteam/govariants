@@ -1,7 +1,8 @@
 import { AbstractGame } from "../../abstract_game";
 import { Coordinate } from "../../lib/coordinate";
 import { examineGroup } from "../../lib/group_utils";
-import { Color } from "../baduk";
+import { Variant } from "../../variant";
+import { Baduk, Color } from "../baduk";
 import { NewGridBadukConfig } from "../baduk_utils";
 import {
   FogOfWarField,
@@ -144,3 +145,9 @@ export class FogOfWar extends AbstractGame<NewGridBadukConfig, FogOfWarState> {
     return grid;
   }
 }
+
+export const fogOfWarVariant: Variant<NewGridBadukConfig, FogOfWarState> = {
+  gameClass: FogOfWar,
+  defaultConfig: Baduk.defaultConfig,
+  description: "Each stone casts a ray of light that illuminates fields.",
+};

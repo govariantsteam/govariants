@@ -14,7 +14,7 @@ const variantsWithRulesDescription = getVariantsWithRulesDescription();
         v-for="variant in variantsWithRulesDescription"
         :key="variant"
         class="rules-link"
-        v-bind:to="{ name: 'rules', params: { variant: variant } }"
+        :to="{ name: 'rules', params: { variant: variant } }"
       >
         {{ toUpperCaseFirstLetter(variant) }}
       </RouterLink>

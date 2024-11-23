@@ -25,7 +25,7 @@ const variantExists = computed(() => getVariantList().includes(props.variant));
       </div>
       <div>
         <h1>Demo</h1>
-        <VariantDemoView v-bind:variant="variant" />
+        <VariantDemoView :variant="variant" />
       </div>
     </div>
   </main>

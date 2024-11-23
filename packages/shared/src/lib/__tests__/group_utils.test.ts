@@ -4,6 +4,7 @@ import {
   floodFill,
   getOuterBorder,
   getInnerBorder,
+  examineGroup,
 } from "../group_utils";
 
 function expectArraysToHaveSameElements(
@@ -100,4 +101,77 @@ test("getGroup - undefined group", () => {
     [undefined, 0, 1],
   ]);
   expect(getGroup({ x: 0, y: 0 }, grid)).toHaveLength(3);
+});
+
+test("examineGroup", () => {
+  const g = Grid.from2DArray([
+    [
+      [1, 2],
+      [1, 2],
+      [1, 3],
+    ],
+    [[1, 2], [], [1, 3]],
+    [
+      [1, 3],
+      [1, 3],
+      [1, 3],
+    ],
+  ]);
+
+  const examineResult1 = examineGroup({
+    index: { x: 0, y: 0 },
+    board: g,
+    groupIdentifier: (colors) => colors.includes(2),
+    libertyIdentifier: (colors) => colors.length === 0,
+  });
+  expectArraysToHaveSameElements(examineResult1.members, [
+    { x: 0, y: 0 },
+    { x: 1, y: 0 },
+    { x: 0, y: 1 },
+  ]);
+  expectArraysToHaveSameElements(examineResult1.adjacent, [
+    { x: 0, y: 2 },
+    { x: 1, y: 1 },
+    { x: 2, y: 0 },
+  ]);
+  expect(examineResult1.liberties).toBe(1);
+
+  const examineResult2 = examineGroup({
+    index: { x: 2, y: 2 },
+    board: g,
+    groupIdentifier: (colors) => colors.includes(3),
+    libertyIdentifier: (colors) => colors.length === 0,
+  });
+  expectArraysToHaveSameElements(examineResult2.members, [
+    { x: 0, y: 2 },
+    { x: 1, y: 2 },
+    { x: 2, y: 2 },
+    { x: 2, y: 1 },
+    { x: 2, y: 0 },
+  ]);
+  expectArraysToHaveSameElements(examineResult2.adjacent, [
+    { x: 1, y: 0 },
+    { x: 1, y: 1 },
+    { x: 0, y: 1 },
+  ]);
+  expect(examineResult2.liberties).toBe(1);
+
+  const examineResult3 = examineGroup({
+    index: { x: 2, y: 2 },
+    board: g,
+    groupIdentifier: (colors) => colors.includes(1),
+    libertyIdentifier: (colors) => colors.length === 0,
+  });
+  expectArraysToHaveSameElements(examineResult3.members, [
+    { x: 0, y: 0 },
+    { x: 0, y: 1 },
+    { x: 0, y: 2 },
+    { x: 1, y: 2 },
+    { x: 2, y: 2 },
+    { x: 2, y: 1 },
+    { x: 2, y: 0 },
+    { x: 1, y: 0 },
+  ]);
+  expectArraysToHaveSameElements(examineResult3.adjacent, [{ x: 1, y: 1 }]);
+  expect(examineResult3.liberties).toBe(1);
 });

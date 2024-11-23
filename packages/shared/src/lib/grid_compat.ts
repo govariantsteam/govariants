@@ -14,3 +14,14 @@ export function indexToMove(index: CoordinateLike | number): string {
   }
   return new Coordinate(index.x, index.y).toSgfRepr();
 }
+
+/**
+ * Translate a move string to the two main indices:
+ * SGF coordinate and numbers.
+ */
+export function moveToIndex(move: string): Coordinate | number {
+  if (/^[A-Za-z]{2}$/.test(move)) {
+    return Coordinate.fromSgfRepr(move);
+  }
+  return parseInt(move);
+}

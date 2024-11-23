@@ -8,7 +8,7 @@ import {
 } from "@ogfcommunity/variants-shared";
 import SeatComponent from "@/components/GameView/SeatComponent.vue";
 import { useCurrentUser } from "../stores/user";
-import { computed, reactive, ref, type Ref } from "vue";
+import { computed, reactive, ref, watch, type Ref } from "vue";
 import type { MovesType } from "@ogfcommunity/variants-shared";
 import NavButtons from "@/components/GameView/NavButtons.vue";
 import PlayersToMove from "@/components/GameView/PlayersToMove.vue";
@@ -127,70 +127,82 @@ function onConfigChange(c: object) {
   // so we restart the game
   moves.length = 0;
 }
+
+watch(
+  moves,
+  () => {
+    if (game.value.next_to_play.length === 1) {
+      playing_as.value = game.value.next_to_play[0];
+    }
+  },
+  { immediate: true },
+);
 </script>
 
 <template>
-  <div>
-    <component
-      v-if="variantGameView && game.state"
-      v-bind:is="variantGameView"
-      v-bind:gamestate="transformedGameData.gamestate"
-      v-bind:config="transformedGameData.config"
-      v-bind:displayed_round="displayed_round"
-      v-on:move="makeMove"
-    />
-    <NavButtons v-model="view_round" :gameRound="game.round" />
+  <div class="grid-page-layout">
+    <div>
+      <component
+        v-if="variantGameView && game.state"
+        v-bind:is="variantGameView"
+        v-bind:gamestate="transformedGameData.gamestate"
+        v-bind:config="transformedGameData.config"
+        v-bind:displayed_round="displayed_round"
+        v-on:move="makeMove"
+      />
+      <NavButtons v-model="view_round" :gameRound="game.round" />
 
-    <div id="variant-info">
-      <div>
-        <span class="info-label">Variant:</span>
-        <span class="info-attribute">
-          {{ props.variant ?? "unknown" }}
-        </span>
-      </div>
+      <div id="variant-info">
+        <div>
+          <span class="info-label">Variant:</span>
+          <span class="info-attribute">
+            {{ props.variant ?? "unknown" }}
+          </span>
+        </div>
 
-      <div>
-        <span class="info-label">Description:</span>
-        <span class="info-attribute">{{ variantDescriptionShort }}</span>
+        <div>
+          <span class="info-label">Description:</span>
+          <span class="info-attribute">{{ variantDescriptionShort }}</span>
+        </div>
       </div>
     </div>
-  </div>
-  <div className="seat-list">
-    <div v-for="(_, idx) in game.numPlayers" :key="idx">
-      <SeatComponent
-        :user_id="user?.id"
-        :occupant="user || undefined"
-        :player_n="idx"
-        @select="setPlayingAs(idx)"
-        :selected="playing_as"
-        :time_control="null"
-        :is_players_turn="game.next_to_play?.includes(idx) ?? false"
-        :variant="variant"
-        :config="config"
+    <div className="seat-list">
+      <div v-for="(_, idx) in game.numPlayers" :key="idx">
+        <SeatComponent
+          :user_id="user?.id"
+          :occupant="user || undefined"
+          :player_n="idx"
+          @select="setPlayingAs(idx)"
+          :selected="playing_as"
+          :time_control="null"
+          :is_players_turn="game.next_to_play?.includes(idx) ?? false"
+          :variant="variant"
+          :config="config"
+        />
+      </div>
+
+      <div>
+        <button
+          v-for="(value, key) in specialMoves"
+          :key="key"
+          @click="makeMove(key as string)"
+        >
+          {{ value }}
+        </button>
+      </div>
+
+      <PlayersToMove :next-to-play="game.next_to_play" />
+
+      <component
+        v-bind:is="variantConfigForm"
+        v-bind:initialConfig="getDefaultConfig(variant)"
+        v-on:configChanged="onConfigChange"
       />
     </div>
 
-    <div>
-      <button
-        v-for="(value, key) in specialMoves"
-        :key="key"
-        @click="makeMove(key as string)"
-      >
-        {{ value }}
-      </button>
+    <div v-if="game.result" style="font-weight: bold; font-size: 24pt">
+      Result: {{ game.result }}
     </div>
-
-    <PlayersToMove :next-to-play="game.next_to_play" />
-
-    <component
-      v-bind:is="variantConfigForm"
-      v-bind:initialConfig="getDefaultConfig(variant)"
-      v-on:configChanged="onConfigChange"
-    />
-  </div>
-
-  <div v-if="game.result" style="font-weight: bold; font-size: 24pt">
-    Result: {{ game.result }}
   </div>
 </template>
 

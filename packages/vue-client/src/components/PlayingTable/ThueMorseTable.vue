@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import { BadukState, GridBadukConfig } from "@ogfcommunity/variants-shared";
-import BadukBoardSelector from "../boards/BadukBoardSelector.vue";
+import {
+  DefaultBoardConfig,
+  DefaultBoardState,
+} from "@ogfcommunity/variants-shared";
 import MoveSequenceDisplay from "../MoveSequenceDisplay.vue";
 import { count_binary_ones } from "@ogfcommunity/variants-shared";
+import DefaultBoard from "../boards/DefaultBoard.vue";
 
 defineProps<{
-  gamestate: BadukState;
-  config: GridBadukConfig;
+  gamestate: DefaultBoardState;
+  config: DefaultBoardConfig;
   displayed_round: number;
 }>();
 
@@ -23,7 +26,7 @@ function move(move: string) {
 }
 </script>
 <template>
-  <BadukBoardSelector
+  <DefaultBoard
     :gamestate="$props.gamestate"
     :config="$props.config"
     v-on:move="move"

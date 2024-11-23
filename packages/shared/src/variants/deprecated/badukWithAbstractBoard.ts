@@ -1,4 +1,4 @@
-import { Baduk, BadukConfig } from "../baduk";
+import { BadukState, badukVariant } from "../baduk";
 import { BoardConfig } from "../../lib/abstractBoard/boardFactory";
 import { Variant } from "../../variant";
 import { NewBadukConfig } from "../baduk_utils";
@@ -52,18 +52,12 @@ export function mapToNewBadukConfig(config: unknown): NewBadukConfig {
   return { komi: typedConfig.komi, board: mapToNewBoardConfig(typedConfig) };
 }
 
-export const badukWithAbstractBoardVariant: Variant<BadukConfig> = {
-  gameClass: Baduk,
+export const badukWithAbstractBoardVariant: Variant<
+  NewBadukConfig,
+  BadukState
+> = {
+  ...badukVariant,
   description: "Baduk with varying board patterns",
   deprecated: true,
   sanitizeConfig: mapToNewBadukConfig,
-  defaultConfig() {
-    return {
-      width: 19,
-      height: 19,
-      komi: 6.5,
-      pattern: BoardPattern.Rectangular,
-    };
-  },
-  getPlayerColors: Baduk.getPlayerColors,
 };

@@ -34,6 +34,7 @@ function positionClicked(pos: Coordinate | number) {
     :board="props.gamestate.board as (MulticolorStone | null)[][]"
     :board_dimensions="props.config.board"
     :background_color="props.gamestate.backgroundColor"
+    :score_board="props.gamestate.score_board as (string[] | null)[][]"
     @click="positionClicked"
   />
   <MulticolorGraphBoard
@@ -42,5 +43,6 @@ function positionClicked(pos: Coordinate | number) {
     :board_config="$props.config.board"
     @click="positionClicked"
     :background_color="props.gamestate.backgroundColor"
+    :score_board="props.gamestate.score_board as (string[] | null)[]"
   />
 </template>

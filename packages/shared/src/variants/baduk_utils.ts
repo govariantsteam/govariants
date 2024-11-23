@@ -3,6 +3,7 @@ import {
   BoardPattern,
   GridBoardConfig,
 } from "../lib/abstractBoard/boardFactory";
+import { Grid } from "../lib/grid";
 import { BadukConfig } from "./baduk";
 
 export type LegacyBadukConfig = {
@@ -60,4 +61,38 @@ export function mapToNewConfig<ConfigT extends LegacyBadukConfig>(
       height: config.height,
     },
   };
+}
+
+export type BoardShape = "1d" | "2d" | "flatten-2d-to-1d";
+export function mapBoard<T, S>(board: T[], f: (x: T) => S, shape: "1d"): S[];
+export function mapBoard<T, S>(
+  board: T[][],
+  f: (x: T) => S,
+  shape: "2d",
+): S[][];
+export function mapBoard<T, S>(
+  board: T[][],
+  f: (x: T) => S,
+  shape: "flatten-2d-to-1d",
+): S[];
+export function mapBoard<T, S>(
+  board: T[][],
+  f: (x: T) => S,
+  shape: BoardShape,
+): S[] | S[][];
+export function mapBoard<T, S>(
+  board: T[] | T[][],
+  f: (x: T) => S,
+  shape: BoardShape,
+) {
+  switch (shape) {
+    case "1d":
+      return (board as T[]).map(f);
+    case "2d":
+      return Grid.from2DArray(board as T[][])
+        .map(f)
+        .to2DArray();
+    case "flatten-2d-to-1d":
+      return (board as T[][]).flat().map(f);
+  }
 }

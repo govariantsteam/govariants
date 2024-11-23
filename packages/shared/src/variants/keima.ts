@@ -135,4 +135,6 @@ export const keimaVariant: Variant<NewBadukConfig> = {
   gameClass: Keima,
   description:
     "Baduk but players play two moves that must form a Keima (Knight's move) shape",
+  // TODO: migrate Keima to default board
+  uiTransform: undefined,
 };

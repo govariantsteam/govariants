@@ -116,3 +116,12 @@ export function uiTransform(variant: string, config: object, state: object) {
   }
   return variant_object.uiTransform(config, state);
 }
+
+export function getVariantsWithRulesDescription(): string[] {
+  return Object.entries(variant_map)
+    .filter(
+      ([_name, variant]) =>
+        !variant.deprecated && variant.rulesDescription !== undefined,
+    )
+    .map(([name, _variant]) => name);
+}

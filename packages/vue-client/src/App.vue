@@ -4,11 +4,11 @@ import UserNav from "./components/UserNav.vue";
 import { ref } from "vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faBook } from "@fortawesome/free-solid-svg-icons";
 import { faHouse } from "@fortawesome/free-solid-svg-icons";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 
-library.add(faBars, faHouse, faCircleInfo);
+library.add(faBars, faHouse, faCircleInfo, faBook);
 const is_menu_closed = ref(true);
 
 const closeMenuFn = (event: MouseEvent) => {
@@ -49,6 +49,12 @@ const toggleMenuFn = (event: MouseEvent) => {
             icon="fa-solid fa-circle-info"
             class="icon"
           />About</RouterLink
+        >
+        <RouterLink class="navElement" to="/variants/rules-list"
+          ><font-awesome-icon
+            icon="fa-solid fa-book"
+            class="icon"
+          />Rules</RouterLink
         >
       </div>
       <div>

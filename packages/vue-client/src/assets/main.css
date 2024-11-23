@@ -13,8 +13,8 @@
 
 @media (max-width: 540px) {
   .grid-page-layout {
-    padding-left: 0.2rem;
-    padding-right: 0.2rem;
+    padding-left: 12px;
+    padding-right: 12px;
   }
 }
 

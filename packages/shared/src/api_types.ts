@@ -18,11 +18,16 @@ export interface GameResponse {
   time_control?: ITimeControlBase;
 }
 
+// We may add more roles like "moderator" or "bot" in the future
+export type UserRole = "admin";
+
 export interface UserResponse {
   id?: string;
   login_type: "guest" | "persistent";
   username?: string;
   rating?: number;
+  // undefined is just a normal user.
+  role?: UserRole;
 }
 
 export type GamesFilter = {

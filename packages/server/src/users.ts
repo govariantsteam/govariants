@@ -1,5 +1,5 @@
 import { getDb } from "./db";
-import { UserResponse } from "@ogfcommunity/variants-shared";
+import { UserResponse, UserRole } from "@ogfcommunity/variants-shared";
 import { Collection, WithId, ObjectId } from "mongodb";
 import { randomBytes, scrypt } from "node:crypto";
 
@@ -189,6 +189,7 @@ function outwardFacingUser(
     login_type: db_user.login_type,
     ...(db_user.login_type === "persistent" && { username: db_user.username }),
     rating: db_user.rating,
+    role: db_user.role,
   };
 }
 
@@ -206,5 +207,15 @@ export function checkUsername(username: string): void {
   }
   if (!/^[a-zA-Z0-9]*$/.test(username)) {
     throw "Username can only have alphanumeric characters.";
+  }
+}
+
+export async function setUserRole(user_id: string, role: UserRole): Promise<void> {
+  const update_result = await usersCollection().updateOne(
+    { _id: new ObjectId(user_id) },
+    { $set: { role: role } },
+  );
+  if (update_result.matchedCount == 0) {
+    throw new Error("User not found");
   }
 }

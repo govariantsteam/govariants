@@ -15,6 +15,7 @@ import {
   createUserWithUsernameAndPassword,
   deleteUser,
   getUserByName,
+  setUserRole,
 } from "./users";
 import {
   getOnlyMove,
@@ -162,6 +163,22 @@ router.post("/register", async (req, res, next) => {
 
   await createUserWithUsernameAndPassword(username, password);
   passport.authenticate("local", make_auth_cb(req, res))(req, res, next);
+});
+
+router.put("/user/:userId/role", async (req, res) => {
+  const { role } = req.body;
+  try {
+    if (!req.user || (req.user as UserResponse).role !== "admin") {
+      // unauthorized
+      res.status(401);
+      res.json("Only Admins may set user roles.");
+      return;
+    }
+    await setUserRole(req.params.userId, role);
+  } catch (e) {
+    res.status(500);
+    res.json(e.message);
+  }
 });
 
 function make_auth_cb(

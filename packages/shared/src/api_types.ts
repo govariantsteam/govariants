@@ -22,7 +22,7 @@ export interface GameResponse {
 export type UserRole = "admin";
 
 export interface UserResponse {
-  id?: string;
+  id: string;
   login_type: "guest" | "persistent";
   username?: string;
   rating?: number;

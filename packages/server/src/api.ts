@@ -177,7 +177,7 @@ router.put("/users/:userId/role", async (req, res) => {
     }
 
     if (!["admin"].includes(role)) {
-      throw new Error(`Invalid role: ${role}`)
+      throw new Error(`Invalid role: ${role}`);
     }
 
     await setUserRole(req.params.userId, role);
@@ -191,7 +191,7 @@ router.put("/users/:userId/role", async (req, res) => {
 
 router.get("/users/:userId", async (req, res) => {
   try {
-    const user = await getUser(req.params.userId)
+    const user = await getUser(req.params.userId);
     if (!user) {
       res.status(500);
       res.json("User does not exist");
@@ -201,7 +201,7 @@ router.get("/users/:userId", async (req, res) => {
     res.status(500);
     res.json(e.message);
   }
-})
+});
 
 function make_auth_cb(
   req: express.Request,

@@ -5,7 +5,6 @@ import { Variant } from "../../variant";
 import { Baduk, Color } from "../baduk";
 import { NewGridBadukConfig } from "../baduk_utils";
 import {
-  FogOfWarField,
   binaryPlayerNr,
   VisibleField,
   FogOfWarBoard,
@@ -28,10 +27,7 @@ export class FogOfWar extends AbstractGame<NewGridBadukConfig, FogOfWarState> {
       );
     }
 
-    this.board = FogOfWar.initializeBoardVisibility(
-      config.board.width,
-      config.board.height,
-    );
+    this.board = new FogOfWarBoard(config.board.width, config.board.height);
   }
 
   override exportState(player?: number): FogOfWarState {
@@ -91,6 +87,7 @@ export class FogOfWar extends AbstractGame<NewGridBadukConfig, FogOfWarState> {
       this.playMoveInternal(position);
       this.postValidateMove(position);
     }
+    this.prepareForNextMove(move);
   }
 
   protected playMoveInternal(move: Coordinate): void {
@@ -100,7 +97,7 @@ export class FogOfWar extends AbstractGame<NewGridBadukConfig, FogOfWarState> {
     this.board.neighbors(move).forEach((pos) => {
       const neighbor_color = this.board.at(pos)!.color;
       const { members: groupMembers, liberties: liberties } = examineGroup({
-        index: move,
+        index: pos,
         board: this.board,
         groupIdentifier: (field) => field.color === neighbor_color,
         libertyIdentifier: (field) => field.color === Color.EMPTY,
@@ -134,15 +131,14 @@ export class FogOfWar extends AbstractGame<NewGridBadukConfig, FogOfWarState> {
     // });
   }
 
-  static initializeBoardVisibility(
-    width: number,
-    height: number,
-  ): FogOfWarBoard {
-    const grid = new FogOfWarBoard(width, height);
-    grid.forEach((_, coordinate, grid) =>
-      grid.set(coordinate, new FogOfWarField()),
-    );
-    return grid;
+  protected prepareForNextMove(move: string): void {
+    // if (move == "pass" && this.last_move === "pass") {
+    //   this.finalizeScore();
+    // } else {
+    this.next_to_play = this.next_to_play === 0 ? 1 : 0;
+    // this.last_move = move;
+    // }
+    super.increaseRound();
   }
 }
 

@@ -2,23 +2,47 @@ import { Coordinate, CoordinateLike } from "../../lib/coordinate";
 import { Grid } from "../../lib/grid";
 import { Color } from "../baduk";
 
+const colorMap: { [p: number]: Color } = {
+  0: Color.BLACK,
+  1: Color.WHITE,
+};
+
 export class FogOfWarField {
   color: Color = Color.EMPTY;
   visibleFrom: (binaryPlayerNr | null)[] = [null, null, null, null];
   lastKnownInformation: Color[] = [Color.EMPTY, Color.EMPTY, Color.EMPTY];
 
-  isVisibleToPlayer(playerNr: binaryPlayerNr): boolean {
-    return this.visibleFrom.some((x) => x === playerNr);
+  isVisibleToPlayer(
+    playerNr: binaryPlayerNr,
+    fromDirection?: Direction,
+  ): boolean {
+    if (fromDirection !== undefined) {
+      return (
+        this.color === colorMap[playerNr] ||
+        this.visibleFrom[fromDirection] === playerNr
+      );
+    }
+    return (
+      this.color === colorMap[playerNr] ||
+      this.visibleFrom.some((x) => x === playerNr)
+    );
   }
 
+  // Here we need to be careful not to reveal information to the players.
+  // Observers may only see public information.
   isVisibleToObserver(): boolean {
-    return this.isVisibleToPlayer(0) && this.isVisibleToPlayer(1);
+    const directions: Direction[] = [0, 1, 2, 3];
+    return directions.some(
+      (direction) =>
+        this.isVisibleToPlayer(0, direction) &&
+        this.isVisibleToPlayer(1, opposite(direction)),
+    );
   }
 
   isVisibleTo(person: binaryPlayerNr | null): boolean {
-    return person !== null
-      ? this.isVisibleToPlayer(person)
-      : this.isVisibleToObserver();
+    return person === null
+      ? this.isVisibleToObserver()
+      : this.isVisibleToPlayer(person);
   }
 
   exportFor(person: binaryPlayerNr | null): VisibleField {
@@ -35,9 +59,21 @@ export class FogOfWarField {
     if (player) {
       this.lastKnownInformation[player] = this.color;
     }
-    if (this.isVisibleTo(player === 0 ? 1 : 0)) {
-      // visible to both players
+    if (this.isVisibleToObserver()) {
       this.lastKnownInformation[2] = this.color;
+    }
+  }
+
+  setColor(color: Color): void {
+    this.color = color;
+    if (this.isVisibleToPlayer(0)) {
+      this.lastKnownInformation[0] = color;
+    }
+    if (this.isVisibleToPlayer(1)) {
+      this.lastKnownInformation[1] = color;
+    }
+    if (this.isVisibleToObserver()) {
+      this.lastKnownInformation[2] = color;
     }
   }
 }
@@ -73,13 +109,21 @@ function step(coordinate: CoordinateLike, direction: Direction): Coordinate {
 }
 
 export class FogOfWarBoard extends Grid<FogOfWarField> {
+  constructor(width: number, height: number) {
+    super(width, height);
+    this.arr.fill(new FogOfWarField());
+    // make sure that each field has an independent object
+    this.arr.forEach((_, index) => (this.arr[index] = new FogOfWarField()));
+  }
+
   addStone(player: binaryPlayerNr, coordinate: Coordinate): void {
-    const color = player === 0 ? Color.BLACK : Color.EMPTY;
+    const color = colorMap[player];
     const field = this.at(coordinate);
     if (!field) {
+      // should not happen
       return;
     }
-    field.color = color;
+    field.setColor(color);
 
     // update visibility in all directions
     const directions: Direction[] = [0, 1, 2, 3];
@@ -102,7 +146,7 @@ export class FogOfWarBoard extends Grid<FogOfWarField> {
     if (!field) {
       return;
     }
-    field.color = Color.EMPTY;
+    field.setColor(Color.EMPTY);
 
     // update visibility in all directions
     const directions: Direction[] = [0, 1, 2, 3];

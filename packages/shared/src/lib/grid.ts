@@ -6,7 +6,7 @@ import { Fillable } from "./group_utils";
  * the API should match that of a regular Array.
  */
 export class Grid<T> implements Fillable<CoordinateLike, T> {
-  private arr: Array<T>;
+  protected arr: Array<T>;
   constructor(
     public readonly width: number,
     public readonly height: number,

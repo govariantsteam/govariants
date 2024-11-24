@@ -28,5 +28,6 @@ export * from "./lib/abstractBoard/intersection";
 export * from "./variants/s_fractional";
 export { count_binary_ones } from "./variants/thue_morse";
 export { sFractionalMoveColors } from "./variants/s_fractional";
+export { type FogOfWarState } from "./variants/fog_of_war/fog_of_war";
 
 export const SITE_NAME = "Go Variants";

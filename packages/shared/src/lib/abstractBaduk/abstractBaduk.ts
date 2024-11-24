@@ -49,13 +49,14 @@ export abstract class AbstractBaduk<
       [];
     const checkedIntersections: Map<number, Set<TChainType>> = new Map();
 
-    changedIntersections.forEach((intersection, index) => {
+    changedIntersections.forEach((intersection) => {
       if (!intersection.stone) {
         // This shouldn't be possible.
         // Maybe use better typing to show that all intersections here have stones.
         return;
       }
 
+      const index = this.intersections.indexOf(intersection);
       const uncheckedChainTypes = new Set(
         Array.from(intersection.stone.getChainTypes()).filter(
           (chainType) =>

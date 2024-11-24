@@ -48,6 +48,11 @@ const router = createRouter({
       component: () => import("../views/RulesView.vue"),
       props: true,
     },
+    {
+      path: "/variants/rules-list",
+      name: "rules-list",
+      component: () => import("../views/RulesListView.vue"),
+    },
   ],
 });
 

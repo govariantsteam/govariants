@@ -14,6 +14,7 @@ import {
   checkUsername,
   createUserWithUsernameAndPassword,
   deleteUser,
+  getUser,
   getUserByName,
   setUserRole,
 } from "./users";
@@ -180,6 +181,20 @@ router.put("/user/:userId/role", async (req, res) => {
     res.json(e.message);
   }
 });
+
+router.get("/users/:userId", async (req, res) => {
+  try {
+    const user = await getUser(req.params.userId)
+    if (!user) {
+      res.status(500);
+      res.json("User does not exist");
+    }
+    res.send(user);
+  } catch (e) {
+    res.status(500);
+    res.json(e.message);
+  }
+})
 
 function make_auth_cb(
   req: express.Request,

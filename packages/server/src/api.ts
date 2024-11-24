@@ -166,7 +166,7 @@ router.post("/register", async (req, res, next) => {
   passport.authenticate("local", make_auth_cb(req, res))(req, res, next);
 });
 
-router.put("/user/:userId/role", async (req, res) => {
+router.put("/users/:userId/role", async (req, res) => {
   const { role } = req.body;
   try {
     if (!req.user || (req.user as UserResponse).role !== "admin") {
@@ -175,7 +175,14 @@ router.put("/user/:userId/role", async (req, res) => {
       res.json("Only Admins may set user roles.");
       return;
     }
+
+    if (!["admin"].includes(role)) {
+      throw new Error(`Invalid role: ${role}`)
+    }
+
     await setUserRole(req.params.userId, role);
+
+    res.send(await getUser(req.params.userId));
   } catch (e) {
     res.status(500);
     res.json(e.message);

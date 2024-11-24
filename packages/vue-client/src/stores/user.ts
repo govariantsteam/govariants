@@ -1,10 +1,10 @@
 import { defineStore, storeToRefs } from "pinia";
 import * as requests from "../requests";
-import type { User } from "@ogfcommunity/variants-shared";
+import type { UserResponse } from "@ogfcommunity/variants-shared";
 import type { Ref } from "vue";
 
 interface UserStoreStateTree {
-  user: User | null;
+  user: UserResponse | null;
 }
 
 export const useStore = defineStore("user", {
@@ -45,7 +45,7 @@ export const useStore = defineStore("user", {
   },
 });
 
-export function useCurrentUser(): Ref<User | null> {
+export function useCurrentUser(): Ref<UserResponse | null> {
   const store = useStore();
   return storeToRefs(store).user;
 }

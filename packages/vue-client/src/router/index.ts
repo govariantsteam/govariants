@@ -53,6 +53,12 @@ const router = createRouter({
       name: "rules-list",
       component: () => import("../views/RulesListView.vue"),
     },
+    {
+      path: "/users/:userId([0-9a-fA-F]+)",
+      name: "user",
+      component: () => import("../views/UserView.vue"),
+      props: true,
+    },
   ],
 });
 

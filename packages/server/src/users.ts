@@ -1,8 +1,5 @@
 import { getDb } from "./db";
-import {
-  UserResponse,
-  UserRankings,
-} from "@ogfcommunity/variants-shared";
+import { UserResponse, UserRankings } from "@ogfcommunity/variants-shared";
 import { Collection, WithId, ObjectId } from "mongodb";
 import { randomBytes, scrypt } from "node:crypto";
 

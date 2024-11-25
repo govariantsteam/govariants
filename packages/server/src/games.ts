@@ -200,13 +200,16 @@ export async function handleMoveAndTime(
 
   emitGame(game.id, game.players?.length ?? 0, game_obj, timeControl);
 
-  if (game_obj.phase == "gameover" && game.players.length == 2 && supportsRatings(game.variant)) {
+  if (
+    game_obj.phase == "gameover" &&
+    game.players.length == 2 &&
+    supportsRatings(game.variant)
+  ) {
     await updateRatings(game, game_obj);
   }
 
   return game;
 }
-
 
 function emitGame(
   game_id: string,

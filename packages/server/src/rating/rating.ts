@@ -8,12 +8,10 @@ import {
 import { Glicko2, Player } from "glicko2";
 import { updateUserRanking, getUser } from "../users";
 
-
 export async function updateRatings(
   game: GameResponse,
   game_obj: AbstractGame<object, object>,
 ) {
-
   const ranking = new Glicko2({
     tau: 0.5,
     rating: 1500,
@@ -26,7 +24,7 @@ export async function updateRatings(
   const variant = game.variant;
 
   const glicko_outcome = getGlickoResult(game_obj.result[0]);
- 
+
   const player_black_id = game.players[0].id;
   const player_white_id = game.players[1].id;
 
@@ -35,11 +33,11 @@ export async function updateRatings(
 
   const glicko_player_black = getGlickoPlayer(
     db_player_black.ranking[variant],
-    ranking
+    ranking,
   );
   const glicko_player_white = getGlickoPlayer(
     db_player_white.ranking[variant],
-    ranking
+    ranking,
   );
 
   matches.push([glicko_player_black, glicko_player_white, glicko_outcome]);
@@ -64,20 +62,18 @@ export async function updateRatings(
 }
 
 export function getGlickoResult(game_result: string): number {
-  
-  if (game_result === "B") { 
-    return 1 
+  if (game_result === "B") {
+    return 1;
   }
-  if (game_result === "W") { 
-    return 0 
+  if (game_result === "W") {
+    return 0;
   }
-  return 0.5
-
+  return 0.5;
 }
 
 export function getGlickoPlayer(
   db_player_ranking: UserRanking,
-  ranking: Glicko2
+  ranking: Glicko2,
 ): Player {
   if (db_player_ranking == undefined) {
     return ranking.makePlayer(1500, 350, 0.06);
@@ -94,7 +90,6 @@ export function userRankingFromGlickoPlayer(
   glicko_player: Player,
   variant: string,
 ): UserRankings {
-
   const ranking: UserRanking = {
     rating: glicko_player.getRating(),
     rd: glicko_player.getRd(),
@@ -120,6 +115,6 @@ export function supportsRatings(variant: string) {
     "one color",
     "drift",
     "quantum",
-    "sfractional"
+    "sfractional",
   ].includes(variant);
 }

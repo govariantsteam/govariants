@@ -87,13 +87,13 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
   playMove(player: number, move: string): void {
     if (move === "resign") {
       this.phase = "gameover";
-      this.result = player === 0 ? "B+R" : "W+R";
+      this.result = player === 0 ? "W+R" : "B+R";
       return;
     }
 
     if (move === "timeout") {
       this.phase = "gameover";
-      this.result = player === 0 ? "B+T" : "W+T";
+      this.result = player === 0 ? "W+T" : "B+T";
       return;
     }
 

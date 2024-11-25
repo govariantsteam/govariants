@@ -18,19 +18,19 @@ test("getGlickoPlayer - with typical player value", () => {
         username: 'testUser',
         ranking: {
             quantum: {
-                rating: 1337.6891060937023,
-                rd: 290.31896371798047,
-                vol: 0.05999967537233814
+                rating: 1337,
+                rd: 290,
+                vol: 0.0599
             },
             baduk: {
-                rating: 1623.3256984571523,
-                rd: 290.31896371798047,
-                vol: 0.05999967537233814
+                rating: 1623,
+                rd: 290,
+                vol: 0.0599
             },
             phantom: {
-                rating: 1762.3697989563215,
-                rd: 290.31896371798047,
-                vol: 0.05999967537233814
+                rating: 1762,
+                rd: 290,
+                vol: 0.0599
             }
         }
     }
@@ -100,28 +100,28 @@ test("userRankingFromGlickoPlayer", () => {
         username: 'testUser',
         ranking: {
             quantum: {
-                rating: 1337.6891060937023,
-                rd: 290.31896371798047,
-                vol: 0.05999967537233814
+                rating: 1337,
+                rd: 290,
+                vol: 0.0599
             },
             baduk: {
-                rating: 1623.3256984571523,
-                rd: 290.31896371798047,
-                vol: 0.05999967537233814
+                rating: 1623,
+                rd: 290,
+                vol: 0.0599
             },
             phantom: {
-                rating: 1762.3697989563215,
-                rd: 290.31896371798047,
-                vol: 0.05999967537233814
+                rating: 1762,
+                rd: 290,
+                vol: 0.0599
             }
         }
     }
     
     const new_quantum_ranking: UserRanking =
     {
-        rating: 1667.6891060937023,
-        rd: 295.31896371798047,
-        vol: 0.06999967537233814
+        rating: 1667,
+        rd: 295,
+        vol: 0.0699
     }
 
     const glicko_player = getGlickoPlayer(new_quantum_ranking, glicko_ranking);
@@ -133,19 +133,19 @@ test("userRankingFromGlickoPlayer", () => {
         username: 'testUser',
         ranking: {
             quantum: {
-                rating: 1667.6891060937023,
-                rd: 295.31896371798047,
-                vol: 0.06999967537233814
+                rating: 1667,
+                rd: 295,
+                vol: 0.0699
             },
             baduk: {
-                rating: 1623.3256984571523,
-                rd: 290.31896371798047,
-                vol: 0.05999967537233814
+                rating: 1623,
+                rd: 290,
+                vol: 0.0599
             },
             phantom: {
-                rating: 1762.3697989563215,
-                rd: 290.31896371798047,
-                vol: 0.05999967537233814
+                rating: 1762,
+                rd: 290,
+                vol: 0.0599
             }
         }
     }

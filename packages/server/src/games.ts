@@ -21,7 +21,7 @@ import {
 } from "./time-control/time-control";
 import { timeControlHandlerMap } from "./time-control/time-handler-map";
 import { Clock } from "./time-control/clock";
-import { updateRatings, supportsRatings } from "./ratings";
+import { updateRatings, supportsRatings } from "./rating/rating";
 
 export function gamesCollection() {
   return getDb().db().collection("games");

@@ -6,8 +6,7 @@ import {
   UserResponse,
 } from "@ogfcommunity/variants-shared";
 import { Glicko2, Player } from "glicko2";
-import { updateUserRanking, getUser } from "./users";
-
+import { updateUserRanking, getUser } from "../users";
 
 
 export async function updateRatings(
@@ -26,23 +25,7 @@ export async function updateRatings(
 
   const variant = game.variant;
 
-  let glicko_outcome;
-  let outcome_player_black: "Win" | "Loss" | "Tie"
-  let outcome_player_white: "Win" | "Loss" | "Tie"
-
-  if (game_obj.result[0] === "B") {
-    glicko_outcome = 1;
-    outcome_player_black = "Win";
-    outcome_player_white = "Loss";
-  } else if (game_obj.result[0] === "W") {
-    glicko_outcome = 0;
-    outcome_player_black = "Loss";
-    outcome_player_white = "Win";
-  } else {
-    glicko_outcome = 0.5;
-    outcome_player_black = "Tie";
-    outcome_player_white = "Tie";
-  }
+  const glicko_outcome = getGlickoResult(game_obj.result[0]);
  
   const player_black_id = game.players[0].id;
   const player_white_id = game.players[1].id;
@@ -80,7 +63,19 @@ export async function updateRatings(
   ]);
 }
 
-function getGlickoPlayer(
+export function getGlickoResult(game_result: string): number {
+  
+  if (game_result === "B") { 
+    return 1 
+  }
+  if (game_result === "W") { 
+    return 0 
+  }
+  return 0.5
+
+}
+
+export function getGlickoPlayer(
   db_player_ranking: UserRanking,
   ranking: Glicko2
 ): Player {
@@ -94,12 +89,11 @@ function getGlickoPlayer(
   );
 }
 
-function userRankingFromGlickoPlayer(
+export function userRankingFromGlickoPlayer(
   player: UserResponse,
   glicko_player: Player,
   variant: string,
 ): UserRankings {
-  const player_ranking = player.ranking;
 
   const ranking: UserRanking = {
     rating: glicko_player.getRating(),
@@ -107,6 +101,7 @@ function userRankingFromGlickoPlayer(
     vol: glicko_player.getVol(),
   };
 
+  const player_ranking = player.ranking;
   player_ranking[variant] = ranking;
   return player_ranking;
 }

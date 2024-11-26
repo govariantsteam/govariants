@@ -19,13 +19,7 @@ watchEffect(async () => {
 const loggedInUser = useCurrentUser();
 
 function setRole(role: UserRole) {
-  watchEffect(async () => {
-    try {
-      user.value = await requests.put(`/users/${props.userId}/role`, { role });
-    } catch (e) {
-      alert(e);
-    }
-  });
+  requests.put(`/users/${props.userId}/role`, { role }).catch(alert);
 }
 </script>
 

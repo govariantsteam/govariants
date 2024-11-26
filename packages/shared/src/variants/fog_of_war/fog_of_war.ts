@@ -1,6 +1,7 @@
 import { AbstractGame } from "../../abstract_game";
 import { Coordinate } from "../../lib/coordinate";
 import { examineGroup } from "../../lib/group_utils";
+import { SuperKoDetector } from "../../lib/ko_detector";
 import { Variant } from "../../variant";
 import { Baduk, Color } from "../baduk";
 import { NewGridBadukConfig } from "../baduk_utils";
@@ -8,6 +9,7 @@ import {
   binaryPlayerNr,
   VisibleField,
   FogOfWarBoard,
+  FogOfWarField,
 } from "./fog_of_war.types";
 
 export type FogOfWarState = {
@@ -16,7 +18,8 @@ export type FogOfWarState = {
 
 export class FogOfWar extends AbstractGame<NewGridBadukConfig, FogOfWarState> {
   board: FogOfWarBoard;
-  protected next_to_play: 0 | 1 = 0;
+  private ko_detector = new SuperKoDetector();
+  protected next_to_play: binaryPlayerNr = 0;
 
   constructor(config: NewGridBadukConfig) {
     super(config);
@@ -54,6 +57,10 @@ export class FogOfWar extends AbstractGame<NewGridBadukConfig, FogOfWarState> {
   }
 
   override playMove(player: number, move: string): void {
+    if (!(player === 0 || player === 1)) {
+      throw Error("unexpected player param");
+    }
+
     if (move === "resign") {
       this.phase = "gameover";
       this.result = player === 0 ? "W+R" : "B+R";
@@ -77,17 +84,23 @@ export class FogOfWar extends AbstractGame<NewGridBadukConfig, FogOfWarState> {
         throw Error(`Move out of bounds. (move: ${position})`);
       }
 
-      if (this.board.at(position)!.color !== Color.EMPTY) {
-        // TODO: if this field is not visible to the player, we should handle this differently!
-        throw Error(
-          `Cannot place a stone on top of an existing stone. (${this.board.at(position)!.color} at (${position}))`,
-        );
+      const field = this.board.at(position)!;
+      if (field.color === Color.EMPTY) {
+        this.playMoveInternal(position);
+        this.postValidateMove(position);
+      } else {
+        this.handleCollision(field);
       }
-
-      this.playMoveInternal(position);
-      this.postValidateMove(position);
     }
     this.prepareForNextMove(move);
+  }
+
+  handleCollision(field: FogOfWarField): void {
+    if (field.isVisibleTo(this.next_to_play)) {
+      throw Error(`Cannot place a stone on top of an existing stone.`);
+    } else {
+      field.updateLKI(this.next_to_play);
+    }
   }
 
   protected playMoveInternal(move: Coordinate): void {
@@ -114,21 +127,29 @@ export class FogOfWar extends AbstractGame<NewGridBadukConfig, FogOfWarState> {
 
     // Detect suicide
     const move_color = this.next_to_play === 0 ? Color.BLACK : Color.WHITE;
-    const { liberties: liberties } = examineGroup({
+    const {
+      members: members,
+      adjacent: adjacent,
+      liberties: liberties,
+    } = examineGroup({
       index: move,
       board: this.board,
       groupIdentifier: (field) => field.color === move_color,
       libertyIdentifier: (field) => field.color === Color.EMPTY,
     });
     if (liberties === 0) {
-      throw Error("Move is suicidal!");
+      members.forEach((pos) => this.board.removeStone(pos));
+
+      adjacent.forEach((pos) =>
+        this.board.at(pos)!.updateLKI(this.next_to_play),
+      );
     }
 
     // situational superko
-    // this.ko_detector.push({
-    //   board: this.board,
-    //   next_to_play: this.next_to_play,
-    // });
+    this.ko_detector.push({
+      board: this.board.map((x) => x.color).serialize(),
+      next_to_play: this.next_to_play,
+    });
   }
 
   protected prepareForNextMove(move: string): void {
@@ -136,7 +157,6 @@ export class FogOfWar extends AbstractGame<NewGridBadukConfig, FogOfWarState> {
     //   this.finalizeScore();
     // } else {
     this.next_to_play = this.next_to_play === 0 ? 1 : 0;
-    // this.last_move = move;
     // }
     super.increaseRound();
   }

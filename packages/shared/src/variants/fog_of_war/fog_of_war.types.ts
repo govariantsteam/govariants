@@ -64,17 +64,18 @@ export class FogOfWarField {
     }
   }
 
+  updateLKI(person: binaryPlayerNr | null): void {
+    this.lastKnownInformation[person ?? 2] = this.color;
+  }
+
   setColor(color: Color): void {
     this.color = color;
-    if (this.isVisibleToPlayer(0)) {
-      this.lastKnownInformation[0] = color;
-    }
-    if (this.isVisibleToPlayer(1)) {
-      this.lastKnownInformation[1] = color;
-    }
-    if (this.isVisibleToObserver()) {
-      this.lastKnownInformation[2] = color;
-    }
+    const persons: (binaryPlayerNr | null)[] = [0, 1, null];
+    persons.forEach((person) => {
+      if (this.isVisibleTo(person)) {
+        this.updateLKI(person);
+      }
+    });
   }
 }
 

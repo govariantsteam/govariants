@@ -5,7 +5,11 @@ import {
   getGlickoResult,
 } from "../rating";
 import { Glicko2 } from "glicko2";
-import { UserRanking, UserRankings, UserResponse } from "@ogfcommunity/variants-shared";
+import {
+  UserRanking,
+  UserRankings,
+  UserResponse,
+} from "@ogfcommunity/variants-shared";
 
 test("supportsRatings", () => {
   const supportsRating = supportsRatings("chess");
@@ -16,12 +20,11 @@ test("supportsRatings", () => {
 });
 
 test("getGlickoPlayer - with typical player value", () => {
-
   const db_player_ranking_quantum = {
     rating: 1337,
     rd: 290,
     vol: 0.0599,
-  }
+  };
 
   const ranking = new Glicko2({
     tau: 0.5,
@@ -47,13 +50,12 @@ test("getGlickoPlayer - when player does not have any rating", () => {
     vol: 0.06,
   });
 
-  const player = getGlickoPlayer(db_player_ranking_quantum, ranking)
+  const player = getGlickoPlayer(db_player_ranking_quantum, ranking);
 
   expect(player.getRating()).toBe(1500);
   expect(player.getRd()).toBe(350);
   expect(player.getVol()).toBe(0.06);
 });
-
 
 test("getGlickoResult", () => {
   expect(getGlickoResult("B")).toBe(1);
@@ -116,7 +118,7 @@ test("applyPlayerRankingToUserResponse", () => {
       rd: 290,
       vol: 0.0599,
     },
-    }
+  };
 
   expect(
     applyPlayerRankingToUserResponse(db_player_initial, glicko_player, variant),

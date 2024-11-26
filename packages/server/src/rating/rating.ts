@@ -38,9 +38,9 @@ export async function updateRatings(
     ranking,
   );
 
-  ranking.addResult(glicko_player_black, glicko_player_white, glicko_outcome)
+  ranking.addResult(glicko_player_black, glicko_player_white, glicko_outcome);
 
-  ranking.calculatePlayersRatings()
+  ranking.calculatePlayersRatings();
 
   const player_black_new_ranking = applyPlayerRankingToUserResponse(
     db_player_black,

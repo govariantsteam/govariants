@@ -1,5 +1,5 @@
 import { AbstractGame } from "../../abstract_game";
-import { Coordinate } from "../../lib/coordinate";
+import { Coordinate, CoordinateLike } from "../../lib/coordinate";
 import { examineGroup } from "../../lib/group_utils";
 import { SuperKoDetector } from "../../lib/ko_detector";
 import { Variant } from "../../variant";
@@ -87,7 +87,7 @@ export class FogOfWar extends AbstractGame<NewGridBadukConfig, FogOfWarState> {
       const field = this.board.at(position)!;
       if (field.color === Color.EMPTY) {
         this.playMoveInternal(position);
-        this.postValidateMove(position);
+        this.postValidateMove();
       } else {
         this.handleCollision(field);
       }
@@ -109,21 +109,23 @@ export class FogOfWar extends AbstractGame<NewGridBadukConfig, FogOfWarState> {
     const opponent_color = this.next_to_play === 0 ? Color.WHITE : Color.BLACK;
     this.board.neighbors(move).forEach((pos) => {
       const neighbor_color = this.board.at(pos)!.color;
-      const { members: groupMembers, liberties: liberties } = examineGroup({
+      if (neighbor_color !== opponent_color) {
+        return;
+      }
+      const {
+        members: members,
+        adjacent: adjacent,
+        liberties: liberties,
+      } = examineGroup({
         index: pos,
         board: this.board,
         groupIdentifier: (field) => field.color === neighbor_color,
         libertyIdentifier: (field) => field.color === Color.EMPTY,
       });
-      if (neighbor_color === opponent_color && liberties === 0) {
-        groupMembers.forEach((pos) => this.board.removeStone(pos));
-        //this.captures[this.next_to_play] += group.length;
+      if (liberties === 0) {
+        this.removeGroup(members, adjacent, this.next_to_play === 0 ? 1 : 0);
       }
     });
-  }
-
-  protected postValidateMove(move: Coordinate): void {
-    // TODO: Think about how Suicide and Ko should work with partial information.
 
     // Detect suicide
     const move_color = this.next_to_play === 0 ? Color.BLACK : Color.WHITE;
@@ -138,13 +140,22 @@ export class FogOfWar extends AbstractGame<NewGridBadukConfig, FogOfWarState> {
       libertyIdentifier: (field) => field.color === Color.EMPTY,
     });
     if (liberties === 0) {
-      members.forEach((pos) => this.board.removeStone(pos));
-
-      adjacent.forEach((pos) =>
-        this.board.at(pos)!.updateLKI(this.next_to_play),
-      );
+      this.removeGroup(members, adjacent, this.next_to_play);
     }
+  }
 
+  private removeGroup(
+    members: CoordinateLike[],
+    adjacent: CoordinateLike[],
+    owner: binaryPlayerNr,
+  ): void {
+    members.forEach((pos) => this.board.removeStone(pos));
+
+    // when a group is removed, its owner gets knowledge of surrounding stones.
+    adjacent.forEach((pos) => this.board.at(pos)!.updateLKI(owner));
+  }
+
+  protected postValidateMove(): void {
     // situational superko
     this.ko_detector.push({
       board: this.board.map((x) => x.color).serialize(),

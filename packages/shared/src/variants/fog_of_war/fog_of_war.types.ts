@@ -147,7 +147,17 @@ export class FogOfWarBoard extends Grid<FogOfWarField> {
     if (!field) {
       return;
     }
+    const people: (binaryPlayerNr | null)[] = [0, 1, null];
+    const peopleWithVisibility = people.filter((person) =>
+      field.isVisibleTo(person),
+    );
+
     field.setColor(Color.EMPTY);
+
+    // Everybody who could previously see this stone learns about its removal.
+    // This is sensible because, if a person loses visibility of a field with a stone,
+    // the person can deduce that the stone was captured (with the current rules).
+    peopleWithVisibility.forEach((person) => field.updateLKI(person));
 
     // update visibility in all directions
     const directions: Direction[] = [0, 1, 2, 3];

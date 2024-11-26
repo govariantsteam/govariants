@@ -19,8 +19,6 @@ export async function updateRatings(
     vol: 0.06,
   });
 
-  const matches: [Player, Player, number][] = [];
-
   const variant = game.variant;
 
   const glicko_outcome = getGlickoResult(game_obj.result[0]);
@@ -40,16 +38,16 @@ export async function updateRatings(
     ranking,
   );
 
-  matches.push([glicko_player_black, glicko_player_white, glicko_outcome]);
+  ranking.addResult(glicko_player_black, glicko_player_white, glicko_outcome)
 
-  ranking.updateRatings(matches);
+  ranking.calculatePlayersRatings()
 
-  const player_black_new_ranking = userRankingFromGlickoPlayer(
+  const player_black_new_ranking = applyPlayerRankingToUserResponse(
     db_player_black,
     glicko_player_black,
     variant,
   );
-  const player_white_new_ranking = userRankingFromGlickoPlayer(
+  const player_white_new_ranking = applyPlayerRankingToUserResponse(
     db_player_white,
     glicko_player_white,
     variant,
@@ -85,7 +83,8 @@ export function getGlickoPlayer(
   );
 }
 
-export function userRankingFromGlickoPlayer(
+// this function updates player's UserRanking with new ratings
+export function applyPlayerRankingToUserResponse(
   player: UserResponse,
   glicko_player: Player,
   variant: string,

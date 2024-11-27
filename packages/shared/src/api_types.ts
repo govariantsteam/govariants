@@ -4,10 +4,20 @@ import {
   ITimeControlConfig,
 } from "./time_control/time_control.types";
 
+export interface UserRankings {
+  [variant: string]: UserRanking;
+}
+
+export interface UserRanking {
+  rating: number;
+  rd: number;
+  vol: number;
+}
+
 export interface User {
   username?: string;
   id: string;
-  rating?: number;
+  ranking?: UserRankings;
 }
 export interface GameResponse {
   id: string;
@@ -22,7 +32,7 @@ export interface UserResponse {
   id?: string;
   login_type: "guest" | "persistent";
   username?: string;
-  rating?: number;
+  ranking?: UserRankings;
 }
 
 export type GamesFilter = {

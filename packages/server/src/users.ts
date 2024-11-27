@@ -1,12 +1,12 @@
 import { getDb } from "./db";
-import { UserResponse } from "@ogfcommunity/variants-shared";
+import { UserResponse, UserRankings } from "@ogfcommunity/variants-shared";
 import { Collection, WithId, ObjectId } from "mongodb";
 import { randomBytes, scrypt } from "node:crypto";
 
 export interface GuestUser extends UserResponse {
   token: string;
   login_type: "guest";
-  rating?: number;
+  ranking?: UserRankings;
 }
 
 // Not currently used, but the plan is to use LocalStrategy from Password.js
@@ -15,16 +15,16 @@ export interface PersistentUser extends UserResponse {
   username: string;
   password_hash: string;
   login_type: "persistent";
-  rating?: number;
+  ranking?: UserRankings;
 }
 
-export async function updateUserRating(
+export async function updateUserRanking(
   user_id: string,
-  new_rating: number,
+  new_ranking: UserRankings,
 ): Promise<void> {
   const update_result = await usersCollection().updateOne(
     { _id: new ObjectId(user_id) },
-    { $set: { rating: new_rating } },
+    { $set: { ranking: new_ranking } },
   );
   if (update_result.matchedCount == 0) {
     throw new Error("User not found");
@@ -49,6 +49,7 @@ export async function getUserByName(username: string): Promise<PersistentUser> {
     username: db_user.username,
     password_hash: db_user.password_hash,
     login_type: db_user.login_type,
+    ranking: db_user.ranking,
   };
 }
 
@@ -134,6 +135,7 @@ export async function createUserWithUsernameAndPassword(
     username,
     password_hash,
     login_type: "persistent",
+    ranking: {},
   };
 
   const result = await usersCollection().insertOne(user);
@@ -188,7 +190,7 @@ function outwardFacingUser(
     id: db_user._id.toString(),
     login_type: db_user.login_type,
     ...(db_user.login_type === "persistent" && { username: db_user.username }),
-    rating: db_user.rating,
+    ranking: db_user.ranking || {},
   };
 }
 

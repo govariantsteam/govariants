@@ -180,9 +180,16 @@ router.put("/users/:userId/role", async (req, res) => {
       throw new Error(`Invalid role: ${role}`);
     }
 
+    const userToUpdate = await getUser(req.params.userId);
+
+    if (userToUpdate.login_type !== "persistent") {
+      throw new Error(`Cannot assign role "${role}" to user with "${userToUpdate.login_type}" type.`)
+    }
+
     await setUserRole(req.params.userId, role);
 
-    res.send(await getUser(req.params.userId));
+    userToUpdate.role = role;
+    res.send(userToUpdate);
   } catch (e) {
     res.status(500);
     res.json(e.message);
@@ -193,7 +200,7 @@ router.get("/users/:userId", async (req, res) => {
   try {
     const user = await getUser(req.params.userId);
     if (!user) {
-      res.status(500);
+      res.status(404);
       res.json("User does not exist");
     }
     res.send(user);

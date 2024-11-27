@@ -183,7 +183,9 @@ router.put("/users/:userId/role", async (req, res) => {
     const userToUpdate = await getUser(req.params.userId);
 
     if (userToUpdate.login_type !== "persistent") {
-      throw new Error(`Cannot assign role "${role}" to user with "${userToUpdate.login_type}" type.`)
+      throw new Error(
+        `Cannot assign role "${role}" to user with "${userToUpdate.login_type}" type.`,
+      );
     }
 
     await setUserRole(req.params.userId, role);

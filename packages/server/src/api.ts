@@ -14,7 +14,9 @@ import {
   checkUsername,
   createUserWithUsernameAndPassword,
   deleteUser,
+  getUser,
   getUserByName,
+  setUserRole,
 } from "./users";
 import {
   getOnlyMove,
@@ -162,6 +164,52 @@ router.post("/register", async (req, res, next) => {
 
   await createUserWithUsernameAndPassword(username, password);
   passport.authenticate("local", make_auth_cb(req, res))(req, res, next);
+});
+
+router.put("/users/:userId/role", async (req, res) => {
+  const { role } = req.body;
+  try {
+    if (!req.user || (req.user as UserResponse).role !== "admin") {
+      // unauthorized
+      res.status(401);
+      res.json("Only Admins may set user roles.");
+      return;
+    }
+
+    if (!["admin"].includes(role)) {
+      throw new Error(`Invalid role: ${role}`);
+    }
+
+    const userToUpdate = await getUser(req.params.userId);
+
+    if (userToUpdate.login_type !== "persistent") {
+      throw new Error(
+        `Cannot assign role "${role}" to user with "${userToUpdate.login_type}" type.`,
+      );
+    }
+
+    await setUserRole(req.params.userId, role);
+
+    userToUpdate.role = role;
+    res.send(userToUpdate);
+  } catch (e) {
+    res.status(500);
+    res.json(e.message);
+  }
+});
+
+router.get("/users/:userId", async (req, res) => {
+  try {
+    const user = await getUser(req.params.userId);
+    if (!user) {
+      res.status(404);
+      res.json("User does not exist");
+    }
+    res.send(user);
+  } catch (e) {
+    res.status(500);
+    res.json(e.message);
+  }
 });
 
 function make_auth_cb(

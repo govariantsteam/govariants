@@ -19,13 +19,13 @@ export async function get(path: string) {
 
 // There's probably a way to get types into the APIs, but for now just have to
 // silence this warning.
-// eslint-disable-next-line
-export async function post(path: string, json: any) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function requestWithPayloadImpl(method: string, path: string, json: any) {
   const headers = new Headers();
   headers.append("Origin", SERVER_ORIGIN); // TODO: Is this necessary?
   headers.append("Content-Type", "application/json");
   const response = await fetch(SERVER_PATH_PREFIX + path, {
-    method: "post",
+    method,
     body: JSON.stringify(json),
     headers,
   });
@@ -37,5 +37,8 @@ export async function post(path: string, json: any) {
 
   return data;
 }
+
+export const post = requestWithPayloadImpl.bind(undefined, "post");
+export const put = requestWithPayloadImpl.bind(undefined, "put");
 
 export const socket = io(SERVER_ORIGIN);

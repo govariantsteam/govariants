@@ -21,6 +21,7 @@ import {
 } from "./time-control/time-control";
 import { timeControlHandlerMap } from "./time-control/time-handler-map";
 import { Clock } from "./time-control/clock";
+import { updateRatings, supportsRatings } from "./rating/rating";
 
 export function gamesCollection() {
   return getDb().db().collection("games");
@@ -198,6 +199,14 @@ export async function handleMoveAndTime(
   game.moves.push(moves);
 
   emitGame(game.id, game.players?.length ?? 0, game_obj, timeControl);
+
+  if (
+    game_obj.phase == "gameover" &&
+    game.players.length == 2 &&
+    supportsRatings(game.variant)
+  ) {
+    await updateRatings(game, game_obj);
+  }
 
   return game;
 }

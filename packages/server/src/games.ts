@@ -2,7 +2,7 @@ import {
   GameResponse,
   makeGameObject,
   MovesType,
-  User,
+  UserResponse,
   getOnlyMove,
   HasTimeControlConfig,
   GamesFilter,
@@ -250,7 +250,7 @@ async function updateSeat(
   game_id: string,
   seat: number,
   user_id: string,
-  new_user: User | undefined,
+  new_user: UserResponse | undefined,
 ) {
   const game = await getGame(game_id);
 
@@ -275,7 +275,7 @@ async function updateSeat(
   return game.players;
 }
 
-export function takeSeat(game_id: string, seat: number, user: User) {
+export function takeSeat(game_id: string, seat: number, user: UserResponse) {
   return updateSeat(game_id, seat, user.id, user);
 }
 

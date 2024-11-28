@@ -10,7 +10,7 @@ import * as requests from "../requests";
 import SeatComponent from "@/components/GameView/SeatComponent.vue";
 import { useCurrentUser } from "../stores/user";
 import type {
-  User,
+  UserResponse,
   IPerPlayerTimeControlBase,
   IConfigWithTimeControl,
   GameStateResponse,
@@ -36,7 +36,7 @@ const transformedGameData = computed(() => {
   }
   return undefined;
 });
-const players = ref<User[]>();
+const players = ref<UserResponse[]>();
 // null <-> viewing the latest round
 // while viewing history of game, maybe we should prevent player from making a move (accidentally)
 const view_round: Ref<number | null> = ref(null);
@@ -110,7 +110,7 @@ watchEffect(async () => {
 const sit = (seat: number) => {
   requests
     .post(`/games/${props.gameId}/sit/${seat}`, {})
-    .then((players_array: User[]) => {
+    .then((players_array: UserResponse[]) => {
       players.value = players_array;
       playing_as.value = seat;
     });
@@ -119,7 +119,7 @@ const sit = (seat: number) => {
 const leave = (seat: number) => {
   requests
     .post(`/games/${props.gameId}/leave/${seat}`, {})
-    .then((players_array: User[]) => {
+    .then((players_array: UserResponse[]) => {
       players.value = players_array;
       if (playing_as.value === seat) {
         playing_as.value = undefined;

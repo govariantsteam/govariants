@@ -14,17 +14,12 @@ export interface UserRanking {
   vol: number;
 }
 
-export interface User {
-  username?: string;
-  id: string;
-  ranking?: UserRankings;
-}
 export interface GameResponse {
   id: string;
   variant: string;
   moves: MovesType[];
   config: { time_control?: ITimeControlConfig };
-  players?: Array<User | undefined>;
+  players?: Array<UserResponse | undefined>;
   time_control?: ITimeControlBase;
 }
 

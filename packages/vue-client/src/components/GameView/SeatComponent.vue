@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type {
-  User,
+  UserResponse,
   IPerPlayerTimeControlBase,
   IConfigWithTimeControl,
 } from "@ogfcommunity/variants-shared";
@@ -10,7 +10,7 @@ import PlayerSymbol from "./PlayerSymbol.vue";
 
 const props = defineProps<{
   user_id?: string;
-  occupant?: User;
+  occupant?: UserResponse;
   player_n: number;
   selected?: number;
   time_control: IPerPlayerTimeControlBase | null;

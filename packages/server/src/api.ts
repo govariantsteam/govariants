@@ -23,7 +23,6 @@ import {
   GameResponse,
   GamesFilter,
   MovesType,
-  User,
   UserResponse,
   GameInitialResponse,
 } from "@ogfcommunity/variants-shared";
@@ -105,7 +104,7 @@ router.post("/games", async (req, res) => {
 
 router.post("/games/:gameId/move", async (req, res) => {
   const move: MovesType = req.body;
-  const user_id = (req.user as User)?.id;
+  const user_id = (req.user as UserResponse)?.id;
 
   try {
     res.send(await playMove(req.params.gameId, move, user_id));
@@ -116,10 +115,10 @@ router.post("/games/:gameId/move", async (req, res) => {
 });
 
 router.post("/games/:gameId/sit/:seat", async (req, res) => {
-  const user = req.user as User | undefined;
+  const user = req.user as UserResponse | undefined;
 
   try {
-    const players: User[] = await takeSeat(
+    const players: UserResponse[] = await takeSeat(
       req.params.gameId,
       Number(req.params.seat),
       user,
@@ -135,9 +134,9 @@ router.post("/games/:gameId/sit/:seat", async (req, res) => {
 
 router.post("/games/:gameId/leave/:seat", async (req, res) => {
   // TODO: make sure this is set to a valid id once we have user auth
-  const user_id = (req.user as User)?.id;
+  const user_id = (req.user as UserResponse)?.id;
 
-  const players: User[] = await leaveSeat(
+  const players: UserResponse[] = await leaveSeat(
     req.params.gameId,
     Number(req.params.seat),
     user_id,
@@ -203,7 +202,7 @@ router.get("/users/:userId", async (req, res) => {
     const user = await getUser(req.params.userId);
     if (!user) {
       res.status(404);
-      res.json("User does not exist");
+      res.json("UserResponse does not exist");
     }
     res.send(user);
   } catch (e) {

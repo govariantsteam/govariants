@@ -41,7 +41,10 @@ describe("Sequential Time Control Tests", () => {
       config: config,
       moves: [],
       variant: variant,
-      players: [{ id: "" }, { id: "" }],
+      players: [
+        { id: "", login_type: "persistent" },
+        { id: "", login_type: "persistent" },
+      ],
       time_control: new TimeHandlerSequentialMoves(
         clock,
         new TestTimeoutService(),

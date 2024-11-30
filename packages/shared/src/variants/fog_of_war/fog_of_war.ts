@@ -106,6 +106,7 @@ export class FogOfWar extends AbstractGame<NewGridBadukConfig, FogOfWarState> {
   protected playMoveInternal(move: Coordinate): void {
     this.board.addStone(this.next_to_play, move);
 
+    // Resolve opponent captures
     const opponent_color = this.next_to_play === 0 ? Color.WHITE : Color.BLACK;
     this.board.neighbors(move).forEach((pos) => {
       const neighbor_color = this.board.at(pos)!.color;
@@ -123,11 +124,11 @@ export class FogOfWar extends AbstractGame<NewGridBadukConfig, FogOfWarState> {
         libertyIdentifier: (field) => field.color === Color.EMPTY,
       });
       if (liberties === 0) {
-        this.removeGroup(members, adjacent, this.next_to_play === 0 ? 1 : 0);
+        this.removeGroup(members, adjacent, true);
       }
     });
 
-    // Detect suicide
+    // Resolve self capture
     const move_color = this.next_to_play === 0 ? Color.BLACK : Color.WHITE;
     const {
       members: members,
@@ -140,19 +141,34 @@ export class FogOfWar extends AbstractGame<NewGridBadukConfig, FogOfWarState> {
       libertyIdentifier: (field) => field.color === Color.EMPTY,
     });
     if (liberties === 0) {
-      this.removeGroup(members, adjacent, this.next_to_play);
+      this.removeGroup(members, adjacent, false);
     }
+
+    this.board.updateLKIs();
   }
 
   private removeGroup(
     members: CoordinateLike[],
     adjacent: CoordinateLike[],
-    owner: binaryPlayerNr,
+    isOpponentGroup: boolean,
   ): void {
+    const owner = isOpponentGroup
+      ? this.next_to_play === 0
+        ? 1
+        : 0
+      : this.next_to_play;
     members.forEach((pos) => this.board.removeStone(pos));
 
     // when a group is removed, its owner gets knowledge of surrounding stones.
     adjacent.forEach((pos) => this.board.at(pos)!.updateLKI(owner));
+
+    // unless this is a stone that immediately gets captured, we know that all players
+    // and thus also observer, have visibility on the captured group.
+    if (isOpponentGroup || members.length > 1) {
+      [...members, ...adjacent].forEach((pos) =>
+        this.board.at(pos)!.updateLKI(null),
+      );
+    }
   }
 
   protected postValidateMove(): void {

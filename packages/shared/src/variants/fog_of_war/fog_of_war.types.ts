@@ -8,23 +8,26 @@ const colorMap: { [p: number]: Color } = {
 };
 
 export class FogOfWarField {
-  color: Color = Color.EMPTY;
+  private _color: Color = Color.EMPTY;
+  // marks whether something was updated, for the purpose of LKI.
+  updated: boolean = false;
   visibleFrom: (binaryPlayerNr | null)[] = [null, null, null, null];
   lastKnownInformation: Color[] = [Color.EMPTY, Color.EMPTY, Color.EMPTY];
 
-  isVisibleToPlayer(
-    playerNr: binaryPlayerNr,
-    fromDirection?: Direction,
-  ): boolean {
-    if (fromDirection !== undefined) {
-      return (
-        this.color === colorMap[playerNr] ||
-        this.visibleFrom[fromDirection] === playerNr
-      );
-    }
+  isVisibleToPlayer(playerNr: binaryPlayerNr): boolean {
     return (
       this.color === colorMap[playerNr] ||
       this.visibleFrom.some((x) => x === playerNr)
+    );
+  }
+
+  isVisibleToPlayerFromDirection(
+    playerNr: binaryPlayerNr,
+    fromDirection: Direction,
+  ): boolean {
+    return (
+      this.color === colorMap[playerNr] ||
+      this.visibleFrom[fromDirection] === playerNr
     );
   }
 
@@ -34,8 +37,8 @@ export class FogOfWarField {
     const directions: Direction[] = [0, 1, 2, 3];
     return directions.some(
       (direction) =>
-        this.isVisibleToPlayer(0, direction) &&
-        this.isVisibleToPlayer(1, opposite(direction)),
+        this.isVisibleToPlayerFromDirection(0, direction) &&
+        this.isVisibleToPlayerFromDirection(1, opposite(direction)),
     );
   }
 
@@ -54,28 +57,29 @@ export class FogOfWarField {
 
   setVisibleFrom(direction: Direction, player: binaryPlayerNr | null): void {
     this.visibleFrom[direction] = player;
-
-    // update last known information
-    if (player) {
-      this.lastKnownInformation[player] = this.color;
-    }
-    if (this.isVisibleToObserver()) {
-      this.lastKnownInformation[2] = this.color;
-    }
+    this.updated = true;
   }
 
   updateLKI(person: binaryPlayerNr | null): void {
     this.lastKnownInformation[person ?? 2] = this.color;
   }
 
-  setColor(color: Color): void {
-    this.color = color;
-    const persons: (binaryPlayerNr | null)[] = [0, 1, null];
+  updateLKIs(): void {
+    var persons: (binaryPlayerNr | null)[] = [0, 1, null];
     persons.forEach((person) => {
       if (this.isVisibleTo(person)) {
         this.updateLKI(person);
       }
     });
+  }
+
+  set color(color: Color) {
+    this._color = color;
+    this.updated = true;
+  }
+
+  get color(): Color {
+    return this._color;
   }
 }
 
@@ -124,7 +128,7 @@ export class FogOfWarBoard extends Grid<FogOfWarField> {
       // should not happen
       return;
     }
-    field.setColor(color);
+    field.color = color;
 
     // update visibility in all directions
     const directions: Direction[] = [0, 1, 2, 3];
@@ -144,20 +148,13 @@ export class FogOfWarBoard extends Grid<FogOfWarField> {
 
   removeStone(coordinate: CoordinateLike): void {
     const field = this.at(coordinate);
-    if (!field) {
+    if (!field || field.color === Color.EMPTY) {
       return;
     }
-    const people: (binaryPlayerNr | null)[] = [0, 1, null];
-    const peopleWithVisibility = people.filter((person) =>
-      field.isVisibleTo(person),
-    );
-
-    field.setColor(Color.EMPTY);
-
-    // Everybody who could previously see this stone learns about its removal.
-    // This is sensible because, if a person loses visibility of a field with a stone,
-    // the person can deduce that the stone was captured (with the current rules).
-    peopleWithVisibility.forEach((person) => field.updateLKI(person));
+    let owner: binaryPlayerNr = field.color === Color.BLACK ? 0 : 1;
+    field.color = Color.EMPTY;
+    // owner knows that this field is empty now.
+    field.updateLKI(owner);
 
     // update visibility in all directions
     const directions: Direction[] = [0, 1, 2, 3];
@@ -172,6 +169,15 @@ export class FogOfWarBoard extends Grid<FogOfWarField> {
         if (field.color !== Color.EMPTY) {
           break;
         }
+      }
+    });
+  }
+
+  updateLKIs(): void {
+    this.forEach((field) => {
+      if (field.updated) {
+        field.updateLKIs();
+        field.updated = false;
       }
     });
   }

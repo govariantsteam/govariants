@@ -67,7 +67,7 @@ export class FogOfWarField {
   }
 
   updateLKIs(): void {
-    var persons: (binaryPlayerNr | null)[] = [0, 1, null];
+    let persons: (binaryPlayerNr | null)[] = [0, 1, null];
     persons.forEach((person) => {
       if (this.isVisibleTo(person)) {
         this.updateLKI(person);
@@ -153,7 +153,7 @@ export class FogOfWarBoard extends Grid<FogOfWarField> {
     if (!field || field.color === Color.EMPTY) {
       return;
     }
-    let owner: binaryPlayerNr = field.color === Color.BLACK ? 0 : 1;
+    const owner: binaryPlayerNr = field.color === Color.BLACK ? 0 : 1;
     field.color = Color.EMPTY;
     // owner knows that this field is empty now.
     field.updateLKI(owner);

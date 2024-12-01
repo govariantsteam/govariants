@@ -1,6 +1,7 @@
 import { AbstractGame } from "../../abstract_game";
 import { Coordinate, CoordinateLike } from "../../lib/coordinate";
-import { examineGroup } from "../../lib/group_utils";
+import { Grid } from "../../lib/grid";
+import { examineGroup, getGroup, getOuterBorder } from "../../lib/group_utils";
 import { SuperKoDetector } from "../../lib/ko_detector";
 import { Variant } from "../../variant";
 import { Baduk, Color } from "../baduk";
@@ -14,12 +15,15 @@ import {
 
 export type FogOfWarState = {
   board: VisibleField[][];
+  score_board?: Color[][];
 };
 
 export class FogOfWar extends AbstractGame<NewGridBadukConfig, FogOfWarState> {
   board: FogOfWarBoard;
   private ko_detector = new SuperKoDetector();
+  protected score_board?: Grid<Color>;
   protected next_to_play: binaryPlayerNr = 0;
+  protected last_move = "";
 
   constructor(config: NewGridBadukConfig) {
     super(config);
@@ -36,11 +40,13 @@ export class FogOfWar extends AbstractGame<NewGridBadukConfig, FogOfWarState> {
   override exportState(player?: number): FogOfWarState {
     const typedPlayerNr: binaryPlayerNr | null =
       player === 0 || player === 1 ? player : null;
+    const isGameOver = this.phase === "gameover";
 
     return {
       board: this.board
-        .map((field) => field.exportFor(typedPlayerNr))
+        .map((field) => field.exportFor(typedPlayerNr, isGameOver))
         .serialize(),
+      ...(this.score_board && { score_board: this.score_board.serialize() }),
     };
   }
 
@@ -180,12 +186,56 @@ export class FogOfWar extends AbstractGame<NewGridBadukConfig, FogOfWarState> {
   }
 
   protected prepareForNextMove(move: string): void {
-    // if (move == "pass" && this.last_move === "pass") {
-    //   this.finalizeScore();
-    // } else {
-    this.next_to_play = this.next_to_play === 0 ? 1 : 0;
-    // }
+    if (move == "pass" && this.last_move === "pass") {
+      this.finalizeScore();
+    } else {
+      this.next_to_play = this.next_to_play === 0 ? 1 : 0;
+      this.last_move = move;
+    }
     super.increaseRound();
+  }
+
+  private finalizeScore(): void {
+    const board = this.board.map((x) => x.color);
+    const visited = this.board.map(() => false);
+    let black_points = 0;
+    let white_points = this.config.komi;
+
+    board.forEach((color, pos) => {
+      if (visited.at(pos)) {
+        return;
+      }
+      if (color === Color.EMPTY) {
+        const group = getGroup(pos, board);
+        const outer_border = getOuterBorder(group, board);
+        const border_colors = outer_border.map((pos) => board.at(pos) as Color);
+        if (border_colors.length > 0) {
+          const owner_color = border_colors[0];
+          if (border_colors.every((c) => c === owner_color)) {
+            group.forEach((pos) => board.set(pos, owner_color));
+          }
+        }
+        group.forEach((pos) => visited.set(pos, true));
+      }
+    });
+
+    board.forEach((color) => {
+      if (color === Color.BLACK) black_points++;
+      else if (color === Color.WHITE) white_points++;
+    });
+
+    this.score_board = board;
+
+    const diff = black_points - white_points;
+    if (diff < 0) {
+      this.result = `W+${-diff}`;
+    } else if (diff > 0) {
+      this.result = `B+${diff}`;
+    } else {
+      this.result = "Tie";
+    }
+
+    this.phase = "gameover";
   }
 }
 

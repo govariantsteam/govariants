@@ -48,11 +48,13 @@ export class FogOfWarField {
       : this.isVisibleToPlayer(person);
   }
 
-  exportFor(person: binaryPlayerNr | null): VisibleField {
-    return {
-      visibleColor: this.isVisibleTo(person) ? this.color : null,
-      lastKnownInformation: this.lastKnownInformation[person ?? 2],
-    };
+  exportFor(person: binaryPlayerNr | null, isGameOver: boolean): VisibleField {
+    return isGameOver
+      ? { visibleColor: this.color, lastKnownInformation: Color.EMPTY }
+      : {
+          visibleColor: this.isVisibleTo(person) ? this.color : null,
+          lastKnownInformation: this.lastKnownInformation[person ?? 2],
+        };
   }
 
   setVisibleFrom(direction: Direction, player: binaryPlayerNr | null): void {

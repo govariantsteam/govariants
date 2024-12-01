@@ -54,6 +54,20 @@ const fields_colors = computed(() =>
     row.map((field) => (field.visibleColor !== null ? lightFieldColor : null)),
   ),
 );
+
+const score_board = computed(() => {
+  const colorTransform = (color: Color): string[] => {
+    switch (color) {
+      case Color.BLACK:
+        return ["black"];
+      case Color.WHITE:
+        return ["white"];
+      case Color.EMPTY:
+        return [];
+    }
+  };
+  return props.gamestate.score_board?.map((row) => row.map(colorTransform));
+});
 </script>
 
 <template>
@@ -63,6 +77,7 @@ const fields_colors = computed(() =>
     :board_dimensions="props.config.board"
     :background_color="darkFieldColor"
     :fields_bg_color="fields_colors"
+    :score_board="score_board"
     @click="positionClicked"
   />
 </template>

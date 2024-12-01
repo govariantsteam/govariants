@@ -67,7 +67,7 @@ export class FogOfWarField {
   }
 
   updateLKIs(): void {
-    let persons: (binaryPlayerNr | null)[] = [0, 1, null];
+    const persons: (binaryPlayerNr | null)[] = [0, 1, null];
     persons.forEach((person) => {
       if (this.isVisibleTo(person)) {
         this.updateLKI(person);

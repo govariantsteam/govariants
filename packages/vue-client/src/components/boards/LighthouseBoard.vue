@@ -6,13 +6,13 @@ import {
   indexToMove,
   DefaultBoardConfig,
   MulticolorStone,
-  FogOfWarState,
+  LighthouseState,
 } from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
 
 const props = defineProps<{
   config: DefaultBoardConfig;
-  gamestate: FogOfWarState;
+  gamestate: LighthouseState;
 }>();
 
 const emit = defineEmits<{

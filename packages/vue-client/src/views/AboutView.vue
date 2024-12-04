@@ -15,6 +15,10 @@
             OGS Forums
           </a>
         </p>
+        <p>
+          <span>Or chat on </span>
+          <a href="https://matrix.to/#/#govariants:matrix.org">Element</a>
+        </p>
       </div>
     </div>
   </main>

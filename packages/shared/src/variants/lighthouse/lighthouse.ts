@@ -245,6 +245,7 @@ export class Lighthouse extends AbstractGame<
 export const lighthouseVariant: Variant<NewGridBadukConfig, LighthouseState> = {
   gameClass: Lighthouse,
   defaultConfig: Baduk.defaultConfig,
+  getPlayerColors: Baduk.getPlayerColors,
   description:
     "Each stone casts rays of light that illuminate fields in a line.",
 };

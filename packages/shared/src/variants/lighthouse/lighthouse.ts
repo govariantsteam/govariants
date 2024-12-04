@@ -9,17 +9,20 @@ import { NewGridBadukConfig } from "../baduk_utils";
 import {
   binaryPlayerNr,
   VisibleField,
-  FogOfWarBoard,
-  FogOfWarField,
-} from "./fog_of_war.types";
+  LighthouseGrid,
+  LighthouseField,
+} from "./lighthouse.types";
 
-export type FogOfWarState = {
+export type LighthouseState = {
   board: VisibleField[][];
   score_board?: Color[][];
 };
 
-export class FogOfWar extends AbstractGame<NewGridBadukConfig, FogOfWarState> {
-  board: FogOfWarBoard;
+export class Lighthouse extends AbstractGame<
+  NewGridBadukConfig,
+  LighthouseState
+> {
+  board: LighthouseGrid;
   private ko_detector = new SuperKoDetector();
   protected score_board?: Grid<Color>;
   protected next_to_play: binaryPlayerNr = 0;
@@ -34,10 +37,10 @@ export class FogOfWar extends AbstractGame<NewGridBadukConfig, FogOfWarState> {
       );
     }
 
-    this.board = new FogOfWarBoard(config.board.width, config.board.height);
+    this.board = new LighthouseGrid(config.board.width, config.board.height);
   }
 
-  override exportState(player?: number): FogOfWarState {
+  override exportState(player?: number): LighthouseState {
     const typedPlayerNr: binaryPlayerNr | null =
       player === 0 || player === 1 ? player : null;
     const isGameOver = this.phase === "gameover";
@@ -101,7 +104,7 @@ export class FogOfWar extends AbstractGame<NewGridBadukConfig, FogOfWarState> {
     this.prepareForNextMove(move);
   }
 
-  handleCollision(field: FogOfWarField): void {
+  handleCollision(field: LighthouseField): void {
     if (field.isVisibleTo(this.next_to_play)) {
       throw Error(`Cannot place a stone on top of an existing stone.`);
     } else {
@@ -239,8 +242,9 @@ export class FogOfWar extends AbstractGame<NewGridBadukConfig, FogOfWarState> {
   }
 }
 
-export const fogOfWarVariant: Variant<NewGridBadukConfig, FogOfWarState> = {
-  gameClass: FogOfWar,
+export const lighthouseVariant: Variant<NewGridBadukConfig, LighthouseState> = {
+  gameClass: Lighthouse,
   defaultConfig: Baduk.defaultConfig,
-  description: "Each stone casts a ray of light that illuminates fields.",
+  description:
+    "Each stone casts rays of light that illuminate fields in a line.",
 };

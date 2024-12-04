@@ -7,7 +7,7 @@ const colorMap: { [p: number]: Color } = {
   1: Color.WHITE,
 };
 
-export class FogOfWarField {
+export class LighthouseField {
   private _color: Color = Color.EMPTY;
   // marks whether something was updated, for the purpose of LKI.
   updated: boolean = false;
@@ -115,12 +115,12 @@ function step(coordinate: CoordinateLike, direction: Direction): Coordinate {
   }
 }
 
-export class FogOfWarBoard extends Grid<FogOfWarField> {
+export class LighthouseGrid extends Grid<LighthouseField> {
   constructor(width: number, height: number) {
     super(width, height);
-    this.arr.fill(new FogOfWarField());
+    this.arr.fill(new LighthouseField());
     // make sure that each field has an independent object
-    this.arr.forEach((_, index) => (this.arr[index] = new FogOfWarField()));
+    this.arr.forEach((_, index) => (this.arr[index] = new LighthouseField()));
   }
 
   addStone(player: binaryPlayerNr, coordinate: Coordinate): void {

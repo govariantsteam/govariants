@@ -23,18 +23,21 @@ function positionClicked(pos: Coordinate | number) {
   emit("move", indexToMove(pos));
 }
 
-const darkFieldColor = "#a88946";
+const darkFieldColor = "#684e14";
 const lightFieldColor = "#dcb35c";
-const darkWhiteColor = "#cccccc";
+const lightWhiteColor = "#FFFFFF";
+const darkWhiteColor = "#bbbbbb";
+const lightBlackColor = "#4c4c4c";
+const darkBlackColor = "#000000";
 
 function toStone(color: Color, darken: boolean): MulticolorStone | null {
   switch (color) {
     case Color.EMPTY:
       return null;
     case Color.BLACK:
-      return { colors: ["black"] };
+      return { colors: [darken ? darkBlackColor : lightBlackColor] };
     case Color.WHITE:
-      return { colors: [darken ? darkWhiteColor : "white"] };
+      return { colors: [darken ? darkWhiteColor : lightWhiteColor] };
   }
 }
 
@@ -59,9 +62,9 @@ const score_board = computed(() => {
   const colorTransform = (color: Color): string[] => {
     switch (color) {
       case Color.BLACK:
-        return ["black"];
+        return [lightBlackColor];
       case Color.WHITE:
-        return ["white"];
+        return [lightWhiteColor];
       case Color.EMPTY:
         return [];
     }

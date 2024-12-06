@@ -56,16 +56,22 @@ function board_with_quantum_stones(
     // difference in index.
     if (boardShape === "2d") {
       pos = pos as CoordinateLike;
-      (multicolor_stone_board as MulticolorStone[][])[pos.y][pos.x].colors.push(
-        "green",
+      addGreenIfOccupied(
+        (multicolor_stone_board as MulticolorStone[][])[pos.y][pos.x].colors,
       );
     } else {
-      (multicolor_stone_board as MulticolorStone[])[pos as number].colors.push(
-        "green",
+      addGreenIfOccupied(
+        (multicolor_stone_board as MulticolorStone[])[pos as number].colors,
       );
     }
   });
   return { board: multicolor_stone_board };
+}
+
+function addGreenIfOccupied(positionColors: string[]): void {
+  if (positionColors.length > 0) {
+    positionColors.push("green");
+  }
 }
 
 const board_0 = computed(() => {

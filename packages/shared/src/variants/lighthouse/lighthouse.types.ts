@@ -118,9 +118,9 @@ function step(coordinate: CoordinateLike, direction: Direction): Coordinate {
 export class LighthouseGrid extends Grid<LighthouseField> {
   constructor(width: number, height: number) {
     super(width, height);
-    this.arr.fill(new LighthouseField());
+    this.fill(new LighthouseField());
     // make sure that each field has an independent object
-    this.arr.forEach((_, index) => (this.arr[index] = new LighthouseField()));
+    this.forEach((_, index) => this.set(index, new LighthouseField()));
   }
 
   addStone(player: binaryPlayerNr, coordinate: Coordinate): void {

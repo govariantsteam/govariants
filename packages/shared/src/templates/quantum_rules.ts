@@ -23,6 +23,8 @@ The first two moves of the game are Quantum moves that **invert colour** in one 
 
 To highlight Quantum moves, the stones are marked with a green colour.
 
+The positions of quantum stones stay connected after capture, so subsequent moves result in according stone placements in the two realities.
+
 Score
 ---------
 

@@ -177,7 +177,7 @@ export const fractionalVariant: Variant<FractionalConfig> = {
   gameClass: Fractional,
   description: "Multiplayer Baduk with multicolored stones and parallel moves",
   rulesDescription: fractionalRulesDescription,
-  time_handling: "parallel",
+  time_handling: "none",
   defaultConfig(): FractionalConfig {
     return {
       players: [

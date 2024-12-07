@@ -2,7 +2,6 @@ import { getGame, getGamesWithTimeControl, handleMoveAndTime } from "../games";
 import {
   MovesType,
   getOnlyMove,
-  getTimeHandling,
   makeGameObject,
   timeControlMap,
 } from "@ogfcommunity/variants-shared";

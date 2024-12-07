@@ -45,17 +45,14 @@ export class TimeoutService implements ITimeoutService {
           continue;
         }
 
-        const timeHandling = getTimeHandling(game.variant);
-        if (timeHandling === "none") {
-          // this should not happen here, since the timeout service only activates
-          // for games supporting time control.
+        const timeHandler = GetTimeHandler(game.variant, this);
+        if (timeHandler === null) {
+          // this should generally not happen
           console.warn(
             `timeout service was called for game ${game.id} of variant ${game.variant}, which has no time control.`,
           );
           continue;
         }
-
-        const timeHandler = GetTimeHandler(timeHandling, this);
         const playersWithTimeout = game_object
           .nextToPlay()
           .filter((player) => game.moves.some((move) => player in move));

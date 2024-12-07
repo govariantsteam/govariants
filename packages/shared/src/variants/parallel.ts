@@ -252,6 +252,7 @@ interface Group {
 export const parallelVariant: Variant<ParallelGoConfig> = {
   gameClass: ParallelGo,
   description: "Multiplayer Baduk with parallel moves",
+  time_handling: "parallel",
   defaultConfig(): ParallelGoConfig {
     return {
       width: 19,

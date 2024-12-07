@@ -72,6 +72,7 @@ export class DriftGo extends GridBaduk {
 export const driftVariant: Variant<DriftGoConfig, BadukState> = {
   gameClass: DriftGo,
   description: "Baduk, but the entire board drifts on every turn",
+  time_handling: "sequential",
   defaultConfig(): DriftGoConfig {
     return {
       komi: 6.5,

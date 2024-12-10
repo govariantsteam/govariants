@@ -17,7 +17,7 @@ import { io } from "./socket_io";
 import { getTimeoutService } from "./index";
 import {
   GetInitialTimeControl,
-  GetTimeHandler,
+  getTimeHandler,
   ValidateTimeControlConfig,
 } from "./time-control/time-control";
 import { updateRatings, supportsRatings } from "./rating/rating";
@@ -173,7 +173,7 @@ export async function handleMoveAndTime(
     if (game_obj.phase === "gameover") {
       getTimeoutService().clearGameTimeouts(game.id);
     }
-    const timeHandler = GetTimeHandler(game.variant);
+    const timeHandler = getTimeHandler(game.variant);
     if (timeHandler !== null) {
       timeControl = timeHandler.handleMove(
         game,

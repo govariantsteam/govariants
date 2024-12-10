@@ -65,7 +65,7 @@ export function ValidateTimeControlBase(
 /**
  * Returns a new time handler instance suited for a given variant.
  */
-export function GetTimeHandler(
+export function getTimeHandler(
   variant: string,
   timeout_service?: TimeoutService,
 ): ITimeHandler | null {
@@ -95,7 +95,7 @@ export function GetInitialTimeControl(
   variant: string,
   config: object,
 ): ITimeControlBase | null {
-  const handler = GetTimeHandler(variant);
+  const handler = getTimeHandler(variant);
   if (!HasTimeControlConfig(config) || handler === null) return null;
 
   return handler.initialState(variant, config);

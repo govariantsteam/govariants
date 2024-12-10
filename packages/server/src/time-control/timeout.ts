@@ -6,7 +6,7 @@ import {
   timeControlMap,
 } from "@ogfcommunity/variants-shared";
 import { nullTimeState } from "./time-handler-utils";
-import { GetTimeHandler } from "./time-control";
+import { getTimeHandler } from "./time-control";
 
 type GameTimeouts = {
   // timeout for this player, or null
@@ -44,7 +44,7 @@ export class TimeoutService implements ITimeoutService {
           continue;
         }
 
-        const timeHandler = GetTimeHandler(game.variant, this);
+        const timeHandler = getTimeHandler(game.variant, this);
         if (timeHandler === null) {
           // this should generally not happen
           console.warn(

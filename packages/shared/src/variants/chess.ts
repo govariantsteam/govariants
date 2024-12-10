@@ -55,5 +55,6 @@ export const chessVariant: Variant = {
   gameClass: ChessGame,
   description:
     "Baduk with different types of stones\n the goal is to capture a specific stone",
+  time_handling: "sequential",
   defaultConfig: Object,
 };

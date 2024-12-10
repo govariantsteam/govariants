@@ -5,9 +5,8 @@ import {
   makeGameObject,
   timeControlMap,
 } from "@ogfcommunity/variants-shared";
-import { timeControlHandlerMap } from "./time-handler-map";
-import { Clock } from "./clock";
 import { nullTimeState } from "./time-handler-utils";
+import { getTimeHandler } from "./time-control";
 
 type GameTimeouts = {
   // timeout for this player, or null
@@ -45,10 +44,14 @@ export class TimeoutService implements ITimeoutService {
           continue;
         }
 
-        const timeHandler = new timeControlHandlerMap[game.variant](
-          new Clock(),
-          this,
-        );
+        const timeHandler = getTimeHandler(game.variant, this);
+        if (timeHandler === null) {
+          // this should generally not happen
+          console.warn(
+            `timeout service was called for game ${game.id} of variant ${game.variant}, which has no time control.`,
+          );
+          continue;
+        }
         const playersWithTimeout = game_object
           .nextToPlay()
           .filter((player) => game.moves.some((move) => player in move));

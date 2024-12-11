@@ -125,3 +125,9 @@ export function getVariantsWithRulesDescription(): string[] {
     )
     .map(([name, _variant]) => name);
 }
+
+export function getTimeHandling(
+  variant: string,
+): "sequential" | "parallel" | "none" {
+  return variant_map[variant]?.time_handling ?? "none";
+}

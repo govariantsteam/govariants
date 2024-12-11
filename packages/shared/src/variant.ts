@@ -10,6 +10,7 @@ export interface Variant<
   description: string;
   rulesDescription?: string;
   deprecated?: boolean;
+  time_handling: "sequential" | "parallel" | "none";
   defaultConfig: () => ConfigT;
   getPlayerColors?: (config: ConfigT, playerNr: number) => string[];
   sanitizeConfig?: (config: object) => ConfigT;

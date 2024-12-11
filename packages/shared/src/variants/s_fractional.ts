@@ -343,6 +343,7 @@ export const sFractionalVariant: Variant<SFractionalConfig, SFractionalState> =
     description:
       "Stones have a secondary colour that also requires liberties to avoid capture.",
     rulesDescription: sfractionalRulesDescription,
+    time_handling: "sequential",
     getPlayerColors: Baduk.getPlayerColors,
     uiTransform: SFractional.uiTransform,
   };

@@ -5,6 +5,7 @@ import {
   getDefaultConfig,
   type ITimeControlConfig,
   BoardPattern,
+  getTimeHandling,
 } from "@ogfcommunity/variants-shared";
 import * as requests from "@/requests";
 import router from "@/router";
@@ -78,6 +79,9 @@ const setTimeControlConfig = (
 ) => {
   timeControlConfig = newTimeControlConfig;
 };
+const hasTimeConfigForm = computed(
+  () => getTimeHandling(variant.value) !== "none",
+);
 </script>
 
 <template>
@@ -100,12 +104,18 @@ const setTimeControlConfig = (
         v-bind:initialConfig="getDefaultConfig(variant)"
         v-on:configChanged="setConfig"
       />
-      <TimeControlConfigForm v-on:config-changed="setTimeControlConfig" />
+      <TimeControlConfigForm
+        v-if="hasTimeConfigForm"
+        v-on:config-changed="setTimeControlConfig"
+      />
       <button v-on:click="createGame" class="large-button">Create Game</button>
     </template>
     <template v-else>
       <textarea v-model="configString"></textarea>
-      <TimeControlConfigForm v-on:config-changed="setTimeControlConfig" />
+      <TimeControlConfigForm
+        v-if="hasTimeConfigForm"
+        v-on:config-changed="setTimeControlConfig"
+      />
       <button v-on:click="parseConfigThenCreateGame" class="large-button">
         Create Game
       </button>

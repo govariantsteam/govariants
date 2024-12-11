@@ -337,6 +337,7 @@ export const badukVariant: Variant<NewBadukConfig, BadukState> = {
   gameClass: Baduk,
   description:
     "Traditional game of Baduk a.k.a. Go, Weiqi\n Surround stones to capture them\n Secure more territory + captures to win",
+  time_handling: "sequential",
   defaultConfig: Baduk.defaultConfig,
   getPlayerColors: Baduk.getPlayerColors,
   sanitizeConfig: Baduk.sanitizeConfig,

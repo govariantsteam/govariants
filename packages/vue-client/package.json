@@ -13,6 +13,11 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "gen-favicon": "rimraf public/favicon.ico && icon-gen --ico -i public/logo.svg -o public --ico-name favicon"
   },
+  "lint-staged": {
+    "src/**/*.+(ts|vue)": [
+      "eslint --ignore-path .gitignore"
+    ]
+  },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
     "@fortawesome/free-brands-svg-icons": "^6.5.1",

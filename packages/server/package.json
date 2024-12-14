@@ -9,6 +9,12 @@
     "lint": "eslint --fix ./src && prettier --write ./src",
     "lint:check": "eslint ./src && prettier --check ./src"
   },
+  "lint-staged": {
+    "src/**/*.+(ts)": [
+      "eslint",
+      "prettier --check"
+    ]
+  },
   "dependencies": {
     "@ogfcommunity/variants-shared": "1.0.0",
     "@types/bcrypt": "^5.0.0",

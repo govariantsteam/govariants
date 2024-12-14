@@ -22,6 +22,12 @@
     "lint": "eslint --fix ./src && prettier --write ./src",
     "new-variant": "node scripts/create-new-variant.mjs"
   },
+  "lint-staged": {
+    "src/**/*.+(ts)": [
+      "eslint",
+      "prettier --check"
+    ]
+  },
   "dependencies": {
     "chess.js": "^1.0.0-beta.6",
     "markdown-it": "^14.1.0",

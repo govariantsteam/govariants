@@ -248,4 +248,5 @@ export const lighthouseVariant: Variant<NewGridBadukConfig, LighthouseState> = {
   getPlayerColors: Baduk.getPlayerColors,
   description:
     "Each stone casts rays of light that illuminate fields in a line.",
+  time_handling: "sequential",
 };

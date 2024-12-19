@@ -17,7 +17,6 @@ import { badukVariant } from "./variants/baduk";
 import { Variant } from "./variant";
 import markdownit from "markdown-it";
 import { sFractionalVariant } from "./variants/s_fractional";
-import { lighthouseVariant } from "./variants/lighthouse/lighthouse";
 
 const variant_map: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -39,7 +38,6 @@ const variant_map: {
   drift: driftVariant,
   quantum: quantumVariant,
   sfractional: sFractionalVariant,
-  lighthouse: lighthouseVariant,
 };
 
 class ConfigError extends Error {

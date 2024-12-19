@@ -21,4 +21,5 @@ export const config_form_map: {
   drift: DriftGoConfigFormVue,
   quantum: BadukConfigForm,
   sfractional: SFractionalConfigForm,
+  lighthouse: GridBadukConfigForm,
 };

@@ -3,6 +3,7 @@ import { Coordinate, CoordinateLike } from "../../lib/coordinate";
 import { Grid } from "../../lib/grid";
 import { examineGroup, getGroup, getOuterBorder } from "../../lib/group_utils";
 import { SuperKoDetector } from "../../lib/ko_detector";
+import { lighthouseRules } from "../../templates/lighthouse_rules";
 import { Variant } from "../../variant";
 import { Baduk, Color } from "../baduk";
 import { NewGridBadukConfig } from "../baduk_utils";
@@ -249,4 +250,5 @@ export const lighthouseVariant: Variant<NewGridBadukConfig, LighthouseState> = {
   description:
     "Each stone casts rays of light that illuminate fields in a line.",
   time_handling: "sequential",
+  rulesDescription: lighthouseRules,
 };

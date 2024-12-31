@@ -46,6 +46,9 @@ const user = useCurrentUser();
 const playing_as = ref<undefined | number>(undefined);
 const displayed_round = computed(() => view_round.value ?? current_round.value);
 const time_control = ref<ITimeControlBase | null>(null);
+// Admins probably don't want to do admin stuff most of the time.  Let's hide
+// admin interface behind a toggle.
+const adminMode = ref<boolean>(false);
 
 function setNewState(stateResponse: GameStateResponse): void {
   const { timeControl: timeControl, ...state } = stateResponse;
@@ -254,6 +257,7 @@ const createTimeControlPreview = (
           <div v-for="(player, idx) in players" :key="idx">
             <SeatComponent
               :user_id="user?.id"
+              :admin_mode="adminMode"
               :occupant="player"
               :player_n="idx"
               @sit="sit(idx)"
@@ -288,6 +292,10 @@ const createTimeControlPreview = (
           style="font-weight: bold; font-size: 24pt"
         >
           Result: {{ game_state?.result }}
+        </div>
+        <div v-if="user?.role === 'admin'">
+          <input type="checkbox" v-model="adminMode" id="admin" />
+          <label for="admin">Admin Mode</label>
         </div>
       </div>
     </div>

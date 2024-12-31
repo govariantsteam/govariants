@@ -116,7 +116,7 @@ router.post("/games/:gameId/move", async (req, res) => {
 });
 
 router.post("/games/:gameId/sit/:seat", async (req, res) => {
-  const user = req.user as User | undefined;
+  const user = req.user as UserResponse | undefined;
 
   try {
     const players: User[] = await takeSeat(
@@ -135,12 +135,12 @@ router.post("/games/:gameId/sit/:seat", async (req, res) => {
 
 router.post("/games/:gameId/leave/:seat", async (req, res) => {
   // TODO: make sure this is set to a valid id once we have user auth
-  const user_id = (req.user as User)?.id;
+  const user = req.user as UserResponse | undefined;
 
   const players: User[] = await leaveSeat(
     req.params.gameId,
     Number(req.params.seat),
-    user_id,
+    user,
   );
 
   io().emit(`game/${req.params.gameId}/seats`, players);

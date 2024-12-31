@@ -10,6 +10,7 @@ import {
   GameStateResponse,
   sanitizeConfig,
   ITimeControlBase,
+  UserResponse,
 } from "@ogfcommunity/variants-shared";
 import { ObjectId, WithId, Document, Filter } from "mongodb";
 import { getDb } from "./db";
@@ -242,10 +243,18 @@ function emitGame(
   }
 }
 
+/**
+ *
+ * @param game_id
+ * @param seat The seat to be updated (0..N)
+ * @param user The user who submitted the request.
+ * @param new_user The user to place in the seat. The seat will be vacated if undefined.
+ * @returns
+ */
 async function updateSeat(
   game_id: string,
   seat: number,
-  user_id: string,
+  user: UserResponse,
   new_user: User | undefined,
 ) {
   const game = await getGame(game_id);
@@ -257,7 +266,12 @@ async function updateSeat(
   }
 
   // If the seat is occupied by another player, throw an error.
-  if (game.players[seat] != null && game.players[seat].id != user_id) {
+  if (
+    game.players[seat] != null &&
+    game.players[seat].id != user.id &&
+    // Admins may do as they please
+    user.role !== "admin"
+  ) {
     throw new Error("Seat taken!");
   }
 
@@ -271,16 +285,16 @@ async function updateSeat(
   return game.players;
 }
 
-export function takeSeat(game_id: string, seat: number, user: User) {
-  return updateSeat(game_id, seat, user.id, user);
+export function takeSeat(game_id: string, seat: number, user: UserResponse) {
+  return updateSeat(game_id, seat, user, user);
 }
 
 export async function leaveSeat(
   game_id: string,
   seat: number,
-  user_id: string,
+  user: UserResponse,
 ) {
-  return updateSeat(game_id, seat, user_id, undefined);
+  return updateSeat(game_id, seat, user, undefined);
 }
 
 export async function getGameState(

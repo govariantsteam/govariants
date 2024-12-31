@@ -10,6 +10,7 @@ import PlayerSymbol from "./PlayerSymbol.vue";
 
 const props = defineProps<{
   user_id?: string;
+  admin_mode?: boolean;
   occupant?: User;
   player_n: number;
   selected?: number;
@@ -67,6 +68,13 @@ const time_config = computed(
         >
           Leave Seat
         </button>
+        <button
+          v-if="hasLeaveCallback && occupant.id !== user_id && admin_mode"
+          class="btn-danger"
+          @click.stop="$emit('leave')"
+        >
+          Kick
+        </button>
       </div>
     </div>
     <PlayerSymbol
@@ -118,5 +126,12 @@ const time_config = computed(
   button {
     margin-left: 0.5rem;
   }
+}
+
+/* stolen from bootstrap */
+.btn-danger {
+  color: #fff;
+  background-color: #d9534f;
+  border-color: #d43f3a;
 }
 </style>

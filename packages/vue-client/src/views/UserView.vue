@@ -3,6 +3,8 @@ import { UserResponse, UserRole } from "@ogfcommunity/variants-shared";
 import { ref, watchEffect } from "vue";
 import * as requests from "../requests";
 import { useCurrentUser } from "@/stores/user";
+import Swal from "sweetalert2";
+import router from "@/router";
 
 const props = defineProps<{ userId: string }>();
 
@@ -24,6 +26,41 @@ function setRole(role: UserRole) {
     .then(() => (user.value = user.value ? { ...user.value, role } : undefined))
     .catch(alert);
 }
+
+async function launchDeleteUserDialog() {
+  if (!user.value) {
+    Swal.fire({ icon: "error", text: "User is undefined!" });
+    return;
+  }
+
+  const userToDelete = user.value;
+  const { value: nameForVerification } = await Swal.fire({
+    title: "Delete User",
+    text: `Are you sure you want to delete user '${userToDelete.username}'`,
+    input: "text",
+    inputPlaceholder: "To confirm, type the username here",
+    showCancelButton: true,
+  });
+
+  if (nameForVerification !== userToDelete.username) {
+    Swal.fire({
+      icon: "error",
+      text: "Name did not match!",
+    });
+  } else {
+    try {
+      await requests.del(`/users/${props.userId}`);
+      Swal.fire(`Successfully deleted user: ${userToDelete.username}`);
+      router.push("/");
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Could not delete user...",
+        text: `${(error as Error).message}`,
+      });
+    }
+  }
+}
 </script>
 
 <template>
@@ -37,6 +74,7 @@ function setRole(role: UserRole) {
           <button v-if="user.role !== 'admin'" @click="setRole('admin')">
             Make Admin
           </button>
+          <button @click="launchDeleteUserDialog()">Delete User</button>
         </div>
       </div>
       <div v-if="err">{{ err }}</div>

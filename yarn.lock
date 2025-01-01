@@ -1185,6 +1185,7 @@ __metadata:
     prettier: ^2.8.8
     rimraf: ^5.0.5
     socket.io-client: ^4.8.1
+    sweetalert2: ^11.15.3
     typescript: ^5.1.6
     vite: ^4.5.2
     vitest: ^0.32.4
@@ -7587,6 +7588,13 @@ __metadata:
   version: 1.0.0
   resolution: "supports-preserve-symlinks-flag@npm:1.0.0"
   checksum: 53b1e247e68e05db7b3808b99b892bd36fb096e6fba213a06da7fab22045e97597db425c724f2bbd6c99a3c295e1e73f3e4de78592289f38431049e1277ca0ae
+  languageName: node
+  linkType: hard
+
+"sweetalert2@npm:^11.15.3":
+  version: 11.15.3
+  resolution: "sweetalert2@npm:11.15.3"
+  checksum: 8d75654fddd76ef5317b555a93e5f4648c74a0c19d95d9ecbf230e9640ce910bd29474d2b64e495ac886d2b3e087e1fe2d83ce3b0259f2ebac0a0f0bf8535f08
   languageName: node
   linkType: hard
 

@@ -6,8 +6,15 @@ const SERVER_ORIGIN =
     : "http://localhost:3001";
 const SERVER_PATH_PREFIX = "/api";
 
-export async function get(path: string) {
-  const response = await fetch(SERVER_PATH_PREFIX + path);
+async function requestImpl(method: string, path: string, json?: object) {
+  const headers = new Headers();
+  headers.append("Origin", SERVER_ORIGIN); // TODO: Is this necessary?
+  headers.append("Content-Type", "application/json");
+  const response = await fetch(SERVER_PATH_PREFIX + path, {
+    method,
+    ...(json ? { body: JSON.stringify(json) } : null),
+    headers,
+  });
   const data = await response.json();
 
   if (!response.ok) {
@@ -20,25 +27,11 @@ export async function get(path: string) {
 // There's probably a way to get types into the APIs, but for now just have to
 // silence this warning.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function requestWithPayloadImpl(method: string, path: string, json: any) {
-  const headers = new Headers();
-  headers.append("Origin", SERVER_ORIGIN); // TODO: Is this necessary?
-  headers.append("Content-Type", "application/json");
-  const response = await fetch(SERVER_PATH_PREFIX + path, {
-    method,
-    body: JSON.stringify(json),
-    headers,
-  });
-  const data = await response.json();
+type NoPayloadRequest = (path: string) => Promise<any>;
 
-  if (!response.ok) {
-    throw new Error(data);
-  }
-
-  return data;
-}
-
-export const post = requestWithPayloadImpl.bind(undefined, "post");
-export const put = requestWithPayloadImpl.bind(undefined, "put");
+export const get: NoPayloadRequest = requestImpl.bind(undefined, "get");
+export const post = requestImpl.bind(undefined, "post");
+export const put = requestImpl.bind(undefined, "put");
+export const del: NoPayloadRequest = requestImpl.bind(undefined, "delete");
 
 export const socket = io(SERVER_ORIGIN);

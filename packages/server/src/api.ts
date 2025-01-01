@@ -212,6 +212,23 @@ router.get("/users/:userId", async (req, res) => {
   }
 });
 
+router.delete("/users/:userId", async (req, res) => {
+  if ((req.user as UserResponse).role !== "admin") {
+    res.status(401);
+    res.json("You are not authorized to delete users");
+    return;
+  }
+
+  try {
+    // TODO: we should probably make deleteUser async so that we can report DB errors to the API caller
+    deleteUser(req.params.userId);
+    res.json("success");
+  } catch (e) {
+    res.status(500);
+    res.json(e.message);
+  }
+});
+
 function make_auth_cb(
   req: express.Request,
   res: express.Response,

@@ -75,7 +75,9 @@ passport.deserializeUser<string>(function (id, callback) {
       if (user) {
         callback(null, user);
       } else {
-        callback(new Error(`No user with ID: ${id}`));
+        // This may be the case if a user has been deleted, but the user session persists.
+        // Sending null as the second argument invalidates the session.
+        callback(null, null);
       }
     })
     .catch((err) => {

@@ -2,7 +2,7 @@ import { Vector2D } from "./types/Vector2D";
 import { Intersection } from "./types/intersection";
 
 export function createSierpinskyBoard(depth: number): Intersection[] {
-  const sideLength = Math.pow(2, depth + 1);
+  const radius = Math.pow(2, depth + 1) / Math.sqrt(3);
 
   const middleIntersections = [0, 1, 2].map(
     (number) =>
@@ -10,7 +10,7 @@ export function createSierpinskyBoard(depth: number): Intersection[] {
         new Vector2D(
           Math.cos((Math.PI * (0.5 + 2 * number)) / 3),
           Math.sin((Math.PI * (0.5 + 2 * number)) / 3),
-        ).Multiply(sideLength / 2),
+        ).Multiply(radius),
       ),
   ) as [Intersection, Intersection, Intersection];
 

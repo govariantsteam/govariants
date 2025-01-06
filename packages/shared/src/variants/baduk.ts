@@ -296,9 +296,7 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
     ): MulticolorStone => {
       return {
         colors: colorTransform(color),
-        annotation: equals_placement(gamestate.last_move, idx)
-          ? "CR"
-          : undefined,
+        ...(equals_placement(gamestate.last_move, idx) && { annotation: "CR" }),
       };
     };
 

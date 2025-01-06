@@ -312,9 +312,7 @@ export class SFractional extends AbstractGame<
     ): MulticolorStone => {
       return {
         colors: colors,
-        annotation: equals_placement(gamestate.lastMove, idx)
-          ? "CR"
-          : undefined,
+        ...(equals_placement(gamestate.lastMove, idx) && { annotation: "CR" }),
       };
     };
     const scoreTransform = (color: string): string[] | null =>

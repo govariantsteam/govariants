@@ -14,6 +14,7 @@ import {
   LegacyBadukConfig,
   NewBadukConfig,
   NewGridBadukConfig,
+  equals_placement,
   isGridBadukConfig,
   isLegacyBadukConfig,
   mapBoard,
@@ -289,8 +290,16 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
           return [];
       }
     };
-    const stoneTransform = (color: Color): MulticolorStone => {
-      return { colors: colorTransform(color) };
+    const stoneTransform = (
+      color: Color,
+      idx: number | CoordinateLike,
+    ): MulticolorStone => {
+      return {
+        colors: colorTransform(color),
+        annotation: equals_placement(gamestate.last_move, idx)
+          ? "CR"
+          : undefined,
+      };
     };
 
     return {

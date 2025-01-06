@@ -3,6 +3,7 @@ import {
   BoardPattern,
   GridBoardConfig,
 } from "../lib/abstractBoard/boardFactory";
+import { Coordinate, CoordinateLike } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
 import { BadukConfig } from "./baduk";
 
@@ -67,22 +68,22 @@ export type BoardShape = "1d" | "2d" | "flatten-2d-to-1d";
 export function mapBoard<T, S>(board: T[], f: (x: T) => S, shape: "1d"): S[];
 export function mapBoard<T, S>(
   board: T[][],
-  f: (x: T) => S,
+  f: (x: T, idx: number | CoordinateLike) => S,
   shape: "2d",
 ): S[][];
 export function mapBoard<T, S>(
   board: T[][],
-  f: (x: T) => S,
+  f: (x: T, idx: number | CoordinateLike) => S,
   shape: "flatten-2d-to-1d",
 ): S[];
 export function mapBoard<T, S>(
   board: T[][],
-  f: (x: T) => S,
+  f: (x: T, idx: number | CoordinateLike) => S,
   shape: BoardShape,
 ): S[] | S[][];
 export function mapBoard<T, S>(
   board: T[] | T[][],
-  f: (x: T) => S,
+  f: (x: T, idx: number | CoordinateLike) => S,
   shape: BoardShape,
 ) {
   switch (shape) {
@@ -95,4 +96,17 @@ export function mapBoard<T, S>(
     case "flatten-2d-to-1d":
       return (board as T[][]).flat().map(f);
   }
+}
+
+export function equals_placement(
+  last_move: string,
+  idx: number | CoordinateLike,
+): boolean {
+  if (["", "pass", "resign", "timeout"].includes(last_move)) {
+    return false;
+  }
+  if (typeof idx === "number") {
+    return idx === Number(last_move);
+  }
+  return Coordinate.fromSgfRepr(last_move).equals(idx);
 }

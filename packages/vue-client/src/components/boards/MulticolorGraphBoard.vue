@@ -95,16 +95,16 @@ const viewBox = computed(() => {
       />
     </g>
     <g>
-      <IntersectionAnnotation
-        v-for="(intersection, index) in intersections.filter(
-          (_, idx) => props.board.at(idx)?.annotation,
-        )"
-        :key="index"
-        :cx="intersection.position.X"
-        :cy="intersection.position.Y"
-        :r="0.48"
-        :annotation="props.board.at(index)?.annotation!"
-      />
+      <template v-for="(intersection, index) in intersections">
+        <IntersectionAnnotation
+          v-if="props.board.at(index)?.annotation"
+          :key="index"
+          :cx="intersection.position.X"
+          :cy="intersection.position.Y"
+          :r="0.48"
+          :annotation="props.board.at(index)?.annotation!"
+        />
+      </template>
     </g>
     <g v-if="score_board">
       <template v-for="(intersection, index) in intersections" :key="index">

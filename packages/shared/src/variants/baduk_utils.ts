@@ -65,7 +65,11 @@ export function mapToNewConfig<ConfigT extends LegacyBadukConfig>(
 }
 
 export type BoardShape = "1d" | "2d" | "flatten-2d-to-1d";
-export function mapBoard<T, S>(board: T[], f: (x: T) => S, shape: "1d"): S[];
+export function mapBoard<T, S>(
+  board: T[],
+  f: (x: T, idx: number | CoordinateLike) => S,
+  shape: "1d",
+): S[];
 export function mapBoard<T, S>(
   board: T[][],
   f: (x: T, idx: number | CoordinateLike) => S,
@@ -98,15 +102,22 @@ export function mapBoard<T, S>(
   }
 }
 
+/**
+ * Checks whether a string-encoded move is a stone placement at a certain place.
+ * @param move The string-encoded move to check
+ * @param idx An identifier for an intersection on the go board. If it is of type number,
+ * then we assume that we work with a graph board. In case of type CoordinateLike, we assume
+ * a rectangular board.
+ */
 export function equals_placement(
-  last_move: string,
+  move: string,
   idx: number | CoordinateLike,
 ): boolean {
-  if (["", "pass", "resign", "timeout"].includes(last_move)) {
+  if (["", "pass", "resign", "timeout"].includes(move)) {
     return false;
   }
   if (typeof idx === "number") {
-    return idx === Number(last_move);
+    return idx === Number(move);
   }
-  return Coordinate.fromSgfRepr(last_move).equals(idx);
+  return Coordinate.fromSgfRepr(move).equals(idx);
 }

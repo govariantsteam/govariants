@@ -3,6 +3,7 @@ import {
   BoardPattern,
   GridBoardConfig,
 } from "../lib/abstractBoard/boardFactory";
+import { Coordinate, CoordinateLike } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
 import { BadukConfig } from "./baduk";
 
@@ -64,25 +65,29 @@ export function mapToNewConfig<ConfigT extends LegacyBadukConfig>(
 }
 
 export type BoardShape = "1d" | "2d" | "flatten-2d-to-1d";
-export function mapBoard<T, S>(board: T[], f: (x: T) => S, shape: "1d"): S[];
+export function mapBoard<T, S>(
+  board: T[],
+  f: (x: T, idx: number | CoordinateLike) => S,
+  shape: "1d",
+): S[];
 export function mapBoard<T, S>(
   board: T[][],
-  f: (x: T) => S,
+  f: (x: T, idx: number | CoordinateLike) => S,
   shape: "2d",
 ): S[][];
 export function mapBoard<T, S>(
   board: T[][],
-  f: (x: T) => S,
+  f: (x: T, idx: number | CoordinateLike) => S,
   shape: "flatten-2d-to-1d",
 ): S[];
 export function mapBoard<T, S>(
   board: T[][],
-  f: (x: T) => S,
+  f: (x: T, idx: number | CoordinateLike) => S,
   shape: BoardShape,
 ): S[] | S[][];
 export function mapBoard<T, S>(
   board: T[] | T[][],
-  f: (x: T) => S,
+  f: (x: T, idx: number | CoordinateLike) => S,
   shape: BoardShape,
 ) {
   switch (shape) {
@@ -95,4 +100,24 @@ export function mapBoard<T, S>(
     case "flatten-2d-to-1d":
       return (board as T[][]).flat().map(f);
   }
+}
+
+/**
+ * Checks whether a string-encoded move is a stone placement at a certain place.
+ * @param move The string-encoded move to check
+ * @param idx An identifier for an intersection on the go board. If it is of type number,
+ * then we assume that we work with a graph board. In case of type CoordinateLike, we assume
+ * a rectangular board.
+ */
+export function equals_placement(
+  move: string,
+  idx: number | CoordinateLike,
+): boolean {
+  if (["", "pass", "resign", "timeout"].includes(move)) {
+    return false;
+  }
+  if (typeof idx === "number") {
+    return idx === Number(move);
+  }
+  return Coordinate.fromSgfRepr(move).equals(idx);
 }

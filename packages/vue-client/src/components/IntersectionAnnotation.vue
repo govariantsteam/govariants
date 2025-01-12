@@ -24,9 +24,10 @@ const r = computed(() => props.r * 0.6);
       :r="r"
       :cx="props.cx"
       :cy="props.cy"
-      stroke="black"
+      stroke="#dbdbdb"
       stroke-width="0.1"
       fill="none"
+      class="mix"
     />
   </g>
   <g v-if="props.annotation === 'MA'">
@@ -48,3 +49,8 @@ const r = computed(() => props.r * 0.6);
     />
   </g>
 </template>
+<style scoped>
+.mix {
+  mix-blend-mode: difference;
+}
+</style>

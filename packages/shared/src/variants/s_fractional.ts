@@ -4,7 +4,12 @@ import {
   createBoard,
   createGraph,
 } from "../lib/abstractBoard/boardFactory";
-import { isGridBadukConfig, mapBoard, NewBadukConfig } from "./baduk_utils";
+import {
+  equals_placement,
+  isGridBadukConfig,
+  mapBoard,
+  NewBadukConfig,
+} from "./baduk_utils";
 import { AbstractGame } from "../abstract_game";
 import { Baduk, BadukBoard } from "./baduk";
 import { Intersection } from "../lib/abstractBoard/intersection";
@@ -301,8 +306,14 @@ export class SFractional extends AbstractGame<
   } {
     const boardShape = isGridBadukConfig(config) ? "2d" : "flatten-2d-to-1d";
 
-    const stoneTransform = (colors: PlacementColors): MulticolorStone => {
-      return { colors: colors };
+    const stoneTransform = (
+      colors: PlacementColors,
+      idx: number | CoordinateLike,
+    ): MulticolorStone => {
+      return {
+        colors: colors,
+        ...(equals_placement(gamestate.lastMove, idx) && { annotation: "CR" }),
+      };
     };
     const scoreTransform = (color: string): string[] | null =>
       color === "" ? null : [color];

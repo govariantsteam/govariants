@@ -67,17 +67,17 @@ export function mapToNewConfig<ConfigT extends LegacyBadukConfig>(
 export type BoardShape = "1d" | "2d" | "flatten-2d-to-1d";
 export function mapBoard<T, S>(
   board: T[],
-  f: (x: T, idx: number | CoordinateLike) => S,
+  f: (x: T, idx: number) => S,
   shape: "1d",
 ): S[];
 export function mapBoard<T, S>(
   board: T[][],
-  f: (x: T, idx: number | CoordinateLike) => S,
+  f: (x: T, idx: CoordinateLike) => S,
   shape: "2d",
 ): S[][];
 export function mapBoard<T, S>(
   board: T[][],
-  f: (x: T, idx: number | CoordinateLike) => S,
+  f: (x: T, idx: number) => S,
   shape: "flatten-2d-to-1d",
 ): S[];
 export function mapBoard<T, S>(
@@ -87,18 +87,18 @@ export function mapBoard<T, S>(
 ): S[] | S[][];
 export function mapBoard<T, S>(
   board: T[] | T[][],
-  f: (x: T, idx: number | CoordinateLike) => S,
+  f: ((x: T, idx: CoordinateLike) => S) | ((x: T, idx: number) => S),
   shape: BoardShape,
 ) {
   switch (shape) {
     case "1d":
-      return (board as T[]).map(f);
+      return (board as T[]).map(f as (x: T, idx: number) => S);
     case "2d":
       return Grid.from2DArray(board as T[][])
-        .map(f)
+        .map(f as (x: T, idx: CoordinateLike) => S)
         .to2DArray();
     case "flatten-2d-to-1d":
-      return (board as T[][]).flat().map(f);
+      return (board as T[][]).flat().map(f as (x: T, idx: number) => S);
   }
 }
 

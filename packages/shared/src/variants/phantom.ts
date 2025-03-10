@@ -14,6 +14,7 @@ export class Phantom extends Baduk {
       color_to_player(color) === player ? color : Color.EMPTY,
     );
     state.board = board.to2DArray();
+    state.last_move = "";
     return state;
   }
 }

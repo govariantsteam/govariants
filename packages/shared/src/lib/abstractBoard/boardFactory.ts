@@ -7,6 +7,7 @@ import { TrihexagonalBoardHelper } from "./helper/TrihexagonalBoardHelper";
 import { createSierpinskyBoard as createSierpinskyBoardExternal } from "./helper/SierpinskyBoard";
 import { Graph } from "../graph";
 import { Grid } from "../grid";
+import { createFlowerBoard as createFlowerBoardExternal } from "./helper/flowerHelper";
 
 export const BoardPattern = {
   Grid: "grid",
@@ -15,6 +16,7 @@ export const BoardPattern = {
   Trihexagonal: "trihexagonal",
   Sierpinsky: "sierpinsky",
   GridWithHoles: "gridWithHoles",
+  Flower: "flower",
 } as const;
 
 export type BoardConfig =
@@ -23,7 +25,8 @@ export type BoardConfig =
   | CircularBoardConfig
   | TrihexagonalBoardConfig
   | SierpinskyBoardConfig
-  | GridWithHolesBoardConfig;
+  | GridWithHolesBoardConfig
+  | FlowerBoardConfig;
 
 export interface GridBoardConfig {
   type: typeof BoardPattern.Grid;
@@ -60,6 +63,11 @@ export interface GridWithHolesBoardConfig {
   // 0b10: connect down
   // 0b11: connect down and to the right
   // 0b100: intersection with just existing connections up or to the left
+}
+
+export interface FlowerBoardConfig {
+  type: typeof BoardPattern.Flower;
+  size: number;
 }
 
 export interface IntersectionConstructor<TIntersection extends Intersection> {
@@ -104,6 +112,12 @@ export function createBoard<TIntersection extends Intersection>(
       break;
     case "gridWithHoles":
       intersections = createGridWithHolesBoard<TIntersection>(
+        config,
+        intersectionConstructor,
+      );
+      break;
+    case BoardPattern.Flower:
+      intersections = createFlowerBoard<TIntersection>(
         config,
         intersectionConstructor,
       );
@@ -222,6 +236,16 @@ function createGridWithHolesBoard<TIntersection extends Intersection>(
     .to2DArray()
     .flat()
     .filter((intersection): intersection is TIntersection => !!intersection);
+}
+
+function createFlowerBoard<TIntersection extends Intersection>(
+  config: FlowerBoardConfig,
+  intersectionConstructor: IntersectionConstructor<TIntersection>,
+): TIntersection[] {
+  return convertIntersections<TIntersection>(
+    createFlowerBoardExternal(config.size),
+    intersectionConstructor,
+  );
 }
 
 function convertIntersections<TIntersection extends Intersection>(

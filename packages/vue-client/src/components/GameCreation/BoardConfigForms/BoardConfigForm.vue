@@ -7,6 +7,7 @@ import RhombitrihexagonalBoardConfigForm from "./RhombitrihexagonalBoardConfigFo
 import CircularBoardConfigForm from "./CircularBoardConfigForm.vue";
 import TrihexagonalConfigForm from "./TrihexagonalConfigForm.vue";
 import SierpinskyBoardConfigForm from "./SierpinskyBoardConfigForm.vue";
+import FlowerBoardConfigForm from "./FlowerBoardConfigForm.vue";
 
 const _props = defineProps<{ gridOnly?: boolean }>();
 
@@ -37,6 +38,7 @@ function emitConfigChange(config: BoardConfig) {
         <option :value="BoardPattern.Circular">Circular</option>
         <option :value="BoardPattern.Trihexagonal">Trihexagonal</option>
         <option :value="BoardPattern.Sierpinsky">Sierpinsky Triangle</option>
+        <option :value="BoardPattern.Flower">Flower</option>
       </select>
     </template>
     <GridBoardConfigForm
@@ -61,6 +63,10 @@ function emitConfigChange(config: BoardConfig) {
     />
     <SierpinskyBoardConfigForm
       v-if="board_type === BoardPattern.Sierpinsky"
+      @config-changed="emitConfigChange"
+    />
+    <FlowerBoardConfigForm
+      v-if="board_type === BoardPattern.Flower"
       @config-changed="emitConfigChange"
     />
   </div>

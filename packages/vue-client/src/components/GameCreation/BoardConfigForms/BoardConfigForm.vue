@@ -7,8 +7,8 @@ import RhombitrihexagonalBoardConfigForm from "./RhombitrihexagonalBoardConfigFo
 import CircularBoardConfigForm from "./CircularBoardConfigForm.vue";
 import TrihexagonalConfigForm from "./TrihexagonalConfigForm.vue";
 import SierpinskyBoardConfigForm from "./SierpinskyBoardConfigForm.vue";
-import BoardPreview from "@/components/boards/BoardPreview.vue";
 import ExpandablePocket from "@/utils/ExpandablePocket.vue";
+import DefaultBoard from "@/components/boards/DefaultBoard.vue";
 
 const _props = defineProps<{ gridOnly?: boolean }>();
 
@@ -68,7 +68,18 @@ function emitConfigChange(config: BoardConfig) {
       @config-changed="emitConfigChange"
     />
     <ExpandablePocket label="Board preview">
-      <BoardPreview v-if="boardConfig" :config="boardConfig"></BoardPreview>
+      <div class="event-blocker">
+        <DefaultBoard
+          v-if="boardConfig"
+          :config="{ board: boardConfig }"
+        ></DefaultBoard>
+      </div>
     </ExpandablePocket>
   </div>
 </template>
+
+<style scoped>
+.event-blocker {
+  pointer-events: none;
+}
+</style>

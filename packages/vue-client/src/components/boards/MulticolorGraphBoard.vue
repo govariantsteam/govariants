@@ -12,7 +12,7 @@ import {
 import ScoreMark from "./ScoreMark.vue";
 
 const props = defineProps<{
-  board: (MulticolorStone | null)[];
+  board?: (MulticolorStone | null)[];
   background_color?: string;
   board_config: BoardConfig;
   score_board?: (string[] | null)[];
@@ -97,7 +97,7 @@ const viewBox = computed(() => {
     <g>
       <template v-for="(intersection, index) in intersections">
         <IntersectionAnnotation
-          v-if="props.board.at(index)?.annotation"
+          v-if="props.board?.at(index)?.annotation"
           :key="index"
           :cx="intersection.position.X"
           :cy="intersection.position.Y"

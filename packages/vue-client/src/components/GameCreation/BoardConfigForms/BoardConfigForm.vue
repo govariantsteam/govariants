@@ -7,10 +7,13 @@ import RhombitrihexagonalBoardConfigForm from "./RhombitrihexagonalBoardConfigFo
 import CircularBoardConfigForm from "./CircularBoardConfigForm.vue";
 import TrihexagonalConfigForm from "./TrihexagonalConfigForm.vue";
 import SierpinskyBoardConfigForm from "./SierpinskyBoardConfigForm.vue";
+import ExpandablePocket from "@/utils/ExpandablePocket.vue";
+import DefaultBoard from "@/components/boards/DefaultBoard.vue";
 
 const _props = defineProps<{ gridOnly?: boolean }>();
 
 const board_type: Ref<string> = ref(BoardPattern.Grid);
+const boardConfig: Ref<BoardConfig | undefined> = ref();
 
 // TODO: respect initial board config as defined by variant
 // TODO: Add BoardPattern -> (Label, Component) mapping to enable use of v-for
@@ -20,6 +23,7 @@ const emit = defineEmits<{
 }>();
 
 function emitConfigChange(config: BoardConfig) {
+  boardConfig.value = config;
   emit("configChanged", config);
 }
 </script>
@@ -63,5 +67,19 @@ function emitConfigChange(config: BoardConfig) {
       v-if="board_type === BoardPattern.Sierpinsky"
       @config-changed="emitConfigChange"
     />
+    <ExpandablePocket label="Board preview">
+      <div class="event-blocker">
+        <DefaultBoard
+          v-if="boardConfig"
+          :config="{ board: boardConfig }"
+        ></DefaultBoard>
+      </div>
+    </ExpandablePocket>
   </div>
 </template>
+
+<style scoped>
+.event-blocker {
+  pointer-events: none;
+}
+</style>

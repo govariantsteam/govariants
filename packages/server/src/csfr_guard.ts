@@ -1,0 +1,47 @@
+import { randomBytes } from "node:crypto";
+// Based on https://medium.com/@brakdemir/csrf-prevention-on-node-js-express-without-csurf-da5d9e6272ad
+// using the Synchronizer Token Pattern
+
+/**
+ * @desc Generates a token for the purpose of protecting against csrf.
+ */
+// TODO: improve types
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export function generateCSRFToken(req: any, res: any, next: any) {
+  try {
+    const token = randomBytes(36).toString("base64");
+    req.session.csrfToken = token;
+    next();
+  } catch (e) {
+    res.status(500).json({ result: false, message: e.message });
+    return;
+  }
+}
+
+/**
+ * @desc Checks and compares the tokens from the request header and session.
+ */
+// TODO: improve types
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export function checkCSRFTokenSTP(req: any, res: any, next: any) {
+  try {
+    const sessionCsrfToken = req.session.csrfToken;
+    const requestCsrfToken = req.get("CSRF-Token");
+    if (!requestCsrfToken || !sessionCsrfToken) {
+      res.status(401).json({
+        result: false,
+        message: "Token has not been provided.",
+      });
+    }
+    if (requestCsrfToken !== sessionCsrfToken) {
+      res.status(401).json({
+        result: false,
+        message: "Invalid token.",
+      });
+    }
+    next();
+  } catch (e) {
+    res.status(500).json({ result: false, message: e.message });
+    return;
+  }
+}

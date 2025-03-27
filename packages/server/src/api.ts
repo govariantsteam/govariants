@@ -28,6 +28,7 @@ import {
   GameInitialResponse,
 } from "@ogfcommunity/variants-shared";
 import { io } from "./socket_io";
+import { generateCSRFToken } from "./csfr_guard";
 
 export const router = express.Router();
 
@@ -259,8 +260,12 @@ router.get("/guestLogin", function (req, res, next) {
   passport.authenticate("guest", make_auth_cb(req, res))(req, res, next);
 });
 
-router.get("/checkLogin", function (req, res) {
-  return res.json(req.user ? req.user : null);
+// TODO: improve types
+/* eslint-disable @typescript-eslint/no-explicit-any */
+router.get("/checkLogin", generateCSRFToken, function (req: any, res) {
+  return res.json(
+    req.user ? { user: req.user, csrf_token: req.session.csrfToken } : null,
+  );
 });
 
 router.get("/logout", async function (req, res) {

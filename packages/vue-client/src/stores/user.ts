@@ -13,7 +13,10 @@ export const useStore = defineStore("user", {
   },
   actions: {
     async update() {
-      this.user = await requests.get("/checkLogin");
+      const res = await requests.get("/checkLogin");
+      this.user = res.user;
+      const csfr_token = res.csfr_token;
+      console.log(csfr_token);
     },
 
     async guestLogin() {

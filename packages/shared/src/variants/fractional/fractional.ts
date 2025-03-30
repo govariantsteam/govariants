@@ -8,6 +8,15 @@ import { BoardPattern } from "../../lib/abstractBoard/boardFactory";
 import { Variant } from "../../variant";
 import { fractionalRulesDescription } from "../../templates/fractional_rules";
 
+function getNullIndexes(arr: unknown[]) {
+  return arr.reduce((indexes: number[], element, index) => {
+    if (element == null) {
+      indexes.push(index);
+    }
+    return indexes;
+  }, []);
+}
+
 export type Color =
   | "black"
   | "white"
@@ -128,9 +137,7 @@ export class Fractional extends AbstractBaduk<
   }
 
   nextToPlay(): number[] {
-    return this.phase === "gameover"
-      ? []
-      : [...Array(this.config.players.length).keys()];
+    return this.phase === "gameover" ? [] : getNullIndexes(this.stagedMoves);
   }
 
   numPlayers(): number {

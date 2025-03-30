@@ -3,6 +3,7 @@ import {
   MovesType,
   getOnlyMove,
   makeGameObject,
+  normalizeNextToPlay,
   timeControlMap,
 } from "@ogfcommunity/variants-shared";
 import { nullTimeState } from "./time-handler-utils";
@@ -52,9 +53,11 @@ export class TimeoutService implements ITimeoutService {
           );
           continue;
         }
-        const playersWithTimeout = game_object
-          .nextToPlay()
-          .filter((player) => game.moves.some((move) => player in move));
+        const playersWithTimeout = normalizeNextToPlay(
+          game_object.nextToPlay(),
+        ).required.filter((player) =>
+          game.moves.some((move) => player in move),
+        );
 
         for (const playerNr of playersWithTimeout) {
           const t = timeHandler.getMsUntilTimeout(game, playerNr);

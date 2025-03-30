@@ -4,6 +4,7 @@ import {
   IConfigWithTimeControl,
   IPerPlayerTimeControlBase,
   ITimeControlBase,
+  normalizeNextToPlay,
 } from "@ogfcommunity/variants-shared";
 import { ITimeoutService } from "./timeout";
 import { ITimeHandler } from "./time-control";
@@ -91,12 +92,12 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
     this._timeoutService.clearPlayerTimeout(game.id, playerNr);
 
     // time control starts only after the first move of player
-    const nextPlayers = game_obj
-      .nextToPlay()
-      .filter(
-        (player) =>
-          game.moves.some((move) => player in move) || player === playerNr,
-      );
+    const nextPlayers = normalizeNextToPlay(
+      game_obj.nextToPlay(),
+    ).required.filter(
+      (player) =>
+        game.moves.some((move) => player in move) || player === playerNr,
+    );
     nextPlayers.forEach((player) => {
       timeControl.forPlayer[player].onThePlaySince = timestamp;
       this._timeoutService.scheduleTimeout(

@@ -2,6 +2,8 @@
  * @license AGPL-3.0-or-later
  */
 
+import { NextToPlayType } from "./lib/next_to_play";
+
 // This is safe as long as all methods/members of this interface are optional.
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export interface AbstractGame {
@@ -41,7 +43,7 @@ export abstract class AbstractGame<
    * Returns the list of players that need to play a move the next round.
    * Returns empty array when the game is finished.
    */
-  abstract nextToPlay(): number[];
+  abstract nextToPlay(): NextToPlayType;
 
   /**
    * Total number of players required for this game.  The players will be

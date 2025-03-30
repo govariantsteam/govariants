@@ -11,6 +11,7 @@ import {
   sanitizeConfig,
   ITimeControlBase,
   UserResponse,
+  normalizeNextToPlay,
 } from "@ogfcommunity/variants-shared";
 import { ObjectId, WithId, Document, Filter } from "mongodb";
 import { getDb } from "./db";
@@ -214,7 +215,7 @@ function emitGame(
   game_obj: AbstractGame,
   time_control: ITimeControlBase,
 ): void {
-  const next_to_play = game_obj.nextToPlay();
+  const next_to_play = normalizeNextToPlay(game_obj.nextToPlay());
   const specialMoves = game_obj.specialMoves();
 
   io()
@@ -332,7 +333,7 @@ export async function getGameState(
   return {
     state: game_obj.exportState(seat),
     round: game_obj.round,
-    next_to_play: game_obj.nextToPlay(),
+    next_to_play: normalizeNextToPlay(game_obj.nextToPlay()),
     special_moves: game_obj.specialMoves(),
     result: game_obj.result,
     seat: seat,

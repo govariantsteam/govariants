@@ -5,6 +5,7 @@ import {
   getDefaultConfig,
   getDescription,
   uiTransform,
+  normalizeNextToPlay,
 } from "@ogfcommunity/variants-shared";
 import SeatComponent from "@/components/GameView/SeatComponent.vue";
 import { useCurrentUser } from "../stores/user";
@@ -74,7 +75,7 @@ function getGame(
     result,
     state,
     round: game_obj.round,
-    next_to_play: game_obj.nextToPlay(),
+    next_to_play: normalizeNextToPlay(game_obj.nextToPlay()),
     numPlayers: game_obj.numPlayers(),
   };
 }
@@ -131,8 +132,9 @@ function onConfigChange(c: object) {
 watch(
   moves,
   () => {
-    if (game.value.next_to_play.length === 1) {
-      playing_as.value = game.value.next_to_play[0];
+    const nextToPlay = game.value.next_to_play.required;
+    if (nextToPlay.length === 1) {
+      playing_as.value = nextToPlay[0];
     }
   },
   { immediate: true },
@@ -175,7 +177,7 @@ watch(
           @select="setPlayingAs(idx)"
           :selected="playing_as"
           :time_control="null"
-          :is_players_turn="game.next_to_play?.includes(idx) ?? false"
+          :is_players_turn="game.next_to_play?.required.includes(idx) ?? false"
           :variant="variant"
           :config="config"
         />
@@ -191,7 +193,7 @@ watch(
         </button>
       </div>
 
-      <PlayersToMove :next-to-play="game.next_to_play" />
+      <PlayersToMove :next-to-play="game.next_to_play.required" />
 
       <component
         v-bind:is="variantConfigForm"

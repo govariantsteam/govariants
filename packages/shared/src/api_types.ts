@@ -48,7 +48,7 @@ export type GamesFilter = {
 export type GameStateResponse = {
   state: object;
   round: number;
-  next_to_play: number[];
+  next_to_play: { required: number[]; optional: number[] };
   special_moves: { [key: string]: string };
   result: string;
   seat: number | null;

@@ -248,7 +248,7 @@ const createTimeControlPreview = (
           </div>
         </div>
 
-        <PlayersToMove :next-to-play="game_state?.next_to_play" />
+        <PlayersToMove :next-to-play="game_state?.next_to_play.required" />
       </div>
 
       <div>
@@ -268,7 +268,7 @@ const createTimeControlPreview = (
                 time_control?.forPlayer[idx] ?? createTimeControlPreview(config)
               "
               :is_players_turn="
-                game_state?.next_to_play?.includes(idx) ?? false
+                game_state?.next_to_play?.required.includes(idx) ?? false
               "
               :variant="variant"
               :config="config"

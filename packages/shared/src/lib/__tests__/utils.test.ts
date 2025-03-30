@@ -1,4 +1,4 @@
-import { getOnlyMove } from "../utils";
+import { getNullIndices, getOnlyMove } from "../utils";
 
 const MOVE_STRING = "test";
 
@@ -17,4 +17,8 @@ test("getOnlyMove - more than one move", () => {
 
 test("getOnlyMove - no moves", () => {
   expect(() => getOnlyMove({})).toThrow("No players specified!");
+});
+
+test("getNullIndices", () => {
+  expect(getNullIndices([1, null, "foo", undefined])).toEqual([1, 3]);
 });

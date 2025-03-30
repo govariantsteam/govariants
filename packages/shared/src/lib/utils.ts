@@ -53,3 +53,12 @@ export function assertRectangular2DArrayOf<T>(
 
   return array2D as T[][];
 }
+
+export function getNullIndices(arr: unknown[]) {
+  return arr.reduce((indexes: number[], element, index) => {
+    if (element == null) {
+      indexes.push(index);
+    }
+    return indexes;
+  }, []);
+}

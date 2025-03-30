@@ -7,15 +7,7 @@ import { FractionalStone } from "./fractionalStone";
 import { BoardPattern } from "../../lib/abstractBoard/boardFactory";
 import { Variant } from "../../variant";
 import { fractionalRulesDescription } from "../../templates/fractional_rules";
-
-function getNullIndexes(arr: unknown[]) {
-  return arr.reduce((indexes: number[], element, index) => {
-    if (element == null) {
-      indexes.push(index);
-    }
-    return indexes;
-  }, []);
-}
+import { getNullIndices } from "../../lib/utils";
 
 export type Color =
   | "black"
@@ -137,7 +129,7 @@ export class Fractional extends AbstractBaduk<
   }
 
   nextToPlay(): number[] {
-    return this.phase === "gameover" ? [] : getNullIndexes(this.stagedMoves);
+    return this.phase === "gameover" ? [] : getNullIndices(this.stagedMoves);
   }
 
   numPlayers(): number {

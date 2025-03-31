@@ -11,7 +11,7 @@ import { positionsGetter } from "./board_utils";
 import ScoreMark from "./ScoreMark.vue";
 
 const props = defineProps<{
-  board: (MulticolorStone | null)[][];
+  board?: (MulticolorStone | null)[][];
   background_color?: string;
   board_dimensions: { width: number; height: number };
   score_board?: (string[] | null)[][];
@@ -97,10 +97,10 @@ function positionHovered(pos: Coordinate) {
         r="0.12"
       />
     </g>
-    <g>
+    <g v-if="props.board">
       <TaegeukStone
         v-for="pos in positions.filter(
-          (pos) => props.board[pos.y][pos.x] !== null,
+          (pos) => props.board![pos.y][pos.x] !== null,
         )"
         :key="`${pos.x},${pos.y}`"
         :cx="pos.x"
@@ -109,10 +109,10 @@ function positionHovered(pos: Coordinate) {
         :colors="props.board[pos.y][pos.x]?.colors ?? []"
       />
     </g>
-    <g>
+    <g v-if="props.board">
       <IntersectionAnnotation
         v-for="{ x, y } in positions.filter(
-          ({ x, y }) => props.board[y][x]?.annotation,
+          ({ x, y }) => props.board![y][x]?.annotation,
         )"
         :key="`${x},${y}`"
         :cx="x"

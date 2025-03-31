@@ -59,7 +59,7 @@ export function connectTwoSides(
   gon1.getVertex(index1 + 1).ConnectTo(gon2.getVertex(index2 - 1), true);
 }
 
-export function createFlowerBoard(size: number): Intersection[] {
+export function createSunflowerBoard(size: number): Intersection[] {
   const hexagonLayers: Hexagon[][] = [];
   const triangleLayersUp: Triangle[][] = [];
   const triangleLayersDown: Triangle[][] = [];

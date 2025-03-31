@@ -7,7 +7,7 @@ import { TrihexagonalBoardHelper } from "./helper/TrihexagonalBoardHelper";
 import { createSierpinskyBoard as createSierpinskyBoardExternal } from "./helper/SierpinskyBoard";
 import { Graph } from "../graph";
 import { Grid } from "../grid";
-import { createFlowerBoard as createFlowerBoardExternal } from "./helper/flowerHelper";
+import { createSunflowerBoard as createSunflowerBoardExternal } from "./helper/SunflowerHelper";
 
 export const BoardPattern = {
   Grid: "grid",
@@ -16,7 +16,7 @@ export const BoardPattern = {
   Trihexagonal: "trihexagonal",
   Sierpinsky: "sierpinsky",
   GridWithHoles: "gridWithHoles",
-  Flower: "flower",
+  Sunflower: "sunflower",
 } as const;
 
 export type BoardConfig =
@@ -26,7 +26,7 @@ export type BoardConfig =
   | TrihexagonalBoardConfig
   | SierpinskyBoardConfig
   | GridWithHolesBoardConfig
-  | FlowerBoardConfig;
+  | SunflowerBoardConfig;
 
 export interface GridBoardConfig {
   type: typeof BoardPattern.Grid;
@@ -65,8 +65,8 @@ export interface GridWithHolesBoardConfig {
   // 0b100: intersection with just existing connections up or to the left
 }
 
-export interface FlowerBoardConfig {
-  type: typeof BoardPattern.Flower;
+export interface SunflowerBoardConfig {
+  type: typeof BoardPattern.Sunflower;
   size: number;
 }
 
@@ -116,8 +116,8 @@ export function createBoard<TIntersection extends Intersection>(
         intersectionConstructor,
       );
       break;
-    case BoardPattern.Flower:
-      intersections = createFlowerBoard<TIntersection>(
+    case BoardPattern.Sunflower:
+      intersections = createSunflowerBoard<TIntersection>(
         config,
         intersectionConstructor,
       );
@@ -238,12 +238,12 @@ function createGridWithHolesBoard<TIntersection extends Intersection>(
     .filter((intersection): intersection is TIntersection => !!intersection);
 }
 
-function createFlowerBoard<TIntersection extends Intersection>(
-  config: FlowerBoardConfig,
+function createSunflowerBoard<TIntersection extends Intersection>(
+  config: SunflowerBoardConfig,
   intersectionConstructor: IntersectionConstructor<TIntersection>,
 ): TIntersection[] {
   return convertIntersections<TIntersection>(
-    createFlowerBoardExternal(config.size),
+    createSunflowerBoardExternal(config.size),
     intersectionConstructor,
   );
 }

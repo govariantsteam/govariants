@@ -1,18 +1,21 @@
 <script setup lang="ts">
-import { BoardPattern, FlowerBoardConfig } from "@ogfcommunity/variants-shared";
+import {
+  BoardPattern,
+  SunflowerBoardConfig,
+} from "@ogfcommunity/variants-shared";
 import { ref } from "vue";
 
-const defaultConfig: FlowerBoardConfig = {
-  type: BoardPattern.Flower,
-  size: 3,
+const defaultConfig: SunflowerBoardConfig = {
+  type: BoardPattern.Sunflower,
+  size: 2,
 };
 
-const props = defineProps<{ initialConfig?: FlowerBoardConfig }>();
+const props = defineProps<{ initialConfig?: SunflowerBoardConfig }>();
 
 const config = ref(props.initialConfig ?? defaultConfig);
 
 const emit = defineEmits<{
-  (e: "configChanged", config: FlowerBoardConfig): void;
+  (e: "configChanged", config: SunflowerBoardConfig): void;
 }>();
 
 function emitConfigChange() {

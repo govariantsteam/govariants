@@ -19,11 +19,6 @@ export function getOnlyMove(moves: MovesType): {
   return { player, move: moves[player] };
 }
 
-export type Participation = {
-  playerNr: number;
-  dropOutAtRound: number | null;
-};
-
 export function gamesFilterToUrlParams(filter: GamesFilter): string {
   return (
     (filter.user_id ? `&user_id=${encodeURIComponent(filter.user_id)}` : "") +

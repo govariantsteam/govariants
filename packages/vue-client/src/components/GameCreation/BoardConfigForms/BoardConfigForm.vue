@@ -7,6 +7,7 @@ import RhombitrihexagonalBoardConfigForm from "./RhombitrihexagonalBoardConfigFo
 import CircularBoardConfigForm from "./CircularBoardConfigForm.vue";
 import TrihexagonalConfigForm from "./TrihexagonalConfigForm.vue";
 import SierpinskyBoardConfigForm from "./SierpinskyBoardConfigForm.vue";
+import SunflowerBoardConfigForm from "./SunflowerBoardConfigForm.vue";
 import ExpandablePocket from "@/utils/ExpandablePocket.vue";
 import DefaultBoard from "@/components/boards/DefaultBoard.vue";
 
@@ -41,6 +42,7 @@ function emitConfigChange(config: BoardConfig) {
         <option :value="BoardPattern.Circular">Circular</option>
         <option :value="BoardPattern.Trihexagonal">Trihexagonal</option>
         <option :value="BoardPattern.Sierpinsky">Sierpinsky Triangle</option>
+        <option :value="BoardPattern.Sunflower">Sunflower</option>
       </select>
     </template>
     <GridBoardConfigForm
@@ -65,6 +67,10 @@ function emitConfigChange(config: BoardConfig) {
     />
     <SierpinskyBoardConfigForm
       v-if="board_type === BoardPattern.Sierpinsky"
+      @config-changed="emitConfigChange"
+    />
+    <SunflowerBoardConfigForm
+      v-if="board_type === BoardPattern.Sunflower"
       @config-changed="emitConfigChange"
     />
     <ExpandablePocket label="Board preview">

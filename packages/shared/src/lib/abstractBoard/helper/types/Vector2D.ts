@@ -22,4 +22,8 @@ export class Vector2D {
   Export(): Vector2D {
     return new Vector2D(this.X, this.Y);
   }
+
+  static fromAngle(rad: number): Vector2D {
+    return new Vector2D(Math.cos(rad), Math.sin(rad));
+  }
 }

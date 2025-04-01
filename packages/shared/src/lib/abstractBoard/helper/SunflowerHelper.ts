@@ -7,16 +7,15 @@ export class NGon {
 
   constructor(n: number, refV: Vector2D, refAngle: number) {
     this.numberOfVertices = n;
-    const tempVertices: Intersection[] = [];
+    this.vertices = [];
     const sideLengthRelation = 1 / (2 * Math.sin(Math.PI / n));
     for (let i = 0; i < n; i++) {
       const rad = refAngle + (2 * Math.PI * i) / n;
       const vec = refV.Add(
         Vector2D.fromAngle(rad).Multiply(sideLengthRelation),
       );
-      tempVertices.push(new Intersection(vec));
+      this.vertices.push(new Intersection(vec));
     }
-    this.vertices = tempVertices;
     for (let i = 0; i < n; i++) {
       this.getVertex(i).ConnectTo(this.getVertex(i + 1), true);
     }

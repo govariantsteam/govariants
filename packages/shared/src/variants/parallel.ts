@@ -65,7 +65,10 @@ export class ParallelGo extends AbstractGame<
   }
 
   playMove(player: number, move: string): void {
-    if (!Object.keys(this.specialMoves()).includes(move) && move != "timeout") {
+    if (
+      !Object.keys(this.specialMoves()).includes(move) &&
+      move !== "timeout"
+    ) {
       const decoded_move = Coordinate.fromSgfRepr(move);
       const occupants = this.board.at(decoded_move);
       if (occupants === undefined) {

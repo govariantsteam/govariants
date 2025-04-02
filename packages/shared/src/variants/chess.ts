@@ -27,10 +27,10 @@ export class ChessGame extends AbstractGame<object, ChessState> {
       return;
     }
 
-    if (player === 1 && "b" != this.chess.turn()) {
+    if (player === 1 && "b" !== this.chess.turn()) {
       throw Error("Not Black's turn");
     }
-    if (player === 0 && "w" != this.chess.turn()) {
+    if (player === 0 && "w" !== this.chess.turn()) {
       throw Error("Not White's turn");
     }
     this.chess.move(move);
@@ -41,7 +41,7 @@ export class ChessGame extends AbstractGame<object, ChessState> {
     return { fen: this.chess.fen() };
   }
   nextToPlay(): number[] {
-    return this.phase === "gameover" ? [] : [this.chess.turn() == "b" ? 1 : 0];
+    return this.phase === "gameover" ? [] : [this.chess.turn() === "b" ? 1 : 0];
   }
   numPlayers(): number {
     return 2;

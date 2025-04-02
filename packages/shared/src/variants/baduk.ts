@@ -101,7 +101,7 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
   }
 
   override playMove(player: number, move: string): void {
-    if (player != this.next_to_play) {
+    if (player !== this.next_to_play) {
       throw Error(`It's not player ${player}'s turn!`);
     }
 
@@ -119,14 +119,16 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
       return;
     }
 
-    if (move != "pass") {
+    if (move !== "pass") {
       const decoded_move = this.decodeMove(move);
 
       const { x, y } = decoded_move;
       const color = this.board.at(decoded_move);
       if (color === undefined) {
         throw Error(
-          `Move out of bounds. (move: ${decoded_move}, config: ${JSON.stringify(this.config)}`,
+          `Move out of bounds. (move: ${decoded_move}, config: ${JSON.stringify(
+            this.config,
+          )}`,
         );
       }
       if (color !== Color.EMPTY) {
@@ -187,7 +189,7 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
   }
 
   protected prepareForNextMove(move: string): void {
-    if (move == "pass" && this.last_move === "pass") {
+    if (move === "pass" && this.last_move === "pass") {
       this.finalizeScore();
     } else {
       this.next_to_play = this.next_to_play === 0 ? 1 : 0;

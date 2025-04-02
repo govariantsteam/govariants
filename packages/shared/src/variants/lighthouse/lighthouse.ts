@@ -190,7 +190,7 @@ export class Lighthouse extends AbstractGame<
   }
 
   protected prepareForNextMove(move: string): void {
-    if (move == "pass" && this.last_move === "pass") {
+    if (move === "pass" && this.last_move === "pass") {
       this.finalizeScore();
     } else {
       this.next_to_play = this.next_to_play === 0 ? 1 : 0;

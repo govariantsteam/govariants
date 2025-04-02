@@ -98,18 +98,22 @@ export class SFractional extends AbstractGame<
       throw Error(`It's not player ${player}'s turn.`);
     }
 
-    if (move != "pass") {
+    if (move !== "pass") {
       const decoded_move = this.decodeMove(move);
 
       const placementColors = this.board.at(decoded_move);
       if (placementColors === undefined) {
         throw Error(
-          `Move out of bounds. (move: ${decoded_move}, config: ${JSON.stringify(this.config)}`,
+          `Move out of bounds. (move: ${decoded_move}, config: ${JSON.stringify(
+            this.config,
+          )}`,
         );
       }
       if (this.isOccupied(placementColors)) {
         throw Error(
-          `Cannot place a stone on top of an existing stone. (${placementColors.join(", ")} at (${decoded_move.x}, ${decoded_move.y}))`,
+          `Cannot place a stone on top of an existing stone. (${placementColors.join(
+            ", ",
+          )} at (${decoded_move.x}, ${decoded_move.y}))`,
         );
       }
 
@@ -121,7 +125,7 @@ export class SFractional extends AbstractGame<
   }
 
   private decodeMove(move: string): Coordinate {
-    if (this.config.board.type == "grid") {
+    if (this.config.board.type === "grid") {
       return Coordinate.fromSgfRepr(move);
     }
     // graph boards encode moves with the unique identifier number
@@ -201,7 +205,7 @@ export class SFractional extends AbstractGame<
   }
 
   protected prepareForNextMove(move: string): void {
-    if (move == "pass" && this.last_move === "pass") {
+    if (move === "pass" && this.last_move === "pass") {
       this.finalizeScore();
     } else {
       this.last_move = move;

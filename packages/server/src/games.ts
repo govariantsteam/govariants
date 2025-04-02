@@ -198,8 +198,8 @@ export async function handleMoveAndTime(
   emitGame(game.id, game.players?.length ?? 0, game_obj, timeControl);
 
   if (
-    game_obj.phase == "gameover" &&
-    game.players.length == 2 &&
+    game_obj.phase === "gameover" &&
+    game.players.length === 2 &&
     supportsRatings(game.variant)
   ) {
     await updateRatings(game, game_obj);
@@ -268,7 +268,7 @@ async function updateSeat(
   // If the seat is occupied by another player, throw an error.
   if (
     game.players[seat] != null &&
-    game.players[seat].id != user.id &&
+    game.players[seat].id !== user.id &&
     // Admins may do as they please
     user.role !== "admin"
   ) {

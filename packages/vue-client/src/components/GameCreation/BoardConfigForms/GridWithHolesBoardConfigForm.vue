@@ -27,7 +27,7 @@ watch(bitmapString, () => {
   configError.value = undefined;
   try {
     const isBitmapElement = (x: unknown): x is 0 | 1 | 2 | 3 | 4 =>
-      [0, 1, 2, 3, 4].some((y) => x == y);
+      [0, 1, 2, 3, 4].some((y) => x === y);
     const array2D = assertRectangular2DArrayOf(
       JSON.parse(bitmapString.value),
       isBitmapElement,

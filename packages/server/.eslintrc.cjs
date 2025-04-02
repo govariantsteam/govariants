@@ -17,5 +17,6 @@ module.exports = {
         varsIgnorePattern: "^_",
       },
     ],
+    eqeqeq: ["error", "smart"],
   },
 };

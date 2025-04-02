@@ -40,7 +40,7 @@ export class TimeoutService implements ITimeoutService {
           game_object.playMove(player, move);
         });
 
-        if (game_object.result !== "" || game_object.phase == "gameover") {
+        if (game_object.result !== "" || game_object.phase === "gameover") {
           continue;
         }
 

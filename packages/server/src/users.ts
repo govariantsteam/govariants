@@ -30,7 +30,7 @@ export async function updateUserRanking(
     { _id: new ObjectId(user_id) },
     { $set: { ranking: new_ranking } },
   );
-  if (update_result.matchedCount == 0) {
+  if (update_result.matchedCount === 0) {
     throw new Error("User not found");
   }
 }
@@ -224,7 +224,7 @@ export async function setUserRole(
     { _id: new ObjectId(user_id) },
     { $set: { role: role } },
   );
-  if (update_result.matchedCount == 0) {
+  if (update_result.matchedCount === 0) {
     throw new Error("User not found");
   }
 }

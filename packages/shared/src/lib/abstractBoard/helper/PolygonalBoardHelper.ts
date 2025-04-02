@@ -217,7 +217,7 @@ class PolygonalTile {
   // otherwise adds references to intersections of neighbours
   Complete() {
     if (this.NeighbourTiles[2] == null) {
-      if (this.NeighbourTiles[1]?.Completed != true) {
+      if (this.NeighbourTiles[1]?.Completed !== true) {
         this.Intersections[6] = new Intersection(
           this.ReferencePoint.Add(Shift7),
         );
@@ -226,7 +226,7 @@ class PolygonalTile {
         this.Intersections[6] = this.NeighbourTiles[1].Intersections[9];
       }
 
-      if (this.NeighbourTiles[3]?.Completed != true) {
+      if (this.NeighbourTiles[3]?.Completed !== true) {
         this.Intersections[7] = new Intersection(
           this.ReferencePoint.Add(Shift8),
         );
@@ -243,7 +243,7 @@ class PolygonalTile {
     }
 
     if (this.NeighbourTiles[3] == null) {
-      if (this.NeighbourTiles[2]?.Completed != true) {
+      if (this.NeighbourTiles[2]?.Completed !== true) {
         this.Intersections[8] = new Intersection(
           this.ReferencePoint.Add(Shift9),
         );
@@ -252,7 +252,7 @@ class PolygonalTile {
         this.Intersections[8] = this.NeighbourTiles[2].Intersections[11];
       }
 
-      if (this.NeighbourTiles[4]?.Completed != true) {
+      if (this.NeighbourTiles[4]?.Completed !== true) {
         this.Intersections[9] = new Intersection(
           this.ReferencePoint.Add(Shift10),
         );
@@ -272,7 +272,7 @@ class PolygonalTile {
     }
 
     if (this.NeighbourTiles[4] == null) {
-      if (this.NeighbourTiles[3]?.Completed != true) {
+      if (this.NeighbourTiles[3]?.Completed !== true) {
         this.Intersections[10] = new Intersection(
           this.ReferencePoint.Add(Shift11),
         );
@@ -281,7 +281,7 @@ class PolygonalTile {
         this.Intersections[10] = this.NeighbourTiles[3].Intersections[13];
       }
 
-      if (this.NeighbourTiles[5]?.Completed != true) {
+      if (this.NeighbourTiles[5]?.Completed !== true) {
         this.Intersections[11] = new Intersection(
           this.ReferencePoint.Add(Shift12),
         );
@@ -301,7 +301,7 @@ class PolygonalTile {
     }
 
     if (this.NeighbourTiles[5] == null) {
-      if (this.NeighbourTiles[4]?.Completed != true) {
+      if (this.NeighbourTiles[4]?.Completed !== true) {
         this.Intersections[12] = new Intersection(
           this.ReferencePoint.Add(Shift13),
         );
@@ -310,7 +310,7 @@ class PolygonalTile {
         this.Intersections[12] = this.NeighbourTiles[4].Intersections[15];
       }
 
-      if (this.NeighbourTiles[0]?.Completed != true) {
+      if (this.NeighbourTiles[0]?.Completed !== true) {
         this.Intersections[13] = new Intersection(
           this.ReferencePoint.Add(Shift14),
         );
@@ -330,7 +330,7 @@ class PolygonalTile {
     }
 
     if (this.NeighbourTiles[0] == null) {
-      if (this.NeighbourTiles[5]?.Completed != true) {
+      if (this.NeighbourTiles[5]?.Completed !== true) {
         this.Intersections[14] = new Intersection(
           this.ReferencePoint.Add(Shift15),
         );
@@ -339,7 +339,7 @@ class PolygonalTile {
         this.Intersections[14] = this.NeighbourTiles[5].Intersections[17];
       }
 
-      if (this.NeighbourTiles[1]?.Completed != true) {
+      if (this.NeighbourTiles[1]?.Completed !== true) {
         this.Intersections[15] = new Intersection(
           this.ReferencePoint.Add(Shift16),
         );
@@ -359,7 +359,7 @@ class PolygonalTile {
     }
 
     if (this.NeighbourTiles[1] == null) {
-      if (this.NeighbourTiles[0]?.Completed != true) {
+      if (this.NeighbourTiles[0]?.Completed !== true) {
         this.Intersections[16] = new Intersection(
           this.ReferencePoint.Add(Shift17),
         );
@@ -368,7 +368,7 @@ class PolygonalTile {
         this.Intersections[16] = this.NeighbourTiles[0].Intersections[7];
       }
 
-      if (this.NeighbourTiles[2]?.Completed != true) {
+      if (this.NeighbourTiles[2]?.Completed !== true) {
         this.Intersections[17] = new Intersection(
           this.ReferencePoint.Add(Shift18),
         );

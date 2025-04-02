@@ -1,7 +1,7 @@
 <script lang="ts">
 import { TimeControlType } from "@ogfcommunity/variants-shared";
 function shouldShowPeriodTime(type: TimeControlType) {
-  return type == TimeControlType.ByoYomi || type === TimeControlType.Canadian;
+  return type === TimeControlType.ByoYomi || type === TimeControlType.Canadian;
 }
 </script>
 

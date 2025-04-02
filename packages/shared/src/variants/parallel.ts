@@ -32,7 +32,10 @@ export class ParallelGo extends AbstractGame<
   private staged: MovesType = {};
   private last_round: MovesType = {};
   // Resignations and timeouts
-  private dropouts = new Set<number>();
+  private participants = Array.from(
+    { length: this.config.num_players },
+    (_, i) => i,
+  );
 
   constructor(config: ParallelGoConfig) {
     super(config);
@@ -56,7 +59,7 @@ export class ParallelGo extends AbstractGame<
   nextToPlay(): number[] {
     if (this.phase === "gameover") return [];
 
-    return this.participants().filter((idx) => !(idx in this.staged));
+    return this.participants.filter((idx) => !(idx in this.staged));
   }
 
   playMove(player: number, move: string): void {
@@ -77,10 +80,10 @@ export class ParallelGo extends AbstractGame<
     }
 
     if (move === "resign" || move === "timeout") {
-      this.dropouts.add(player);
+      this.participants = this.participants.filter((val) => val != player);
 
-      if (this.participants().length < 2) {
-        if (this.participants().length === 1) {
+      if (this.participants.length < 2) {
+        if (this.participants.length === 1) {
           this.result = `Player ${this.nextToPlay()[0]} wins!`;
         }
 
@@ -90,14 +93,14 @@ export class ParallelGo extends AbstractGame<
     } else {
       // stage move
 
-      if (!this.participants().includes(player)) {
+      if (!this.participants.includes(player)) {
         throw new Error("Player is no longer participating");
       }
 
       this.staged[player] = move;
     }
 
-    if (this.participants().some((playerNr) => !(playerNr in this.staged))) {
+    if (this.participants.some((playerNr) => !(playerNr in this.staged))) {
       // Don't play moves until everybody has staged a move
       return;
     }
@@ -115,7 +118,7 @@ export class ParallelGo extends AbstractGame<
       const player = Number(player_str);
       this.board.at(decoded_move)?.push(player);
     });
-    if (num_passes === this.participants().length) {
+    if (num_passes === this.participants.length) {
       this.phase = "gameover";
     }
 
@@ -229,12 +232,6 @@ export class ParallelGo extends AbstractGame<
         return;
       }
       group.stones.forEach((pos) => this.board.set(pos, []));
-    });
-  }
-
-  private participants() {
-    return [...Array(this.config.num_players).keys()].filter((idx) => {
-      return !this.dropouts.has(idx);
     });
   }
 }

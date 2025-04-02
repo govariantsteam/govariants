@@ -80,7 +80,7 @@ export class ParallelGo extends AbstractGame<
     }
 
     if (move === "resign" || move === "timeout") {
-      this.participants = this.participants.filter((val) => val != player);
+      this.participants = this.participants.filter((val) => val !== player);
 
       if (this.participants.length < 2) {
         if (this.participants.length === 1) {

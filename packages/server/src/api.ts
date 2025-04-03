@@ -28,7 +28,7 @@ import {
   GameInitialResponse,
 } from "@ogfcommunity/variants-shared";
 import { io } from "./socket_io";
-import { checkCSRFToken, generateCSRFToken } from "./csfr_guard";
+import { checkCSRFToken, generateCSRFToken } from "./csrf_guard";
 
 export const router = express.Router();
 

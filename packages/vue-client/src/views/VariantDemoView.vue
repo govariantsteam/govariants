@@ -48,12 +48,12 @@ const displayed_round = computed(() => view_round.value ?? moves.length);
 
 function getGame(
   variant: string,
-  config: unknown,
+  config: object,
   moves: Array<MovesType>,
   viewRound: number | null,
   playingAs?: number,
 ) {
-  const game_obj = makeGameObject(variant, config);
+  const game_obj = makeGameObject(variant, { ...config });
 
   let state: object | null = null;
   for (let i = 0; i < moves.length; i++) {

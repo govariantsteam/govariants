@@ -5,18 +5,18 @@ import type { Ref } from "vue";
 
 interface UserStoreStateTree {
   user: UserResponse | null;
+  csrf_token: string | null;
 }
 
 export const useStore = defineStore("user", {
   state: (): UserStoreStateTree => {
-    return { user: null };
+    return { user: null, csrf_token: null };
   },
   actions: {
     async update() {
       const res = await requests.get("/checkLogin");
       this.user = res.user;
-      const csfr_token = res.csfr_token;
-      console.log(csfr_token);
+      this.csrf_token = res.csrf_token;
     },
 
     async guestLogin() {
@@ -43,6 +43,7 @@ export const useStore = defineStore("user", {
     async logout() {
       await requests.get("/logout");
       this.user = null;
+      this.csrf_token = null;
       this.update();
     },
   },

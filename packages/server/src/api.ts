@@ -28,7 +28,7 @@ import {
   GameInitialResponse,
 } from "@ogfcommunity/variants-shared";
 import { io } from "./socket_io";
-import { generateCSRFToken } from "./csfr_guard";
+import { checkCSRFToken, generateCSRFToken } from "./csfr_guard";
 
 export const router = express.Router();
 
@@ -85,7 +85,7 @@ router.get("/games", async (req, res) => {
   res.send(games || 0);
 });
 
-router.post("/games", async (req, res) => {
+router.post("/games", checkCSRFToken, async (req, res) => {
   const data = req.body;
 
   if (!req.user) {

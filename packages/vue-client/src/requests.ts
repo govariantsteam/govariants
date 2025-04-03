@@ -1,4 +1,5 @@
 import io from "socket.io-client";
+import { useStore } from "./stores/user";
 
 const SERVER_ORIGIN =
   process.env.NODE_ENV === "production"
@@ -10,6 +11,10 @@ async function requestImpl(method: string, path: string, json?: object) {
   const headers = new Headers();
   headers.append("Origin", SERVER_ORIGIN); // TODO: Is this necessary?
   headers.append("Content-Type", "application/json");
+  const csfr_token = useStore().csrf_token;
+  if (csfr_token) {
+    headers.append("CSRF-Token", csfr_token);
+  }
   const response = await fetch(SERVER_PATH_PREFIX + path, {
     method,
     ...(json ? { body: JSON.stringify(json) } : null),
@@ -18,7 +23,7 @@ async function requestImpl(method: string, path: string, json?: object) {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data);
+    throw new Error(JSON.stringify(data));
   }
 
   return data;

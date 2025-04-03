@@ -73,7 +73,7 @@ export function getGlickoPlayer(
   db_player_ranking: UserRanking,
   ranking: Glicko2,
 ): Player {
-  if (db_player_ranking == undefined) {
+  if (db_player_ranking === undefined) {
     return ranking.makePlayer(1500, 350, 0.06);
   }
   return ranking.makePlayer(

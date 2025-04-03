@@ -25,5 +25,6 @@ module.exports = {
         patterns: ["@ogfcommunity/variants-shared/src/*"],
       },
     ],
+    eqeqeq: ["error", "smart"],
   },
 };

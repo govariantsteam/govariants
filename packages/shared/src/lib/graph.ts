@@ -41,7 +41,7 @@ export class Graph<T> implements Fillable<number, T> {
   }
 
   static fromPlainObject<T>(o: SerializedGraph<T>) {
-    if (o.adjacency_array.length != o.data.length) {
+    if (o.adjacency_array.length !== o.data.length) {
       throw new Error("Adjacency array must be the same length as data array");
     }
     const ret = new Graph<T>(o.adjacency_array);

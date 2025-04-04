@@ -103,6 +103,7 @@ app.use(
       sameSite: "strict",
       secure: "auto", // TODO: See https://www.npmjs.com/package/express-session,
       maxAge: 86_400_000 * 180, // 180 days
+      httpOnly: true,
     },
     store: MongoStore.create({ client: getDb() }),
   }),

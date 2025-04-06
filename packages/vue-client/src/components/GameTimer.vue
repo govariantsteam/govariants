@@ -6,10 +6,12 @@ import {
   type ITimeControlConfig,
 } from "@ogfcommunity/variants-shared";
 import { isDefined } from "@vueuse/core";
+import { speak } from "@/utils/voice-synthesizer";
 
 const props = defineProps<{
   time_control: IPerPlayerTimeControlBase;
   time_config: ITimeControlConfig;
+  user_occupies_seat: boolean;
 }>();
 
 const clockController = computed(() => {
@@ -27,6 +29,8 @@ const formattedTime = computed(() => {
     return "";
   }
 });
+const warnThreshold = 60;
+const alertThreshold = 10;
 let timerIndex: number | null = null;
 
 watch(
@@ -63,6 +67,13 @@ function resetTimer(): void {
       elapsed = now.getTime() - onThePlaySince.getTime();
 
       timerIndex = window.setInterval(() => {
+        const elapsed = new Date().getTime() - onThePlaySince.getTime();
+        time.value = clockController.value.elapse(
+          elapsed,
+          props.time_control.clockState,
+          props.time_config,
+        );
+
         const msUntilTimeout = clockController.value.msUntilTimeout(
           time.value,
           props.time_config,
@@ -70,13 +81,12 @@ function resetTimer(): void {
         if (msUntilTimeout <= 0 && timerIndex !== null) {
           clearInterval(timerIndex);
         } else {
-          const timeStamp = new Date();
-          const elapsed = timeStamp.getTime() - onThePlaySince.getTime();
-          time.value = clockController.value.elapse(
-            elapsed,
-            props.time_control.clockState,
-            props.time_config,
+          const countdownText = getCountdownText(
+            Math.floor(msUntilTimeout / 1000),
           );
+          if (countdownText && props.user_occupies_seat) {
+            speak(countdownText);
+          }
         }
       }, 1000);
     }
@@ -86,6 +96,20 @@ function resetTimer(): void {
       props.time_config,
     );
   }
+}
+
+function getCountdownText(seconds: number): string | null {
+  if (seconds < 0 || seconds > warnThreshold) return null;
+  if (seconds > alertThreshold) {
+    return seconds % 10 !== 0
+      ? null
+      : seconds.toLocaleString(undefined, {
+          style: "unit",
+          unit: "second",
+          unitDisplay: "long",
+        });
+  }
+  return seconds.toString();
 }
 </script>
 

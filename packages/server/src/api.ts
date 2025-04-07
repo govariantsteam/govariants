@@ -247,6 +247,7 @@ function make_auth_cb(
         return res.status(500).json(err.message);
       }
 
+      generateCSRFToken(req);
       return res.json(user);
     });
   };
@@ -262,7 +263,7 @@ router.get("/guestLogin", function (req, res, next) {
 
 // TODO: improve types
 /* eslint-disable @typescript-eslint/no-explicit-any */
-router.get("/checkLogin", generateCSRFToken, function (req: any, res) {
+router.get("/checkLogin", function (req: any, res) {
   return res.json(
     req.user ? { user: req.user, csrf_token: req.session.csrfToken } : null,
   );

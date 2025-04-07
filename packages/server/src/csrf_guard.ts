@@ -9,15 +9,9 @@ import express from "express";
  */
 // TODO: improve types
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export function generateCSRFToken(req: any, res: any, next: any) {
-  try {
-    const token = randomBytes(36).toString("base64");
-    req.session.csrfToken = token;
-    next();
-  } catch (e) {
-    res.status(500).json({ result: false, message: e.message });
-    return;
-  }
+export function generateCSRFToken(req: any) {
+  const token = randomBytes(36).toString("base64");
+  req.session.csrfToken = token;
 }
 
 /**
@@ -25,11 +19,19 @@ export function generateCSRFToken(req: any, res: any, next: any) {
  */
 // TODO: improve types
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export function checkCSRFToken(req: any, res: express.Response, next: any) {
+export function checkCSRFToken(
+  req: any,
+  res: express.Response,
+  next: express.NextFunction,
+) {
   try {
     const sessionCsrfToken = req.session.csrfToken;
+    if (!sessionCsrfToken) {
+      next();
+      return;
+    }
     const requestCsrfToken = req.get("CSRF-Token");
-    if (!requestCsrfToken || !sessionCsrfToken) {
+    if (!requestCsrfToken) {
       res.status(401).json({
         result: false,
         message: "Token has not been provided.",

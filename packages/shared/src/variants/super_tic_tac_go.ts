@@ -1,8 +1,15 @@
-import { Baduk, BadukConfig, badukVariant, Color } from "./baduk";
+import {
+  Baduk,
+  BadukConfig,
+  badukVariant,
+  Color,
+  groupHasLiberties,
+} from "./baduk";
 import { superTicTacGoRules } from "../templates/super_tic_tac_go_rules";
 import { NewGridBadukConfig } from "./baduk_utils";
 import { BoardPattern } from "../lib/abstractBoard/boardFactory";
 import { Coordinate, CoordinateLike } from "../lib/coordinate";
+import { getGroup } from "../lib/group_utils";
 
 export type SuperTicTacGoConfig = {
   komi: number;
@@ -64,7 +71,7 @@ export class Nonant {
     );
   }
 
-  equals(other: Nonant) {
+  equals(other: Nonant): boolean {
     return this.x === other.x && this.y === other.y;
   }
 
@@ -102,6 +109,16 @@ export class SuperTicTacGo extends Baduk {
     super.playMove(player, move);
   }
 
+  protected override playMoveInternal(move: Coordinate): void {
+    super.playMoveInternal(move);
+    // handle self-capture
+    const group = getGroup(move, this.board);
+    if (!groupHasLiberties(group, this.board)) {
+      group.forEach((pos) => this.board.set(pos, Color.EMPTY));
+      this.captures[this.next_to_play === 0 ? 1 : 0] += group.length;
+    }
+  }
+
   override postValidateMove(): void {
     // Allow self-capture moves
     // allow  ko
@@ -112,26 +129,12 @@ export class SuperTicTacGo extends Baduk {
     super.prepareForNextMove(move);
   }
 
-  public getLegalNonant(): Nonant {
+  protected getLegalNonant(): Nonant {
     if (this.last_move.length !== 2) {
       throw new Error("all nonants are legal");
     }
     const lastMove = super.decodeMove(this.last_move);
     return Nonant.correspondingToCoordinate(lastMove);
-  }
-
-  // mostly added this for easier testing
-  public getLegalVertices(): Array<Coordinate> {
-    if (this.last_move.length === 2) {
-      return this.getOpenVerticesInNonant(this.getLegalNonant());
-    } else {
-      const coords = new Array<Coordinate>();
-      this.board.forEach((val, i) => {
-        if (val !== Color.EMPTY) return;
-        coords.push(new Coordinate(i.x, i.y));
-      });
-      return coords;
-    }
   }
 
   protected getOpenVerticesInNonant(nonant: Nonant): Array<Coordinate> {
@@ -156,9 +159,14 @@ export class SuperTicTacGo extends Baduk {
   }
 
   static sanitizeConfig(config: unknown): SuperTicTacGoConfig {
-    const sttgConfig = config as BadukConfig;
+    let komi: number = SuperTicTacGo.defaultConfig().komi;
+    if (typeof config === "object" && config !== null) {
+      if ("komi" in config && typeof config.komi === "number") {
+        komi = config.komi;
+      }
+    }
     return {
-      komi: sttgConfig.komi,
+      komi,
       board: {
         type: "grid",
         width: 9,

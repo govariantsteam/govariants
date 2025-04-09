@@ -19,11 +19,6 @@ export function getOnlyMove(moves: MovesType): {
   return { player, move: moves[player] };
 }
 
-export type Participation = {
-  playerNr: number;
-  dropOutAtRound: number | null;
-};
-
 export function gamesFilterToUrlParams(filter: GamesFilter): string {
   return (
     (filter.user_id ? `&user_id=${encodeURIComponent(filter.user_id)}` : "") +
@@ -52,4 +47,13 @@ export function assertRectangular2DArrayOf<T>(
   }
 
   return array2D as T[][];
+}
+
+export function getNullIndices(arr: unknown[]) {
+  return arr.reduce((indexes: number[], element, index) => {
+    if (element == null) {
+      indexes.push(index);
+    }
+    return indexes;
+  }, []);
 }

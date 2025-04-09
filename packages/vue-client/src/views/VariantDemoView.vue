@@ -46,14 +46,20 @@ const game = computed(() =>
 );
 const displayed_round = computed(() => view_round.value ?? moves.length);
 
+function cloneConfig(config: object): object {
+  // here we use this on a vue proxy object,
+  // and structuredClone doesn't work on those.
+  return JSON.parse(JSON.stringify(config));
+}
+
 function getGame(
   variant: string,
-  config: unknown,
+  config: object,
   moves: Array<MovesType>,
   viewRound: number | null,
   playingAs?: number,
 ) {
-  const game_obj = makeGameObject(variant, config);
+  const game_obj = makeGameObject(variant, cloneConfig(config));
 
   let state: object | null = null;
   for (let i = 0; i < moves.length; i++) {
@@ -82,7 +88,7 @@ function getGame(
 const specialMoves = computed(() =>
   !props.variant || !config.value
     ? {}
-    : makeGameObject(props.variant, config.value).specialMoves(),
+    : makeGameObject(props.variant, cloneConfig(config.value)).specialMoves(),
 );
 const variantGameView = computed(() => getPlayingTable(props.variant));
 const variantDescriptionShort = computed(() => getDescription(props.variant));

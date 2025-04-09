@@ -1,7 +1,7 @@
 import { AbstractGame } from "../abstract_game";
 import { Coordinate } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
-import { MovesType, Participation } from "../lib/utils";
+import { MovesType } from "../lib/utils";
 import { Variant } from "../variant";
 
 export interface ParallelGoConfig {
@@ -31,8 +31,10 @@ export class ParallelGo extends AbstractGame<
   private board: Grid<number[]>;
   private staged: MovesType = {};
   private last_round: MovesType = {};
-  private playerParticipation = this.initializeParticipation(
-    this.config.num_players,
+  // Resignations and timeouts
+  private participants = Array.from(
+    { length: this.config.num_players },
+    (_, i) => i,
   );
 
   constructor(config: ParallelGoConfig) {
@@ -55,13 +57,9 @@ export class ParallelGo extends AbstractGame<
   }
 
   nextToPlay(): number[] {
-    return this.phase === "gameover"
-      ? []
-      : this.playerParticipation
-          .filter(
-            (x) => x.dropOutAtRound === null || x.dropOutAtRound > this.round,
-          )
-          .map((p) => p.playerNr);
+    if (this.phase === "gameover") return [];
+
+    return this.participants.filter((idx) => !(idx in this.staged));
   }
 
   playMove(player: number, move: string): void {
@@ -82,10 +80,10 @@ export class ParallelGo extends AbstractGame<
     }
 
     if (move === "resign" || move === "timeout") {
-      this.playerParticipation[player].dropOutAtRound = this.round;
+      this.participants = this.participants.filter((val) => val !== player);
 
-      if (this.nextToPlay().length < 2) {
-        if (this.nextToPlay().length === 1) {
+      if (this.participants.length < 2) {
+        if (this.participants.length === 1) {
           this.result = `Player ${this.nextToPlay()[0]} wins!`;
         }
 
@@ -95,14 +93,14 @@ export class ParallelGo extends AbstractGame<
     } else {
       // stage move
 
-      if (!this.nextToPlay().includes(player)) {
-        throw new Error("Not your turn");
+      if (!this.participants.includes(player)) {
+        throw new Error("Player is no longer participating");
       }
 
       this.staged[player] = move;
     }
 
-    if (this.nextToPlay().some((playerNr) => !(playerNr in this.staged))) {
+    if (this.participants.some((playerNr) => !(playerNr in this.staged))) {
       // Don't play moves until everybody has staged a move
       return;
     }
@@ -120,7 +118,7 @@ export class ParallelGo extends AbstractGame<
       const player = Number(player_str);
       this.board.at(decoded_move)?.push(player);
     });
-    if (num_passes === this.nextToPlay().length) {
+    if (num_passes === this.participants.length) {
       this.phase = "gameover";
     }
 
@@ -235,14 +233,6 @@ export class ParallelGo extends AbstractGame<
       }
       group.stones.forEach((pos) => this.board.set(pos, []));
     });
-  }
-
-  initializeParticipation(numPlayers: number): Participation[] {
-    const participation = new Array(numPlayers);
-    for (let i = 0; i < numPlayers; i++) {
-      participation[i] = { playerNr: i, dropOutAtRound: null };
-    }
-    return participation;
   }
 }
 

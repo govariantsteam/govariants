@@ -129,7 +129,7 @@ export class SuperTicTacGo extends Baduk {
     super.prepareForNextMove(move);
   }
 
-  protected getLegalNonant(): Nonant {
+  private getLegalNonant(): Nonant {
     if (this.last_move.length !== 2) {
       throw new Error("all nonants are legal");
     }
@@ -137,13 +137,13 @@ export class SuperTicTacGo extends Baduk {
     return Nonant.correspondingToCoordinate(lastMove);
   }
 
-  protected getOpenVerticesInNonant(nonant: Nonant): Array<Coordinate> {
+  private getOpenVerticesInNonant(nonant: Nonant): Array<Coordinate> {
     return nonant.vertices().filter((coord) => {
       return this.board.at(coord) === Color.EMPTY;
     });
   }
 
-  protected hasOpenPoints(nonant: Nonant): boolean {
+  private hasOpenPoints(nonant: Nonant): boolean {
     return this.getOpenVerticesInNonant(nonant).length > 0;
   }
 

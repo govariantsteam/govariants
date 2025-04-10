@@ -15,7 +15,6 @@ const props = defineProps<{
   background_color?: string;
   board_dimensions: { width: number; height: number };
   score_board?: (string[] | null)[][];
-  fields_bg_color?: (string | null)[][];
 }>();
 
 const width = computed(() => props.board_dimensions.width);
@@ -52,17 +51,17 @@ function positionHovered(pos: Coordinate) {
       :height="height"
       :fill="background_color ?? '#dcb35c'"
     />
-    <g v-if="props.fields_bg_color">
+    <g v-if="props.board">
       <rect
         v-for="pos in positions.filter((pos) =>
-          props.fields_bg_color?.at(pos.y)?.at(pos.x),
+          props.board![pos.y][pos.x]?.background_color,
         )"
         :key="`${pos.x},${pos.y}`"
         :x="pos.x - 0.5"
         :y="pos.y - 0.5"
         width="1"
         height="1"
-        :fill="props.fields_bg_color![pos.y][pos.x]!"
+        :fill="props.board![pos.y][pos.x]!.background_color"
       ></rect>
     </g>
     <g>
@@ -132,7 +131,9 @@ function positionHovered(pos: Coordinate) {
     </g>
     <g>
       <rect
-        v-for="pos in positions"
+        v-for="pos in positions.filter(
+          (pos) => !props.board?.at(pos.y)?.at(pos.x)?.disable_move,
+        )"
         :key="`${pos.x},${pos.y}`"
         @click="positionClicked(pos)"
         @mouseover="positionHovered(pos)"

@@ -3,6 +3,8 @@ import { BoardConfig } from "./abstractBoard/boardFactory";
 export interface MulticolorStone {
   colors: string[];
   annotation?: "CR" | "MA";
+
+  // currently only supported on grid board
   background_color?: string;
   disable_move?: true;
 }

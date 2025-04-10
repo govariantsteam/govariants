@@ -1,4 +1,9 @@
 import { AbstractGame } from "../../abstract_game";
+import {
+  DefaultBoardConfig,
+  DefaultBoardState,
+  MulticolorStone,
+} from "../../lib/board_types";
 import { Coordinate, CoordinateLike } from "../../lib/coordinate";
 import { Grid } from "../../lib/grid";
 import { examineGroup, getGroup, getOuterBorder } from "../../lib/group_utils";
@@ -241,6 +246,48 @@ export class Lighthouse extends AbstractGame<
 
     this.phase = "gameover";
   }
+
+  static uiTransform(
+    config: NewGridBadukConfig,
+    state: LighthouseState,
+  ): { config: DefaultBoardConfig; gamestate: DefaultBoardState } {
+    function colorMap(color: Color, darken: boolean): string[] {
+      switch (color) {
+        case Color.EMPTY:
+          return [];
+        case Color.BLACK:
+          return [darken ? darkBlackColor : lightBlackColor];
+        case Color.WHITE:
+          return [darken ? darkWhiteColor : lightWhiteColor];
+      }
+    }
+
+    const board = state.board.map((row) =>
+      row.map((field): MulticolorStone => {
+        if (field.visibleColor !== null) {
+          return {
+            colors: colorMap(field.visibleColor, false),
+            background_color: lightFieldColor,
+            disable_move: true,
+          };
+        }
+        return { colors: colorMap(field.lastKnownInformation, false) };
+      }),
+    );
+
+    const score_board = state.score_board?.map((row) =>
+      row.map((field) => colorMap(field, false)),
+    );
+
+    return {
+      config: config,
+      gamestate: {
+        backgroundColor: darkFieldColor,
+        board: board,
+        score_board: score_board,
+      },
+    };
+  }
 }
 
 export const lighthouseVariant: Variant<NewGridBadukConfig, LighthouseState> = {
@@ -251,4 +298,12 @@ export const lighthouseVariant: Variant<NewGridBadukConfig, LighthouseState> = {
     "Each stone casts rays of light that illuminate fields in a line.",
   time_handling: "sequential",
   rulesDescription: lighthouseRules,
+  uiTransform: Lighthouse.uiTransform,
 };
+
+const darkFieldColor = "#684e14";
+const lightFieldColor = "#dcb35c";
+const lightWhiteColor = "#FFFFFF";
+const darkWhiteColor = "#bbbbbb";
+const lightBlackColor = "#4c4c4c";
+const darkBlackColor = "#000000";

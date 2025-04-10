@@ -268,7 +268,6 @@ export class Lighthouse extends AbstractGame<
           return {
             colors: colorMap(field.visibleColor, false),
             background_color: lightFieldColor,
-            disable_move: true,
           };
         }
         return { colors: colorMap(field.lastKnownInformation, false) };

@@ -28,6 +28,7 @@ import {
   GameInitialResponse,
 } from "@ogfcommunity/variants-shared";
 import { io } from "./socket_io";
+import { checkCSRFToken, generateCSRFToken } from "./csrf_guard";
 
 export const router = express.Router();
 
@@ -84,7 +85,7 @@ router.get("/games", async (req, res) => {
   res.send(games || 0);
 });
 
-router.post("/games", async (req, res) => {
+router.post("/games", checkCSRFToken, async (req, res) => {
   const data = req.body;
 
   if (!req.user) {
@@ -103,7 +104,7 @@ router.post("/games", async (req, res) => {
   }
 });
 
-router.post("/games/:gameId/move", async (req, res) => {
+router.post("/games/:gameId/move", checkCSRFToken, async (req, res) => {
   const move: MovesType = req.body;
   const user_id = (req.user as User)?.id;
 
@@ -115,7 +116,7 @@ router.post("/games/:gameId/move", async (req, res) => {
   }
 });
 
-router.post("/games/:gameId/sit/:seat", async (req, res) => {
+router.post("/games/:gameId/sit/:seat", checkCSRFToken, async (req, res) => {
   const user = req.user as UserResponse | undefined;
 
   try {
@@ -133,7 +134,7 @@ router.post("/games/:gameId/sit/:seat", async (req, res) => {
   }
 });
 
-router.post("/games/:gameId/leave/:seat", async (req, res) => {
+router.post("/games/:gameId/leave/:seat", checkCSRFToken, async (req, res) => {
   // TODO: make sure this is set to a valid id once we have user auth
   const user = req.user as UserResponse | undefined;
 
@@ -166,7 +167,7 @@ router.post("/register", async (req, res, next) => {
   passport.authenticate("local", make_auth_cb(req, res))(req, res, next);
 });
 
-router.put("/users/:userId/role", async (req, res) => {
+router.put("/users/:userId/role", checkCSRFToken, async (req, res) => {
   const { role } = req.body;
   try {
     if (!req.user || (req.user as UserResponse).role !== "admin") {
@@ -212,7 +213,7 @@ router.get("/users/:userId", async (req, res) => {
   }
 });
 
-router.delete("/users/:userId", async (req, res) => {
+router.delete("/users/:userId", checkCSRFToken, async (req, res) => {
   if ((req.user as UserResponse).role !== "admin") {
     res.status(401);
     res.json("You are not authorized to delete users");
@@ -246,6 +247,7 @@ function make_auth_cb(
         return res.status(500).json(err.message);
       }
 
+      generateCSRFToken(req);
       return res.json(user);
     });
   };
@@ -259,8 +261,12 @@ router.get("/guestLogin", function (req, res, next) {
   passport.authenticate("guest", make_auth_cb(req, res))(req, res, next);
 });
 
-router.get("/checkLogin", function (req, res) {
-  return res.json(req.user ? req.user : null);
+// TODO: improve types
+/* eslint-disable @typescript-eslint/no-explicit-any */
+router.get("/checkLogin", function (req: any, res) {
+  return res.json(
+    req.user ? { user: req.user, csrf_token: req.session.csrfToken } : null,
+  );
 });
 
 router.get("/logout", async function (req, res) {

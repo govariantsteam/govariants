@@ -6,7 +6,7 @@ import {
   type ITimeControlConfig,
 } from "@ogfcommunity/variants-shared";
 import { isDefined } from "@vueuse/core";
-import { speak } from "@/utils/voice-synthesizer";
+import { stop_and_speak } from "@/utils/voice-synthesizer";
 
 const props = defineProps<{
   time_control: IPerPlayerTimeControlBase;
@@ -29,7 +29,6 @@ const formattedTime = computed(() => {
     return "";
   }
 });
-const warnThreshold = 60;
 const alertThreshold = 10;
 let timerIndex: number | null = null;
 
@@ -81,11 +80,9 @@ function resetTimer(): void {
         if (msUntilTimeout <= 0 && timerIndex !== null) {
           clearInterval(timerIndex);
         } else {
-          const countdownText = getCountdownText(
-            Math.floor(msUntilTimeout / 1000),
-          );
-          if (countdownText && props.user_occupies_seat) {
-            speak(countdownText);
+          const remainingSeconds = Math.floor(msUntilTimeout / 1000);
+          if (props.user_occupies_seat && remainingSeconds <= alertThreshold) {
+            stop_and_speak(remainingSeconds.toString());
           }
         }
       }, 1000);
@@ -96,20 +93,6 @@ function resetTimer(): void {
       props.time_config,
     );
   }
-}
-
-function getCountdownText(seconds: number): string | null {
-  if (seconds < 0 || seconds > warnThreshold) return null;
-  if (seconds > alertThreshold) {
-    return seconds % 10 !== 0
-      ? null
-      : seconds.toLocaleString(undefined, {
-          style: "unit",
-          unit: "second",
-          unitDisplay: "long",
-        });
-  }
-  return seconds.toString();
 }
 </script>
 

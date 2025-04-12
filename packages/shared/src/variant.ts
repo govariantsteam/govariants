@@ -29,7 +29,13 @@ export interface Variant<
    * completed) will remain accessible, but new games cannot be created.
    */
   deprecated?: boolean;
-  /** Used to determine the flow of the game.  In most cases, this is "sequential". */
+  /** Used to determine the flow of the game.
+   *
+   * Valid options:
+   * - "sequential" – Players take turns one after another.  This is the most common time control.
+   * - "parallel" – All players play a move in each round.
+   * - "none" – Time control is not supported.
+   */
   time_handling: "sequential" | "parallel" | "none";
   /** The initial config displayed in the config form. */
   defaultConfig: () => ConfigT;

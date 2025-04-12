@@ -27,3 +27,30 @@ test("create rhombitrihexagonal board", () => {
   // Also see PolygonalBoardHelper lines 4 - 28
   expect(graph.neighbors(0)).toEqual([1, 5, 6, 17]);
 });
+
+test("create custom board", () => {
+  // Just a 2x2 grid board
+  const intersections = createBoard(
+    {
+      type: BoardPattern.Custom,
+      coordinates: [
+        [0, 0],
+        [1, 0],
+        [0, 1],
+        [1, 1],
+      ],
+      adjacencyList: [
+        [1, 2],
+        [0, 3],
+        [0, 3],
+        [1, 2],
+      ],
+    },
+    Intersection,
+  );
+
+  expect(intersections).toHaveLength(4);
+
+  expect(intersections[0].position).toEqual({ X: 0, Y: 0 });
+  expect(intersections[0].neighbours).toHaveLength(2);
+});

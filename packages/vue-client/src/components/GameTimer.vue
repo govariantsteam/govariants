@@ -30,6 +30,7 @@ const formattedTime = computed(() => {
   }
 });
 const alertThreshold = 10;
+const isAlertMode = ref(false);
 let timerIndex: number | null = null;
 
 watch(
@@ -81,7 +82,8 @@ function resetTimer(): void {
           clearInterval(timerIndex);
         } else {
           const remainingSeconds = Math.floor(msUntilTimeout / 1000);
-          if (props.user_occupies_seat && remainingSeconds <= alertThreshold) {
+          isAlertMode.value = remainingSeconds <= alertThreshold;
+          if (props.user_occupies_seat && isAlertMode.value) {
             stop_and_speak(remainingSeconds.toString());
           }
         }
@@ -92,12 +94,22 @@ function resetTimer(): void {
       time.value,
       props.time_config,
     );
+  } else {
+    // this seat is not on the play
+    isAlertMode.value = false;
   }
 }
 </script>
 
 <template>
-  <div>
+  <div v-bind:class="{ 'alert-timer': isAlertMode }">
     {{ formattedTime }}
   </div>
 </template>
+
+<style lang="css" scoped>
+/* This class is referenced in a css selector in SeatComponent */
+.alert-timer {
+  color: var(--color-warn);
+}
+</style>

@@ -96,6 +96,10 @@ const time_config = computed(
   width: 200px;
   padding: 10px;
   margin: 5px 2px;
+
+  &:has(.alert-timer) {
+    background-color: var(--color-warn-transparent);
+  }
 }
 .seat.selected {
   border-color: var(--color-selected-seat);

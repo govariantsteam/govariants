@@ -1,63 +1,10 @@
-<script lang="ts">
-function validateConfig(config: unknown) {
-  if (!(config instanceof Object)) {
-    throw new Error("'config' is not an object");
-  }
-
-  if (!("coordinates" in config)) {
-    throw new Error("no 'coordinates' in config");
-  }
-  if (!("adjacencyList" in config)) {
-    throw new Error("no 'adjacencyList' in config");
-  }
-
-  if (!Array.isArray(config.coordinates)) {
-    throw new Error("'coordinates' is not an Array");
-  }
-  if (!Array.isArray(config.adjacencyList)) {
-    throw new Error("'adjacencyList' is not an Array");
-  }
-
-  if (config.coordinates.length !== config.adjacencyList.length) {
-    throw new Error("'coordinates' and 'adjacencyList' must be the same size");
-  }
-
-  const numIntersections = config.coordinates.length;
-
-  if (
-    !config.coordinates.every(
-      (val) =>
-        Array.isArray(val) &&
-        val.length === 2 &&
-        Number.isFinite(val[0]) &&
-        Number.isFinite(val[1]),
-    )
-  ) {
-    // tbh we can probably get more specific in the error message
-    throw new Error("'coordinates' is invalid");
-  }
-
-  if (
-    !config.adjacencyList.every(
-      (neighbors, idx) =>
-        Array.isArray(neighbors) &&
-        neighbors.every(
-          (neighbor) =>
-            Number.isInteger(neighbor) &&
-            neighbor !== idx &&
-            neighbor >= 0 &&
-            neighbor < numIntersections,
-        ),
-    )
-  ) {
-    // tbh we can probably get more specific in the error message
-    throw new Error("'adjacencyList' is invalid");
-  }
-}
-</script>
-
 <script setup lang="ts">
-import { BoardPattern, CustomBoardConfig } from "@ogfcommunity/variants-shared";
+import {
+  BoardPattern,
+  CustomBoardConfig,
+  validateCustomBoardConfig,
+  getCustomBoardConfigWarning,
+} from "@ogfcommunity/variants-shared";
 import { ref } from "vue";
 
 const defaultConfigStr = `{
@@ -78,10 +25,15 @@ const configStr = ref(
 );
 
 function onTextChanged(configStr: string) {
-  let config: unknown;
+  let config: CustomBoardConfig;
   try {
     config = JSON.parse(configStr);
-    validateConfig(config);
+    // because we don't want to force the user to enter "type" in
+    // the textarea, we set it here
+    config.type = BoardPattern.Custom;
+
+    // Blocking errors, like invalid types
+    config = validateCustomBoardConfig(config);
   } catch (e) {
     if (e instanceof Error) {
       error.value = e.message;
@@ -89,11 +41,10 @@ function onTextChanged(configStr: string) {
     return;
   }
 
-  error.value = "";
+  // Non-blocking warnings, such as directed edges
+  error.value = getCustomBoardConfigWarning(config);
 
-  (config as CustomBoardConfig).type = BoardPattern.Custom;
-
-  emit("configChanged", config as CustomBoardConfig);
+  emit("configChanged", config);
 }
 
 if (!props.initialConfig) {
@@ -110,3 +61,11 @@ if (!props.initialConfig) {
   </form>
   <div class="error">{{ error }}</div>
 </template>
+
+<style scoped>
+.error {
+  color: red;
+  font-size: 0.8em;
+  margin-top: 0.5em;
+}
+</style>

@@ -65,15 +65,26 @@ export function validateConfig(config: unknown): CustomBoardConfig {
 }
 
 export function getConfigWarning(config: CustomBoardConfig): string {
+  const { coordinates, adjacencyList } = config;
+
   // check adjacency list is undirected
-  const adjacencyList = config.adjacencyList;
   for (let i = 0; i < adjacencyList.length; i++) {
     const neighbors = adjacencyList[i];
     for (const neighbor of neighbors) {
       if (!adjacencyList[neighbor].includes(i)) {
-        return `Warning: adjacencyList has directed edge: ${i} -> ${neighbor}`;
+        return `Warning: 'adjacencyList' has directed edge: ${i} -> ${neighbor}`;
       }
     }
+  }
+
+  // check for duplicate coordinates
+  const seenCoordinates = new Set<string>();
+  for (const [x, y] of coordinates) {
+    const coordKey = `${x},${y}`;
+    if (seenCoordinates.has(coordKey)) {
+      return `Warning: 'coordinates' contains duplicate: (${coordKey})`;
+    }
+    seenCoordinates.add(coordKey);
   }
 
   return "";

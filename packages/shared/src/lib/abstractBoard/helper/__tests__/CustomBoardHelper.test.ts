@@ -1,4 +1,5 @@
-import { validateConfig } from "../CustomBoardHelper";
+import { CustomBoardConfig } from "../../boardFactory";
+import { getConfigWarning, validateConfig } from "../CustomBoardHelper";
 
 describe("validateConfig", () => {
   it("throws an error if config is not an object", () => {
@@ -8,14 +9,19 @@ describe("validateConfig", () => {
   });
 
   it("throws an error if config.type is not 'custom'", () => {
-    expect(() => validateConfig({})).toThrow("'config.type' must be 'custom'");
+    expect(() =>
+      validateConfig({
+        adjacencyList: [],
+        coordinates: [],
+      }),
+    ).toThrow("'config.type' must be 'custom'");
     expect(() => validateConfig({ type: "invalid" })).toThrow(
       "'config.type' must be 'custom'",
     );
   });
 
   it("throws an error if 'coordinates' is missing", () => {
-    expect(() => validateConfig({ type: "custom" })).toThrow(
+    expect(() => validateConfig({ type: "custom", adjacencyList: [] })).toThrow(
       "no 'coordinates' in config",
     );
   });
@@ -81,5 +87,46 @@ describe("validateConfig", () => {
       adjacencyList: [[1], [0]],
     };
     expect(validateConfig(validConfig)).toBe(validConfig);
+  });
+});
+
+describe("getConfigWarning", () => {
+  it("returns an empty string for a valid config", () => {
+    const validConfig: CustomBoardConfig = {
+      type: "custom",
+      coordinates: [
+        [0, 0],
+        [1, 1],
+      ],
+      adjacencyList: [[1], [0]],
+    };
+    expect(getConfigWarning(validConfig)).toBe("");
+  });
+  it("returns a warning for a config with directed edges", () => {
+    const configWithDirectedEdges: CustomBoardConfig = {
+      type: "custom",
+      coordinates: [
+        [0, 0],
+        [1, 1],
+      ],
+      adjacencyList: [[1], []], // Directed edges
+    };
+    expect(getConfigWarning(configWithDirectedEdges)).toBe(
+      "Warning: 'adjacencyList' has directed edge: 0 -> 1",
+    );
+  });
+  it("returns a warning for a config with duplicate coordinates", () => {
+    const configWithDuplicates: CustomBoardConfig = {
+      type: "custom",
+      coordinates: [
+        [0, 0],
+        [1, 1],
+        [0, 0], // Duplicate
+      ],
+      adjacencyList: [[], [], []],
+    };
+    expect(getConfigWarning(configWithDuplicates)).toBe(
+      "Warning: 'coordinates' contains duplicate: (0,0)",
+    );
   });
 });

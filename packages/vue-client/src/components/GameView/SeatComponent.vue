@@ -99,6 +99,10 @@ const time_config = computed(
 
   &:has(.alert-timer) {
     background-color: var(--color-warn-transparent);
+
+    &.selected {
+      border-color: var(--color-warn);
+    }
   }
 }
 .seat.selected {
@@ -116,7 +120,7 @@ const time_config = computed(
   box-shadow: 0px 0px var(--to-move-shadow-width) var(--color-shadow);
 }
 
-.seat.to-move.selected {
+.seat.to-move.selected:not(:has(.alert-timer)) {
   box-shadow: 0px 0px var(--to-move-shadow-width) var(--color-selected-seat);
 }
 

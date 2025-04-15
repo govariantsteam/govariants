@@ -102,14 +102,8 @@ function resetTimer(): void {
 </script>
 
 <template>
+  <!--This class is referenced in SeatComponent-->
   <div v-bind:class="{ 'alert-timer': isAlertMode }">
     {{ formattedTime }}
   </div>
 </template>
-
-<style lang="css" scoped>
-/* This class is referenced in a css selector in SeatComponent */
-.alert-timer {
-  color: var(--color-warn);
-}
-</style>

@@ -29,7 +29,7 @@ const formattedTime = computed(() => {
     return "";
   }
 });
-const alertThreshold = 10;
+const alertThresholdSeconds = 10;
 const isAlertMode = ref(false);
 let timerIndex: number | null = null;
 
@@ -82,7 +82,7 @@ function resetTimer(): void {
           clearInterval(timerIndex);
         } else {
           const remainingSeconds = Math.floor(msUntilTimeout / 1000);
-          isAlertMode.value = remainingSeconds <= alertThreshold;
+          isAlertMode.value = remainingSeconds <= alertThresholdSeconds;
           if (props.user_occupies_seat && isAlertMode.value) {
             stop_and_speak(remainingSeconds.toString());
           }

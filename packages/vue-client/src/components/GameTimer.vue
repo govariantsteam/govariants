@@ -11,7 +11,7 @@ import { stop_and_speak } from "@/utils/voice-synthesizer";
 const props = defineProps<{
   time_control: IPerPlayerTimeControlBase;
   time_config: ITimeControlConfig;
-  user_occupies_seat: boolean;
+  is_seat_selected: boolean;
 }>();
 
 const clockController = computed(() => {
@@ -80,10 +80,11 @@ function resetTimer(): void {
         );
         if (msUntilTimeout <= 0 && timerIndex !== null) {
           clearInterval(timerIndex);
+          isAlertMode.value = false;
         } else {
           const remainingSeconds = Math.floor(msUntilTimeout / 1000);
           isAlertMode.value = remainingSeconds <= alertThresholdSeconds;
-          if (props.user_occupies_seat && isAlertMode.value) {
+          if (props.is_seat_selected && isAlertMode.value) {
             stop_and_speak(remainingSeconds.toString());
           }
         }

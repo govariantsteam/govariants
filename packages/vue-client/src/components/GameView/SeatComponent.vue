@@ -7,7 +7,6 @@ import type {
 import { computed, getCurrentInstance } from "vue";
 import GameTimer from "../GameTimer.vue";
 import PlayerSymbol from "./PlayerSymbol.vue";
-import { useCurrentUser } from "../../stores/user";
 
 const props = defineProps<{
   user_id?: string;
@@ -33,12 +32,13 @@ const hasLeaveCallback = computed(
 const time_config = computed(
   () => (props.config as IConfigWithTimeControl).time_control,
 );
+const isSelected = computed(() => props.selected === props.player_n);
 </script>
 
 <template>
   <div
     class="seat"
-    :class="{ selected: selected === player_n, 'to-move': is_players_turn }"
+    :class="{ selected: isSelected, 'to-move': is_players_turn }"
     @click="$emit('select')"
   >
     <p class="seat-number">{{ player_n }}</p>
@@ -49,7 +49,7 @@ const time_config = computed(
           v-if="time_control && time_config"
           v-bind:time_control="time_control"
           v-bind:time_config="time_config"
-          :user_occupies_seat="false"
+          :is_seat_selected="false"
         />
         <button v-if="user_id" @click.stop="$emit('sit')">Take Seat</button>
       </div>
@@ -63,7 +63,7 @@ const time_config = computed(
           v-if="time_control && time_config"
           v-bind:time_control="time_control"
           v-bind:time_config="time_config"
-          :user_occupies_seat="occupant.id === useCurrentUser().value?.id"
+          :is_seat_selected="isSelected"
         />
         <button
           v-if="hasLeaveCallback && occupant.id === user_id"

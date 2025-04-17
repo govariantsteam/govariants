@@ -39,7 +39,7 @@ const voronoiDiagram = computed(() => {
   });
 });
 
-function getPointsString(cell: Cell): string {
+function getPolygonPointsString(cell: Cell): string {
   return cell.halfedges
     .map(
       (edge) =>
@@ -144,9 +144,9 @@ const viewBox = computed(() => {
       </template>
     </g>
     <g>
-      <template v-for="(intersection, index) in intersections" :key="index">
+      <template v-for="(_, index) in intersections" :key="index">
         <polygon
-          :points="getPointsString(voronoiDiagram.cells[index])"
+          :points="getPolygonPointsString(voronoiDiagram.cells[index])"
           v-if="!props.board?.at(index)?.disable_move"
           @click="positionClicked(index)"
           @mouseover="positionHovered(index)"

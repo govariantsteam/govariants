@@ -96,6 +96,15 @@ const viewBox = computed(() => {
       v-bind:height="viewBox.height + 1"
       :fill="background_color ?? '#dcb35c'"
     />
+    <g>
+      <template v-for="(_, index) in intersections" :key="index">
+        <polygon
+          v-if="props.board?.at(index)?.background_color"
+          :points="getPolygonPointsString(voronoiDiagram.cells[index])"
+          :fill="props.board.at(index)!.background_color"
+        />
+      </template>
+    </g>
 
     <g v-for="(intersection, index) in intersections" :key="index">
       <line
@@ -144,12 +153,15 @@ const viewBox = computed(() => {
       </template>
     </g>
     <g>
-      <template v-for="(_, index) in intersections" :key="index">
-        <polygon
-          :points="getPolygonPointsString(voronoiDiagram.cells[index])"
+      <template v-for="(intersection, index) in intersections" :key="index">
+        <rect
           v-if="!props.board?.at(index)?.disable_move"
           @click="positionClicked(index)"
           @mouseover="positionHovered(index)"
+          :x="intersection.position.X - 0.5"
+          :y="intersection.position.Y - 0.5"
+          width="1"
+          height="1"
           :fill="hovered == index ? 'pink' : 'transparent'"
           opacity="0.5"
         />

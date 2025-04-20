@@ -1,7 +1,7 @@
 import { onUnmounted, ref, Ref } from "vue";
 
 export type ReStartableInterval = {
-  reStart: (callback: () => void, interval_ms: number) => void;
+  restart: (callback: () => void, interval_ms: number) => void;
   stop: () => void;
 };
 
@@ -15,12 +15,12 @@ export function useInterval(): ReStartableInterval {
     }
   }
 
-  function reStart(callback: () => void, interval_ms: number): void {
+  function restart(callback: () => void, interval_ms: number): void {
     stop();
     intervalIndex.value = window.setInterval(callback, interval_ms);
   }
 
   onUnmounted(stop);
 
-  return { reStart: reStart, stop: stop };
+  return { restart: restart, stop: stop };
 }

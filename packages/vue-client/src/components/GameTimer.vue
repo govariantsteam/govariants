@@ -51,7 +51,7 @@ function resetTimer(): void {
       const stagedMove = new Date(props.time_control.stagedMoveAt as Date);
       elapsed = stagedMove.getTime() - onThePlaySince.getTime();
     } else {
-      interval.reStart(() => tick(onThePlaySince), 1000);
+      interval.restart(() => tick(onThePlaySince), 1000);
 
       const now = new Date();
       elapsed = now.getTime() - onThePlaySince.getTime();

@@ -32,12 +32,13 @@ const hasLeaveCallback = computed(
 const time_config = computed(
   () => (props.config as IConfigWithTimeControl).time_control,
 );
+const isSelected = computed(() => props.selected === props.player_n);
 </script>
 
 <template>
   <div
     class="seat"
-    :class="{ selected: selected === player_n, 'to-move': is_players_turn }"
+    :class="{ selected: isSelected, 'to-move': is_players_turn }"
     @click="$emit('select')"
   >
     <p class="seat-number">{{ player_n }}</p>
@@ -48,6 +49,7 @@ const time_config = computed(
           v-if="time_control && time_config"
           v-bind:time_control="time_control"
           v-bind:time_config="time_config"
+          :is_seat_selected="false"
         />
         <button v-if="user_id" @click.stop="$emit('sit')">Take Seat</button>
       </div>
@@ -61,6 +63,7 @@ const time_config = computed(
           v-if="time_control && time_config"
           v-bind:time_control="time_control"
           v-bind:time_config="time_config"
+          :is_seat_selected="isSelected"
         />
         <button
           v-if="hasLeaveCallback && occupant.id === user_id"
@@ -93,6 +96,14 @@ const time_config = computed(
   width: 200px;
   padding: 10px;
   margin: 5px 2px;
+
+  &:has(.alert-timer) {
+    background-color: var(--color-warn-transparent);
+
+    &.selected {
+      border-color: var(--color-warn);
+    }
+  }
 }
 .seat.selected {
   border-color: var(--color-selected-seat);
@@ -109,7 +120,7 @@ const time_config = computed(
   box-shadow: 0px 0px var(--to-move-shadow-width) var(--color-shadow);
 }
 
-.seat.to-move.selected {
+.seat.to-move.selected:not(:has(.alert-timer)) {
   box-shadow: 0px 0px var(--to-move-shadow-width) var(--color-selected-seat);
 }
 

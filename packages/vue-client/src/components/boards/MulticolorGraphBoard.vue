@@ -117,18 +117,19 @@ const viewBox = computed(() => {
       </template>
     </g>
     <g>
-      <rect
-        v-for="(intersection, index) in intersections"
-        :key="index"
-        @click="positionClicked(index)"
-        @mouseover="positionHovered(index)"
-        :x="intersection.position.X - 0.5"
-        :y="intersection.position.Y - 0.5"
-        width="1"
-        height="1"
-        :fill="hovered == index ? 'pink' : 'transparent'"
-        opacity="0.5"
-      />
+      <template v-for="(intersection, index) in intersections" :key="index">
+        <rect
+          v-if="!props.board?.at(index)?.disable_move"
+          @click="positionClicked(index)"
+          @mouseover="positionHovered(index)"
+          :x="intersection.position.X - 0.5"
+          :y="intersection.position.Y - 0.5"
+          width="1"
+          height="1"
+          :fill="hovered == index ? 'pink' : 'transparent'"
+          opacity="0.5"
+        />
+      </template>
     </g>
     <g></g>
   </svg>

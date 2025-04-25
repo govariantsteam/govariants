@@ -17,6 +17,7 @@ export const BoardPattern = {
   Sierpinsky: "sierpinsky",
   GridWithHoles: "gridWithHoles",
   Sunflower: "sunflower",
+  Custom: "custom",
 } as const;
 
 export type BoardConfig =
@@ -26,7 +27,8 @@ export type BoardConfig =
   | TrihexagonalBoardConfig
   | SierpinskyBoardConfig
   | GridWithHolesBoardConfig
-  | SunflowerBoardConfig;
+  | SunflowerBoardConfig
+  | CustomBoardConfig;
 
 export interface GridBoardConfig {
   type: typeof BoardPattern.Grid;
@@ -68,6 +70,12 @@ export interface GridWithHolesBoardConfig {
 export interface SunflowerBoardConfig {
   type: typeof BoardPattern.Sunflower;
   size: number;
+}
+
+export interface CustomBoardConfig {
+  type: typeof BoardPattern.Custom;
+  coordinates: Array<[number, number]>;
+  adjacencyList: number[][];
 }
 
 export interface IntersectionConstructor<TIntersection extends Intersection> {
@@ -121,6 +129,13 @@ export function createBoard<TIntersection extends Intersection>(
         config,
         intersectionConstructor,
       );
+      break;
+    case BoardPattern.Custom:
+      intersections = createCustomBoard<TIntersection>(
+        config,
+        intersectionConstructor,
+      );
+      break;
   }
   return intersections;
 }
@@ -246,6 +261,22 @@ function createSunflowerBoard<TIntersection extends Intersection>(
     createSunflowerBoardExternal(config.size),
     intersectionConstructor,
   );
+}
+
+function createCustomBoard<TIntersection extends Intersection>(
+  config: CustomBoardConfig,
+  intersectionConstructor: IntersectionConstructor<TIntersection>,
+): TIntersection[] {
+  const intersections = config.coordinates.map(
+    (val) => new intersectionConstructor(new Vector2D(val[0], val[1])),
+  );
+  config.adjacencyList.forEach((neighbors, idx) => {
+    neighbors.forEach((neighbor) => {
+      intersections[idx].connectTo(intersections[neighbor], false);
+    });
+  });
+
+  return intersections;
 }
 
 function convertIntersections<TIntersection extends Intersection>(

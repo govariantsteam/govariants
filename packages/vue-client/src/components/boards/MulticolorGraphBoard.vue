@@ -31,12 +31,14 @@ const voronoiDiagram = computed(() => {
     y: vector.position.Y,
   }));
 
-  return new Voronoi().compute(sites, {
+  const diagram = new Voronoi().compute(sites, {
     xl: viewBox.value.minX - 0.5,
     xr: viewBox.value.minX + viewBox.value.width + 0.5,
     yt: viewBox.value.minY - 0.5,
     yb: viewBox.value.minY + viewBox.value.height + 0.5,
   });
+
+  return sites.map((site) => diagram.cells.find((cell) => cell.site === site)!);
 });
 
 function getPolygonPointsString(cell: Cell): string {
@@ -100,7 +102,7 @@ const viewBox = computed(() => {
       <template v-for="(_, index) in intersections" :key="index">
         <polygon
           v-if="props.board?.at(index)?.background_color"
-          :points="getPolygonPointsString(voronoiDiagram.cells[index])"
+          :points="getPolygonPointsString(voronoiDiagram[index])"
           :fill="props.board.at(index)!.background_color"
         />
       </template>

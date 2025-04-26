@@ -107,8 +107,8 @@ function pyramidUiTransform(
 
     badukTransformed.gamestate.board = (
       badukTransformed.gamestate.board as MulticolorStone[][]
-    ).map((row, x) =>
-      row.map((multicolorStone, y) => ({
+    ).map((row, y) =>
+      row.map((multicolorStone, x) => ({
         ...multicolorStone,
         background_color: weightedMean(
           light_brown,
@@ -131,15 +131,17 @@ function pyramidUiTransform(
 
   badukTransformed.gamestate.board = (
     badukTransformed.gamestate.board as MulticolorStone[]
-  ).map((multicolorStone, y) => ({
-    ...multicolorStone,
-    background_color: weightedMean(
-      light_brown,
-      1 - config.weights![y] / maxValue,
-      dark_brown,
-      config.weights![y] / maxValue,
-    ).toString(),
-  }));
+  ).map((multicolorStone, x) => {
+    return {
+      ...multicolorStone,
+      background_color: weightedMean(
+        light_brown,
+        1 - config.weights![x] / maxValue,
+        dark_brown,
+        config.weights![x] / maxValue,
+      ).toString(),
+    };
+  });
 
   return badukTransformed;
 }

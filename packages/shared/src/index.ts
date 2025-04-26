@@ -28,5 +28,7 @@ export * from "./variants/s_fractional";
 export { count_binary_ones } from "./variants/thue_morse";
 export { sFractionalMoveColors } from "./variants/s_fractional";
 export { type LighthouseState } from "./variants/lighthouse/lighthouse";
+export { type PyramidConfig } from "./variants/pyramid";
+export { generalizedPyramid } from "./lib/graph-utils";
 
 export const SITE_NAME = "Go Variants";

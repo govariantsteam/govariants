@@ -4,6 +4,7 @@ import ParalleGoConfigForm from "@/components/GameCreation/ParallelGoConfigForm.
 import DriftGoConfigFormVue from "./components/GameCreation/DriftGoConfigForm.vue";
 import GridBadukConfigForm from "./components/GameCreation/GridBadukConfigForm.vue";
 import SFractionalConfigForm from "./components/GameCreation/SFractionalConfigForm.vue";
+import PyramidConfigForm from "./components/GameCreation/PyramidConfigForm.vue";
 
 export const config_form_map: {
   [variant: string]: Component<{ initialConfig: object }>;
@@ -13,7 +14,7 @@ export const config_form_map: {
   parallel: ParalleGoConfigForm,
   capture: BadukConfigForm,
   tetris: BadukConfigForm,
-  pyramid: GridBadukConfigForm,
+  pyramid: PyramidConfigForm,
   "thue-morse": BadukConfigForm,
   freeze: BadukConfigForm,
   keima: GridBadukConfigForm,

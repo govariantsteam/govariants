@@ -1189,6 +1189,7 @@ __metadata:
     typescript: ^5.1.6
     vite: ^4.5.2
     vitest: ^0.32.4
+    voronoijs: ^1.0.0
     vue: ^3.4.25
     vue-error-boundary: ^2.0.3
     vue-router: ^4.2.2
@@ -8147,6 +8148,13 @@ __metadata:
   bin:
     vitest: vitest.mjs
   checksum: 0f3347aac5656e6ba14c2f82d8fc5bfa333766ec745f7250f02a28d4cf6b35e645a300f0116a7db542430f59edb96cfeb3d2bc87856b84c776c25d10581f051b
+  languageName: node
+  linkType: hard
+
+"voronoijs@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "voronoijs@npm:1.0.0"
+  checksum: 8fc29e486e668c89895d065c443cb2efb72bc0814e09f6f808fe30be89f7119c4cc542133fcccbfdf786b5a5a8e13a84ecd0d04755a23cee585823fc5ce1490d
   languageName: node
   linkType: hard
 

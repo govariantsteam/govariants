@@ -10,6 +10,7 @@ import {
   MulticolorStone,
 } from "@ogfcommunity/variants-shared";
 import ScoreMark from "./ScoreMark.vue";
+import { Voronoi, Site, Cell } from "voronoijs";
 
 const props = defineProps<{
   board?: (MulticolorStone | null)[];
@@ -22,6 +23,32 @@ const intersections = computed(() =>
   createBoard(props.board_config, Intersection),
 );
 const graph = computed(() => createGraph(intersections.value, null));
+
+const voronoiDiagram = computed(() => {
+  const sites: Site[] = intersections.value.map((vector, index) => ({
+    id: index,
+    x: vector.position.X,
+    y: vector.position.Y,
+  }));
+
+  return new Voronoi().compute(sites, {
+    xl: viewBox.value.minX - 0.5,
+    xr: viewBox.value.minX + viewBox.value.width + 0.5,
+    yt: viewBox.value.minY - 0.5,
+    yb: viewBox.value.minY + viewBox.value.height + 0.5,
+  });
+});
+
+function getPolygonPointsString(cell: Cell): string {
+  return cell.halfedges
+    .map(
+      (edge) =>
+        `${edge.getStartpoint().x.toFixed(8)},${edge
+          .getStartpoint()
+          .y.toFixed(8)}`,
+    )
+    .join(" ");
+}
 const hovered: Ref<number> = ref(-1);
 
 const emit = defineEmits<{
@@ -69,6 +96,15 @@ const viewBox = computed(() => {
       v-bind:height="viewBox.height + 1"
       :fill="background_color ?? '#dcb35c'"
     />
+    <g>
+      <template v-for="(_, index) in intersections" :key="index">
+        <polygon
+          v-if="props.board?.at(index)?.background_color"
+          :points="getPolygonPointsString(voronoiDiagram.cells[index])"
+          :fill="props.board.at(index)!.background_color"
+        />
+      </template>
+    </g>
 
     <g v-for="(intersection, index) in intersections" :key="index">
       <line

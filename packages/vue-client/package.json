@@ -32,6 +32,7 @@
     "pinia": "^2.1.4",
     "socket.io-client": "^4.8.1",
     "sweetalert2": "^11.15.3",
+    "voronoijs": "^1.0.0",
     "vue": "^3.4.25",
     "vue-error-boundary": "^2.0.3",
     "vue-router": "^4.2.2",

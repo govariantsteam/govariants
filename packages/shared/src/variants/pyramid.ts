@@ -1,6 +1,9 @@
-import { Color, GridBaduk, gridBadukVariant } from "./baduk";
+import { Baduk, BadukState, Color, GridBaduk, gridBadukVariant } from "./baduk";
 import { Grid } from "../lib/grid";
-import { GridBadukConfig } from "./baduk_utils";
+import { GridBadukConfig, NewBadukConfig } from "./baduk_utils";
+import { pyramidRuleDescription } from "../templates/pyramid_rules";
+import { DefaultBoardState, MulticolorStone } from "../lib/board_types";
+import { weightedMean, RGBColor } from "../lib/color-utils";
 
 export class PyramidGo extends GridBaduk {
   private weights: Grid<number>;
@@ -42,6 +45,39 @@ export class PyramidGo extends GridBaduk {
       )
       .reduce((x, y) => x + y, 0);
   }
+
+  static uiTransform<ConfigT extends NewBadukConfig = NewBadukConfig>(
+    config: ConfigT,
+    gamestate: BadukState,
+  ): { config: ConfigT; gamestate: DefaultBoardState } {
+    const width = gamestate.board.length;
+    const height = gamestate.board.at(0)?.length ?? 0;
+    const maxValue = 1 + Math.floor(Math.min(width, height) / 2);
+
+    function valueOf(x: number, y: number): number {
+      return Math.min(x + 1, y + 1, width - x, height - y);
+    }
+
+    const light_brown = new RGBColor(220, 179, 92);
+    const dark_brown = new RGBColor(133, 62, 26);
+
+    const badukTransformed = Baduk.uiTransform(config, gamestate);
+    badukTransformed.gamestate.board = (
+      badukTransformed.gamestate.board as MulticolorStone[][]
+    ).map((row, x) =>
+      row.map((multicolorStone, y) => ({
+        ...multicolorStone,
+        background_color: weightedMean(
+          light_brown,
+          1 - valueOf(x, y) / maxValue,
+          dark_brown,
+          valueOf(x, y) / maxValue,
+        ).toString(),
+      })),
+    );
+
+    return badukTransformed;
+  }
 }
 
 export const pyramidVariant: typeof gridBadukVariant = {
@@ -49,4 +85,6 @@ export const pyramidVariant: typeof gridBadukVariant = {
   gameClass: PyramidGo,
   description:
     "Baduk with pyramid scoring\n Center is worth most points, edge the least",
+  rulesDescription: pyramidRuleDescription,
+  uiTransform: PyramidGo.uiTransform,
 };

@@ -8,11 +8,15 @@
  *
  * @param graph_adjacency - The vertex adjacency list as given by Graph.export.
  */
-function allPairsShortestPaths(graph_adjacency: number[][]): number[][] {
+export function allPairsShortestPaths(graph_adjacency: number[][]): number[][] {
   const n = graph_adjacency.length;
-  const distMatrix = graph_adjacency.map((neighbors) =>
+  const distMatrix = graph_adjacency.map((neighbors, vertex_idx) =>
     graph_adjacency.map((_, idx) =>
-      neighbors.includes(idx) ? 1 : Number.POSITIVE_INFINITY,
+      vertex_idx === idx
+        ? 0
+        : neighbors.includes(idx)
+          ? 1
+          : Number.POSITIVE_INFINITY,
     ),
   );
 
@@ -37,7 +41,7 @@ function allPairsShortestPaths(graph_adjacency: number[][]): number[][] {
  *
  * @param graph_adjacency - The vertex adjacency list as given by Graph.export.
  */
-function eccentricity(graph_adjacency: number[][]): number[] {
+export function eccentricity(graph_adjacency: number[][]): number[] {
   return allPairsShortestPaths(graph_adjacency).map((vertex_adjacency) =>
     Math.max(...vertex_adjacency.filter((n) => Number.isFinite(n))),
   );

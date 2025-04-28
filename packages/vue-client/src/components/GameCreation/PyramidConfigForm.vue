@@ -18,11 +18,15 @@ const emit = defineEmits<{
 }>();
 
 function emitConfigChange(config: NewBadukConfig) {
-  const graph = createGraph(createBoard(config.board, Intersection), null);
-  const weights = generalizedPyramid(graph.export().adjacency_array);
-  console.log(weights);
-
-  emit("configChanged", { ...config, weights: weights });
+  emit("configChanged", {
+    ...config,
+    ...(config.board.type !== "grid" && {
+      weights: generalizedPyramid(
+        createGraph(createBoard(config.board, Intersection), null).export()
+          .adjacency_array,
+      ),
+    }),
+  });
 }
 </script>
 

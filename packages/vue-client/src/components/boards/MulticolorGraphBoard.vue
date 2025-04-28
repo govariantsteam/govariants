@@ -24,21 +24,35 @@ const intersections = computed(() =>
 );
 const graph = computed(() => createGraph(intersections.value, null));
 
+// Computing the voronoi diagram sometimes crashes due to number
+// precision reasons, as discussed in https://github.com/gorhill/Javascript-Voronoi/issues/15
+// As a workaround, we round the coordinates, and catch the error for good measure.
 const voronoiDiagram = computed(() => {
+  // It's easy to accidentally cause this computation unnecessarily
+  // (like exchanging order of the logical expression below),
+  // so I'd like to keep this console.log.
+  console.log("start computing voronoi diagram");
   const sites: Site[] = intersections.value.map((vector, index) => ({
     id: index,
-    x: vector.position.X,
-    y: vector.position.Y,
+    x: Math.fround(vector.position.X),
+    y: Math.fround(vector.position.Y),
   }));
 
-  const diagram = new Voronoi().compute(sites, {
-    xl: viewBox.value.minX - 0.5,
-    xr: viewBox.value.minX + viewBox.value.width + 0.5,
-    yt: viewBox.value.minY - 0.5,
-    yb: viewBox.value.minY + viewBox.value.height + 0.5,
-  });
+  try {
+    const diagram = new Voronoi().compute(sites, {
+      xl: viewBox.value.minX - 0.5,
+      xr: viewBox.value.minX + viewBox.value.width + 0.5,
+      yt: viewBox.value.minY - 0.5,
+      yb: viewBox.value.minY + viewBox.value.height + 0.5,
+    });
 
-  return sites.map((site) => diagram.cells.find((cell) => cell.site === site)!);
+    return sites.map((site) =>
+      diagram.cells.find((cell) => cell.site === site),
+    );
+  } catch (e) {
+    console.error(e);
+    return [];
+  }
 });
 
 function getPolygonPointsString(cell: Cell): string {
@@ -101,7 +115,9 @@ const viewBox = computed(() => {
     <g>
       <template v-for="(_, index) in intersections" :key="index">
         <polygon
-          v-if="props.board?.at(index)?.background_color"
+          v-if="
+            props.board?.at(index)?.background_color && voronoiDiagram[index]
+          "
           :points="getPolygonPointsString(voronoiDiagram[index])"
           :fill="props.board.at(index)!.background_color"
         />

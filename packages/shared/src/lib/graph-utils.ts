@@ -42,8 +42,8 @@ export function allPairsShortestPaths(graph_adjacency: number[][]): number[][] {
  * @param graph_adjacency - The vertex adjacency list as given by Graph.export.
  */
 export function eccentricity(graph_adjacency: number[][]): number[] {
-  return allPairsShortestPaths(graph_adjacency).map((vertex_adjacency) =>
-    Math.max(...vertex_adjacency.filter((n) => Number.isFinite(n))),
+  return allPairsShortestPaths(graph_adjacency).map((vertex_distances) =>
+    Math.max(...vertex_distances.filter((n) => Number.isFinite(n))),
   );
 }
 
@@ -57,9 +57,10 @@ export function eccentricity(graph_adjacency: number[][]): number[] {
  * @param graph_adjacency - The vertex adjacency list as given by Graph.export.
  */
 export function generalizedPyramid(graph_adjacency: number[][]): number[] {
-  if (graph_adjacency.length > 1000) {
+  const vertexThreshold = 1000;
+  if (graph_adjacency.length > vertexThreshold) {
     console.warn(
-      `did not compute all pairs shortest paths, because ${graph_adjacency.length} is too many vertices.`,
+      `did not compute generalized pyramid weights because ${graph_adjacency.length} is too many vertices. The max is ${vertexThreshold}`,
     );
     return graph_adjacency.map(() => 1);
   }

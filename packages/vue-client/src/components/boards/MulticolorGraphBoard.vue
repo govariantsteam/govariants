@@ -118,7 +118,7 @@ const viewBox = computed(() => {
           v-if="
             props.board?.at(index)?.background_color && voronoiDiagram[index]
           "
-          :points="getPolygonPointsString(voronoiDiagram[index])"
+          :points="getPolygonPointsString(voronoiDiagram[index]!)"
           :fill="props.board.at(index)!.background_color"
         />
       </template>

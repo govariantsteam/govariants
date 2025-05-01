@@ -1,3 +1,4 @@
+import { BoardPattern } from "../lib/abstractBoard";
 import { Coordinate } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
 import { getGroup } from "../lib/group_utils";
@@ -9,7 +10,12 @@ import {
   GridBaduk,
   groupHasLiberties,
 } from "./baduk";
-import { NewGridBadukConfig } from "./baduk_utils";
+import { LegacyBadukConfig, NewGridBadukConfig } from "./baduk_utils";
+
+export type LegacyDriftGoConfig = LegacyBadukConfig & {
+  yShift: number;
+  xShift: number;
+};
 
 export type DriftGoConfig = NewGridBadukConfig & {
   yShift: number;
@@ -67,6 +73,20 @@ export class DriftGo extends GridBaduk {
       coord.y === this.board.height - 1
     );
   }
+
+  static sanitizeConfig(config: object): DriftGoConfig {
+    const typedConfig = config as LegacyDriftGoConfig | DriftGoConfig;
+    return "board" in typedConfig
+      ? typedConfig
+      : {
+          ...typedConfig,
+          board: {
+            type: BoardPattern.Grid,
+            width: typedConfig.width,
+            height: typedConfig.height,
+          },
+        };
+  }
 }
 
 export const driftVariant: Variant<DriftGoConfig, BadukState> = {
@@ -83,4 +103,5 @@ export const driftVariant: Variant<DriftGoConfig, BadukState> = {
   },
   getPlayerColors: Baduk.getPlayerColors,
   uiTransform: Baduk.uiTransform<DriftGoConfig>,
+  sanitizeConfig: DriftGo.sanitizeConfig,
 };

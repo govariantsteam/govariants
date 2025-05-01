@@ -340,6 +340,31 @@ export async function getGameState(
   };
 }
 
+export async function repairGame(gameId: string): Promise<void> {
+  const game = await getGame(gameId);
+  const gameInstance = makeGameObject(game.variant, game.config);
+  const errorlessMoves: MovesType[] = [];
+  let errorOccured = false;
+
+  // play moves until an error occurred, if any
+  try {
+    game.moves.forEach((encoded_move) => {
+      const { player, move } = getOnlyMove(encoded_move);
+      gameInstance.playMove(player, move);
+      errorlessMoves.push(encoded_move);
+    });
+  } catch (error) {
+    errorOccured = true;
+  }
+
+  if (errorOccured) {
+    await gamesCollection().updateOne(
+      { _id: new ObjectId(gameId) },
+      { $set: { moves: errorlessMoves } },
+    );
+  }
+}
+
 // This function exists for games whose players field has not yet been defined.
 // We can probably delete this after the db has been updated or cleared.
 async function BACKFILL_addEmptyPlayersArray(game: GameResponse) {

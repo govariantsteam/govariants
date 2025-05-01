@@ -9,6 +9,7 @@ import {
   takeSeat,
   leaveSeat,
   getGameState,
+  repairGame,
 } from "./games";
 import {
   checkUsername,
@@ -309,6 +310,16 @@ router.get("/games/:gameId/state", async (req, res) => {
     const game = await getGame(req.params.gameId);
     const stateResponse = await getGameState(game, seat, round);
     res.send(stateResponse);
+  } catch (e) {
+    res.status(500);
+    res.json(e.message);
+  }
+});
+
+router.post("/game/:gameId/repair", checkCSRFToken, async (req, res) => {
+  try {
+    await repairGame(req.params.gameId);
+    res.send({});
   } catch (e) {
     res.status(500);
     res.json(e.message);

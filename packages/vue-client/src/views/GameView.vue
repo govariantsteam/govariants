@@ -49,6 +49,7 @@ const time_control = ref<ITimeControlBase | null>(null);
 // Admins probably don't want to do admin stuff most of the time.  Let's hide
 // admin interface behind a toggle.
 const adminMode = ref<boolean>(false);
+const errorOccured = ref<boolean>(false);
 
 function setNewState(stateResponse: GameStateResponse): void {
   const { timeControl: timeControl, ...state } = stateResponse;
@@ -107,7 +108,10 @@ watchEffect(async () => {
       players.value = result.players;
       setNewState(result.stateResponse);
     })
-    .catch(alert);
+    .catch((err) => {
+      errorOccured.value = true;
+      alert(err);
+    });
 });
 
 const sit = (seat: number) => {
@@ -217,10 +221,17 @@ const createTimeControlPreview = (
   }
   return null;
 };
+async function repairGame(): Promise<void> {
+  await requests
+    .post(`/game/${props.gameId}/repair`)
+    .catch(alert)
+    .then(() => location.reload());
+}
 </script>
 
 <template>
   <main>
+    <button v-if="errorOccured" v-on:click="repairGame">repair game</button>
     <div class="grid-page-layout">
       <div>
         <!-- Left column -->

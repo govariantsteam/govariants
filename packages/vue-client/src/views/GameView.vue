@@ -22,6 +22,7 @@ import NavButtons from "@/components/GameView/NavButtons.vue";
 import PlayersToMove from "@/components/GameView/PlayersToMove.vue";
 import DownloadSGF from "@/components/GameView/DownloadSGF.vue";
 import { getPlayingTable } from "@/playing_table_map";
+import Swal from "sweetalert2";
 
 const props = defineProps<{ gameId: string }>();
 
@@ -49,6 +50,7 @@ const time_control = ref<ITimeControlBase | null>(null);
 // Admins probably don't want to do admin stuff most of the time.  Let's hide
 // admin interface behind a toggle.
 const adminMode = ref<boolean>(false);
+const errorOccured = ref<boolean>(false);
 
 function setNewState(stateResponse: GameStateResponse): void {
   const { timeControl: timeControl, ...state } = stateResponse;
@@ -107,7 +109,10 @@ watchEffect(async () => {
       players.value = result.players;
       setNewState(result.stateResponse);
     })
-    .catch(alert);
+    .catch((err) => {
+      errorOccured.value = true;
+      alert(err);
+    });
 });
 
 const sit = (seat: number) => {
@@ -217,6 +222,20 @@ const createTimeControlPreview = (
   }
   return null;
 };
+async function repairGame(): Promise<void> {
+  await Swal.fire({
+    title: "Repair game",
+    text: "This action may delete moves in order to restore a game state without errors. If the game has time control, this may have unknown consequences.",
+    showCancelButton: true,
+  }).then((result) => {
+    if (result.isConfirmed) {
+      return requests
+        .post(`/game/${props.gameId}/repair`)
+        .catch(alert)
+        .then(() => location.reload());
+    }
+  });
+}
 </script>
 
 <template>
@@ -298,6 +317,13 @@ const createTimeControlPreview = (
           <label for="admin">Admin Mode</label>
         </div>
       </div>
+      <button
+        class="repair-game-btn"
+        v-if="errorOccured"
+        v-on:click="repairGame"
+      >
+        repair game
+      </button>
     </div>
   </main>
 </template>
@@ -322,5 +348,11 @@ const createTimeControlPreview = (
   .info-attribute {
     white-space: pre-wrap;
   }
+}
+
+.repair-game-btn {
+  background-color: var(--color-warn);
+  height: 64px;
+  font-size: large;
 }
 </style>

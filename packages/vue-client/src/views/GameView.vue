@@ -22,6 +22,7 @@ import NavButtons from "@/components/GameView/NavButtons.vue";
 import PlayersToMove from "@/components/GameView/PlayersToMove.vue";
 import DownloadSGF from "@/components/GameView/DownloadSGF.vue";
 import { getPlayingTable } from "@/playing_table_map";
+import EditGameRecord from "@/components/GameView/EditGameRecord.vue";
 
 const props = defineProps<{ gameId: string }>();
 
@@ -298,6 +299,8 @@ const createTimeControlPreview = (
           <label for="admin">Admin Mode</label>
         </div>
       </div>
+
+      <EditGameRecord :game-id="gameId" v-if="adminMode"></EditGameRecord>
     </div>
   </main>
 </template>

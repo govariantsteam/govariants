@@ -9,6 +9,7 @@ import {
   takeSeat,
   leaveSeat,
   getGameState,
+  gamesCollection,
 } from "./games";
 import {
   checkUsername,
@@ -29,6 +30,7 @@ import {
 } from "@ogfcommunity/variants-shared";
 import { io } from "./socket_io";
 import { checkCSRFToken, generateCSRFToken } from "./csrf_guard";
+import { ObjectId } from "mongodb";
 
 export const router = express.Router();
 
@@ -61,6 +63,7 @@ router.get("/game/:gameId/sgf", async (req, res) => {
   }
 });
 
+// TODO: check if this is still used (exposes all moves)
 router.get("/games/:gameId", async (req, res) => {
   try {
     const game: GameResponse = await getGame(req.params.gameId);
@@ -309,6 +312,44 @@ router.get("/games/:gameId/state", async (req, res) => {
     const game = await getGame(req.params.gameId);
     const stateResponse = await getGameState(game, seat, round);
     res.send(stateResponse);
+  } catch (e) {
+    res.status(500);
+    res.json(e.message);
+  }
+});
+
+router.get("/gameRecord/:gameId", checkCSRFToken, async (req, res) => {
+  if ((req.user as UserResponse).role !== "admin") {
+    res.status(401);
+    res.json("You are not authorized to get this record");
+    return;
+  }
+
+  try {
+    const game: GameResponse = await getGame(req.params.gameId);
+    res.send(game);
+  } catch (e) {
+    res.status(500);
+    res.json(e.message);
+  }
+});
+
+router.put("/gameRecord/:gameId", checkCSRFToken, async (req, res) => {
+  if ((req.user as UserResponse).role !== "admin") {
+    res.status(401);
+    res.json("You are not authorized to edit this record");
+    return;
+  }
+
+  try {
+    const result = await gamesCollection().findOneAndUpdate(
+      { _id: new ObjectId(req.params.gameId) },
+      { $set: req.body },
+    );
+    if (!result.ok) {
+      res.status(500);
+    }
+    res.send({});
   } catch (e) {
     res.status(500);
     res.json(e.message);

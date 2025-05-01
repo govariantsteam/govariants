@@ -22,6 +22,7 @@ import NavButtons from "@/components/GameView/NavButtons.vue";
 import PlayersToMove from "@/components/GameView/PlayersToMove.vue";
 import DownloadSGF from "@/components/GameView/DownloadSGF.vue";
 import { getPlayingTable } from "@/playing_table_map";
+import Swal from "sweetalert2";
 
 const props = defineProps<{ gameId: string }>();
 
@@ -222,16 +223,23 @@ const createTimeControlPreview = (
   return null;
 };
 async function repairGame(): Promise<void> {
-  await requests
-    .post(`/game/${props.gameId}/repair`)
-    .catch(alert)
-    .then(() => location.reload());
+  await Swal.fire({
+    title: "Repair game",
+    text: "This action may delete moves in order to restore a game state without errors. If the game has time control, this may have unknown consequences.",
+    showCancelButton: true,
+  }).then((result) => {
+    if (result.isConfirmed) {
+      return requests
+        .post(`/game/${props.gameId}/repair`)
+        .catch(alert)
+        .then(() => location.reload());
+    }
+  });
 }
 </script>
 
 <template>
   <main>
-    <button v-if="errorOccured" v-on:click="repairGame">repair game</button>
     <div class="grid-page-layout">
       <div>
         <!-- Left column -->
@@ -309,6 +317,13 @@ async function repairGame(): Promise<void> {
           <label for="admin">Admin Mode</label>
         </div>
       </div>
+      <button
+        class="repair-game-btn"
+        v-if="errorOccured"
+        v-on:click="repairGame"
+      >
+        repair game
+      </button>
     </div>
   </main>
 </template>
@@ -333,5 +348,11 @@ async function repairGame(): Promise<void> {
   .info-attribute {
     white-space: pre-wrap;
   }
+}
+
+.repair-game-btn {
+  background-color: var(--color-warn);
+  height: 64px;
+  font-size: large;
 }
 </style>

@@ -23,7 +23,7 @@ import { getWidthAndHeight } from "./baduk_utils";
 export type PyramidConfig = NewBadukConfig & { weights?: number[] };
 
 export class PyramidGo extends Baduk {
-  private weights: BadukBoard<number>;
+  private weights?: BadukBoard<number>;
 
   constructor(config: PyramidConfig | LegacyBadukConfig) {
     super(config);
@@ -39,16 +39,15 @@ export class PyramidGo extends Baduk {
         .fill(0)
         .map((_, { x, y }) => Math.min(x + 1, y + 1, width - x, height - y));
     } else {
-      if (!config.weights) {
-        throw new Error("weights are required for graph boards.");
+      if (config.weights) {
+        const graph = createGraph(
+          createBoard(config.board, Intersection),
+          null,
+        );
+        this.weights = new GraphWrapper(
+          graph.map((_, idx) => config.weights![idx]),
+        );
       }
-
-      // TODO: validate weights
-
-      const graph = createGraph(createBoard(config.board, Intersection), null);
-      this.weights = new GraphWrapper(
-        graph.map((_, idx) => config.weights![idx]),
-      );
     }
   }
 
@@ -69,10 +68,10 @@ export class PyramidGo extends Baduk {
 
   private pointsForColor(c: Color) {
     if (this.score_board === undefined) return 0;
-    let points = 0;
+    let points = c === Color.WHITE ? this.config.komi : 0;
     this.score_board.forEach(
       (color, index) =>
-        (points += color === c ? (this.weights.at(index) as number) : 0),
+        (points += color === c ? this.weights?.at(index) ?? 1 : 0),
     );
     return points;
   }
@@ -123,8 +122,7 @@ function pyramidUiTransform(
   }
 
   if (!config.weights) {
-    console.error("weights must be set for graph boards!");
-    return { config, gamestate: { board: [] } };
+    return badukTransformed;
   }
 
   const maxValue = Math.max(...config.weights);

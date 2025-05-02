@@ -52,17 +52,19 @@ export function eccentricity(graph_adjacency: number[][]): number[] {
  * Time complexity O(n^3)
  *
  * Returns an array A with A[i] being the generalized pyramid value of vertex i,
- * or A[i] = 1 when the number of vertices is > 1000.
+ * or undefined when the number of vertices is > 1000.
  *
  * @param graph_adjacency - The vertex adjacency list as given by Graph.export.
  */
-export function generalizedPyramid(graph_adjacency: number[][]): number[] {
+export function generalizedPyramid(
+  graph_adjacency: number[][],
+): number[] | undefined {
   const vertexThreshold = 1000;
   if (graph_adjacency.length > vertexThreshold) {
     console.warn(
       `did not compute generalized pyramid weights because ${graph_adjacency.length} is too many vertices. The max is ${vertexThreshold}`,
     );
-    return graph_adjacency.map(() => 1);
+    return undefined;
   }
 
   const _eccentricity = eccentricity(graph_adjacency);

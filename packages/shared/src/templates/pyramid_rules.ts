@@ -8,5 +8,5 @@ For the automated scoring to be correct, all dead stones need to be captured man
 # Credit
 [https://forums.online-go.com/t/pyramid-go/36944](https://forums.online-go.com/t/pyramid-go/36944)
 # Pyramid on Graph boards
-On graph boards pyramid scoring can be generalized as follows. A node v has value 1 + d + e(v), where d is the diameter of the graph, and e(v) is the eccentricity of v. These definitions can be found at [https://en.wikipedia.org/wiki/Distance_(graph_theory)](https://en.wikipedia.org/wiki/Distance_(graph_theory))
+On graph boards pyramid scoring can be generalized as follows. A node v has value 1 + d - e(v), where d is the diameter of the graph, and e(v) is the eccentricity of v. These definitions can be found at [https://en.wikipedia.org/wiki/Distance_(graph_theory)](https://en.wikipedia.org/wiki/Distance_(graph_theory))
 `;

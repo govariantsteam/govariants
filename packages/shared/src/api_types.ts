@@ -26,6 +26,7 @@ export interface GameResponse {
   config: { time_control?: ITimeControlConfig };
   players?: Array<User | undefined>;
   time_control?: ITimeControlBase;
+  lastMoveTime?: Date;
 }
 
 // We may add more roles like "moderator" or "bot" in the future

@@ -12,7 +12,7 @@ import {
   ITimeControlBase,
   UserResponse,
 } from "@ogfcommunity/variants-shared";
-import { ObjectId, WithId, Document, Filter } from "mongodb";
+import { ObjectId, WithId, Document, Filter, Collection } from "mongodb";
 import { getDb } from "./db";
 import { io } from "./socket_io";
 import { getTimeoutService } from "./index";
@@ -23,7 +23,15 @@ import {
 } from "./time-control/time-control";
 import { updateRatings, supportsRatings } from "./rating/rating";
 
-export function gamesCollection() {
+export type GameSchema = {
+  variant: string;
+  moves: MovesType[];
+  config: object;
+  players?: Array<User | undefined>;
+  time_control?: ITimeControlBase;
+};
+
+export function gamesCollection(): Collection<GameSchema> {
   return getDb().db().collection("games");
 }
 
@@ -186,12 +194,18 @@ export async function handleMoveAndTime(
     }
   }
 
-  gamesCollection()
-    .updateOne(
-      { _id: new ObjectId(game_id) },
+  const moveUpdateResult = await gamesCollection()
+    .findOneAndUpdate(
+      {
+        _id: new ObjectId(game_id),
+        moves: { $size: game.moves.length },
+      },
       { $push: { moves: moves }, $set: { time_control: timeControl } },
     )
     .catch(console.log);
+  if (!moveUpdateResult || !moveUpdateResult.lastErrorObject?.updatedExisting) {
+    throw new Error("db update for adding move failed");
+  }
 
   game.moves.push(moves);
 
@@ -379,7 +393,7 @@ async function BACKFILL_addEmptyPlayersArray(game: GameResponse) {
   return players;
 }
 
-function outwardFacingGame(db_game: WithId<Document>): GameResponse {
+function outwardFacingGame(db_game: WithId<GameSchema>): GameResponse {
   const config = sanitizeConfig(db_game.variant, db_game.config);
   return {
     id: db_game._id.toString(),

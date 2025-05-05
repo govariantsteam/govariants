@@ -29,7 +29,6 @@ export type GameSchema = {
   config: object;
   players?: Array<User | undefined>;
   time_control?: ITimeControlBase;
-  lastMoveTime?: Date;
 };
 
 export function gamesCollection(): Collection<GameSchema> {
@@ -199,12 +198,9 @@ export async function handleMoveAndTime(
     .findOneAndUpdate(
       {
         _id: new ObjectId(game_id),
-        lastMoveTime: { $eq: game.lastMoveTime },
+        moves: { $size: game.moves.length },
       },
-      {
-        $push: { moves: moves },
-        $set: { time_control: timeControl, lastMoveTime: new Date() },
-      },
+      { $push: { moves: moves }, $set: { time_control: timeControl } },
     )
     .catch(console.log);
   if (!moveUpdateResult || !moveUpdateResult.lastErrorObject?.updatedExisting) {
@@ -406,6 +402,5 @@ function outwardFacingGame(db_game: WithId<GameSchema>): GameResponse {
     config,
     players: db_game.players,
     time_control: db_game.time_control,
-    lastMoveTime: db_game.lastMoveTime,
   };
 }

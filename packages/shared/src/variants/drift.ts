@@ -1,5 +1,5 @@
 import { BoardPattern } from "../lib/abstractBoard";
-import { Coordinate } from "../lib/coordinate";
+import { Coordinate, isSgfRepr } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
 import { getGroup } from "../lib/group_utils";
 import { Variant } from "../variant";
@@ -58,10 +58,11 @@ export class DriftGo extends GridBaduk {
     super.prepareForNextMove(move);
   }
 
-  private shift(coord: Coordinate): Coordinate {
+  private shift(coord: Coordinate, reverse = false): Coordinate {
+    const rev = reverse ? -1 : 1;
     return new Coordinate(
-      (coord.x - this.config.xShift) % this.board.width,
-      (coord.y - this.config.yShift) % this.board.height,
+      (coord.x - rev * this.config.xShift) % this.board.width,
+      (coord.y - rev * this.config.yShift) % this.board.height,
     );
   }
 
@@ -86,6 +87,16 @@ export class DriftGo extends GridBaduk {
             height: typedConfig.height,
           },
         };
+  }
+
+  override exportState(): BadukState {
+    const state = super.exportState();
+    return {
+      ...state,
+      last_move: isSgfRepr(state.last_move)
+        ? this.shift(Coordinate.fromSgfRepr(state.last_move), true).toSgfRepr()
+        : state.last_move,
+    };
   }
 }
 

@@ -56,7 +56,5 @@ export function isSgfRepr(move: string): boolean {
     ("a".charCodeAt(0) <= char_code && char_code <= "z".charCodeAt(0)) ||
     ("A".charCodeAt(0) <= char_code && char_code <= "Z".charCodeAt(0));
 
-  return (
-    isAlphabetic(move[0].charCodeAt(0)) && isAlphabetic(move[1].charCodeAt(0))
-  );
+  return isAlphabetic(move.charCodeAt(0)) && isAlphabetic(move.charCodeAt(1));
 }

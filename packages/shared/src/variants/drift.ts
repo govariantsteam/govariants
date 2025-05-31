@@ -2,6 +2,7 @@ import { BoardPattern } from "../lib/abstractBoard";
 import { Coordinate, isSgfRepr } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
 import { getGroup } from "../lib/group_utils";
+import { drift_rules } from "../templates/drift_rules";
 import { Variant } from "../variant";
 import {
   Baduk,
@@ -115,4 +116,5 @@ export const driftVariant: Variant<DriftGoConfig, BadukState> = {
   getPlayerColors: Baduk.getPlayerColors,
   uiTransform: Baduk.uiTransform<DriftGoConfig>,
   sanitizeConfig: DriftGo.sanitizeConfig,
+  rulesDescription: drift_rules,
 };

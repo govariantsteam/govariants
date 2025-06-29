@@ -16,6 +16,6 @@ module.exports = {
    * @returns {Promise<void>}
    */
   async down(db, client) {
-    db.collection("games").dropIndex("variant_index");
+    await db.collection("games").dropIndex("variant_index");
   },
 };

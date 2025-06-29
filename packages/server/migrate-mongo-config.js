@@ -2,10 +2,10 @@
 
 const config = {
   mongodb: {
-    // TODO Change (or review) the url to your MongoDB:
+    // url to MongoDB
     url: process.env.ATLAS_URI || "mongodb://127.0.0.1:27017",
 
-    // TODO Change this to your database name:
+    // database name
     databaseName: "govariants",
 
     options: {

@@ -48,6 +48,7 @@ passport.use(
 
 migrate().catch(console.error);
 
+// Initialize MongoDB
 connectToDb()
   .then(() => timeoutService.initialize())
   .catch((e) => {

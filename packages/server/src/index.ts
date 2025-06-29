@@ -18,6 +18,7 @@ import { SITE_NAME, UserResponse } from "@ogfcommunity/variants-shared";
 import { router as apiRouter } from "./api";
 import * as socket_io from "./socket_io";
 import { ITimeoutService, TimeoutService } from "./time-control/timeout";
+import { migrate } from "./migration";
 
 const LOCAL_ORIGIN = [
   "http://127.0.0.1:5173",
@@ -45,7 +46,8 @@ passport.use(
   }),
 );
 
-// Initialize MongoDB
+migrate().catch(console.error);
+
 connectToDb()
   .then(() => timeoutService.initialize())
   .catch((e) => {

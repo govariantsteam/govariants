@@ -47,3 +47,14 @@ function numberToSgfChar(n: number): string {
   }
   return ret;
 }
+
+export function isSgfRepr(move: string): boolean {
+  if (move.length !== 2) {
+    return false;
+  }
+  const isAlphabetic = (char_code: number) =>
+    ("a".charCodeAt(0) <= char_code && char_code <= "z".charCodeAt(0)) ||
+    ("A".charCodeAt(0) <= char_code && char_code <= "Z".charCodeAt(0));
+
+  return isAlphabetic(move.charCodeAt(0)) && isAlphabetic(move.charCodeAt(1));
+}

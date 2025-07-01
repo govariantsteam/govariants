@@ -1,5 +1,5 @@
 import * as migrateMongo from "migrate-mongo";
-import * as config from "../migrate-mongo-config.js";
+import * as config from "../../migrate-mongo-config.js";
 
 export async function migrate() {
   // @ts-expect-error ts(2345)

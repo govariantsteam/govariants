@@ -18,7 +18,7 @@ import { SITE_NAME, UserResponse } from "@ogfcommunity/variants-shared";
 import { router as apiRouter } from "./api";
 import * as socket_io from "./socket_io";
 import { ITimeoutService, TimeoutService } from "./time-control/timeout";
-import { migrate } from "./migration";
+import { migrate } from "./migration_logic/migration";
 
 const LOCAL_ORIGIN = [
   "http://127.0.0.1:5173",

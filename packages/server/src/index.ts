@@ -25,6 +25,7 @@ const LOCAL_ORIGIN = [
   "http://localhost:5173",
   "http://[::1]:5173",
 ];
+const isProd = process.env.NODE_ENV === "production";
 
 const timeoutService = new TimeoutService();
 export function getTimeoutService(): ITimeoutService {
@@ -46,7 +47,9 @@ passport.use(
   }),
 );
 
-migrate().catch(console.error);
+if (isProd) {
+  migrate().catch(console.error);
+}
 
 // Initialize MongoDB
 connectToDb()
@@ -142,7 +145,6 @@ io.on("connection", (socket) => {
 });
 
 // If production, serve the React repo!
-const isProd = process.env.NODE_ENV === "production";
 if (isProd) {
   // Compute the build path and index.html path
   const build_path = path.join(__dirname, "../../../packages/vue-client/dist");

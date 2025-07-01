@@ -7,7 +7,7 @@ module.exports = {
   async up(db, client) {
     await db
       .collection("games")
-      .createIndex({ variant: 1 }, { name: "variant_index" });
+      .createIndex({ variant: 1 }, { name: "game_variant" });
   },
 
   /**
@@ -16,6 +16,6 @@ module.exports = {
    * @returns {Promise<void>}
    */
   async down(db, client) {
-    await db.collection("games").dropIndex("variant_index");
+    await db.collection("games").dropIndex("game_variant");
   },
 };

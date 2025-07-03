@@ -1,6 +1,15 @@
 const { ObjectId } = require("mongodb");
 
 function mapBoardConfig(config) {
+  //   enum BoardPattern {
+  //   Unknown = 0,
+  //   Rectangular = 1,
+  //   Polygonal = 2,
+  //   Circular = 3,
+  //   Trihexagonal = 4,
+  //   Sierpinsky = 5,
+  // }
+
   switch (config.pattern) {
     case 1: {
       return { type: "grid", width: config.width, height: config.height };

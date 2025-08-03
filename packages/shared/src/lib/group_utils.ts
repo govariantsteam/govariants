@@ -134,7 +134,7 @@ export function getInnerBorder<K, V>(group: K[], graph: Fillable<K, V>) {
 }
 
 /**
- * Helper function for finding groups and liberties in fillables. Uses depth first search. Applies a callback function to determine wheter an adjacent field is considered connected to the group.
+ * Helper function for finding groups and liberties in Fillables. Applies a callback function to determine whether an adjacent field is considered connected to the group.
  * @param index of the field to start with
  * @param board the fillable to look into
  * @param groupIdentifier predicate that determines whether an adjacent field is connected

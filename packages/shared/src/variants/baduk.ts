@@ -274,7 +274,7 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
   }
 
   /**
-   * Initialises a Ko detector. Override this to change the Ko detection method.
+   * Override this to change the Ko detection method.
    * @returns a Super Ko detector used for post move validation
    */
   protected instantiateKoDetector(): KoDetector {

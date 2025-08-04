@@ -9,37 +9,30 @@
 export interface Fillable<K, V> {
   /**
    * access field value at index
-   * @param index of the field
    * @returns the field value at index or undefined if index is out of bounds
    */
   at(index: K): V | undefined;
   /**
    * set field value at index
-   * @param index of the field
-   * @param val value to store
    */
   set(index: K, val: V): void;
   /**
    * Applies a callback function to every field value and returns a new fillable of the results.
    * @template V2 shape of the values of the new fillable
-   * @param f callback function
    */
   map<V2>(f: (val: V) => V2): Fillable<K, V2>;
   /**
    * get indices of all neighbor fields (by adjacency)
-   * @param index of the field
    * @returns an array of indices of neighbor fields
    */
   neighbors(index: K): K[];
   /**
    * check whether a key corresponds to a field
-   * @param index the key to check
    * @returns true if a field exists that is indexed by index, otherwise false
    */
   isInBounds(index: K): boolean;
   /**
-   * applies a callback function to every field value
-   * @param f the callback function to apply
+   * calls a function on every field value
    */
   forEach(f: (value: V, index: K) => void): void;
   // It could be interesting to have this be some generic type that is
@@ -51,8 +44,6 @@ export interface Fillable<K, V> {
 
 /**
  * Helper function to find a group starting at a field in a fillable. Adjacent fields are considered to be connected if their values are equal.
- * @param index of the field to start with
- * @param g the fillable to look into
  * @returns the array of indices of the group connected to start field
  */
 export function getGroup<K, V>(index: K, g: Fillable<K, V>): K[] {
@@ -83,9 +74,6 @@ export function getGroup<K, V>(index: K, g: Fillable<K, V>): K[] {
 
 /**
  * Sets a value at all fields connected to a start field.
- * @param value the value to store
- * @param index of the start field
- * @param g the fillable to mutate
  */
 export function floodFill<K, V>(value: V, index: K, g: Fillable<K, V>): void {
   return getGroup(index, g).forEach((index) => g.set(index, value));
@@ -93,8 +81,6 @@ export function floodFill<K, V>(value: V, index: K, g: Fillable<K, V>): void {
 
 /**
  * Find fields that are outside of a set of fields, but adjacent to at least one of them.
- * @param group the set of field indices
- * @param graph the fillable to look into
  * @returns the set of indices of fields outside but adjacent to group
  */
 export function getOuterBorder<K, V>(group: K[], graph: Fillable<K, V>) {
@@ -119,8 +105,6 @@ export function getOuterBorder<K, V>(group: K[], graph: Fillable<K, V>) {
 
 /**
  * Find fields that are inside of a set of fields, but adjacent to at least one field outside.
- * @param group the set of field indices
- * @param graph the fillable to look into
  * @returns the set of indices of fields inside group that are adjacent to an outside field
  */
 export function getInnerBorder<K, V>(group: K[], graph: Fillable<K, V>) {
@@ -135,8 +119,6 @@ export function getInnerBorder<K, V>(group: K[], graph: Fillable<K, V>) {
 
 /**
  * Helper function for finding groups and liberties in Fillables. Applies a callback function to determine whether an adjacent field is considered connected to the group.
- * @param index of the field to start with
- * @param board the fillable to look into
  * @param groupIdentifier predicate that determines whether an adjacent field is connected
  * @param libertyIdentifier predicate that determines whether an adjacent field is a liberty
  * @returns an object containing the indices of fields in the group (members), fields adjacent to the group, and liberties.

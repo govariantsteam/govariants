@@ -38,7 +38,7 @@ export type BadukConfig = LegacyBadukConfig | NewBadukConfig;
  * @property next_to_play indicates which player can play a move next.
  * @property captures maps index of a player to the number of their captures.
  * @property last_move string encoding of the move played last round
- * @property scord_board 2d-array which (after scoring) indicates the area ownership
+ * @property score_board 2d-array which (after scoring) indicates the area ownership
  */
 export interface BadukState {
   board: Color[][];
@@ -111,7 +111,6 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
 
   /**
    * Decodes the string encoding of a move. Throws if move string does not represent a board field.
-   * @param move string to decode coordinate(s) from
    * @returns Coordinate representing a board field. In case of graph boards: (x,0) where x is a unique identifier of the field.
    */
   protected decodeMove(move: string): Coordinate {
@@ -178,7 +177,6 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
    * Places a stone at the board and resolves captures.
    * Mutates only the internal board property (important for
    * some inheriting classes e.g. keima)
-   * @param move the coordinate of the added stone
    */
   protected playMoveInternal(move: Coordinate): void {
     this.board.set(move, this.next_to_play === 0 ? Color.BLACK : Color.WHITE);
@@ -198,8 +196,7 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
   }
 
   /**
-   * Called after placing stone and resolving captures. Validates if move is allowed by checking if it results in self-capture or a previously seen position.
-   * @param move coordinates of the move
+   * Called after placing stone and resolving captures. Validates if move is allowed by checking if it results in self-capture or a previously seen position. Is expected to throw on an invalid move when overridden.
    */
   protected postValidateMove(move: Coordinate): void {
     // Detect suicide

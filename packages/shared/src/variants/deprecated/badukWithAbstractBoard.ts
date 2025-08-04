@@ -58,6 +58,6 @@ export const badukWithAbstractBoardVariant: Variant<
 > = {
   ...badukVariant,
   description: "Baduk with varying board patterns",
-  deprecated: true,
+  deprecated: false,
   sanitizeConfig: mapToNewBadukConfig,
 };

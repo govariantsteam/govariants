@@ -10,8 +10,7 @@
     "baseUrl": ".",
     "paths": {
       "*": ["node_modules/*"]
-    },
-    "allowJs": true
+    }
   },
   "include": ["src/**/*"]
 }

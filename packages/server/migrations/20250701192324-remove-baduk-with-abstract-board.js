@@ -40,31 +40,38 @@ module.exports = {
    * @returns {Promise<void>}
    */
   async up(db, client) {
-    client.startSession().withTransaction(async () => {
-      var games = await db
-        .collection("games")
-        .find({ variant: "badukWithAbstractBoard" })
-        .toArray();
+    await client.withSession((session) =>
+      session.withTransaction(async () => {
+        var games = await db
+          .collection("games")
+          .find({ variant: "badukWithAbstractBoard" })
+          .toArray();
 
-      for (var game of games) {
-        var result = await db.collection("games").findOneAndUpdate(
-          { _id: new ObjectId(game._id) },
-          {
-            $set: {
-              variant: "baduk",
-              config: {
-                komi: game.config.komi,
-                board: mapBoardConfig(game.config),
+        let results = await Promise.all(
+          games.map((game) =>
+            db.collection("games").findOneAndUpdate(
+              { _id: new ObjectId(game._id) },
+              {
+                $set: {
+                  variant: "baduk",
+                  config: {
+                    komi: game.config.komi,
+                    board: mapBoardConfig(game.config),
+                  },
+                },
               },
-            },
-          },
+            ),
+          ),
         );
 
-        if (!result.lastErrorObject?.updatedExisting) {
-          throw new Error(`migration failed for game ${game._id}`);
+        // check if all updates worked
+        for (var result of results) {
+          if (!result.lastErrorObject?.updatedExisting) {
+            throw new Error(`migration failed for game ${game._id}`);
+          }
         }
-      }
-    });
+      }),
+    );
   },
 
   /**

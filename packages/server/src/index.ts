@@ -18,14 +18,12 @@ import { SITE_NAME, UserResponse } from "@ogfcommunity/variants-shared";
 import { router as apiRouter } from "./api";
 import * as socket_io from "./socket_io";
 import { ITimeoutService, TimeoutService } from "./time-control/timeout";
-import { migrate } from "./migration_logic/migration";
 
 const LOCAL_ORIGIN = [
   "http://127.0.0.1:5173",
   "http://localhost:5173",
   "http://[::1]:5173",
 ];
-const isProd = process.env.NODE_ENV === "production";
 
 const timeoutService = new TimeoutService();
 export function getTimeoutService(): ITimeoutService {
@@ -46,10 +44,6 @@ passport.use(
     }
   }),
 );
-
-if (isProd) {
-  migrate().catch(console.error);
-}
 
 // Initialize MongoDB
 connectToDb()
@@ -145,6 +139,7 @@ io.on("connection", (socket) => {
 });
 
 // If production, serve the React repo!
+const isProd = process.env.NODE_ENV === "production";
 if (isProd) {
   // Compute the build path and index.html path
   const build_path = path.join(__dirname, "../../../packages/vue-client/dist");

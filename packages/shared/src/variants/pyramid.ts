@@ -71,7 +71,7 @@ export class PyramidGo extends Baduk {
     let points = c === Color.WHITE ? this.config.komi : 0;
     this.score_board.forEach(
       (color, index) =>
-        (points += color === c ? this.weights?.at(index) ?? 1 : 0),
+        (points += color === c ? (this.weights?.at(index) ?? 1) : 0),
     );
     return points;
   }

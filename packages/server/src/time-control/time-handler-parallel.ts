@@ -30,10 +30,14 @@ export class TimeHandlerParallelMoves implements ITimeHandler {
     variant: string,
     config: IConfigWithTimeControl,
   ): TimeControlParallel {
-    return initialState(variant, config, (perPlayerBase) => ({
-      ...perPlayerBase,
-      stagedMoveAt: null,
-    }));
+    return initialState(
+      variant,
+      config,
+      (perPlayerBase): PerPlayerTimeControlParallel => ({
+        ...perPlayerBase,
+        stagedMoveAt: null,
+      }),
+    );
   }
 
   handleMove(

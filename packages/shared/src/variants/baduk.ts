@@ -332,7 +332,7 @@ function count_color<T>(value: T) {
 export class GridBaduk extends Baduk {
   // ! isn't typesafe, but we know board will be assigned in super()
   declare board: Grid<Color>;
-  protected declare score_board?: Grid<Color>;
+  declare protected score_board?: Grid<Color>;
   declare config: NewGridBadukConfig;
   constructor(config: BadukConfig) {
     if (config && !isGridBadukConfig(config)) {

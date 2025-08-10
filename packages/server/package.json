@@ -7,7 +7,8 @@
     "launch": "node ./dist/index.js",
     "test": "jest",
     "lint": "eslint --fix ./src && prettier --write ./src",
-    "lint:check": "eslint ./src && prettier --check ./src"
+    "lint:check": "eslint ./src && prettier --check ./src",
+    "migrate": "migrate-mongo up"
   },
   "lint-staged": {
     "src/**/*.+(ts)": [

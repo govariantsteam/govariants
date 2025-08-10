@@ -1,2 +1,2 @@
-release: npx migrate-mongo up -f '/app/packages/server/migrate-mongo-config.js'
+release: yarn workspace @ogfcommunity/variants-server migrate
 web: yarn workspace @ogfcommunity/variants-server launch

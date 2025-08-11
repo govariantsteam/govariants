@@ -6,7 +6,7 @@ const config = {
     url: process.env.ATLAS_URI || "mongodb://127.0.0.1:27017",
 
     // database name
-    databaseName: "govariants",
+    databaseName: "test",
 
     options: {
       useNewUrlParser: true, // removes a deprecation warning when connecting

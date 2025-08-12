@@ -32,6 +32,14 @@ export enum Color {
 
 export type BadukConfig = LegacyBadukConfig | NewBadukConfig;
 
+/**
+ * Type representing the state of a Baduk game at one round. Contains all information used for displaying the (board-) state client side.
+ * @property board 2d-array containing the states (colors) of all board fields.
+ * @property next_to_play indicates which player can play a move next.
+ * @property captures maps index of a player to the number of their captures.
+ * @property last_move string encoding of the move played last round
+ * @property score_board 2d-array which (after scoring) indicates the area ownership
+ */
 export interface BadukState {
   board: Color[][];
   next_to_play: 0 | 1;
@@ -40,11 +48,20 @@ export interface BadukState {
   score_board?: Color[][];
 }
 
+/**
+ * Type representing a move in Baduk. The index (0 | 1) indicates the player, the string encodes what move was played.
+ */
 export type BadukMove = { 0: string } | { 1: string };
 
-// Grid | GraphWrapper, so we have a better idea of serialize() return type
+// This is basically Fillable<CoordinateLike, TColor> with the additional method serialize.
+/**
+ * Type representing a Baduk board that supports both grid and graph boards. See Fillable interface for methods.
+ */
 export declare type BadukBoard<TColor> = Grid<TColor> | GraphWrapper<TColor>;
 
+/**
+ * Implements rules of Baduk/Go/Weiqi. Can be used as a base class for derived variants. Uses area scoring and positional super ko. Supports graph boards. For variants that don't support graph boards, GridBaduk is more convenient.
+ */
 export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
   protected captures = { 0: 0, 1: 0 };
   private ko_detector: KoDetector;
@@ -92,11 +109,15 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
     return this.phase === "gameover" ? [] : [this.next_to_play];
   }
 
+  /**
+   * Decodes the string encoding of a move. Throws if move string does not represent a board field.
+   * @returns Coordinate representing a board field. In case of graph boards: (x,0) where x is a unique identifier of the field.
+   */
   protected decodeMove(move: string): Coordinate {
     if (isGridBadukConfig(this.config)) {
       return Coordinate.fromSgfRepr(move);
     }
-    // graph boards encode moves with the unique identifier number
+    // graph boards encode moves with a unique index
     return new Coordinate(Number(move), 0);
   }
 
@@ -156,7 +177,6 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
    * Places a stone at the board and resolves captures.
    * Mutates only the internal board property (important for
    * some inheriting classes e.g. keima)
-   * @param move the coordinate of the added stone
    */
   protected playMoveInternal(move: Coordinate): void {
     this.board.set(move, this.next_to_play === 0 ? Color.BLACK : Color.WHITE);
@@ -175,6 +195,9 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
     });
   }
 
+  /**
+   * Called after placing stone and resolving captures. Validates if move is allowed by checking if it results in self-capture or a previously seen position. Is expected to throw on an invalid move when overridden.
+   */
   protected postValidateMove(move: Coordinate): void {
     // Detect suicide
     if (!groupHasLiberties(getGroup(move, this.board), this.board)) {
@@ -197,6 +220,9 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
     }
   }
 
+  /**
+   * Determines score using area scoring with the assumption that all stones are alive.
+   */
   private finalizeScore(): void {
     const board = this.board.map((x) => x);
     const visited = this.board.map(() => false);
@@ -244,6 +270,10 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
     return this.sgf?.sgfContent ?? "non-rectangular";
   }
 
+  /**
+   * Override this to change the Ko detection method.
+   * @returns a Super Ko detector used for post move validation
+   */
   protected instantiateKoDetector(): KoDetector {
     return new SuperKoDetector();
   }
@@ -329,6 +359,9 @@ function count_color<T>(value: T) {
   return (total: number, color: T) => total + (color === value ? 1 : 0);
 }
 
+/**
+ * Like class Baduk but restricted to grid boards.
+ */
 export class GridBaduk extends Baduk {
   // ! isn't typesafe, but we know board will be assigned in super()
   declare board: Grid<Color>;

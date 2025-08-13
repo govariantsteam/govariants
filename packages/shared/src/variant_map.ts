@@ -1,5 +1,4 @@
 import { AbstractGame } from "./abstract_game";
-import { badukWithAbstractBoardVariant } from "./variants/deprecated/badukWithAbstractBoard";
 import { phantomVariant } from "./variants/phantom";
 import { parallelVariant } from "./variants/parallel";
 import { captureVariant } from "./variants/capture";
@@ -25,7 +24,6 @@ const variant_map: {
   [variant: string]: Variant<any, any>;
 } = {
   baduk: badukVariant,
-  badukWithAbstractBoard: badukWithAbstractBoardVariant,
   phantom: phantomVariant,
   parallel: parallelVariant,
   capture: captureVariant,

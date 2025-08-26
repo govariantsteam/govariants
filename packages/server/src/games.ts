@@ -102,13 +102,14 @@ export async function createGame(
   config: object,
 ): Promise<GameResponse> {
   // Construct a game from the config to ensure the config is valid
-  makeGameObject(variant, config);
+  const gameObj = makeGameObject(variant, config);
 
   const game = {
     variant: variant,
     moves: [] as MovesType[],
     config: config,
     time_control: GetInitialTimeControl(variant, config),
+    players: new Array(gameObj.numPlayers()).fill(null),
   };
 
   const result = await gamesCollection().insertOne(game);

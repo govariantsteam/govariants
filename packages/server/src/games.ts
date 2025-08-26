@@ -79,6 +79,11 @@ export async function getGame(id: string): Promise<GameResponse> {
   }
 
   const game = outwardFacingGame(db_game);
+  // Legacy games don't have a players field
+  // TODO: remove this code after doing proper db migration
+  if (!game.players) {
+    game.players = await BACKFILL_addEmptyPlayersArray(game);
+  }
   const playerClocks = Object.values(game.time_control?.forPlayer ?? {});
   // bpj 2024-04-04: changed playerClock.remainingTimeMS to playerClock.clockState
   // in order to support more complex clock states such as byo-yomi
@@ -268,6 +273,12 @@ async function updateSeat(
 ) {
   const game = await getGame(game_id);
 
+  // Legacy games don't have a players field
+  // TODO: remove this code after doing proper db migration
+  if (!game.players) {
+    game.players = await BACKFILL_addEmptyPlayersArray(game);
+  }
+
   // If the seat is occupied by another player, throw an error.
   if (
     game.players[seat] != null &&
@@ -366,6 +377,20 @@ export async function repairGame(gameId: string): Promise<void> {
       { $set: { moves: errorlessMoves } },
     );
   }
+}
+
+// This function exists for games whose players field has not yet been defined.
+// We can probably delete this after the db has been updated or cleared.
+async function BACKFILL_addEmptyPlayersArray(game: GameResponse) {
+  const game_id = game.id;
+  const players = new Array<undefined>(
+    makeGameObject(game.variant, game.config).numPlayers(),
+  ).fill(null);
+  await gamesCollection().updateOne(
+    { _id: new ObjectId(game_id) },
+    { $set: { players } },
+  );
+  return players;
 }
 
 function outwardFacingGame(db_game: WithId<GameSchema>): GameResponse {

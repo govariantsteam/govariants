@@ -1,11 +1,11 @@
 # create migration
 
-yarn migrate-mongo create `name`
+npx migrate-mongo create `name`
 
 # apply all pending migrations locally
 
-yarn migrate-mongo up
+npx migrate-mongo up
 
 # revert last migration locally
 
-yarn migrate-mongo down
+npx migrate-mongo down

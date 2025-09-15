@@ -22,13 +22,15 @@ import {
   ValidateTimeControlConfig,
 } from "./time-control/time-control";
 import { updateRatings, supportsRatings } from "./rating/rating";
+import { GameSubscriptions } from "./notifications/notifications.types";
 
 export type GameSchema = {
   variant: string;
   moves: MovesType[];
   config: object;
-  players?: Array<User | undefined>;
+  players: Array<User | undefined>;
   time_control?: ITimeControlBase;
+  subscriptions: GameSubscriptions[];
 };
 
 export function gamesCollection(): Collection<GameSchema> {
@@ -104,12 +106,13 @@ export async function createGame(
   // Construct a game from the config to ensure the config is valid
   const gameObj = makeGameObject(variant, config);
 
-  const game = {
+  const game: GameSchema = {
     variant: variant,
     moves: [] as MovesType[],
     config: config,
     time_control: GetInitialTimeControl(variant, config),
     players: new Array(gameObj.numPlayers()).fill(null),
+    subscriptions: [],
   };
 
   const result = await gamesCollection().insertOne(game);

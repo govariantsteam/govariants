@@ -1,13 +1,7 @@
-export const Notifications = {
-  gameEnd: 1,
-  newRound: 2,
-  myMove: 3,
-  seatChange: 4,
-} as const;
-
-export type NotificationType =
-  (typeof Notifications)[keyof typeof Notifications];
-
+import {
+  Notifications,
+  NotificationType,
+} from "../../../shared/dist/notifications.types";
 export type DBGameNotification = {
   gameId: string;
   type: NotificationType;

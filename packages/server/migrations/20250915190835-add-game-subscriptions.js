@@ -9,7 +9,7 @@ module.exports = {
       session.withTransaction(async () => {
         await db
           .collection("games")
-          .updateMany({}, { $set: { subscriptions: [] } });
+          .updateMany({}, { $set: { subscriptions: {} } });
       }),
     );
   },

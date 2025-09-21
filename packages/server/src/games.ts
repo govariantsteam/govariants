@@ -22,7 +22,10 @@ import {
   ValidateTimeControlConfig,
 } from "./time-control/time-control";
 import { updateRatings, supportsRatings } from "./rating/rating";
-import { GameSubscriptions } from "./notifications/notifications.types";
+import {
+  GameSubscriptions,
+  NotificationType,
+} from "./notifications/notifications.types";
 
 export type GameSchema = {
   variant: string;
@@ -30,7 +33,7 @@ export type GameSchema = {
   config: object;
   players: Array<User | undefined>;
   time_control?: ITimeControlBase;
-  subscriptions: GameSubscriptions[];
+  subscriptions: GameSubscriptions;
 };
 
 export function gamesCollection(): Collection<GameSchema> {
@@ -112,7 +115,7 @@ export async function createGame(
     config: config,
     time_control: GetInitialTimeControl(variant, config),
     players: new Array(gameObj.numPlayers()).fill(null),
-    subscriptions: [],
+    subscriptions: {},
   };
 
   const result = await gamesCollection().insertOne(game);
@@ -370,6 +373,21 @@ export async function repairGame(gameId: string): Promise<void> {
       { $set: { moves: errorlessMoves } },
     );
   }
+}
+
+export async function subscribeToGame(
+  gameId: string,
+  userId: string,
+  types: NotificationType[],
+): Promise<boolean> {
+  const updateResult = await gamesCollection().updateOne(
+    { _id: new ObjectId(gameId) },
+    {
+      subscriptions: { $set: { [userId]: types } },
+    },
+  );
+
+  return updateResult.modifiedCount === 1;
 }
 
 function outwardFacingGame(db_game: WithId<GameSchema>): GameResponse {

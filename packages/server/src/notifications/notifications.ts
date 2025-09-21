@@ -5,6 +5,7 @@ import {
   NotificationType,
   GameNotification,
   UserNotifications,
+  GameSubscriptions,
 } from "./notifications.types";
 
 function outwardMap(userNotifications: UserNotifications): GameNotification[] {
@@ -98,4 +99,12 @@ export async function notifyOfSeatChange(
   return await addGameNotification(recipientIds, newNotification, [
     Notifications.seatChange,
   ]);
+}
+
+export function getRecipientIDs(
+  subscriptions: GameSubscriptions,
+  type: NotificationType,
+): string[] {
+  const IDs = Object.keys(subscriptions);
+  return IDs.filter((id) => subscriptions[id].includes(type));
 }

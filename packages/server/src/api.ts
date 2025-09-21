@@ -10,6 +10,7 @@ import {
   leaveSeat,
   getGameState,
   repairGame,
+  subscribeToGame,
 } from "./games";
 import {
   checkUsername,
@@ -30,6 +31,7 @@ import {
 } from "@ogfcommunity/variants-shared";
 import { io } from "./socket_io";
 import { checkCSRFToken, generateCSRFToken } from "./csrf_guard";
+import { getUserNotifications } from "./notifications/notifications";
 
 export const router = express.Router();
 
@@ -323,5 +325,40 @@ router.post("/game/:gameId/repair", checkCSRFToken, async (req, res) => {
   } catch (e) {
     res.status(500);
     res.json(e.message);
+  }
+});
+
+router.get("/notifications", checkCSRFToken, async (req, res) => {
+  if (!req.user) {
+    res.send([]);
+    return;
+  }
+
+  try {
+    res.send(await getUserNotifications((req.user as User).id));
+  } catch (e) {
+    res.status(500);
+    res.json(e.message);
+  }
+});
+
+router.post("/game/:gameId/subscribe", checkCSRFToken, async (req, res) => {
+  try {
+    if (!req.user || typeof req.query.gameId !== "string") {
+      res.send([]);
+      return;
+    }
+    const { notificationTypes } = req.body;
+    const gameId = req.query.gameId as string;
+    const userId = (req.user as User).id;
+
+    const success = await subscribeToGame(gameId, userId, notificationTypes);
+    if (success) {
+      res.status(200);
+    } else {
+      res.status(500);
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });

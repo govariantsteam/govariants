@@ -62,6 +62,10 @@ export class Rengo<TSubstate extends object> extends AbstractGame<
     }
   }
 
+  specialMoves(): { [key: string]: string } {
+    return this._subGame.specialMoves();
+  }
+
   private getTeamOfPlayer(player: number): number {
     return Math.trunc(player / this.config.teamSize);
   }

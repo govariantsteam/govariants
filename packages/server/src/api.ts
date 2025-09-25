@@ -10,7 +10,7 @@ import {
   leaveSeat,
   getGameState,
   repairGame,
-  subscribeToGame,
+  subscribeToGameNotifications,
 } from "./games";
 import {
   checkUsername,
@@ -344,21 +344,23 @@ router.get("/notifications", checkCSRFToken, async (req, res) => {
 
 router.post("/game/:gameId/subscribe", checkCSRFToken, async (req, res) => {
   try {
-    if (!req.user || typeof req.query.gameId !== "string") {
-      res.send([]);
-      return;
-    }
     const { notificationTypes } = req.body;
-    const gameId = req.query.gameId as string;
     const userId = (req.user as User).id;
 
-    const success = await subscribeToGame(gameId, userId, notificationTypes);
+    const success = await subscribeToGameNotifications(
+      req.params.gameId,
+      userId,
+      notificationTypes,
+    );
+
     if (success) {
       res.status(200);
     } else {
       res.status(500);
     }
+    res.send();
   } catch (error) {
     res.status(500).json({ error: error.message });
+    res.send();
   }
 });

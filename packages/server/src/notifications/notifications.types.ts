@@ -1,7 +1,5 @@
-import {
-  Notifications,
-  NotificationType,
-} from "../../../shared/dist/notifications.types";
+import { Notifications, NotificationType } from "@ogfcommunity/variants-shared";
+
 export type DBGameNotification = {
   gameId: string;
   type: NotificationType;
@@ -17,6 +15,7 @@ export type GameNotification =
   | {
       gameId: string;
       type: typeof Notifications.gameEnd;
+      params: { result: string };
     }
   | {
       gameId: string;
@@ -37,3 +36,5 @@ export type GameNotification =
 export type GameSubscriptions = {
   [userId: string]: NotificationType[];
 };
+
+// TODO: On delete user, delete notifications.

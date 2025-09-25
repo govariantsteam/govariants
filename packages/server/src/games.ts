@@ -11,6 +11,7 @@ import {
   sanitizeConfig,
   ITimeControlBase,
   UserResponse,
+  NotificationType,
 } from "@ogfcommunity/variants-shared";
 import { ObjectId, WithId, Document, Filter, Collection } from "mongodb";
 import { getDb } from "./db";
@@ -22,10 +23,8 @@ import {
   ValidateTimeControlConfig,
 } from "./time-control/time-control";
 import { updateRatings, supportsRatings } from "./rating/rating";
-import {
-  GameSubscriptions,
-  NotificationType,
-} from "./notifications/notifications.types";
+import { GameSubscriptions } from "./notifications/notifications.types";
+import { notifyOfSeatChange } from "./notifications/notifications";
 
 export type GameSchema = {
   variant: string;
@@ -273,7 +272,9 @@ async function updateSeat(
   user: UserResponse,
   new_user: User | undefined,
 ) {
-  const game = await getGame(game_id);
+  const game = await gamesCollection().findOne({
+    _id: new ObjectId(game_id),
+  });
 
   // If the seat is occupied by another player, throw an error.
   if (
@@ -290,6 +291,13 @@ async function updateSeat(
   await gamesCollection().updateOne(
     { _id: new ObjectId(game_id) },
     { $set: { [`players.${seat}`]: new_user } },
+  );
+  await notifyOfSeatChange(
+    game.subscriptions,
+    game_id,
+    seat,
+    user.username,
+    new_user !== undefined,
   );
 
   return game.players;
@@ -375,19 +383,20 @@ export async function repairGame(gameId: string): Promise<void> {
   }
 }
 
-export async function subscribeToGame(
+export async function subscribeToGameNotifications(
   gameId: string,
   userId: string,
   types: NotificationType[],
 ): Promise<boolean> {
+  const nestedKey = `subscriptions.${userId}`;
   const updateResult = await gamesCollection().updateOne(
     { _id: new ObjectId(gameId) },
     {
-      subscriptions: { $set: { [userId]: types } },
+      $set: { [nestedKey]: types },
     },
   );
 
-  return updateResult.modifiedCount === 1;
+  return updateResult.matchedCount === 1;
 }
 
 function outwardFacingGame(db_game: WithId<GameSchema>): GameResponse {

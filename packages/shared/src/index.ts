@@ -30,5 +30,6 @@ export { sFractionalMoveColors } from "./variants/s_fractional";
 export { type LighthouseState } from "./variants/lighthouse/lighthouse";
 export { type PyramidConfig } from "./variants/pyramid";
 export { generalizedPyramid } from "./lib/graph-utils";
+export type { IHigherOrderConfig, RengoConfig } from "./variants/rengo";
 
 export const SITE_NAME = "Go Variants";

@@ -1,6 +1,6 @@
 import { AbstractGame } from "../abstract_game";
 import { Variant } from "../variant";
-import { makeGameObject } from "../variant_map";
+import { getPlayerColors, makeGameObject } from "../variant_map";
 import { Baduk } from "./baduk";
 
 export type IHigherOrderConfig = {
@@ -93,5 +93,11 @@ export const rengoVariant: Variant<RengoConfig, object> = {
     teamSize: 2,
   }),
   time_handling: "parallel",
-  description: "description under construction",
+  description: "Team game where moves cycle through all team members.",
+  getPlayerColors: (config: RengoConfig, playerNr: number) =>
+    getPlayerColors(
+      config.subVariant,
+      config.subVariantConfig,
+      Math.trunc(playerNr / config.teamSize),
+    ),
 };

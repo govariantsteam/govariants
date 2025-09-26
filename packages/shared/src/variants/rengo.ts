@@ -1,4 +1,5 @@
 import { AbstractGame } from "../abstract_game";
+import { rengoRulesDescription } from "../templates/rengo_rules";
 import { Variant } from "../variant";
 import { getPlayerColors, makeGameObject } from "../variant_map";
 import { Baduk } from "./baduk";
@@ -94,6 +95,7 @@ export const rengoVariant: Variant<RengoConfig, object> = {
   }),
   time_handling: "parallel",
   description: "Team game where moves cycle through all team members.",
+  rulesDescription: rengoRulesDescription,
   getPlayerColors: (config: RengoConfig, playerNr: number) =>
     getPlayerColors(
       config.subVariant,

@@ -51,6 +51,9 @@ export class Rengo<TSubstate extends object> extends AbstractGame<
       );
   }
   playMove(player: number, move: string): void {
+    if (!this.nextToPlay().includes(player)) {
+      throw new Error(`not turn of player ${player}`);
+    }
     const roundBefore = this._subGame.round;
 
     this._subGame.playMove(this.getTeamOfPlayer(player), move);

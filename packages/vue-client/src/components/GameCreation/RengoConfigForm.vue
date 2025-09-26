@@ -45,13 +45,14 @@ function emitConfigChange() {
 
 <template>
   <div class="config-form-column">
+    <label>Subvariant</label>
     <select v-model="subVariant">
       <option v-for="variant in variants" :key="variant">
         {{ variant }}
       </option>
     </select>
     <form @change="emitConfigChange">
-      <label style="display: block">Players per team</label>
+      <label>Players per team</label>
       <input type="number" min="1" v-model="teamSize" />
       <component
         v-if="variantConfigForm"
@@ -62,3 +63,9 @@ function emitConfigChange() {
     </form>
   </div>
 </template>
+
+<style scoped>
+label {
+  display: block;
+}
+</style>

@@ -3,6 +3,7 @@ import { config_form_map } from "@/config_form_map";
 import {
   getDefaultConfig,
   getVariantList,
+  makeGameObject,
   RengoConfig,
 } from "@ogfcommunity/variants-shared";
 import { ref, watch, type Component } from "vue";
@@ -15,17 +16,30 @@ const variants: string[] = getVariantList();
 
 const subVariant = ref(props.initialConfig.subVariant);
 let variantConfigForm: Component;
+
+function maybeUpdateTeamsArray() {
+  const subGameNumPlayers = makeGameObject(
+    subVariant.value,
+    subVariantConfig.value,
+  ).numPlayers();
+  if (subGameNumPlayers !== teamSizes.value.length) {
+    teamSizes.value = new Array(subGameNumPlayers).fill(2);
+  }
+}
+
 watch(subVariant, () => {
   subVariantConfig.value = getDefaultConfig(subVariant.value);
+  maybeUpdateTeamsArray();
   emitConfigChange();
   variantConfigForm = config_form_map[subVariant.value];
 });
 
 const subVariantConfig = ref({ ...props.initialConfig.subVariantConfig });
-const teamSize = ref(props.initialConfig.teamSize);
+const teamSizes = ref(props.initialConfig.teamSizes);
 
 function setSubConfig(subconfig: object): void {
   subVariantConfig.value = subconfig;
+  maybeUpdateTeamsArray();
   emitConfigChange();
 }
 
@@ -37,7 +51,7 @@ function emitConfigChange() {
   const config: RengoConfig = {
     subVariant: subVariant.value,
     subVariantConfig: subVariantConfig.value,
-    teamSize: teamSize.value,
+    teamSizes: teamSizes.value,
   };
   emit("configChanged", config);
 }
@@ -52,8 +66,11 @@ function emitConfigChange() {
       </option>
     </select>
     <form @change="emitConfigChange">
-      <label>Players per team</label>
-      <input type="number" min="1" v-model="teamSize" />
+      <template v-for="(_, index) in teamSizes" :key="index">
+        <label>Size of team {{ index }}</label>
+        <input type="number" min="1" v-model="teamSizes[index]" />
+      </template>
+
       <component
         v-if="variantConfigForm"
         :is="variantConfigForm"

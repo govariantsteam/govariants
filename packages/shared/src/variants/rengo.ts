@@ -1,4 +1,5 @@
 import { AbstractGame } from "../abstract_game";
+import { sum } from "../lib/utils";
 import { rengoRulesDescription } from "../templates/rengo_rules";
 import { Variant } from "../variant";
 import { getPlayerColors, makeGameObject } from "../variant_map";
@@ -10,7 +11,7 @@ export type IHigherOrderConfig = {
 };
 
 export type RengoConfig = IHigherOrderConfig & {
-  teamSize: number;
+  teamSizes: number[];
 };
 
 export class Rengo<TSubstate extends object> extends AbstractGame<
@@ -20,6 +21,7 @@ export class Rengo<TSubstate extends object> extends AbstractGame<
   private _subGame: AbstractGame<object, TSubstate>;
   private movesByTeam: number[];
   private hasTeamPlayedThisRound: boolean[];
+  private teamStartIndices: readonly number[];
 
   constructor(config: RengoConfig) {
     super(config);
@@ -27,14 +29,28 @@ export class Rengo<TSubstate extends object> extends AbstractGame<
       config.subVariant,
       config.subVariantConfig,
     ) as AbstractGame<object, TSubstate>;
+    if (config.teamSizes.length !== this._subGame.numPlayers()) {
+      throw new Error("Incorrect number of configured teams.");
+    }
     this.movesByTeam = new Array(this._subGame.numPlayers()).fill(0);
     this.hasTeamPlayedThisRound = new Array(this._subGame.numPlayers()).fill(
       false,
     );
+    this.teamStartIndices = this.initTeamStartIndices();
+  }
+
+  private initTeamStartIndices(): number[] {
+    const result = [];
+    let pos = 0;
+    for (let i = 0; i < this._subGame.numPlayers(); i++) {
+      result.push(pos);
+      pos += this.config.teamSizes[i];
+    }
+    return result;
   }
 
   numPlayers(): number {
-    return this.config.teamSize * this._subGame.numPlayers();
+    return sum(this.config.teamSizes);
   }
   exportState(player?: number): TSubstate {
     if (!player) {
@@ -47,8 +63,8 @@ export class Rengo<TSubstate extends object> extends AbstractGame<
       .nextToPlay()
       .map(
         (team) =>
-          team * this.config.teamSize +
-          (this.movesByTeam[team] % this.config.teamSize),
+          this.teamStartIndices[team] +
+          (this.movesByTeam[team] % this.config.teamSizes[team]),
       );
   }
   playMove(player: number, move: string): void {
@@ -71,7 +87,7 @@ export class Rengo<TSubstate extends object> extends AbstractGame<
   }
 
   private getTeamOfPlayer(player: number): number {
-    return Math.trunc(player / this.config.teamSize);
+    return getTeamOfPlayer(player, this.config);
   }
   private prepareForNextRound(): void {
     this.hasTeamPlayedThisRound.forEach((has, index) => {
@@ -86,12 +102,21 @@ export class Rengo<TSubstate extends object> extends AbstractGame<
   }
 }
 
+function getTeamOfPlayer(player: number, config: RengoConfig): number {
+  let pos = 0;
+  for (let i = 0; i < config.teamSizes.length; i++) {
+    if (player < pos) return i - 1;
+    pos += config.teamSizes[i];
+  }
+  return config.teamSizes.length - 1;
+}
+
 export const rengoVariant: Variant<RengoConfig, object> = {
   gameClass: Rengo,
   defaultConfig: () => ({
     subVariant: "baduk",
     subVariantConfig: Baduk.defaultConfig(),
-    teamSize: 2,
+    teamSizes: [2, 2],
   }),
   time_handling: "parallel",
   description: "Team game where moves cycle through all team members.",
@@ -100,6 +125,6 @@ export const rengoVariant: Variant<RengoConfig, object> = {
     getPlayerColors(
       config.subVariant,
       config.subVariantConfig,
-      Math.trunc(playerNr / config.teamSize),
+      getTeamOfPlayer(playerNr, config),
     ),
 };

@@ -24,7 +24,11 @@ import {
   ValidateTimeControlConfig,
 } from "./time-control/time-control";
 import { updateRatings, supportsRatings } from "./rating/rating";
-import { notifyOfSeatChange } from "./notifications/notifications";
+import {
+  notifyOfGameEnd,
+  notifyOfNewRound,
+  notifyOfSeatChange,
+} from "./notifications/notifications";
 
 export type GameSchema = {
   variant: string;
@@ -32,7 +36,7 @@ export type GameSchema = {
   config: object;
   players: Array<User | undefined>;
   time_control?: ITimeControlBase;
-  subscriptions: GameSubscriptions;
+  subscriptions?: GameSubscriptions;
 };
 
 export function gamesCollection(): Collection<GameSchema> {
@@ -114,7 +118,6 @@ export async function createGame(
     config: config,
     time_control: GetInitialTimeControl(variant, config),
     players: new Array(gameObj.numPlayers()).fill(null),
-    subscriptions: {},
   };
 
   const result = await gamesCollection().insertOne(game);
@@ -220,6 +223,23 @@ export async function handleMoveAndTime(
     await updateRatings(game, game_obj);
   }
 
+  if (isRoundTransition) {
+    const userIdsOnThePlay = game_obj
+      .nextToPlay()
+      .map((index) => game.players[index]?.id)
+      .filter((x) => !!x);
+    await notifyOfNewRound(
+      game.subscriptions ?? {},
+      game.id,
+      game_obj.round,
+      userIdsOnThePlay,
+    );
+  }
+
+  if (game_obj.phase === "gameover") {
+    await notifyOfGameEnd(game.subscriptions ?? {}, game.id, game_obj.result);
+  }
+
   return game;
 }
 
@@ -293,7 +313,7 @@ async function updateSeat(
     { $set: { [`players.${seat}`]: new_user } },
   );
   await notifyOfSeatChange(
-    game.subscriptions,
+    game.subscriptions ?? {},
     game_id,
     seat,
     user.username,

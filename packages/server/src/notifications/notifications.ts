@@ -21,6 +21,8 @@ async function addGameNotification(
   recipientIds: string[],
   gameNotification: GameNotification,
 ): Promise<UpdateResult<UserNotifications>> {
+  if (!recipientIds.length) return;
+
   return await notifications().updateMany(
     { userId: { $in: recipientIds } },
     {
@@ -35,6 +37,8 @@ async function deleteGameNotifications(
   gameId: string,
   types: NotificationType[],
 ): Promise<UpdateResult<UserNotifications>> {
+  if (!userIds.length || !types.length) return;
+
   return await notifications().updateMany(
     { userId: { $in: userIds } },
     {
@@ -45,26 +49,6 @@ async function deleteGameNotifications(
         },
       },
     },
-  );
-}
-
-async function addAndDeleteGameNotifications(
-  recipientIds: string[],
-  gameNotificationToAdd: GameNotification,
-  notificationTypesToDelete: NotificationType[],
-): Promise<UpdateResult<UserNotifications>> {
-  return await notifications().updateMany(
-    { userId: { $in: recipientIds } },
-    {
-      $pull: {
-        notifications: {
-          gameId: { $eq: gameNotificationToAdd.gameId },
-          type: { $in: notificationTypesToDelete },
-        },
-      },
-      $push: { notifications: gameNotificationToAdd },
-    },
-    { upsert: true },
   );
 }
 
@@ -93,43 +77,33 @@ export async function notifyOfNewRound(
   subscriptions: GameSubscriptions,
   gameId: string,
   round: number,
+  nextToPlayIds: string[],
 ): Promise<UpdateResult<UserNotifications>> {
   await deleteGameNotifications(getSubscriberIds(subscriptions), gameId, [
     Notifications.myMove,
     Notifications.newRound,
   ]);
 
-  const newNotification: GameNotification = {
+  const newRoundNotification: GameNotification = {
     gameId: gameId,
     type: Notifications.newRound,
     params: { round: round },
   };
-  return await addGameNotification(
-    getRecipientIDs(subscriptions, Notifications.newRound),
-    newNotification,
-  );
-}
-
-export async function notifyOfMyMove(
-  subscriptions: GameSubscriptions,
-  nextToPlayIds: string[],
-  gameId: string,
-  round: number,
-): Promise<UpdateResult<UserNotifications>> {
-  const newNotification: GameNotification = {
+  const myMoveNotification: GameNotification = {
     gameId: gameId,
     type: Notifications.myMove,
     params: { round: round },
   };
-  const recipientIds = getRecipientIDs(
-    subscriptions,
-    Notifications.myMove,
-  ).filter((x) => nextToPlayIds.includes(x));
-  // TODO: think about this, since new round and my move are coupled - what will happen after the add & remove stuff of both?
-  return await addAndDeleteGameNotifications(recipientIds, newNotification, [
-    Notifications.myMove,
-    Notifications.newRound,
-  ]);
+  await addGameNotification(
+    getRecipientIDs(subscriptions, Notifications.myMove).filter((id) =>
+      nextToPlayIds.includes(id),
+    ),
+    myMoveNotification,
+  );
+  return await addGameNotification(
+    getRecipientIDs(subscriptions, Notifications.newRound),
+    newRoundNotification,
+  );
 }
 
 export async function notifyOfSeatChange(

@@ -29,9 +29,23 @@ test("rengo + baduk", () => {
   game.playMove(3, "pass");
   game.playMove(0, "ac");
 
+  expect(game.numPlayers()).toEqual(4);
+  expect(game.round).toEqual(9);
+  expect(game.nextToPlay()).toEqual([2]);
   expect(game.exportState().board).toEqual([
     [B, B, _],
     [_, B, B],
     [B, W, _],
   ]);
+
+  game.playMove(2, "pass");
+  game.playMove(1, "pass");
+
+  expect(game.phase).toEqual("gameover");
+  expect(game.exportState().score_board).toEqual([
+    [B, B, B],
+    [B, B, B],
+    [B, W, _],
+  ]);
+  expect(game.result).toEqual("W+0.5");
 });

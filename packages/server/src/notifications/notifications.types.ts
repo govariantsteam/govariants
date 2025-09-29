@@ -33,8 +33,4 @@ export type GameNotification =
       params: { seat: number; user: string; didTakeSeat: boolean };
     };
 
-export type GameSubscriptions = {
-  [userId: string]: NotificationType[];
-};
-
 // TODO: On delete user, delete notifications.

@@ -1,11 +1,11 @@
 import { UpdateResult } from "mongodb";
 import { notifications } from "../db";
+import { GameNotification, UserNotifications } from "./notifications.types";
 import {
-  GameNotification,
-  UserNotifications,
   GameSubscriptions,
-} from "./notifications.types";
-import { Notifications, NotificationType } from "@ogfcommunity/variants-shared";
+  Notifications,
+  NotificationType,
+} from "@ogfcommunity/variants-shared";
 
 function outwardMap(userNotifications: UserNotifications): GameNotification[] {
   return userNotifications.notifications as GameNotification[];

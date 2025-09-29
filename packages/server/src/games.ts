@@ -12,6 +12,7 @@ import {
   ITimeControlBase,
   UserResponse,
   NotificationType,
+  GameSubscriptions,
 } from "@ogfcommunity/variants-shared";
 import { ObjectId, WithId, Document, Filter, Collection } from "mongodb";
 import { getDb } from "./db";
@@ -23,7 +24,6 @@ import {
   ValidateTimeControlConfig,
 } from "./time-control/time-control";
 import { updateRatings, supportsRatings } from "./rating/rating";
-import { GameSubscriptions } from "./notifications/notifications.types";
 import { notifyOfSeatChange } from "./notifications/notifications";
 
 export type GameSchema = {
@@ -408,5 +408,6 @@ function outwardFacingGame(db_game: WithId<GameSchema>): GameResponse {
     config,
     players: db_game.players,
     time_control: db_game.time_control,
+    subscriptions: db_game.subscriptions,
   };
 }

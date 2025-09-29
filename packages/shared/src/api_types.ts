@@ -1,4 +1,5 @@
 import { MovesType } from "./lib/utils";
+import { GameSubscriptions } from "./notifications.types";
 import {
   ITimeControlBase,
   ITimeControlConfig,
@@ -26,6 +27,7 @@ export interface GameResponse {
   config: { time_control?: ITimeControlConfig };
   players?: Array<User | undefined>;
   time_control?: ITimeControlBase;
+  subscriptions?: GameSubscriptions;
 }
 
 // We may add more roles like "moderator" or "bot" in the future

@@ -7,3 +7,7 @@ export const Notifications = {
 
 export type NotificationType =
   (typeof Notifications)[keyof typeof Notifications];
+
+export type GameSubscriptions = {
+  [userId: string]: NotificationType[];
+};

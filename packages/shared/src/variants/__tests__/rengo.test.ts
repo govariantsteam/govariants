@@ -98,6 +98,36 @@ test("rengo + baduk with different team sizes", () => {
   expect(game.result).toEqual("W+0.5");
 });
 
+test("rengo + thue-morse", () => {
+  const game = new Rengo<BadukState>({
+    subVariant: "thue-morse",
+    subVariantConfig: {
+      komi: 6.5,
+      board: {
+        type: "grid",
+        width: 3,
+        height: 3,
+      },
+    },
+    teamSizes: [2, 2],
+  });
+
+  game.playMove(0, "bb");
+  game.playMove(2, "bc");
+  game.playMove(3, "cb");
+  game.playMove(1, "ab");
+  game.playMove(2, "ba");
+  game.playMove(0, "aa");
+  game.playMove(1, "ca");
+
+  expect(game.nextToPlay()).toEqual([3]);
+  expect(game.exportState().board).toEqual([
+    [B, _, B],
+    [B, B, W],
+    [_, W, _],
+  ]);
+});
+
 test("rengo + fractional", () => {
   const game = new Rengo<FractionalState>({
     subVariant: "fractional",

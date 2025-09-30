@@ -15,7 +15,7 @@ const props = defineProps<{
 const variants: string[] = getVariantList();
 
 const subVariant = ref(props.initialConfig.subVariant);
-let variantConfigForm: Component;
+let variantConfigForm: Component = config_form_map[subVariant.value];
 
 function maybeUpdateTeamsArray() {
   const subGameNumPlayers = makeGameObject(

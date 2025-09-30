@@ -24,6 +24,9 @@ export class Rengo<TSubstate extends object> extends AbstractGame<
   private teamStartIndices: readonly number[];
 
   constructor(config: RengoConfig) {
+    if (config.teamSizes.some((size) => !Number.isFinite(size) || size < 1)) {
+      throw new Error(`invalid rengo config`);
+    }
     super(config);
     this._subGame = makeGameObject(
       config.subVariant,

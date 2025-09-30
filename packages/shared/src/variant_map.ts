@@ -18,6 +18,7 @@ import markdownit from "markdown-it";
 import { sFractionalVariant } from "./variants/s_fractional";
 import { lighthouseVariant } from "./variants/lighthouse/lighthouse";
 import { superTicTacGoVariant } from "./variants/super_tic_tac_go";
+import { rengoVariant } from "./variants/rengo";
 
 const variant_map: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -40,6 +41,7 @@ const variant_map: {
   sfractional: sFractionalVariant,
   lighthouse: lighthouseVariant,
   "super tic-tac-go": superTicTacGoVariant,
+  rengo: rengoVariant,
 };
 
 class ConfigError extends Error {

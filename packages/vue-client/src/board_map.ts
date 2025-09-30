@@ -5,6 +5,7 @@ import KeimaBoard from "@/components/boards/KeimaBoard.vue";
 import type { Component } from "vue";
 import QuantumBoard from "@/components/boards/QuantumBoard.vue";
 import DefaultBoard from "./components/boards/DefaultBoard.vue";
+import PolymorphicBoard from "./components/boards/PolymorphicBoard.vue";
 
 const board_map: {
   [variant: string]: Component<{ config: unknown; gamestate: unknown }>;
@@ -14,6 +15,7 @@ const board_map: {
   fractional: FractionalBoard,
   keima: KeimaBoard,
   quantum: QuantumBoard,
+  rengo: PolymorphicBoard,
 };
 
 export function getBoard(variant: string) {

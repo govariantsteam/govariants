@@ -358,7 +358,7 @@ router.post("/game/:gameId/subscribe", checkCSRFToken, async (req, res) => {
     } else {
       res.status(500);
     }
-    res.send();
+    res.send(notificationTypes);
   } catch (error) {
     res.status(500).json({ error: error.message });
     res.send();

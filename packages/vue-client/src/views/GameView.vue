@@ -23,11 +23,7 @@ import PlayersToMove from "@/components/GameView/PlayersToMove.vue";
 import DownloadSGF from "@/components/GameView/DownloadSGF.vue";
 import { getPlayingTable } from "@/playing_table_map";
 import Swal from "sweetalert2";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faBell } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-
-library.add(faBell);
+import SubscriptionDialog from "@/components/GameView/SubscriptionDialog.vue";
 
 const props = defineProps<{ gameId: string }>();
 
@@ -241,12 +237,6 @@ async function repairGame(): Promise<void> {
     }
   });
 }
-
-async function subscribe(): Promise<void> {
-  await requests.post(`/game/${props.gameId}/subscribe`, {
-    notificationTypes: [1, 2, 3, 4],
-  });
-}
 </script>
 
 <template>
@@ -314,12 +304,7 @@ async function subscribe(): Promise<void> {
               {{ value }}
             </button>
           </div>
-          <button @click="subscribe()">
-            <font-awesome-icon
-              icon="fa-solid fa-bell"
-              class="icon"
-            ></font-awesome-icon>
-          </button>
+          <SubscriptionDialog :gameId="props.gameId"></SubscriptionDialog>
         </div>
 
         <DownloadSGF v-if="supportsSGF(variant)" :gameId="gameId" />

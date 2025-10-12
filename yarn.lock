@@ -1209,6 +1209,7 @@ __metadata:
     vue-router: ^4.2.2
     vue-tsc: ^2.2.0
     vue3-chessboard: ^1.2.0
+    vuetify: ^3.10.5
   languageName: unknown
   linkType: soft
 
@@ -8543,6 +8544,25 @@ __metadata:
     typescript:
       optional: true
   checksum: 4699185b2cb611c5fdd2ae5943cc107766c1f1d28fb11ced1239375bc4adc9fec788ce620a23308a03b8e9365f2e3fcce9a46e37c446bb8a5b786b51c5241167
+  languageName: node
+  linkType: hard
+
+"vuetify@npm:^3.10.5":
+  version: 3.10.5
+  resolution: "vuetify@npm:3.10.5"
+  peerDependencies:
+    typescript: ">=4.7"
+    vite-plugin-vuetify: ">=2.1.0"
+    vue: ^3.5.0
+    webpack-plugin-vuetify: ">=3.1.0"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+    vite-plugin-vuetify:
+      optional: true
+    webpack-plugin-vuetify:
+      optional: true
+  checksum: 9c912c1d6e5c4e91e705fcd3d74910baf2fd8cedd6aed83c1a15112dc921b526db92c06144af2da5f064d7547af3b99bf953de8727b2c4d92ad5f5f254ad2b03
   languageName: node
   linkType: hard
 

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { NotificationType } from "@ogfcommunity/variants-shared";
-import { Ref, ref } from "vue";
-import "vuetify/styles";
+import { effect, Ref, ref } from "vue";
 import * as requests from "@/requests";
 import { faBell } from "@fortawesome/free-solid-svg-icons";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -9,10 +8,14 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 library.add(faBell);
 
-const props = defineProps<{ gameId: string }>();
+const props = defineProps<{
+  gameId: string;
+  subscription: NotificationType[];
+}>();
 
-const notificationOptions = ref([]);
-// const isActive = ref(false);
+const notificationOptions = ref(props.subscription);
+
+effect(() => (notificationOptions.value = props.subscription));
 
 async function subscribe(
   notificationTypes: NotificationType[],
@@ -38,7 +41,6 @@ async function subscribe(
         title="Notification options"
         v-bind:class="'notifications-dialog-content'"
       >
-        {{ isActive }}
         <v-switch
           label="game end"
           v-model="notificationOptions"

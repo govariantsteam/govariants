@@ -5,6 +5,7 @@ import {
   supportsSGF,
   getDescription,
   uiTransform,
+  NotificationType,
 } from "@ogfcommunity/variants-shared";
 import * as requests from "../requests";
 import SeatComponent from "@/components/GameView/SeatComponent.vue";
@@ -52,6 +53,7 @@ const time_control = ref<ITimeControlBase | null>(null);
 // admin interface behind a toggle.
 const adminMode = ref<boolean>(false);
 const errorOccured = ref<boolean>(false);
+const subscription = ref<NotificationType[]>([]);
 
 function setNewState(stateResponse: GameStateResponse): void {
   const { timeControl: timeControl, ...state } = stateResponse;
@@ -108,6 +110,7 @@ watchEffect(async () => {
       variant.value = result.variant;
       config.value = result.config;
       players.value = result.players;
+      subscription.value = result.subscription ?? [];
       setNewState(result.stateResponse);
     })
     .catch((err) => {
@@ -304,7 +307,11 @@ async function repairGame(): Promise<void> {
               {{ value }}
             </button>
           </div>
-          <SubscriptionDialog :gameId="props.gameId"></SubscriptionDialog>
+          <SubscriptionDialog
+            :gameId="props.gameId"
+            :subscription="subscription"
+            :disabled="!user"
+          ></SubscriptionDialog>
         </div>
 
         <DownloadSGF v-if="supportsSGF(variant)" :gameId="gameId" />

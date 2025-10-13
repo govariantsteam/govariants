@@ -298,6 +298,9 @@ router.get("/games/:gameId/state/initial", async (req, res) => {
       players: game.players,
       stateResponse: stateResponse,
     };
+    if (req.user && game.subscriptions) {
+      result.subscription = game.subscriptions[(req.user as User).id] ?? [];
+    }
     res.send(result);
   } catch (e) {
     res.status(500);

@@ -13,16 +13,18 @@ const props = defineProps<{
   subscription: NotificationType[];
 }>();
 
-const notificationOptions = ref(props.subscription);
+const notificationOptions: Ref<Array<string | number>> = ref(
+  props.subscription,
+);
 
 effect(() => (notificationOptions.value = props.subscription));
 
 async function subscribe(
-  notificationTypes: NotificationType[],
+  notificationTypes: Array<string | number>,
   isOpen: Ref<boolean>,
 ): Promise<void> {
   await requests.post(`/game/${props.gameId}/subscribe`, {
-    notificationTypes: notificationTypes,
+    notificationTypes: notificationTypes.map((x) => Number(x)),
   });
   isOpen.value = false;
 }
@@ -31,9 +33,9 @@ async function subscribe(
 <template>
   <v-dialog width="fit-content">
     <template v-slot:activator="{ props }">
-      <v-btn v-bind="props" v-bind:class="'notification-options-button'">
+      <button v-bind="props" v-bind:class="'notification-options-button'">
         <font-awesome-icon icon="fa-solid fa-bell" class="icon" />
-      </v-btn>
+      </button>
     </template>
 
     <template v-slot:default="{ isActive }">
@@ -41,37 +43,50 @@ async function subscribe(
         title="Notification options"
         v-bind:class="'notifications-dialog-content'"
       >
-        <v-switch
-          label="game end"
-          v-model="notificationOptions"
-          value="1"
-          color="primary"
-        ></v-switch>
-        <v-switch
-          label="new round"
-          v-model="notificationOptions"
-          value="2"
-          color="primary"
-        ></v-switch>
-        <v-switch
-          label="my move"
-          v-model="notificationOptions"
-          value="3"
-          color="primary"
-        ></v-switch>
-        <v-switch
-          label="seat change"
-          v-model="notificationOptions"
-          value="4"
-          color="primary"
-        ></v-switch>
+        <span>
+          <label for="game_end_checkbox">game end</label>
+          <input
+            id="game_end_checkbox"
+            type="checkbox"
+            v-model="notificationOptions"
+            value="1"
+          />
+        </span>
+        <span>
+          <label for="new_round_checkbox">new round</label>
+          <input
+            id="new_round_checkbox"
+            type="checkbox"
+            v-model="notificationOptions"
+            value="2"
+          />
+        </span>
+
+        <span>
+          <label for="my_move_checkbox">my move</label>
+          <input
+            id="my_move_checkbox"
+            type="checkbox"
+            v-model="notificationOptions"
+            value="3"
+          />
+        </span>
+
+        <span>
+          <label for="seat_change_checkbox">seat change</label>
+          <input
+            id="seat_change_checkbox"
+            type="checkbox"
+            v-model="notificationOptions"
+            value="4"
+          />
+        </span>
 
         <v-card-actions>
-          <v-btn
-            text="save"
-            @click="subscribe(notificationOptions, isActive)"
-          />
-          <v-btn text="cancel" @click="isActive.value = false" />
+          <button @click="subscribe(notificationOptions, isActive)">
+            save
+          </button>
+          <button @click="isActive.value = false">cancel</button>
         </v-card-actions>
       </v-card>
     </template>
@@ -79,9 +94,19 @@ async function subscribe(
 </template>
 
 <style scoped>
+span {
+  display: flex;
+  justify-content: right;
+  gap: 2rem;
+}
+label,
+input {
+  width: fit-content;
+  display: inline-block;
+}
 .notification-options-button {
   width: fit-content;
-  border-radius: 2em;
+  /*border-radius: 2em;*/
 }
 .notifications-dialog-content {
   padding: 16px 48px;

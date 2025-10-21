@@ -13,9 +13,13 @@ const props = defineProps<{
   subscription: NotificationType[];
 }>();
 
-const notificationOptions: Ref<Array<string | number>> = ref(
-  props.subscription,
-);
+const notificationOptions: Ref<Array<string | number>> = ref([
+  ...props.subscription,
+]);
+
+function resetNotificationOptions(): void {
+  notificationOptions.value = [...props.subscription];
+}
 
 effect(() => (notificationOptions.value = props.subscription));
 
@@ -86,7 +90,14 @@ async function subscribe(
           <button @click="subscribe(notificationOptions, isActive)">
             save
           </button>
-          <button @click="isActive.value = false">cancel</button>
+          <button
+            @click="
+              isActive.value = false;
+              resetNotificationOptions();
+            "
+          >
+            cancel
+          </button>
         </v-card-actions>
       </v-card>
     </template>

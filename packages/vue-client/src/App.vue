@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
 import UserNav from "./components/UserNav.vue";
+import NotificationsNav from "./components/NotificationsNav.vue";
 import { ref } from "vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -56,6 +57,7 @@ const toggleMenuFn = (event: MouseEvent) => {
             class="icon"
           />Rules</RouterLink
         >
+        <NotificationsNav />
       </div>
       <div>
         <UserNav />

@@ -57,3 +57,15 @@ export function getNullIndices(arr: unknown[]) {
     return indexes;
   }, []);
 }
+
+export function groupBy<T, K>(arr: T[], selector: (v: T) => K): [K, T[]][] {
+  return [
+    ...arr
+      .reduce((map, item) => {
+        const key = selector(item);
+        (map.get(key) ?? map.set(key, []).get(key)!).push(item);
+        return map;
+      }, new Map<K, T[]>())
+      .entries(),
+  ];
+}

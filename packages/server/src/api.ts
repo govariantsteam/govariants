@@ -31,7 +31,10 @@ import {
 } from "@ogfcommunity/variants-shared";
 import { io } from "./socket_io";
 import { checkCSRFToken, generateCSRFToken } from "./csrf_guard";
-import { getUserNotifications } from "./notifications/notifications";
+import {
+  getUserNotifications,
+  getUserNotificationsCount,
+} from "./notifications/notifications";
 
 export const router = express.Router();
 
@@ -325,6 +328,22 @@ router.post("/game/:gameId/repair", checkCSRFToken, async (req, res) => {
   try {
     await repairGame(req.params.gameId);
     res.send({});
+  } catch (e) {
+    res.status(500);
+    res.json(e.message);
+  }
+});
+
+router.get("/notifications/count", checkCSRFToken, async (req, res) => {
+  if (!req.user) {
+    res.sendStatus(401);
+    return;
+  }
+
+  try {
+    res.send({
+      count: await getUserNotificationsCount((req.user as User).id),
+    });
   } catch (e) {
     res.status(500);
     res.json(e.message);

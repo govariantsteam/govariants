@@ -1,7 +1,8 @@
 import { UpdateResult } from "mongodb";
 import { notifications } from "../db";
-import { GameNotification, UserNotifications } from "./notifications.types";
+import { UserNotifications } from "./notifications.types";
 import {
+  GameNotification,
   GameSubscriptions,
   Notifications,
   NotificationType,
@@ -15,6 +16,19 @@ export async function getUserNotifications(
   userId: string,
 ): Promise<GameNotification[]> {
   return outwardMap(await notifications().findOne({ userId: userId }));
+}
+
+export async function getUserNotificationsCount(
+  userId: string,
+): Promise<number> {
+  const queryResult = await notifications()
+    .aggregate([
+      { $match: { userId: userId } },
+      { $project: { num: { $size: "$notifications" } } },
+    ])
+    .toArray();
+
+  return queryResult.at(0)?.num ?? 0;
 }
 
 async function addGameNotification(

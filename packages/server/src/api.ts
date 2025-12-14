@@ -30,6 +30,7 @@ import {
 } from "@ogfcommunity/variants-shared";
 import { io } from "./socket_io";
 import { checkCSRFToken, generateCSRFToken } from "./csrf_guard";
+import { sendEmail } from "./email";
 
 export const router = express.Router();
 
@@ -320,6 +321,34 @@ router.post("/game/:gameId/repair", checkCSRFToken, async (req, res) => {
   try {
     await repairGame(req.params.gameId);
     res.send({});
+  } catch (e) {
+    res.status(500);
+    res.json(e.message);
+  }
+});
+
+router.post("/admin/test-email", checkCSRFToken, async (req, res) => {
+  try {
+    if (!req.user || (req.user as UserResponse).role !== "admin") {
+      res.status(401);
+      res.json("Only admins may send test emails.");
+      return;
+    }
+
+    const { to } = req.body;
+    if (!to) {
+      res.status(400);
+      res.json("Email address is required.");
+      return;
+    }
+
+    await sendEmail(
+      "GoVariants Test Email",
+      to,
+      "<h1>Test Email</h1><p>This is a test email from GoVariants. If you received this, your email configuration is working correctly!</p>",
+    );
+
+    res.json({ success: true, message: "Test email sent successfully." });
   } catch (e) {
     res.status(500);
     res.json(e.message);

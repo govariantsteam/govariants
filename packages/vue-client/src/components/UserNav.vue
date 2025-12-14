@@ -6,8 +6,9 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { faRightToBracket } from "@fortawesome/free-solid-svg-icons";
 import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
+import { faUserShield } from "@fortawesome/free-solid-svg-icons";
 
-library.add(faUser, faRightToBracket, faRightFromBracket);
+library.add(faUser, faRightToBracket, faRightFromBracket, faUserShield);
 const store = useStore();
 const { user } = storeToRefs(store);
 store.update();
@@ -19,6 +20,12 @@ store.update();
     in</RouterLink
   >
   <template v-else>
+    <RouterLink class="navElement" v-if="user.role === 'admin'" to="/admin"
+      ><font-awesome-icon
+        icon="fa-solid fa-user-shield"
+        class="icon"
+      />Admin</RouterLink
+    >
     <!-- TODO: make this a link to the user's profile? -->
     <RouterLink class="navElement" to="/"
       ><font-awesome-icon icon="fa-solid fa-user" class="icon" />{{

@@ -8,7 +8,7 @@ Configure the following environment variables in your deployment environment:
 
 | Variable        | Required | Description                     | Example                  |
 | --------------- | -------- | ------------------------------- | ------------------------ |
-| `SMTP_HOST`     | Yes      | SMTP server hostname            | `smtp.mailgun.org`         |
+| `SMTP_HOST`     | Yes      | SMTP server hostname            | `smtp.mailgun.org`       |
 | `SMTP_PORT`     | No       | SMTP server port (default: 587) | `587`                    |
 | `SMTP_SECURE`   | No       | Use TLS/SSL (default: false)    | `false`                  |
 | `SMTP_USER`     | Yes      | SMTP authentication username    | `your-email@gmail.com`   |

@@ -1,48 +1,39 @@
 import nodemailer from "nodemailer";
 
-interface EmailConfig {
-  host: string;
-  port: number;
-  secure: boolean;
-  user: string;
-  password: string;
-  from: string;
-}
-
+// Nodemailer docs recommend reusing a single transporter instance
+//
+// > Create the transporter once and reuse it.
+// > Transporter creation opens network sockets and performs authentication;
+// > doing this for every email adds needless overhead.
+//
+// https://nodemailer.com/usage#create-a-transporter
 let transporter: nodemailer.Transporter | null = null;
 
-/**
- * Initialize the email transporter with environment variables.
- * This is called automatically when sending an email.
- */
 function initializeTransporter(): nodemailer.Transporter {
   if (transporter) {
     return transporter;
   }
 
-  const config: EmailConfig = {
-    host: process.env.SMTP_HOST || "",
-    port: parseInt(process.env.SMTP_PORT || "587", 10),
-    secure: process.env.SMTP_SECURE === "true",
-    user: process.env.SMTP_USER || "",
-    password: process.env.SMTP_PASSWORD || "",
-    from: process.env.SMTP_FROM || "",
-  };
+  const host = process.env.SMTP_HOST || "";
+  const port = parseInt(process.env.SMTP_PORT || "587", 10);
+  const secure = process.env.SMTP_SECURE === "true";
+  const user = process.env.SMTP_USER || "";
+  const pass = process.env.SMTP_PASSWORD || "";
 
   // Validate required configuration
-  if (!config.host || !config.user || !config.password || !config.from) {
+  if (!host || !user || !pass) {
     throw new Error(
-      "Missing required email configuration. Please check SMTP_HOST, SMTP_USER, SMTP_PASSWORD, and SMTP_FROM environment variables.",
+      "Missing required email configuration. Please check SMTP_HOST, SMTP_USER, and SMTP_PASSWORD environment variables.",
     );
   }
 
   transporter = nodemailer.createTransport({
-    host: config.host,
-    port: config.port,
-    secure: config.secure,
+    host,
+    port,
+    secure,
     auth: {
-      user: config.user,
-      pass: config.password,
+      user,
+      pass,
     },
   });
 
@@ -54,14 +45,16 @@ function initializeTransporter(): nodemailer.Transporter {
  *
  * @param subject - The email subject line
  * @param to - The recipient's email address
- * @param message - The email message body (plain text or HTML)
+ * @param text - The email message body in plain text format
+ * @param html - Optional HTML version of the message (for email clients that support HTML)
  * @returns Promise that resolves when the email is sent
  * @throws Error if email configuration is missing or if sending fails
  */
 export async function sendEmail(
   subject: string,
   to: string,
-  message: string,
+  text: string,
+  html?: string,
 ): Promise<void> {
   const transporter = initializeTransporter();
   const from = process.env.SMTP_FROM || "";
@@ -71,8 +64,8 @@ export async function sendEmail(
       from: from,
       to: to,
       subject: subject,
-      text: message,
-      html: message, // Send as both text and HTML
+      text: text,
+      html: html,
     });
   } catch (error) {
     console.error("Failed to send email:", error);

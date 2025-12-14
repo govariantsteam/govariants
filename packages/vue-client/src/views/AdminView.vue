@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watchEffect } from "vue";
 import * as requests from "../requests";
 import { useCurrentUser } from "@/stores/user";
 import Swal from "sweetalert2";
@@ -9,10 +9,12 @@ const loggedInUser = useCurrentUser();
 const testEmailAddress = ref<string>("");
 const isSending = ref<boolean>(false);
 
-// Redirect non-admins
-if (!loggedInUser.value || loggedInUser.value.role !== "admin") {
-  router.push("/");
-}
+// Redirect non-admins to home page
+watchEffect(() => {
+  if (loggedInUser.value && loggedInUser.value.role !== "admin") {
+    router.push("/");
+  }
+});
 
 async function sendTestEmail() {
   if (!testEmailAddress.value) {

@@ -20,12 +20,24 @@ Configure the following environment variables in your deployment environment:
 ```typescript
 import { sendEmail } from "./email/email";
 
+// Send plain text email
 try {
   await sendEmail(
     "Password Reset",
     "user@example.com",
-    // rich text or plain text is acceptable
-    "<h1>Reset Your Password</h1><p>Click the link below...</p>",
+    "Reset Your Password\n\nClick the link below to reset your password...",
+  );
+} catch (error) {
+  console.error("Failed to send email:", error);
+}
+
+// Send email with both plain text and HTML versions
+try {
+  await sendEmail(
+    "Password Reset",
+    "user@example.com",
+    "Reset Your Password\n\nClick the link below to reset your password...",
+    "<h1>Reset Your Password</h1><p>Click the link below to reset your password...</p>",
   );
 } catch (error) {
   console.error("Failed to send email:", error);

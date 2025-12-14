@@ -345,6 +345,7 @@ router.post("/admin/test-email", checkCSRFToken, async (req, res) => {
     await sendEmail(
       "GoVariants Test Email",
       to,
+      "Test Email\n\nThis is a test email from GoVariants. If you received this, your email configuration is working correctly!",
       "<h1>Test Email</h1><p>This is a test email from GoVariants. If you received this, your email configuration is working correctly!</p>",
     );
 

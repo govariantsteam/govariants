@@ -29,6 +29,7 @@ export type GameSchema = {
   config: object;
   players?: Array<User | undefined>;
   time_control?: ITimeControlBase;
+  creator?: User;
 };
 
 export function gamesCollection(): Collection<GameSchema> {
@@ -100,6 +101,7 @@ export async function getGame(id: string): Promise<GameResponse> {
 export async function createGame(
   variant: string,
   config: object,
+  creator?: User,
 ): Promise<GameResponse> {
   // Construct a game from the config to ensure the config is valid
   const gameObj = makeGameObject(variant, config);
@@ -110,6 +112,7 @@ export async function createGame(
     config: config,
     time_control: GetInitialTimeControl(variant, config),
     players: new Array(gameObj.numPlayers()).fill(null),
+    creator: creator,
   };
 
   const result = await gamesCollection().insertOne(game);
@@ -378,5 +381,6 @@ function outwardFacingGame(db_game: WithId<GameSchema>): GameResponse {
     config,
     players: db_game.players,
     time_control: db_game.time_control,
+    creator: db_game.creator,
   };
 }

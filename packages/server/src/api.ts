@@ -98,7 +98,12 @@ router.post("/games", checkCSRFToken, async (req, res) => {
   }
 
   try {
-    const game: GameResponse = await createGame(data.variant, data.config);
+    const user = req.user as User;
+    const game: GameResponse = await createGame(
+      data.variant,
+      data.config,
+      user,
+    );
     res.send(game);
   } catch (e) {
     res.status(500);
@@ -295,6 +300,7 @@ router.get("/games/:gameId/state/initial", async (req, res) => {
       config: game.config,
       id: game.id,
       players: game.players,
+      creator: game.creator,
       stateResponse: stateResponse,
     };
     res.send(result);

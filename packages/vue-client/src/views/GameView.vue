@@ -51,6 +51,7 @@ const time_control = ref<ITimeControlBase | null>(null);
 // admin interface behind a toggle.
 const adminMode = ref<boolean>(false);
 const errorOccured = ref<boolean>(false);
+const creator = ref<User | undefined>();
 
 function setNewState(stateResponse: GameStateResponse): void {
   const { timeControl: timeControl, ...state } = stateResponse;
@@ -107,6 +108,7 @@ watchEffect(async () => {
       variant.value = result.variant;
       config.value = result.config;
       players.value = result.players;
+      creator.value = result.creator;
       setNewState(result.stateResponse);
     })
     .catch((err) => {
@@ -264,6 +266,13 @@ async function repairGame(): Promise<void> {
           <div>
             <span class="info-label">Description:</span>
             <span class="info-attribute">{{ variantDescriptionShort }}</span>
+          </div>
+
+          <div v-if="creator">
+            <span class="info-label">Created by:</span>
+            <span class="info-attribute">{{
+              creator.username ?? creator.id
+            }}</span>
           </div>
         </div>
 

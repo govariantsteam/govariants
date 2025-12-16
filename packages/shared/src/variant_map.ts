@@ -19,6 +19,7 @@ import { sFractionalVariant } from "./variants/s_fractional";
 import { lighthouseVariant } from "./variants/lighthouse/lighthouse";
 import { superTicTacGoVariant } from "./variants/super_tic_tac_go";
 import { rengoVariant } from "./variants/rengo";
+import { ticTacToeVariant } from "./variants/tic_tac_toe";
 
 const variant_map: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -42,6 +43,7 @@ const variant_map: {
   lighthouse: lighthouseVariant,
   "super tic-tac-go": superTicTacGoVariant,
   rengo: rengoVariant,
+  "tic-tac-toe": ticTacToeVariant,
 };
 
 class ConfigError extends Error {

@@ -5,6 +5,7 @@ import { useStore } from "@/stores/user";
 
 const username = ref("");
 const password = ref("");
+const email = ref("");
 const error = ref("");
 
 const store = useStore();
@@ -13,7 +14,7 @@ const router = useRouter();
 
 const submit = () =>
   store
-    .registerUser(username.value, password.value)
+    .registerUser(username.value, password.value, email.value)
     .then(() => {
       router.push("/");
     })
@@ -33,6 +34,16 @@ const submit = () =>
             autocomplete="username"
             required
             v-model="username"
+          />
+        </div>
+        <div>
+          <label for="email">Email (optional)</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            autocomplete="email"
+            v-model="email"
           />
         </div>
         <div>

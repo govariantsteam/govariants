@@ -26,12 +26,13 @@ store.update();
         class="icon"
       />Admin</RouterLink
     >
-    <!-- TODO: make this a link to the user's profile? -->
-    <RouterLink class="navElement" to="/"
-      ><font-awesome-icon icon="fa-solid fa-user" class="icon" />{{
-        user.username
-      }}</RouterLink
+    <RouterLink
+      class="navElement"
+      :to="{ name: 'user', params: { userId: user.id } }"
     >
+      <font-awesome-icon icon="fa-solid fa-user" class="icon" />
+      {{ user.username }}
+    </RouterLink>
     <button
       class="navElement logoutButton"
       v-on:click="store.logout()"

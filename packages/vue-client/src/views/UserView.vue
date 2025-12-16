@@ -9,11 +9,31 @@ import router from "@/router";
 const props = defineProps<{ userId: string }>();
 
 const user = ref<UserResponse>();
+const email = ref<string | null>(null);
 const err = ref<string>();
+const isEditingEmail = ref(false);
+const newEmail = ref("");
 
 watchEffect(async () => {
   try {
     user.value = await requests.get(`/users/${props.userId}`);
+
+    // Only fetch email if viewing own profile or admin
+    const currentUser = useCurrentUser().value;
+    if (
+      currentUser &&
+      (currentUser.id === props.userId || currentUser.role === "admin")
+    ) {
+      try {
+        const emailResponse = await requests.get(
+          `/users/${props.userId}/email`,
+        );
+        email.value = emailResponse.email;
+      } catch (e) {
+        // User might not have permission or email might not be set
+        email.value = null;
+      }
+    }
   } catch (e) {
     err.value = e as string;
   }
@@ -25,6 +45,34 @@ function setRole(role: UserRole) {
     .put(`/users/${props.userId}/role`, { role })
     .then(() => (user.value = user.value ? { ...user.value, role } : undefined))
     .catch(alert);
+}
+
+function startEditingEmail() {
+  newEmail.value = email.value || "";
+  isEditingEmail.value = true;
+}
+
+async function saveEmail() {
+  if (!newEmail.value) {
+    Swal.fire({ icon: "error", text: "Email cannot be empty" });
+    return;
+  }
+
+  try {
+    const response = await requests.put(`/users/${props.userId}/email`, {
+      email: newEmail.value,
+    });
+    email.value = response.email;
+    isEditingEmail.value = false;
+    Swal.fire({ icon: "success", text: "Email updated successfully!" });
+  } catch (error) {
+    Swal.fire({ icon: "error", text: `Error: ${error}` });
+  }
+}
+
+function cancelEditingEmail() {
+  isEditingEmail.value = false;
+  newEmail.value = "";
 }
 
 async function launchDeleteUserDialog() {
@@ -70,6 +118,32 @@ async function launchDeleteUserDialog() {
         <div v-if="user.login_type === 'guest'">Guest User</div>
         <div v-else>{{ user.username }}</div>
         <div v-if="user.role">{{ user.role }}</div>
+
+        <div
+          v-if="
+            user.login_type === 'persistent' &&
+            (loggedInUser?.id === user.id || loggedInUser?.role === 'admin')
+          "
+        >
+          <div v-if="!isEditingEmail">
+            <strong>Email:</strong> {{ email || "Not set" }}
+            <button @click="startEditingEmail">
+              {{ email ? "Change Email" : "Set Email" }}
+            </button>
+          </div>
+          <div v-else>
+            <label for="email">Email:</label>
+            <input
+              id="email"
+              type="email"
+              v-model="newEmail"
+              placeholder="Enter email address"
+            />
+            <button @click="saveEmail">Save</button>
+            <button @click="cancelEditingEmail">Cancel</button>
+          </div>
+        </div>
+
         <div v-if="loggedInUser?.role === 'admin'">
           <button v-if="user.role !== 'admin'" @click="setRole('admin')">
             Make Admin

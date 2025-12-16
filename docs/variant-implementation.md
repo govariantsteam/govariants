@@ -59,6 +59,6 @@ Please add unit tests for your variant.  This helps with maintenance and refacto
 Place tests in `packages/shared/src/variants/__tests__`. Use the scaffolded test as a starting point and cover: winning conditions, invalid moves, pass/resign/timeout flows, and exportState shape.
 
 ## Example: Tic-Tac-Toe
-See `packages/shared/src/variants/tic_tac_toe.ts` for a minimal grid-based variant that:
+See [#428](https://github.com/govariantsteam/govariants/pull/428) for a minimal sequential grid-based variant that:
 - Validates moves on a 3x3 grid, declares wins/draws, and uses `uiTransform` to render on the default board.
 - Registers itself in `variant_map.ts` without any client-side code changes.

@@ -1654,7 +1654,6 @@ __metadata:
     "@types/nodemailer": ^7.0.3
     "@types/passport": ^1.0.12
     "@types/passport-local": ^1.0.35
-    "@types/validator": ^13.15.10
     "@typescript-eslint/eslint-plugin": ^6.1.0
     "@typescript-eslint/parser": ^6.1.0
     body-parser: ^1.20.3
@@ -1676,7 +1675,6 @@ __metadata:
     ts-jest: ^29.1.1
     ts-node: ^10.9.1
     typescript: ^5.1.6
-    validator: ^13.15.23
   languageName: unknown
   linkType: soft
 
@@ -1714,6 +1712,7 @@ __metadata:
     "@tsconfig/node18": ^18.2.0
     "@types/jsdom": ^21.1.7
     "@types/node": ^20.3.3
+    "@types/validator": ^13.15.10
     "@vitejs/plugin-vue": ^4.2.3
     "@vue/eslint-config-prettier": ^7.1.0
     "@vue/eslint-config-typescript": ^13.0.0
@@ -1733,6 +1732,7 @@ __metadata:
     socket.io-client: ^4.8.1
     sweetalert2: ^11.15.3
     typescript: ^5.1.6
+    validator: ^13.15.23
     vite: ^4.5.2
     vitest: ^0.32.4
     voronoijs: ^1.0.0

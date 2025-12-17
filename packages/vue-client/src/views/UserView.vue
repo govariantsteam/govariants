@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { UserResponse, UserRole } from "@ogfcommunity/variants-shared";
-import { ref, watchEffect } from "vue";
+import { ref, watchEffect, computed } from "vue";
 import * as requests from "../requests";
 import { useCurrentUser } from "@/stores/user";
 import Swal from "sweetalert2";
 import router from "@/router";
+import { isEmail } from "validator";
 
 const props = defineProps<{ userId: string }>();
 
@@ -13,6 +14,14 @@ const email = ref<string | null>(null);
 const err = ref<string>();
 const isEditingEmail = ref(false);
 const newEmail = ref("");
+
+// Simple email validation check
+const isEmailValid = computed(() => {
+  if (!newEmail.value || newEmail.value.trim() === "") {
+    return true; // Allow empty for unsetting email
+  }
+  return isEmail(newEmail.value);
+});
 
 watchEffect(async () => {
   try {
@@ -53,18 +62,18 @@ function startEditingEmail() {
 }
 
 async function saveEmail() {
-  if (!newEmail.value) {
-    Swal.fire({ icon: "error", text: "Email cannot be empty" });
-    return;
-  }
-
   try {
     const response = await requests.put(`/users/${props.userId}/email`, {
       email: newEmail.value,
     });
-    email.value = response.email;
+    email.value = response.email || null;
     isEditingEmail.value = false;
-    Swal.fire({ icon: "success", text: "Email updated successfully!" });
+    Swal.fire({
+      icon: "success",
+      text: !response.email
+        ? "Email removed successfully!"
+        : "Email updated successfully!",
+    });
   } catch (error) {
     Swal.fire({ icon: "error", text: `Error: ${error}` });
   }
@@ -137,8 +146,14 @@ async function launchDeleteUserDialog() {
               id="email"
               type="email"
               v-model="newEmail"
-              placeholder="Enter email address"
+              placeholder="Enter email address (leave empty to unset)"
             />
+            <div
+              v-if="!isEmailValid"
+              style="color: red; font-size: 0.9em; margin-top: 4px"
+            >
+              Email format doesn't look valid
+            </div>
             <button @click="saveEmail">Save</button>
             <button @click="cancelEditingEmail">Cancel</button>
           </div>

@@ -6,7 +6,6 @@ import {
 } from "@ogfcommunity/variants-shared";
 import { Collection, WithId, ObjectId } from "mongodb";
 import { randomBytes, scrypt } from "node:crypto";
-import { isEmail } from "validator";
 
 export interface GuestUser extends UserResponse {
   token: string;
@@ -251,9 +250,6 @@ export async function setUserEmail(
   user_id: string,
   email: string,
 ): Promise<void> {
-  if (!isEmail(email)) {
-    throw new Error("Invalid email format.");
-  }
   const user = await usersCollection().findOne({
     _id: new ObjectId(user_id),
   });
@@ -263,9 +259,13 @@ export async function setUserEmail(
   if (user.login_type === "guest") {
     throw new Error("Guest users cannot have an email address");
   }
+
+  email = email.trim();
   const update_result = await usersCollection().updateOne(
     { _id: new ObjectId(user_id) },
-    { $set: { email: email } },
+    email.trim() === ""
+      ? { $unset: { email: "" } }
+      : { $set: { email: email } },
   );
   if (update_result.matchedCount === 0) {
     throw new Error("User not found");

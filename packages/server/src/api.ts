@@ -1,7 +1,6 @@
 import express from "express";
 import { makeGameObject } from "@ogfcommunity/variants-shared";
 import passport, { AuthenticateCallback } from "passport";
-import { isEmail } from "validator";
 import {
   getGame,
   getGames,
@@ -163,10 +162,6 @@ router.post("/register", async (req, res, next) => {
 
   try {
     checkUsername(username);
-    if (email && !isEmail(email)) {
-      res.status(400).json("Invalid email format.");
-      return;
-    }
   } catch (e) {
     res.status(500).json(e);
     return;

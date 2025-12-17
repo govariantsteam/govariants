@@ -26,7 +26,6 @@
     "@types/nodemailer": "^7.0.3",
     "@types/passport": "^1.0.12",
     "@types/passport-local": "^1.0.35",
-    "@types/validator": "^13.15.10",
     "body-parser": "^1.20.3",
     "connect-mongo": "^5.0.0",
     "express": "^4.21.1",
@@ -41,8 +40,7 @@
     "passport-local": "^1.0.0",
     "socket.io": "^4.8.1",
     "ts-node": "^10.9.1",
-    "typescript": "^5.1.6",
-    "validator": "^13.15.23"
+    "typescript": "^5.1.6"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.1.0",

@@ -592,3 +592,79 @@ export function faceCoordsTo3DPosition(
       return { x: 0, y: 0, z: 0 };
   }
 }
+
+/**
+ * Project a 3D position onto a squircle (superellipse) surface.
+ * Uses the equation: |x|^p + |y|^p + |z|^p = r^p
+ *
+ * @param pos The position to project
+ * @param power The power parameter (2 = sphere, higher = more cube-like, infinity = cube)
+ * @param radius The target radius
+ * @returns Projected position on the squircle surface
+ */
+export function projectToSquircle(
+  pos: { x: number; y: number; z: number },
+  power: number,
+  radius: number,
+): { x: number; y: number; z: number } {
+  const { x, y, z } = pos;
+
+  // Handle edge case of origin
+  if (x === 0 && y === 0 && z === 0) {
+    return { x: 0, y: 0, z: radius };
+  }
+
+  // Calculate the current "radius" using the superellipse norm
+  // ||v||_p = (|x|^p + |y|^p + |z|^p)^(1/p)
+  const norm = Math.pow(
+    Math.pow(Math.abs(x), power) +
+      Math.pow(Math.abs(y), power) +
+      Math.pow(Math.abs(z), power),
+    1 / power,
+  );
+
+  // Scale to the target radius
+  const scale = radius / norm;
+
+  return {
+    x: x * scale,
+    y: y * scale,
+    z: z * scale,
+  };
+}
+
+/**
+ * Calculate the surface normal at a point on a squircle.
+ * The gradient of f(x,y,z) = |x|^p + |y|^p + |z|^p gives the normal direction.
+ * ∇f = (p·|x|^(p-1)·sgn(x), p·|y|^(p-1)·sgn(y), p·|z|^(p-1)·sgn(z))
+ *
+ * @param pos Position on the squircle surface
+ * @param power The power parameter
+ * @returns Normalized surface normal vector
+ */
+export function calculateSquircleNormal(
+  pos: { x: number; y: number; z: number },
+  power: number,
+): { x: number; y: number; z: number } {
+  const { x, y, z } = pos;
+
+  // Calculate gradient components
+  const epsilon = 1e-10; // Small value to avoid division by zero
+  const nx = power * Math.pow(Math.abs(x) + epsilon, power - 1) * Math.sign(x);
+  const ny = power * Math.pow(Math.abs(y) + epsilon, power - 1) * Math.sign(y);
+  const nz = power * Math.pow(Math.abs(z) + epsilon, power - 1) * Math.sign(z);
+
+  // Normalize the normal vector
+  const length = Math.sqrt(nx * nx + ny * ny + nz * nz);
+
+  if (length < epsilon) {
+    // Fallback for degenerate case
+    return { x: 0, y: 1, z: 0 };
+  }
+
+  return {
+    x: nx / length,
+    y: ny / length,
+    z: nz / length,
+  };
+}

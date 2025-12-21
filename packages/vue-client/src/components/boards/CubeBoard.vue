@@ -9,6 +9,7 @@ import {
 } from "vue";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { VertexNormalsHelper } from "three/examples/jsm/helpers/VertexNormalsHelper.js";
 import {
   CubeBadukConfig,
   createBoard,
@@ -18,12 +19,22 @@ import {
   DefaultBoardState,
   netPositionToFaceCoords,
   faceCoordsTo3DPosition,
+  projectToSquircle,
+  calculateSquircleNormal,
 } from "@ogfcommunity/variants-shared";
 
-const props = defineProps<{
-  config: CubeBadukConfig;
-  gamestate?: DefaultBoardState;
-}>();
+const props = withDefaults(
+  defineProps<{
+    config: CubeBadukConfig;
+    gamestate?: DefaultBoardState;
+    power?: number;
+    showNormals?: boolean;
+  }>(),
+  {
+    power: 4,
+    showNormals: false,
+  },
+);
 
 const emit = defineEmits<{
   (e: "move", pos: string): void;
@@ -42,6 +53,10 @@ let raycaster: THREE.Raycaster;
 let mouse: THREE.Vector2;
 let intersectionMeshes: THREE.Mesh[] = [];
 let stoneMeshes: (THREE.Mesh | null)[] = [];
+let squircleMesh: THREE.Mesh | null = null;
+let cubeMesh: THREE.Mesh | null = null;
+let normalHelper: VertexNormalsHelper | null = null;
+let connectionLines: THREE.Line[] = [];
 let animationId: number;
 
 const intersections = computed(() => {
@@ -88,6 +103,83 @@ watch(
   { immediate: true },
 );
 
+// Watch for power changes and rebuild the board
+watch(
+  () => props.power,
+  () => {
+    if (scene && props.config) {
+      createCubeBoard();
+      // Also need to re-render stones with new positions
+      if (props.gamestate?.board) {
+        updateStones();
+      }
+    }
+  },
+);
+
+/**
+ * Create a squircle geometry using the superellipse equation
+ * |x|^p + |y|^p + |z|^p = r^p
+ */
+function createSquircleGeometry(
+  radius: number,
+  power: number,
+  segments = 32,
+): THREE.BufferGeometry {
+  const vertices: number[] = [];
+  const indices: number[] = [];
+  const normals: number[] = [];
+
+  // Use spherical-like parametrization but with squircle projection
+  for (let i = 0; i <= segments; i++) {
+    const theta = (i / segments) * Math.PI; // 0 to π (vertical angle)
+
+    for (let j = 0; j <= segments; j++) {
+      const phi = (j / segments) * 2 * Math.PI; // 0 to 2π (horizontal angle)
+
+      // Start with sphere coordinates
+      const x = Math.sin(theta) * Math.cos(phi);
+      const y = Math.cos(theta);
+      const z = Math.sin(theta) * Math.sin(phi);
+
+      // Project onto squircle surface
+      const projected = projectToSquircle({ x, y, z }, power, radius);
+      vertices.push(projected.x, projected.y, projected.z);
+
+      // Calculate normal at this point
+      const normal = calculateSquircleNormal(projected, power);
+      normals.push(normal.x, normal.y, normal.z);
+    }
+  }
+
+  // Generate indices for triangles (reversed winding order for outward-facing)
+  for (let i = 0; i < segments; i++) {
+    for (let j = 0; j < segments; j++) {
+      const a = i * (segments + 1) + j;
+      const b = a + segments + 1;
+      const c = a + 1;
+      const d = b + 1;
+
+      // Two triangles per quad (winding order reversed)
+      indices.push(a, c, b);
+      indices.push(b, c, d);
+    }
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute(
+    "position",
+    new THREE.Float32BufferAttribute(vertices, 3),
+  );
+  geometry.setAttribute("normal", new THREE.Float32BufferAttribute(normals, 3));
+  geometry.setIndex(indices);
+
+  // Ensure normals are normalized
+  geometry.normalizeNormals();
+
+  return geometry;
+}
+
 function initThreeJS() {
   if (!canvasRef.value || !containerRef.value) return;
 
@@ -115,12 +207,14 @@ function initThreeJS() {
   renderer.setPixelRatio(window.devicePixelRatio);
 
   // Lighting
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
   scene.add(ambientLight);
 
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+  // Attach directional light to camera so it moves with the view
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
   directionalLight.position.set(10, 10, 5);
-  scene.add(directionalLight);
+  camera.add(directionalLight);
+  scene.add(camera);
 
   // Controls
   controls = new OrbitControls(camera, renderer.domElement);
@@ -146,19 +240,80 @@ function createCubeBoard() {
   const cubeSize = size - 1; // Physical size of cube
   const faceOffset = cubeSize / 2;
 
-  // Create cube faces with go board color
-  const cubeGeometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
-  const cubeMaterial = new THREE.MeshPhongMaterial({
-    color: 0xdeb887, // Go board color
-    transparent: true,
-    opacity: 0.7,
-    side: THREE.DoubleSide,
+  // Remove old squircle mesh if it exists
+  if (squircleMesh) {
+    scene.remove(squircleMesh);
+    squircleMesh.geometry.dispose();
+    (squircleMesh.material as THREE.Material).dispose();
+    squircleMesh = null;
+  }
+
+  // Remove old cube mesh if it exists
+  if (cubeMesh) {
+    scene.remove(cubeMesh);
+    cubeMesh.geometry.dispose();
+    (cubeMesh.material as THREE.Material).dispose();
+    cubeMesh = null;
+  }
+
+  // Remove old normal helper if it exists
+  if (normalHelper) {
+    scene.remove(normalHelper);
+    normalHelper.dispose();
+    normalHelper = null;
+  }
+
+  // Use perfect cube geometry when power >= 10, otherwise use squircle
+  if (props.power >= 10) {
+    const cubeGeometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
+    const cubeMaterial = new THREE.MeshStandardMaterial({
+      color: 0xdeb887, // Go board color
+      roughness: 0.7,
+      metalness: 0,
+    });
+    cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial);
+    scene.add(cubeMesh);
+
+    // Add normal helper if enabled
+    if (props.showNormals) {
+      normalHelper = new VertexNormalsHelper(cubeMesh, 0.3, 0x00ff00);
+      scene.add(normalHelper);
+    }
+  } else {
+    // Create squircle geometry with go board color
+    const squircleGeometry = createSquircleGeometry(faceOffset, props.power);
+    const squircleMaterial = new THREE.MeshStandardMaterial({
+      color: 0xdeb887, // Go board color
+      roughness: 0.7,
+      metalness: 0,
+    });
+    squircleMesh = new THREE.Mesh(squircleGeometry, squircleMaterial);
+    scene.add(squircleMesh);
+
+    // Add normal helper if enabled
+    if (props.showNormals) {
+      normalHelper = new VertexNormalsHelper(squircleMesh, 0.3, 0x00ff00);
+      scene.add(normalHelper);
+    }
+  }
+
+  // Remove old intersection meshes
+  intersectionMeshes.forEach((mesh) => {
+    scene.remove(mesh);
+    mesh.geometry.dispose();
+    (mesh.material as THREE.Material).dispose();
   });
-  const cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial);
-  scene.add(cubeMesh);
+
+  // Remove old connection lines
+  connectionLines.forEach((line) => {
+    scene.remove(line);
+    line.geometry.dispose();
+    (line.material as THREE.Material).dispose();
+  });
 
   // Create intersection points on the cube faces
   intersectionMeshes = [];
+  connectionLines = [];
 
   for (let i = 0; i < intersections.value.length; i++) {
     const position = getIntersectionPosition3D(i, size, faceOffset);
@@ -195,6 +350,7 @@ function createCubeBoard() {
         const material = new THREE.LineBasicMaterial({ color: 0x000000 });
         const line = new THREE.Line(geometry, material);
         scene.add(line);
+        connectionLines.push(line);
       }
     });
   });
@@ -227,9 +383,17 @@ function getIntersectionPosition3D(
 
   const [face, x, y] = coords;
 
-  // Convert face-x-y to 3D position
+  // Convert face-x-y to 3D position on cube
   const pos3d = faceCoordsTo3DPosition(face, x, y, size, faceOffset);
-  return new THREE.Vector3(pos3d.x, pos3d.y, pos3d.z);
+
+  // For perfect cube (power >= 10), don't project onto squircle
+  if (props.power >= 10) {
+    return new THREE.Vector3(pos3d.x, pos3d.y, pos3d.z);
+  }
+
+  // Project onto squircle surface
+  const projected = projectToSquircle(pos3d, props.power, faceOffset);
+  return new THREE.Vector3(projected.x, projected.y, projected.z);
 }
 
 function onMouseMove(event: MouseEvent) {
@@ -296,58 +460,73 @@ function onWindowResize() {
   renderer.setSize(width, height);
 }
 
+function updateStones() {
+  if (!props.gamestate?.board || !props.config?.board || !scene) return;
+
+  const size = props.config.board.faceSize;
+  const faceOffset = (size - 1) / 2;
+
+  // Remove old stones
+  stoneMeshes.forEach((mesh) => {
+    if (mesh) scene.remove(mesh);
+  });
+  stoneMeshes = [];
+
+  // Add new stones
+  props.gamestate.board.forEach((stone, index) => {
+    // Handle both single stone and array of stones (for 2D boards)
+    const singleStone = Array.isArray(stone) ? stone[0] : stone;
+
+    if (!singleStone || singleStone.colors.length === 0) {
+      stoneMeshes.push(null);
+      return;
+    }
+
+    const position = getIntersectionPosition3D(index, size, faceOffset);
+
+    // Create stone
+    const geometry = new THREE.SphereGeometry(0.35, 32, 32);
+    const color = singleStone.colors.includes("black") ? 0x000000 : 0xffffff;
+    const material = new THREE.MeshStandardMaterial({
+      color,
+      roughness: 0.3,
+      metalness: 0,
+    });
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.position.copy(position);
+
+    // Calculate normal at stone position for proper orientation
+    const normal = calculateSquircleNormal(
+      { x: position.x, y: position.y, z: position.z },
+      props.power,
+    );
+
+    // Add annotation if present
+    if (singleStone.annotation === "CR") {
+      const ringGeometry = new THREE.RingGeometry(0.4, 0.5, 32);
+      const ringMaterial = new THREE.MeshBasicMaterial({
+        color: singleStone.colors.includes("black") ? 0xffffff : 0x000000,
+        side: THREE.DoubleSide,
+      });
+      const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+
+      // Orient ring perpendicular to the surface using the normal
+      const normalVector = new THREE.Vector3(normal.x, normal.y, normal.z);
+      ring.quaternion.setFromUnitVectors(
+        new THREE.Vector3(0, 0, 1),
+        normalVector,
+      );
+
+      mesh.add(ring);
+    }
+
+    scene.add(mesh);
+    stoneMeshes.push(mesh);
+  });
+}
+
 // Watch for board updates to render stones
-watch(
-  () => props.gamestate?.board,
-  (newBoard) => {
-    if (!newBoard || !props.config?.board || !scene) return;
-
-    const size = props.config.board.faceSize;
-    const faceOffset = (size - 1) / 2;
-
-    // Remove old stones
-    stoneMeshes.forEach((mesh) => {
-      if (mesh) scene.remove(mesh);
-    });
-    stoneMeshes = [];
-
-    // Add new stones
-    newBoard.forEach((stone, index) => {
-      // Handle both single stone and array of stones (for 2D boards)
-      const singleStone = Array.isArray(stone) ? stone[0] : stone;
-
-      if (!singleStone || singleStone.colors.length === 0) {
-        stoneMeshes.push(null);
-        return;
-      }
-
-      const position = getIntersectionPosition3D(index, size, faceOffset);
-
-      // Create stone
-      const geometry = new THREE.SphereGeometry(0.35, 32, 32);
-      const color = singleStone.colors.includes("black") ? 0x000000 : 0xffffff;
-      const material = new THREE.MeshPhongMaterial({ color });
-      const mesh = new THREE.Mesh(geometry, material);
-      mesh.position.copy(position);
-
-      // Add annotation if present
-      if (singleStone.annotation === "CR") {
-        const ringGeometry = new THREE.RingGeometry(0.4, 0.5, 32);
-        const ringMaterial = new THREE.MeshBasicMaterial({
-          color: singleStone.colors.includes("black") ? 0xffffff : 0x000000,
-          side: THREE.DoubleSide,
-        });
-        const ring = new THREE.Mesh(ringGeometry, ringMaterial);
-        ring.lookAt(camera.position);
-        mesh.add(ring);
-      }
-
-      scene.add(mesh);
-      stoneMeshes.push(mesh);
-    });
-  },
-  { immediate: true },
-);
+watch(() => props.gamestate?.board, updateStones, { immediate: true });
 </script>
 
 <template>

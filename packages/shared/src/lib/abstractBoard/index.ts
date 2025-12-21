@@ -8,4 +8,6 @@ export {
   getCubeNetPosition,
   netPositionToFaceCoords,
   faceCoordsTo3DPosition,
+  projectToSquircle,
+  calculateSquircleNormal,
 } from "./helper/CubeHelper";

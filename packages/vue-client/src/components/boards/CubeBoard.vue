@@ -16,6 +16,8 @@ import {
   createGraph,
   indexToMove,
   DefaultBoardState,
+  netPositionToFaceCoords,
+  faceCoordsTo3DPosition,
 } from "@ogfcommunity/variants-shared";
 
 const props = defineProps<{
@@ -200,39 +202,34 @@ function createCubeBoard() {
 
 /**
  * Convert flat index to 3D position on cube surface
+ * Uses the actual intersection position data
  */
 function getIntersectionPosition3D(
   index: number,
   size: number,
   faceOffset: number,
 ): THREE.Vector3 {
-  const face = Math.floor(index / (size * size));
-  const faceIndex = index % (size * size);
-  const y = Math.floor(faceIndex / size);
-  const x = faceIndex % size;
-
-  // Convert grid coordinates to centered positions
-  const u = (x / (size - 1)) * (size - 1) - faceOffset;
-  const v = (y / (size - 1)) * (size - 1) - faceOffset;
-
-  // Map to cube face positions
-  // 0=Front, 1=Right, 2=Back, 3=Left, 4=Top, 5=Bottom
-  switch (face) {
-    case 0: // Front (facing +Z)
-      return new THREE.Vector3(u, -v, faceOffset);
-    case 1: // Right (facing +X)
-      return new THREE.Vector3(faceOffset, -v, -u);
-    case 2: // Back (facing -Z)
-      return new THREE.Vector3(-u, -v, -faceOffset);
-    case 3: // Left (facing -X)
-      return new THREE.Vector3(-faceOffset, -v, u);
-    case 4: // Top (facing +Y)
-      return new THREE.Vector3(u, faceOffset, v);
-    case 5: // Bottom (facing -Y)
-      return new THREE.Vector3(u, -faceOffset, -v);
-    default:
-      return new THREE.Vector3(0, 0, 0);
+  const intersection = intersections.value[index];
+  if (!intersection) {
+    return new THREE.Vector3(0, 0, 0);
   }
+
+  // Convert the intersection's 2D net position back to face-x-y coordinates
+  const pos = intersection.position;
+  const coords = netPositionToFaceCoords({ x: pos.X, y: pos.Y }, size);
+  if (!coords) {
+    console.warn(
+      `Could not map intersection ${index} position to face coords:`,
+      intersection.position,
+    );
+    return new THREE.Vector3(0, 0, 0);
+  }
+
+  const [face, x, y] = coords;
+
+  // Convert face-x-y to 3D position
+  const pos3d = faceCoordsTo3DPosition(face, x, y, size, faceOffset);
+  return new THREE.Vector3(pos3d.x, pos3d.y, pos3d.z);
 }
 
 function onMouseMove(event: MouseEvent) {
@@ -316,7 +313,10 @@ watch(
 
     // Add new stones
     newBoard.forEach((stone, index) => {
-      if (!stone || stone.colors.length === 0) {
+      // Handle both single stone and array of stones (for 2D boards)
+      const singleStone = Array.isArray(stone) ? stone[0] : stone;
+
+      if (!singleStone || singleStone.colors.length === 0) {
         stoneMeshes.push(null);
         return;
       }
@@ -325,16 +325,16 @@ watch(
 
       // Create stone
       const geometry = new THREE.SphereGeometry(0.35, 32, 32);
-      const color = stone.colors.includes("black") ? 0x000000 : 0xffffff;
+      const color = singleStone.colors.includes("black") ? 0x000000 : 0xffffff;
       const material = new THREE.MeshPhongMaterial({ color });
       const mesh = new THREE.Mesh(geometry, material);
       mesh.position.copy(position);
 
       // Add annotation if present
-      if (stone.annotation === "CR") {
+      if (singleStone.annotation === "CR") {
         const ringGeometry = new THREE.RingGeometry(0.4, 0.5, 32);
         const ringMaterial = new THREE.MeshBasicMaterial({
-          color: stone.colors.includes("black") ? 0xffffff : 0x000000,
+          color: singleStone.colors.includes("black") ? 0xffffff : 0x000000,
           side: THREE.DoubleSide,
         });
         const ring = new THREE.Mesh(ringGeometry, ringMaterial);

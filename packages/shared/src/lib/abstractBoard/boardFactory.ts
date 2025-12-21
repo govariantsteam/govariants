@@ -8,6 +8,7 @@ import { createSierpinskyBoard as createSierpinskyBoardExternal } from "./helper
 import { Graph } from "../graph";
 import { Grid } from "../grid";
 import { createSunflowerBoard as createSunflowerBoardExternal } from "./helper/SunflowerHelper";
+import { createCubeBoard as createCubeBoardHelper } from "./helper/CubeHelper";
 
 export const BoardPattern = {
   Grid: "grid",
@@ -138,7 +139,7 @@ export function createBoard<TIntersection extends Intersection>(
       );
       break;
     case BoardPattern.Cube:
-      intersections = createCubeBoard<TIntersection>(
+      intersections = createCubeBoardHelper<TIntersection>(
         config,
         intersectionConstructor,
       );
@@ -290,196 +291,6 @@ function createCustomBoard<TIntersection extends Intersection>(
   });
 
   return intersections;
-}
-
-/**
- * Creates a cube board where each face is a grid.
- * The cube has 6 faces arranged like a standard cube net.
- * Edges between faces are connected.
- *
- * Face layout (looking at an unfolded cube):
- *     [Top]
- * [Left][Front][Right][Back]
- *     [Bottom]
- *
- * Face indices: 0=Front, 1=Right, 2=Back, 3=Left, 4=Top, 5=Bottom
- */
-function createCubeBoard<TIntersection extends Intersection>(
-  config: CubeBoardConfig,
-  intersectionConstructor: IntersectionConstructor<TIntersection>,
-): TIntersection[] {
-  const size = config.faceSize;
-  const intersections: TIntersection[] = [];
-
-  // Create 6 faces, each as a grid
-  // We'll use a 3D coordinate system where each intersection has metadata
-  // about which face it's on and its position within that face
-
-  // Helper to get flat index from face, x, y
-  const getIndex = (face: number, x: number, y: number): number => {
-    return face * size * size + y * size + x;
-  };
-
-  // Create all intersections for all 6 faces
-  for (let face = 0; face < 6; face++) {
-    for (let y = 0; y < size; y++) {
-      for (let x = 0; x < size; x++) {
-        // Position intersections in 3D space for visualization
-        // We'll arrange them in a cube net layout
-        const pos = getCubeNetPosition(face, x, y, size);
-        intersections.push(new intersectionConstructor(pos));
-      }
-    }
-  }
-
-  // Connect intersections within each face (grid connections)
-  for (let face = 0; face < 6; face++) {
-    for (let y = 0; y < size; y++) {
-      for (let x = 0; x < size; x++) {
-        const idx = getIndex(face, x, y);
-
-        // Connect to right neighbor
-        if (x < size - 1) {
-          const rightIdx = getIndex(face, x + 1, y);
-          intersections[idx].connectTo(intersections[rightIdx], true);
-        }
-
-        // Connect to bottom neighbor
-        if (y < size - 1) {
-          const bottomIdx = getIndex(face, x, y + 1);
-          intersections[idx].connectTo(intersections[bottomIdx], true);
-        }
-      }
-    }
-  }
-
-  // Connect edges between faces
-  // This is the tricky part - we need to connect the edges of adjacent faces
-
-  // Face adjacency:
-  // 0=Front: top->4, right->1, bottom->5, left->3
-  // 1=Right: top->4, right->2, bottom->5, left->0
-  // 2=Back: top->4, right->3, bottom->5, left->1
-  // 3=Left: top->4, right->0, bottom->5, left->2
-  // 4=Top: top->2, right->1, bottom->0, left->3
-  // 5=Bottom: top->0, right->1, bottom->2, left->3
-
-  // Connect Front (0) edges
-  connectCubeEdge(intersections, size, getIndex, 0, "top", 4, "bottom");
-  connectCubeEdge(intersections, size, getIndex, 0, "right", 1, "left");
-  connectCubeEdge(intersections, size, getIndex, 0, "bottom", 5, "top");
-  connectCubeEdge(intersections, size, getIndex, 0, "left", 3, "right");
-
-  // Connect Right (1) edges
-  connectCubeEdge(intersections, size, getIndex, 1, "top", 4, "right");
-  connectCubeEdge(intersections, size, getIndex, 1, "right", 2, "left");
-  connectCubeEdge(intersections, size, getIndex, 1, "bottom", 5, "right");
-  // left edge already connected to Front
-
-  // Connect Back (2) edges
-  connectCubeEdge(intersections, size, getIndex, 2, "top", 4, "top");
-  connectCubeEdge(intersections, size, getIndex, 2, "right", 3, "left");
-  connectCubeEdge(intersections, size, getIndex, 2, "bottom", 5, "bottom");
-  // left edge already connected to Right
-
-  // Connect Left (3) edges
-  connectCubeEdge(intersections, size, getIndex, 3, "top", 4, "left");
-  // right, bottom, left edges already connected
-
-  // Top (4) and Bottom (5) edges are mostly connected already
-
-  return intersections;
-}
-
-/**
- * Get the 2D position for displaying a cube net
- */
-function getCubeNetPosition(
-  face: number,
-  x: number,
-  y: number,
-  size: number,
-): Vector2D {
-  // Cube net layout:
-  //       [4: Top]
-  // [3: Left][0: Front][1: Right][2: Back]
-  //       [5: Bottom]
-
-  const spacing = size + 1; // Add spacing between faces
-  let baseX = 0,
-    baseY = 0;
-
-  switch (face) {
-    case 0: // Front
-      baseX = spacing;
-      baseY = spacing;
-      break;
-    case 1: // Right
-      baseX = spacing * 2;
-      baseY = spacing;
-      break;
-    case 2: // Back
-      baseX = spacing * 3;
-      baseY = spacing;
-      break;
-    case 3: // Left
-      baseX = 0;
-      baseY = spacing;
-      break;
-    case 4: // Top
-      baseX = spacing;
-      baseY = 0;
-      break;
-    case 5: // Bottom
-      baseX = spacing;
-      baseY = spacing * 2;
-      break;
-  }
-
-  return new Vector2D(baseX + x, baseY + y);
-}
-
-/**
- * Connect an edge of one face to an edge of another face
- */
-function connectCubeEdge<TIntersection extends Intersection>(
-  intersections: TIntersection[],
-  size: number,
-  getIndex: (face: number, x: number, y: number) => number,
-  face1: number,
-  edge1: "top" | "right" | "bottom" | "left",
-  face2: number,
-  edge2: "top" | "right" | "bottom" | "left",
-): void {
-  for (let i = 0; i < size; i++) {
-    const [x1, y1] = getEdgeCoord(edge1, i, size);
-    const [x2, y2] = getEdgeCoord(edge2, i, size);
-
-    const idx1 = getIndex(face1, x1, y1);
-    const idx2 = getIndex(face2, x2, y2);
-
-    intersections[idx1].connectTo(intersections[idx2], true);
-  }
-}
-
-/**
- * Get the x, y coordinates for a position along an edge
- */
-function getEdgeCoord(
-  edge: "top" | "right" | "bottom" | "left",
-  i: number,
-  size: number,
-): [number, number] {
-  switch (edge) {
-    case "top":
-      return [i, 0];
-    case "right":
-      return [size - 1, i];
-    case "bottom":
-      return [i, size - 1];
-    case "left":
-      return [0, i];
-  }
 }
 
 function convertIntersections<TIntersection extends Intersection>(

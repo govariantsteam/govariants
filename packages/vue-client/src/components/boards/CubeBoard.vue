@@ -56,7 +56,7 @@ let stoneMeshes: (THREE.Mesh | null)[] = [];
 let squircleMesh: THREE.Mesh | null = null;
 let cubeMesh: THREE.Mesh | null = null;
 let normalHelper: VertexNormalsHelper | null = null;
-let connectionLines: THREE.Line[] = [];
+let connectionLines: THREE.Object3D[] = [];
 let animationId: number;
 
 const intersections = computed(() => {
@@ -124,7 +124,7 @@ watch(
 function createSquircleGeometry(
   radius: number,
   power: number,
-  segments = 32,
+  segments = 96,
 ): THREE.BufferGeometry {
   const vertices: number[] = [];
   const indices: number[] = [];
@@ -335,25 +335,118 @@ function createCubeBoard() {
 
   // Draw lines between connected intersections
   const graph = createGraph(intersections.value, null);
-  graph.forEach((neighbors, idx) => {
-    if (!neighbors) return;
+
+  for (let idx = 0; idx < intersections.value.length; idx++) {
+    const neighbors = graph.neighbors(idx);
+    if (!neighbors || neighbors.length === 0) continue;
 
     const pos1 = getIntersectionPosition3D(idx, size, faceOffset);
-    const neighborList: number[] = neighbors;
 
-    neighborList.forEach((neighborIdx: number) => {
+    neighbors.forEach((neighborIdx: number) => {
       // Draw each line only once
       if (neighborIdx > idx) {
         const pos2 = getIntersectionPosition3D(neighborIdx, size, faceOffset);
 
-        const geometry = new THREE.BufferGeometry().setFromPoints([pos1, pos2]);
-        const material = new THREE.LineBasicMaterial({ color: 0x000000 });
-        const line = new THREE.Line(geometry, material);
-        scene.add(line);
-        connectionLines.push(line);
+        // Create ribbon that follows the curvature
+        const segments = 10;
+        const ribbonWidth = 0.015;
+        const offset = 0.02;
+
+        const vertices: number[] = [];
+        const indices: number[] = [];
+
+        // Generate vertices along the curve
+        for (let i = 0; i <= segments; i++) {
+          const t = i / segments;
+
+          // Interpolate between pos1 and pos2
+          const interpPos = new THREE.Vector3(
+            pos1.x + (pos2.x - pos1.x) * t,
+            pos1.y + (pos2.y - pos1.y) * t,
+            pos1.z + (pos2.z - pos1.z) * t,
+          );
+
+          // Re-project onto squircle surface (for perfect cube, skip this)
+          let surfacePos;
+          if (props.power >= 10) {
+            surfacePos = interpPos;
+          } else {
+            const projected = projectToSquircle(
+              { x: interpPos.x, y: interpPos.y, z: interpPos.z },
+              props.power,
+              faceOffset,
+            );
+            surfacePos = new THREE.Vector3(
+              projected.x,
+              projected.y,
+              projected.z,
+            );
+          }
+
+          // Calculate normal at the projected surface position
+          const normal = calculateSquircleNormal(
+            { x: surfacePos.x, y: surfacePos.y, z: surfacePos.z },
+            props.power,
+          );
+
+          const centerPos = new THREE.Vector3(
+            surfacePos.x + normal.x * offset,
+            surfacePos.y + normal.y * offset,
+            surfacePos.z + normal.z * offset,
+          );
+
+          // Calculate perpendicular direction for ribbon width
+          // Use cross product of normal with line direction
+          const lineDir = new THREE.Vector3()
+            .subVectors(pos2, pos1)
+            .normalize();
+          const perpDir = new THREE.Vector3()
+            .crossVectors(
+              new THREE.Vector3(normal.x, normal.y, normal.z),
+              lineDir,
+            )
+            .normalize();
+
+          // Create two vertices for the ribbon width
+          const v1 = new THREE.Vector3()
+            .copy(centerPos)
+            .add(perpDir.clone().multiplyScalar(ribbonWidth / 2));
+          const v2 = new THREE.Vector3()
+            .copy(centerPos)
+            .sub(perpDir.clone().multiplyScalar(ribbonWidth / 2));
+
+          vertices.push(v1.x, v1.y, v1.z);
+          vertices.push(v2.x, v2.y, v2.z);
+        }
+
+        // Generate indices for triangles
+        for (let i = 0; i < segments; i++) {
+          const base = i * 2;
+          // Two triangles per segment
+          indices.push(base, base + 1, base + 2);
+          indices.push(base + 1, base + 3, base + 2);
+        }
+
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute(
+          "position",
+          new THREE.Float32BufferAttribute(vertices, 3),
+        );
+        geometry.setIndex(indices);
+        geometry.computeVertexNormals();
+
+        const material = new THREE.MeshBasicMaterial({
+          color: 0x000000,
+          side: THREE.DoubleSide,
+        });
+        const ribbon = new THREE.Mesh(geometry, material);
+
+        scene.add(ribbon);
+        connectionLines.push(ribbon);
+        lineCount++;
       }
     });
-  });
+  }
 }
 
 /**

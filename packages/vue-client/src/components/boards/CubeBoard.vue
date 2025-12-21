@@ -28,11 +28,11 @@ const props = withDefaults(
     config: CubeBadukConfig;
     gamestate?: DefaultBoardState;
     power?: number;
-    showNormals?: boolean;
+    debugGraphics?: boolean;
   }>(),
   {
     power: 4,
-    showNormals: false,
+    debugGraphics: false,
   },
 );
 
@@ -57,6 +57,7 @@ let squircleMesh: THREE.Mesh | null = null;
 let cubeMesh: THREE.Mesh | null = null;
 let normalHelper: VertexNormalsHelper | null = null;
 let connectionLines: THREE.Object3D[] = [];
+let faceLabels: THREE.Sprite[] = [];
 let animationId: number;
 
 const intersections = computed(() => {
@@ -106,6 +107,20 @@ watch(
 // Watch for power changes and rebuild the board
 watch(
   () => props.power,
+  () => {
+    if (scene && props.config) {
+      createCubeBoard();
+      // Also need to re-render stones with new positions
+      if (props.gamestate?.board) {
+        updateStones();
+      }
+    }
+  },
+);
+
+// Watch for debugGraphics changes and rebuild the board
+watch(
+  () => props.debugGraphics,
   () => {
     if (scene && props.config) {
       createCubeBoard();
@@ -263,6 +278,16 @@ function createCubeBoard() {
     normalHelper = null;
   }
 
+  // Remove old face labels
+  faceLabels.forEach((sprite) => {
+    scene.remove(sprite);
+    sprite.material.dispose();
+    if (sprite.material.map) {
+      sprite.material.map.dispose();
+    }
+  });
+  faceLabels = [];
+
   // Use perfect cube geometry when power >= 10, otherwise use squircle
   if (props.power >= 10) {
     const cubeGeometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
@@ -275,9 +300,14 @@ function createCubeBoard() {
     scene.add(cubeMesh);
 
     // Add normal helper if enabled
-    if (props.showNormals) {
+    if (props.debugGraphics) {
       normalHelper = new VertexNormalsHelper(cubeMesh, 0.3, 0x00ff00);
       scene.add(normalHelper);
+    }
+
+    // Add face labels if debug mode is enabled
+    if (props.debugGraphics) {
+      addFaceLabels(cubeSize);
     }
   } else {
     // Create squircle geometry with go board color
@@ -291,9 +321,14 @@ function createCubeBoard() {
     scene.add(squircleMesh);
 
     // Add normal helper if enabled
-    if (props.showNormals) {
+    if (props.debugGraphics) {
       normalHelper = new VertexNormalsHelper(squircleMesh, 0.3, 0x00ff00);
       scene.add(normalHelper);
+    }
+
+    // Add face labels if debug mode is enabled
+    if (props.debugGraphics) {
+      addFaceLabels(faceOffset);
     }
   }
 
@@ -443,10 +478,89 @@ function createCubeBoard() {
 
         scene.add(ribbon);
         connectionLines.push(ribbon);
-        lineCount++;
       }
     });
   }
+}
+
+/**
+ * Create a canvas texture with text for face labels
+ */
+function createTextTexture(
+  text: string,
+  color: string = "#000000",
+): THREE.CanvasTexture {
+  const canvas = document.createElement("canvas");
+  const size = 256;
+  canvas.width = size;
+  canvas.height = size;
+  const context = canvas.getContext("2d");
+
+  if (context) {
+    // Semi-transparent background
+    context.fillStyle = "rgba(255, 255, 255, 0.8)";
+    context.fillRect(0, 0, size, size);
+
+    // Draw text
+    context.fillStyle = color;
+    context.font = "bold 48px Arial";
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.fillText(text, size / 2, size / 2);
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.needsUpdate = true;
+  return texture;
+}
+
+/**
+ * Add face labels to show which face is which (0-5)
+ */
+function addFaceLabels(offset: number) {
+  const faceNames = ["Front", "Right", "Back", "Left", "Top", "Bottom"];
+  const scale = offset * 0.4; // Scale labels relative to cube size
+
+  // Face positions and orientations
+  // 0=Front(+Z), 1=Right(+X), 2=Back(-Z), 3=Left(-X), 4=Top(+Y), 5=Bottom(-Y)
+  const faceConfigs = [
+    {
+      face: 0,
+      position: { x: 0, y: 0, z: offset + 0.5 },
+    }, // Front
+    {
+      face: 1,
+      position: { x: offset + 0.5, y: 0, z: 0 },
+    }, // Right
+    {
+      face: 2,
+      position: { x: 0, y: 0, z: -(offset + 0.5) },
+    }, // Back
+    {
+      face: 3,
+      position: { x: -(offset + 0.5), y: 0, z: 0 },
+    }, // Left
+    {
+      face: 4,
+      position: { x: 0, y: offset + 0.5, z: 0 },
+    }, // Top
+    {
+      face: 5,
+      position: { x: 0, y: -(offset + 0.5), z: 0 },
+    }, // Bottom
+  ];
+
+  faceConfigs.forEach(({ face, position }) => {
+    const texture = createTextTexture(`${face}\n${faceNames[face]}`, "#000000");
+    const material = new THREE.SpriteMaterial({ map: texture });
+    const sprite = new THREE.Sprite(material);
+
+    sprite.position.set(position.x, position.y, position.z);
+    sprite.scale.set(scale, scale, 1);
+
+    scene.add(sprite);
+    faceLabels.push(sprite);
+  });
 }
 
 /**

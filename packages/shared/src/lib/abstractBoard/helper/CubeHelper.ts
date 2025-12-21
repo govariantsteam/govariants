@@ -293,7 +293,7 @@ function getSharedPositionKeys(
     "0-bottom": [5, "top", false],
     "0-left": [3, "right", false],
     // Right (1)
-    "1-top": [4, "right", false],
+    "1-top": [4, "right", true], // reversed
     "1-right": [2, "left", false],
     "1-bottom": [5, "right", false],
     "1-left": [0, "right", false],
@@ -305,7 +305,7 @@ function getSharedPositionKeys(
     // Left (3)
     "3-top": [4, "left", false],
     "3-right": [0, "left", false],
-    "3-bottom": [5, "left", false],
+    "3-bottom": [5, "left", true], // reversed
     "3-left": [2, "right", false],
     // Top (4)
     "4-top": [2, "top", true], // reversed

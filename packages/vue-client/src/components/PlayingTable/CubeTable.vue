@@ -22,7 +22,7 @@ function move(move: string) {
 
 // Slider value from 0-100 (for easier UI)
 const sliderValue = ref(50);
-const showNormals = ref(false);
+const debugGraphics = ref(false);
 
 // Map slider value to power with linear scale 2.0 to 10.0
 // At 100, we'll render a true cube instead of squircle
@@ -42,7 +42,7 @@ const displayPower = computed(() => {
       :gamestate="$props.gamestate"
       :config="$props.config"
       :power="power"
-      :show-normals="showNormals"
+      :debug-graphics="debugGraphics"
       v-on:move="move"
     />
     <div class="controls">
@@ -64,8 +64,8 @@ const displayPower = computed(() => {
       </div>
       <div class="checkbox-control">
         <label>
-          <input type="checkbox" v-model="showNormals" />
-          Show Normals (Debug)
+          <input type="checkbox" v-model="debugGraphics" />
+          Debug Graphics
         </label>
       </div>
     </div>

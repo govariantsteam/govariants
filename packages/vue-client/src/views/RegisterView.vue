@@ -1,19 +1,29 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "@/stores/user";
+import { isEmail } from "validator";
 
 const username = ref("");
 const password = ref("");
+const email = ref("");
 const error = ref("");
 
 const store = useStore();
 
 const router = useRouter();
 
+// Email validation check
+const isEmailValid = computed(() => {
+  if (!email.value || email.value.trim() === "") {
+    return true; // Allow empty since email is optional
+  }
+  return isEmail(email.value);
+});
+
 const submit = () =>
   store
-    .registerUser(username.value, password.value)
+    .registerUser(username.value, password.value, email.value)
     .then(() => {
       router.push("/");
     })
@@ -34,6 +44,22 @@ const submit = () =>
             required
             v-model="username"
           />
+        </div>
+        <div>
+          <label for="email">Email (optional)</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            autocomplete="email"
+            v-model="email"
+          />
+          <div
+            v-if="!isEmailValid"
+            style="color: red; font-size: 0.9em; margin-top: 4px"
+          >
+            Email format doesn't look valid
+          </div>
         </div>
         <div>
           <label for="current-password">Password</label>

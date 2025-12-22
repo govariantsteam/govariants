@@ -17,7 +17,9 @@ import {
   deleteUser,
   getUser,
   getUserByName,
+  getUserEmail,
   setUserRole,
+  setUserEmail,
 } from "./users";
 import {
   getOnlyMove,
@@ -156,7 +158,7 @@ router.post("/games/:gameId/leave/:seat", checkCSRFToken, async (req, res) => {
 });
 
 router.post("/register", async (req, res, next) => {
-  const { username, password } = req.body;
+  const { username, password, email } = req.body;
   const user = await getUserByName(username);
   if (user) {
     res.status(500).json(`Username "${username}" already taken!`);
@@ -170,7 +172,7 @@ router.post("/register", async (req, res, next) => {
     return;
   }
 
-  await createUserWithUsernameAndPassword(username, password);
+  await createUserWithUsernameAndPassword(username, password, email);
   passport.authenticate("local", make_auth_cb(req, res))(req, res, next);
 });
 
@@ -200,6 +202,66 @@ router.put("/users/:userId/role", checkCSRFToken, async (req, res) => {
 
     userToUpdate.role = role;
     res.send(userToUpdate);
+  } catch (e) {
+    res.status(500);
+    res.json(e.message);
+  }
+});
+
+router.get("/users/:userId/email", checkCSRFToken, async (req, res) => {
+  try {
+    if (!req.user) {
+      res.status(401);
+      res.json("You must be logged in to view email.");
+      return;
+    }
+
+    const currentUser = req.user as UserResponse;
+
+    // Users can only view their own email (unless they're an admin)
+    if (currentUser.id !== req.params.userId && currentUser.role !== "admin") {
+      res.status(403);
+      res.json("You can only view your own email.");
+      return;
+    }
+
+    const email = await getUserEmail(req.params.userId);
+    res.json({ email: email || null });
+  } catch (e) {
+    res.status(500);
+    res.json(e.message);
+  }
+});
+
+router.put("/users/:userId/email", checkCSRFToken, async (req, res) => {
+  const { email } = req.body;
+  try {
+    if (!req.user) {
+      res.status(401);
+      res.json("You must be logged in to update email.");
+      return;
+    }
+
+    const currentUser = req.user as UserResponse;
+
+    // Users can only update their own email (unless they're an admin)
+    if (currentUser.id !== req.params.userId && currentUser.role !== "admin") {
+      res.status(403);
+      res.json("You can only update your own email.");
+      return;
+    }
+
+    const userToUpdate = await getUser(req.params.userId);
+
+    if (userToUpdate.login_type !== "persistent") {
+      throw new Error(
+        `Cannot set email for user with "${userToUpdate.login_type}" type.`,
+      );
+    }
+
+    await setUserEmail(req.params.userId, email);
+
+    res.json({ success: true, email });
   } catch (e) {
     res.status(500);
     res.json(e.message);

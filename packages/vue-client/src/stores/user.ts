@@ -24,10 +24,11 @@ export const useStore = defineStore("user", {
       this.update();
     },
 
-    async registerUser(username: string, password: string) {
+    async registerUser(username: string, password: string, email?: string) {
       this.user = await requests.post("/register", {
         username,
         password,
+        ...(email && { email }),
       });
       this.update();
     },

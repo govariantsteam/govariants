@@ -74,6 +74,7 @@ onMounted(async () => {
   if (!canvasRef.value || !containerRef.value || !props.config) return;
   initThreeJS();
   createCubeBoard();
+  updateStones(); // Render initial stones after board is created
   animate();
 });
 
@@ -108,6 +109,7 @@ watch(
       await nextTick();
       initThreeJS();
       createCubeBoard();
+      updateStones(); // Render stones after board is created
       animate();
     }
   },
@@ -882,7 +884,16 @@ function updateStones() {
 }
 
 // Watch for board updates to render stones
-watch(() => props.gamestate?.board, updateStones, { immediate: true });
+watch(
+  () => props.gamestate?.board,
+  () => {
+    // Only update if scene is ready
+    if (scene) {
+      updateStones();
+    }
+  },
+  { deep: true },
+);
 </script>
 
 <template>

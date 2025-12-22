@@ -21,6 +21,7 @@ import {
   faceCoordsTo3DPosition,
   projectToSquircle,
   calculateSquircleNormal,
+  getHoshi,
 } from "@ogfcommunity/variants-shared";
 
 const props = withDefaults(
@@ -59,6 +60,7 @@ let cubeMesh: THREE.Mesh | null = null;
 let normalHelper: VertexNormalsHelper | null = null;
 let connectionLines: THREE.Mesh[] = [];
 let faceLabels: THREE.Sprite[] = [];
+let starPoints: THREE.Mesh[] = [];
 let ghostStone: THREE.Mesh | null = null;
 let animationId: number;
 
@@ -354,9 +356,17 @@ function createCubeBoard() {
     (line.material as THREE.Material).dispose();
   });
 
+  // Remove old star points
+  starPoints.forEach((star) => {
+    scene.remove(star);
+    star.geometry.dispose();
+    (star.material as THREE.Material).dispose();
+  });
+
   // Create intersection points on the cube faces
   intersectionMeshes = [];
   connectionLines = [];
+  starPoints = [];
 
   for (let i = 0; i < intersections.value.length; i++) {
     const position = getIntersectionPosition3D(i, size, faceOffset);
@@ -488,6 +498,69 @@ function createCubeBoard() {
         scene.add(ribbon);
         connectionLines.push(ribbon);
       }
+    });
+  }
+
+  // Add star points (hoshi)
+  addStarPoints(size, faceOffset);
+}
+
+/**
+ * Add star points to each face of the cube
+ */
+function addStarPoints(size: number, faceOffset: number) {
+  const hoshiCoords = getHoshi(size, size);
+
+  // For each of the 6 faces, add star points
+  for (let face = 0; face < 6; face++) {
+    hoshiCoords.forEach((coord) => {
+      const x = coord.x;
+      const y = coord.y;
+
+      // Convert face coordinates to 3D position
+      const pos3d = faceCoordsTo3DPosition(face, x, y, size, faceOffset);
+
+      // Project onto squircle surface (or cube if power >= 10)
+      let surfacePos;
+      if (props.power >= 10) {
+        surfacePos = new THREE.Vector3(pos3d.x, pos3d.y, pos3d.z);
+      } else {
+        const projected = projectToSquircle(pos3d, props.power, faceOffset);
+        surfacePos = new THREE.Vector3(projected.x, projected.y, projected.z);
+      }
+
+      // Calculate normal at this position
+      const normal = calculateSquircleNormal(
+        { x: surfacePos.x, y: surfacePos.y, z: surfacePos.z },
+        props.power,
+      );
+
+      // Create a small circle for the star point
+      const starRadius = 0.08;
+      const geometry = new THREE.CircleGeometry(starRadius, 16);
+      const material = new THREE.MeshBasicMaterial({
+        color: 0x000000,
+        side: THREE.DoubleSide,
+      });
+      const star = new THREE.Mesh(geometry, material);
+
+      // Orient the star point to face outward from the surface
+      const normalVector = new THREE.Vector3(normal.x, normal.y, normal.z);
+      star.quaternion.setFromUnitVectors(
+        new THREE.Vector3(0, 0, 1),
+        normalVector,
+      );
+
+      // Position on the surface (slightly offset outward to avoid z-fighting)
+      const offsetDistance = 0.015;
+      star.position.set(
+        surfacePos.x + normal.x * offsetDistance,
+        surfacePos.y + normal.y * offsetDistance,
+        surfacePos.z + normal.z * offsetDistance,
+      );
+
+      scene.add(star);
+      starPoints.push(star);
     });
   }
 }

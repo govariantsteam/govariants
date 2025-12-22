@@ -57,7 +57,7 @@ let stoneMeshes: (THREE.Mesh | null)[] = [];
 let squircleMesh: THREE.Mesh | null = null;
 let cubeMesh: THREE.Mesh | null = null;
 let normalHelper: VertexNormalsHelper | null = null;
-let connectionLines: THREE.Object3D[] = [];
+let connectionLines: THREE.Mesh[] = [];
 let faceLabels: THREE.Sprite[] = [];
 let ghostStone: THREE.Mesh | null = null;
 let animationId: number;

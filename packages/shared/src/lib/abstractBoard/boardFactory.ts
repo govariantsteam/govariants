@@ -8,6 +8,7 @@ import { createSierpinskyBoard as createSierpinskyBoardExternal } from "./helper
 import { Graph } from "../graph";
 import { Grid } from "../grid";
 import { createSunflowerBoard as createSunflowerBoardExternal } from "./helper/SunflowerHelper";
+import { createCubeBoard as createCubeBoardHelper } from "./helper/CubeHelper";
 
 export const BoardPattern = {
   Grid: "grid",
@@ -17,6 +18,7 @@ export const BoardPattern = {
   Sierpinsky: "sierpinsky",
   GridWithHoles: "gridWithHoles",
   Sunflower: "sunflower",
+  Cube: "cube",
   Custom: "custom",
 } as const;
 
@@ -28,6 +30,7 @@ export type BoardConfig =
   | SierpinskyBoardConfig
   | GridWithHolesBoardConfig
   | SunflowerBoardConfig
+  | CubeBoardConfig
   | CustomBoardConfig;
 
 export interface GridBoardConfig {
@@ -70,6 +73,11 @@ export interface GridWithHolesBoardConfig {
 export interface SunflowerBoardConfig {
   type: typeof BoardPattern.Sunflower;
   size: number;
+}
+
+export interface CubeBoardConfig {
+  type: typeof BoardPattern.Cube;
+  faceSize: number; // Size of each face (e.g., 9 for a 9x9 grid on each face)
 }
 
 export interface CustomBoardConfig {
@@ -126,6 +134,12 @@ export function createBoard<TIntersection extends Intersection>(
       break;
     case BoardPattern.Sunflower:
       intersections = createSunflowerBoard<TIntersection>(
+        config,
+        intersectionConstructor,
+      );
+      break;
+    case BoardPattern.Cube:
+      intersections = createCubeBoardHelper<TIntersection>(
         config,
         intersectionConstructor,
       );

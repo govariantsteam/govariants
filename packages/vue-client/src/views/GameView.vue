@@ -251,6 +251,7 @@ async function repairGame(): Promise<void> {
           v-bind:gamestate="transformedGameData.gamestate"
           v-bind:config="transformedGameData.config"
           v-bind:displayed_round="displayed_round"
+          v-bind:next-to-play="game_state?.next_to_play"
           v-on:move="makeMove"
         />
         <NavButtons :gameRound="current_round" v-model="view_round" />

@@ -13,6 +13,7 @@ import { oneColorGoVariant } from "./variants/one_color";
 import { driftVariant } from "./variants/drift";
 import { quantumVariant } from "./variants/quantum";
 import { badukVariant } from "./variants/baduk";
+import { cubeBadukVariant } from "./variants/cube";
 import { Variant } from "./variant";
 import markdownit from "markdown-it";
 import { sFractionalVariant } from "./variants/s_fractional";
@@ -25,6 +26,7 @@ const variant_map: {
   [variant: string]: Variant<any, any>;
 } = {
   baduk: badukVariant,
+  cube: cubeBadukVariant,
   phantom: phantomVariant,
   parallel: parallelVariant,
   capture: captureVariant,

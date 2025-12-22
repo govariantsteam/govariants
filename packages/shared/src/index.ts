@@ -1,4 +1,5 @@
 export * from "./variants/baduk";
+export * from "./variants/cube";
 export * from "./variants/phantom";
 export * from "./variants/capture";
 export * from "./variants/parallel";

@@ -1,0 +1,169 @@
+<script setup lang="ts">
+import { ref, computed } from "vue";
+import CubeBoard from "../boards/CubeBoard.vue";
+import type {
+  CubeBadukConfig,
+  DefaultBoardState,
+} from "@ogfcommunity/variants-shared";
+
+defineProps<{
+  gamestate: DefaultBoardState;
+  config: CubeBadukConfig;
+  displayed_round: number;
+  nextToPlay?: number[];
+}>();
+
+const emit = defineEmits<{
+  (e: "move", move: string): void;
+}>();
+
+function move(move: string) {
+  emit("move", move);
+}
+
+// Slider value from 0-10 (curvature scale)
+const sliderValue = ref(5);
+const debugGraphics = ref(false);
+
+// Map curvature to power:
+// 0 curvature = cube (power = 10)
+// 10 curvature = sphere (power = 2)
+const power = computed(() => {
+  // Linear interpolation: at 0 -> power=10, at 10 -> power=2
+  return 2 + (10 - sliderValue.value) * 0.8;
+});
+
+const displayPower = computed(() => {
+  if (sliderValue.value === 0) return "Cube";
+  if (sliderValue.value === 10) return "Sphere";
+  return sliderValue.value.toFixed(1);
+});
+</script>
+
+<template>
+  <div class="cube-table">
+    <CubeBoard
+      :gamestate="$props.gamestate"
+      :config="$props.config"
+      :next-to-play="$props.nextToPlay"
+      :power="power"
+      :debug-graphics="debugGraphics"
+      v-on:move="move"
+    />
+    <div class="controls">
+      <label for="power-slider" class="control-label">
+        Curvature: {{ displayPower }}
+      </label>
+      <input
+        id="power-slider"
+        v-model.number="sliderValue"
+        type="range"
+        min="0"
+        max="10"
+        step="0.1"
+        class="power-slider"
+      />
+      <div class="control-hints">
+        <span>Cube</span>
+        <span>Sphere</span>
+      </div>
+      <div class="checkbox-control">
+        <label>
+          <input type="checkbox" v-model="debugGraphics" />
+          Debug Graphics
+        </label>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.cube-table {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.control-label {
+  font-weight: 500;
+  color: #ddd;
+  font-size: 0.95rem;
+}
+
+.power-slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(to right, #4a9eff, #ff6b6b);
+  outline: none;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+  cursor: pointer;
+}
+
+.power-slider:hover {
+  opacity: 1;
+}
+
+.power-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.power-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.control-hints {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.checkbox-control {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.checkbox-control label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #999;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-control input[type="checkbox"] {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+}
+
+.checkbox-control label:hover {
+  color: #ddd;
+}
+</style>

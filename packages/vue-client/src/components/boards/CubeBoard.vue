@@ -27,6 +27,7 @@ const props = withDefaults(
   defineProps<{
     config: CubeBadukConfig;
     gamestate?: DefaultBoardState;
+    nextToPlay?: number[];
     power?: number;
     debugGraphics?: boolean;
   }>(),
@@ -58,6 +59,7 @@ let cubeMesh: THREE.Mesh | null = null;
 let normalHelper: VertexNormalsHelper | null = null;
 let connectionLines: THREE.Object3D[] = [];
 let faceLabels: THREE.Sprite[] = [];
+let ghostStone: THREE.Mesh | null = null;
 let animationId: number;
 
 const intersections = computed(() => {
@@ -87,6 +89,12 @@ onBeforeUnmount(() => {
   }
   if (controls) {
     controls.dispose();
+  }
+  if (ghostStone) {
+    scene.remove(ghostStone);
+    ghostStone.geometry.dispose();
+    (ghostStone.material as THREE.Material).dispose();
+    ghostStone = null;
   }
 });
 
@@ -353,12 +361,13 @@ function createCubeBoard() {
   for (let i = 0; i < intersections.value.length; i++) {
     const position = getIntersectionPosition3D(i, size, faceOffset);
 
-    // Create a small sphere for each intersection
-    const geometry = new THREE.SphereGeometry(0.15, 16, 16);
+    // Create a larger invisible sphere for each intersection (for clicking)
+    const geometry = new THREE.SphereGeometry(0.4, 16, 16);
     const material = new THREE.MeshPhongMaterial({
       color: 0x8b7355,
       transparent: true,
-      opacity: 0.3,
+      opacity: 0,
+      visible: false,
     });
     const mesh = new THREE.Mesh(geometry, material);
     mesh.position.copy(position);
@@ -604,7 +613,7 @@ function getIntersectionPosition3D(
 }
 
 function onMouseMove(event: MouseEvent) {
-  if (!canvasRef.value) return;
+  if (!canvasRef.value || !props.config?.board) return;
 
   const rect = canvasRef.value.getBoundingClientRect();
   mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
@@ -613,22 +622,69 @@ function onMouseMove(event: MouseEvent) {
   raycaster.setFromCamera(mouse, camera);
   const intersects = raycaster.intersectObjects(intersectionMeshes);
 
-  // Reset previous hover
-  if (hoveredIntersection.value >= 0) {
-    const mesh = intersectionMeshes[hoveredIntersection.value];
-    const material = mesh.material as THREE.MeshPhongMaterial;
-    material.opacity = 0.3;
-  }
-
   if (intersects.length > 0) {
     const index = intersects[0].object.userData.index;
     hoveredIntersection.value = index;
-    const material = (intersects[0].object as THREE.Mesh)
-      .material as THREE.MeshPhongMaterial;
-    material.opacity = 0.6;
     emit("hover", index);
+
+    // Show ghost stone
+    const size = props.config.board.faceSize;
+    const faceOffset = (size - 1) / 2;
+    const position = getIntersectionPosition3D(index, size, faceOffset);
+    const normal = calculateSquircleNormal(
+      { x: position.x, y: position.y, z: position.z },
+      props.power,
+    );
+
+    // Determine the color of the ghost stone (current player's color)
+    // Player 0 = black, Player 1 = white
+    const currentPlayer = props.nextToPlay?.[0] ?? 0;
+    const ghostColor = currentPlayer === 0 ? 0x000000 : 0xffffff;
+
+    if (!ghostStone) {
+      // Create ghost stone
+      const stoneRadiusXZ = 0.35;
+      const stoneRadiusY = 0.12;
+      const geometry = new THREE.SphereGeometry(1, 32, 32);
+      const material = new THREE.MeshStandardMaterial({
+        color: ghostColor,
+        roughness: 0.3,
+        metalness: 0,
+        transparent: true,
+        opacity: 0.5,
+      });
+      ghostStone = new THREE.Mesh(geometry, material);
+      ghostStone.scale.set(stoneRadiusXZ, stoneRadiusY, stoneRadiusXZ);
+      scene.add(ghostStone);
+    } else {
+      // Update ghost stone color if needed
+      const material = ghostStone.material as THREE.MeshStandardMaterial;
+      material.color.setHex(ghostColor);
+    }
+
+    // Orient the ghost stone
+    const normalVector = new THREE.Vector3(normal.x, normal.y, normal.z);
+    ghostStone.quaternion.setFromUnitVectors(
+      new THREE.Vector3(0, 1, 0),
+      normalVector,
+    );
+
+    // Position on top of the surface
+    const offsetDistance = 0.12;
+    ghostStone.position.set(
+      position.x + normal.x * offsetDistance,
+      position.y + normal.y * offsetDistance,
+      position.z + normal.z * offsetDistance,
+    );
   } else {
     hoveredIntersection.value = -1;
+    // Hide ghost stone
+    if (ghostStone) {
+      scene.remove(ghostStone);
+      ghostStone.geometry.dispose();
+      (ghostStone.material as THREE.Material).dispose();
+      ghostStone = null;
+    }
   }
 }
 
@@ -691,8 +747,17 @@ function updateStones() {
 
     const position = getIntersectionPosition3D(index, size, faceOffset);
 
-    // Create stone
-    const geometry = new THREE.SphereGeometry(0.35, 32, 32);
+    // Calculate normal at stone position for proper orientation
+    const normal = calculateSquircleNormal(
+      { x: position.x, y: position.y, z: position.z },
+      props.power,
+    );
+
+    // Create stone as an oblate spheroid (go stone shape)
+    // Go stones are about 1/3 as tall as they are wide
+    const stoneRadiusXZ = 0.35; // width
+    const stoneRadiusY = 0.15; // height
+    const geometry = new THREE.SphereGeometry(1, 32, 32);
     const color = singleStone.colors.includes("black") ? 0x000000 : 0xffffff;
     const material = new THREE.MeshStandardMaterial({
       color,
@@ -700,12 +765,23 @@ function updateStones() {
       metalness: 0,
     });
     const mesh = new THREE.Mesh(geometry, material);
-    mesh.position.copy(position);
 
-    // Calculate normal at stone position for proper orientation
-    const normal = calculateSquircleNormal(
-      { x: position.x, y: position.y, z: position.z },
-      props.power,
+    // Orient the stone so its flattened axis aligns with the surface normal
+    const normalVector = new THREE.Vector3(normal.x, normal.y, normal.z);
+    mesh.quaternion.setFromUnitVectors(
+      new THREE.Vector3(0, 1, 0), // default up direction
+      normalVector,
+    );
+
+    // Scale to create oblate spheroid
+    mesh.scale.set(stoneRadiusXZ, stoneRadiusY, stoneRadiusXZ);
+
+    // Position the stone on top of the surface (offset along normal)
+    const offsetDistance = stoneRadiusY; // offset by half the height
+    mesh.position.set(
+      position.x + normal.x * offsetDistance,
+      position.y + normal.y * offsetDistance,
+      position.z + normal.z * offsetDistance,
     );
 
     // Add annotation if present

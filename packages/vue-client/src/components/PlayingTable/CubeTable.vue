@@ -10,6 +10,7 @@ defineProps<{
   gamestate: DefaultBoardState;
   config: CubeBadukConfig;
   displayed_round: number;
+  nextToPlay?: number[];
 }>();
 
 const emit = defineEmits<{
@@ -41,6 +42,7 @@ const displayPower = computed(() => {
     <CubeBoard
       :gamestate="$props.gamestate"
       :config="$props.config"
+      :next-to-play="$props.nextToPlay"
       :power="power"
       :debug-graphics="debugGraphics"
       v-on:move="move"

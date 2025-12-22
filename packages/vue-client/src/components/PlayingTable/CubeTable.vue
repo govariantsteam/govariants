@@ -21,19 +21,22 @@ function move(move: string) {
   emit("move", move);
 }
 
-// Slider value from 0-100 (for easier UI)
-const sliderValue = ref(50);
+// Slider value from 0-10 (curvature scale)
+const sliderValue = ref(5);
 const debugGraphics = ref(false);
 
-// Map slider value to power with linear scale 2.0 to 10.0
-// At 100, we'll render a true cube instead of squircle
+// Map curvature to power:
+// 0 curvature = cube (power = 10)
+// 10 curvature = sphere (power = 2)
 const power = computed(() => {
-  return 2 + (sliderValue.value / 100) * 8;
+  // Linear interpolation: at 0 -> power=10, at 10 -> power=2
+  return 2 + (10 - sliderValue.value) * 0.8;
 });
 
 const displayPower = computed(() => {
-  if (sliderValue.value === 100) return "Cube";
-  return power.value.toFixed(1);
+  if (sliderValue.value === 0) return "Cube";
+  if (sliderValue.value === 10) return "Sphere";
+  return sliderValue.value.toFixed(1);
 });
 </script>
 
@@ -49,20 +52,20 @@ const displayPower = computed(() => {
     />
     <div class="controls">
       <label for="power-slider" class="control-label">
-        Board Curvature: {{ displayPower }}
+        Curvature: {{ displayPower }}
       </label>
       <input
         id="power-slider"
         v-model.number="sliderValue"
         type="range"
         min="0"
-        max="100"
-        step="1"
+        max="10"
+        step="0.1"
         class="power-slider"
       />
       <div class="control-hints">
-        <span>Spherical (2.0)</span>
-        <span>Perfect Cube</span>
+        <span>Cube</span>
+        <span>Sphere</span>
       </div>
       <div class="checkbox-control">
         <label>

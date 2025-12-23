@@ -64,6 +64,10 @@ let starPoints: THREE.Mesh[] = [];
 let ghostStone: THREE.Mesh | null = null;
 let animationId: number;
 
+// Track drag state to distinguish clicks from drags
+let pointerDownPosition: { x: number; y: number } | null = null;
+const DRAG_THRESHOLD = 5; // pixels
+
 const intersections = computed(() => {
   if (!props.config?.board) return [];
   return createBoard(props.config.board, Intersection);
@@ -86,6 +90,7 @@ onBeforeUnmount(() => {
   if (canvasRef.value) {
     canvasRef.value.removeEventListener("mousemove", onMouseMove);
     canvasRef.value.removeEventListener("click", onClick);
+    canvasRef.value.removeEventListener("pointerdown", onPointerDown);
   }
   if (renderer) {
     renderer.dispose();
@@ -255,6 +260,7 @@ function initThreeJS() {
   // Mouse events
   canvasRef.value.addEventListener("mousemove", onMouseMove);
   canvasRef.value.addEventListener("click", onClick);
+  canvasRef.value.addEventListener("pointerdown", onPointerDown);
 
   // Handle window resize
   window.addEventListener("resize", onWindowResize);
@@ -763,8 +769,31 @@ function onMouseMove(event: MouseEvent) {
   }
 }
 
+function onPointerDown(event: PointerEvent) {
+  // Record the pointer down position to detect drags
+  pointerDownPosition = {
+    x: event.clientX,
+    y: event.clientY,
+  };
+}
+
 function onClick(event: MouseEvent) {
   if (!canvasRef.value) return;
+
+  // Check if this was a drag operation
+  if (pointerDownPosition) {
+    const dx = event.clientX - pointerDownPosition.x;
+    const dy = event.clientY - pointerDownPosition.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    // If pointer moved more than threshold, treat as drag, not click
+    if (distance > DRAG_THRESHOLD) {
+      pointerDownPosition = null;
+      return;
+    }
+  }
+
+  pointerDownPosition = null;
 
   const rect = canvasRef.value.getBoundingClientRect();
   mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;

@@ -110,6 +110,16 @@ watchEffect(async () => {
       players.value = result.players;
       creator.value = result.creator;
       setNewState(result.stateResponse);
+
+      // Auto-select seat if user occupies exactly one seat
+      const userSeats = players.value
+        ?.map((player: User | undefined, index: number) =>
+          player?.id === user.value?.id ? index : null,
+        )
+        .filter((index: number | null): index is number => index !== null);
+      if (userSeats?.length === 1) {
+        setPlayingAs(userSeats[0]);
+      }
     })
     .catch((err) => {
       errorOccured.value = true;

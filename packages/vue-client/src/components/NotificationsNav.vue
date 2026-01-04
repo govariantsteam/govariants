@@ -2,12 +2,16 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faBell } from "@fortawesome/free-solid-svg-icons";
-import { ref, watchEffect } from "vue";
+import { watchEffect } from "vue";
 import * as requests from "@/requests";
 import { useCurrentUser, useStore } from "@/stores/user";
+import {
+  setNotificationsCount,
+  useNotificationsCount,
+} from "@/stores/notifications";
 
 library.add(faBell);
-const notificationCount = ref(null);
+const notificationCount = useNotificationsCount();
 const store = useStore();
 const user = useCurrentUser();
 
@@ -15,10 +19,8 @@ watchEffect(async () => {
   if (user.value && store.csrf_token) {
     await requests
       .get("/notifications/count")
-      .then((result) => (notificationCount.value = result.count))
+      .then((result) => setNotificationsCount(result.count))
       .catch(alert);
-  } else {
-    notificationCount.value = null;
   }
 });
 </script>
@@ -26,14 +28,14 @@ watchEffect(async () => {
 <template>
   <RouterLink class="navElement" to="/notifications">
     <v-badge
-      v-if="notificationCount !== null"
+      v-if="notificationCount !== null && notificationCount > 0"
       location="top right"
       color="error"
       :content="notificationCount"
     >
-      <font-awesome-icon icon="fa-solid fa-bell" class="icon" />
+      <font-awesome-icon icon="fa-solid fa-bell" />
     </v-badge>
-    <font-awesome-icon v-else icon="fa-solid fa-bell" class="icon" />
+    <font-awesome-icon v-else icon="fa-solid fa-bell" />
   </RouterLink>
 </template>
 

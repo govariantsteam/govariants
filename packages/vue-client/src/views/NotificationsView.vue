@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, Ref, ref, watchEffect } from "vue";
+import { computed, effect, Ref, ref, watchEffect } from "vue";
 import * as requests from "@/requests";
 import { useCurrentUser, useStore } from "@/stores/user";
 import {
@@ -7,6 +7,16 @@ import {
   groupBy,
   Notifications,
 } from "@ogfcommunity/variants-shared";
+import { setNotificationsCount } from "@/stores/notifications";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+  faCircleCheck,
+  faEyeSlash,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+
+library.add(faCircleCheck, faTrash, faEyeSlash);
 
 const notifications: Ref<GameNotification[] | null> = ref(null);
 const store = useStore();
@@ -20,12 +30,23 @@ const groupedNotifications = computed(() => {
   return groupBy(notificationsArray, (n) => n.gameId);
 });
 
+effect(() =>
+  setNotificationsCount(
+    notifications.value?.filter((notification) => !notification.read).length ??
+      0,
+  ),
+);
+
+async function load(): Promise<void> {
+  await requests
+    .get("/notifications")
+    .then((result) => (notifications.value = result))
+    .catch(alert);
+}
+
 watchEffect(async () => {
   if (user.value && store.csrf_token) {
-    await requests
-      .get("/notifications")
-      .then((result) => (notifications.value = result))
-      .catch(alert);
+    await load();
   } else {
     notifications.value = null;
   }
@@ -49,6 +70,24 @@ function renderNotification(notification: GameNotification): string {
     }
   }
 }
+
+async function markAsRead(gameId: string): Promise<unknown> {
+  return requests
+    .post(`/notifications/${gameId}/mark-as-read`)
+    .catch(alert)
+    .then(load);
+}
+
+async function clear(gameId: string): Promise<unknown> {
+  return requests
+    .post(`/notifications/${gameId}/clear`)
+    .catch(alert)
+    .then(load);
+}
+
+async function unsubscribe(gameId: string): Promise<unknown> {
+  return requests.post(`/game/${gameId}/unsubscribe`).catch(alert).then(load);
+}
 </script>
 
 <template>
@@ -61,8 +100,22 @@ function renderNotification(notification: GameNotification): string {
       >
         <RouterLink :to="`/game/${gameId}`">game-{{ gameId }}</RouterLink>
         <div v-for="(notification, index) in gameNotifications" :key="index">
-          {{ renderNotification(notification) }}
+          <strong v-if="!notification.read" aria-label="unread">
+            {{ renderNotification(notification) }}
+          </strong>
+          <span v-else aria-label="read">
+            {{ renderNotification(notification) }}
+          </span>
         </div>
+        <button aria-label="mark as read" v-on:click="markAsRead(gameId)">
+          <FontAwesomeIcon icon="fa-solid fa-circle-check" />
+        </button>
+        <button aria-label="clear" v-on:click="clear(gameId)">
+          <FontAwesomeIcon icon="fa-solid fa-trash" />
+        </button>
+        <button aria-label="unsubscribe" v-on:click="unsubscribe(gameId)">
+          <FontAwesomeIcon icon="fa-solid fa-eye-slash" />
+        </button>
       </div>
     </div>
   </main>
@@ -74,5 +127,8 @@ function renderNotification(notification: GameNotification): string {
   padding: 5px;
   box-shadow: 0 0 5px black;
   width: fit-content;
+}
+strong {
+  font-weight: 800;
 }
 </style>

@@ -24,7 +24,19 @@ export async function getUserNotificationsCount(
   const queryResult = await notifications()
     .aggregate([
       { $match: { userId: userId } },
-      { $project: { num: { $size: "$notifications" } } },
+      {
+        $project: {
+          num: {
+            $size: {
+              $filter: {
+                input: "$notifications",
+                as: "notification",
+                cond: { $eq: ["$$notification.read", false] },
+              },
+            },
+          },
+        },
+      },
     ])
     .toArray();
 
@@ -80,6 +92,7 @@ export async function notifyOfGameEnd(
     gameId: gameId,
     type: Notifications.gameEnd,
     params: { result: gameResult },
+    read: false,
   };
   return await addGameNotification(
     getRecipientIDs(subscriptions, Notifications.gameEnd),
@@ -102,11 +115,13 @@ export async function notifyOfNewRound(
     gameId: gameId,
     type: Notifications.newRound,
     params: { round: round },
+    read: false,
   };
   const myMoveNotification: GameNotification = {
     gameId: gameId,
     type: Notifications.myMove,
     params: { round: round },
+    read: false,
   };
   await addGameNotification(
     getRecipientIDs(subscriptions, Notifications.myMove).filter((id) =>
@@ -131,10 +146,32 @@ export async function notifyOfSeatChange(
     gameId: gameId,
     type: Notifications.seatChange,
     params: { seat: seat, user: user, didTakeSeat: didTakeSeat },
+    read: false,
   };
   return await addGameNotification(
     getRecipientIDs(subscriptions, Notifications.seatChange),
     newNotification,
+  );
+}
+
+export async function markAsRead(
+  userId: string,
+  gameId: string,
+): Promise<UpdateResult<UserNotifications>> {
+  return notifications().updateOne(
+    { userId: userId },
+    { $set: { "notifications.$[notification].read": true } },
+    { arrayFilters: [{ "notification.gameId": gameId }] },
+  );
+}
+
+export async function clearNotifications(
+  userId: string,
+  gameId: string,
+): Promise<UpdateResult<UserNotifications>> {
+  return notifications().updateOne(
+    { userId: userId },
+    { $pull: { notifications: { gameId: gameId } } },
   );
 }
 

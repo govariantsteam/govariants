@@ -4,6 +4,7 @@ export type DBGameNotification = {
   gameId: string;
   type: NotificationType;
   params?: unknown;
+  read: boolean;
 };
 
 export type UserNotifications = {

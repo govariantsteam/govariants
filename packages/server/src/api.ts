@@ -32,8 +32,10 @@ import {
 import { io } from "./socket_io";
 import { checkCSRFToken, generateCSRFToken } from "./csrf_guard";
 import {
+  clearNotifications,
   getUserNotifications,
   getUserNotificationsCount,
+  markAsRead,
 } from "./notifications/notifications";
 
 export const router = express.Router();
@@ -386,3 +388,76 @@ router.post("/game/:gameId/subscribe", checkCSRFToken, async (req, res) => {
     res.send();
   }
 });
+
+router.post("/game/:gameId/unsubscribe", checkCSRFToken, async (req, res) => {
+  try {
+    const userId = (req.user as User).id;
+
+    const clearedNotifications = await clearNotifications(
+      userId,
+      req.params.gameId,
+    );
+    if (!clearedNotifications) {
+      throw new Error("Failed to clear notifications.");
+    }
+    const subscribed = await subscribeToGameNotifications(
+      req.params.gameId,
+      userId,
+      [],
+    );
+
+    if (subscribed) {
+      res.status(200);
+    } else {
+      res.status(500);
+    }
+    res.send({});
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+    res.send();
+  }
+});
+
+router.post(
+  "/notifications/:gameId/mark-as-read",
+  checkCSRFToken,
+  async (req, res) => {
+    try {
+      const userId = (req.user as User).id;
+
+      const result = await markAsRead(userId, req.params.gameId);
+
+      if (result.acknowledged) {
+        res.status(200);
+      } else {
+        res.status(500);
+      }
+      res.send({});
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+      res.send({});
+    }
+  },
+);
+
+router.post(
+  "/notifications/:gameId/clear",
+  checkCSRFToken,
+  async (req, res) => {
+    try {
+      const userId = (req.user as User).id;
+
+      const result = await clearNotifications(userId, req.params.gameId);
+
+      if (result.acknowledged) {
+        res.status(200);
+      } else {
+        res.status(500);
+      }
+      res.send({});
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+      res.send({});
+    }
+  },
+);

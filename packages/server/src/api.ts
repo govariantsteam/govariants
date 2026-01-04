@@ -65,16 +65,6 @@ router.get("/game/:gameId/sgf", async (req, res) => {
   }
 });
 
-router.get("/games/:gameId", async (req, res) => {
-  try {
-    const game: GameResponse = await getGame(req.params.gameId);
-    res.send(game);
-  } catch (e) {
-    res.status(500);
-    res.json(e.message);
-  }
-});
-
 router.get("/games", async (req, res) => {
   const filter: GamesFilter = {
     user_id: req.query.user_id?.toString(),
@@ -86,7 +76,17 @@ router.get("/games", async (req, res) => {
     Number(req.query.offset),
     filter,
   );
-  res.send(games || 0);
+  const gameStates = games.map(
+    (game): GameInitialResponse => ({
+      id: game.id,
+      variant: game.variant,
+      config: game.config,
+      creator: game.creator,
+      players: game.players,
+      stateResponse: getGameState(game, null, null),
+    }),
+  );
+  res.send(gameStates || 0);
 });
 
 router.post("/games", checkCSRFToken, async (req, res) => {
@@ -356,7 +356,7 @@ router.get("/logout", async function (req, res) {
 router.get("/games/:gameId/state/initial", async (req, res) => {
   try {
     const game = await getGame(req.params.gameId);
-    const stateResponse = await getGameState(game, null, null);
+    const stateResponse = getGameState(game, null, null);
     const result: GameInitialResponse = {
       variant: game.variant,
       config: game.config,
@@ -377,7 +377,7 @@ router.get("/games/:gameId/state", async (req, res) => {
     const seat = req.query.seat === "" ? null : Number(req.query.seat);
     const round = req.query.round === "" ? null : Number(req.query.round);
     const game = await getGame(req.params.gameId);
-    const stateResponse = await getGameState(game, seat, round);
+    const stateResponse = getGameState(game, seat, round);
     res.send(stateResponse);
   } catch (e) {
     res.status(500);

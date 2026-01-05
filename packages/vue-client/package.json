@@ -9,6 +9,7 @@
     "preview": "vite preview --port 4173",
     "build-only": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
+    "test": "vitest",
     "lint:check": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "gen-favicon": "rimraf public/favicon.ico && icon-gen --ico -i public/logo.svg -o public --ico-name favicon"
@@ -54,6 +55,7 @@
     "eslint": "^8.44.0",
     "eslint-plugin-vue": "^9.25.0",
     "icon-gen": "^4.0.0",
+    "jsdom": "^27.4.0",
     "postcss": "^8.4.35",
     "postcss-nesting": "^12.0.4",
     "prettier": "^2.8.8",

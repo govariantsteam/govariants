@@ -53,6 +53,7 @@ onMounted(() => {
     cursor: pointer;
     background-color: transparent;
     border-style: none;
+    color: var(--color-text);
   }
 
   .expand-content {

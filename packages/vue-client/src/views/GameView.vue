@@ -109,7 +109,7 @@ watchEffect(async () => {
       config.value = result.config;
       players.value = result.players;
       creator.value = result.creator;
-      setNewState(result.stateResponse);
+      setNewState(result);
     })
     .catch((err) => {
       errorOccured.value = true;

@@ -56,9 +56,5 @@ export type GameStateResponse = {
   timeControl?: ITimeControlBase;
 };
 
-export type GameInitialResponse = Omit<
-  GameResponse,
-  "moves" | "timeControl"
-> & {
-  stateResponse: GameStateResponse;
-};
+export type GameInitialResponse = Omit<GameResponse, "moves" | "timeControl"> &
+  GameStateResponse;

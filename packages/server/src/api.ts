@@ -83,7 +83,7 @@ router.get("/games", async (req, res) => {
       config: game.config,
       creator: game.creator,
       players: game.players,
-      stateResponse: getGameState(game, null, null),
+      ...getGameState(game, null, null),
     }),
   );
   res.send(gameStates || 0);
@@ -363,7 +363,7 @@ router.get("/games/:gameId/state/initial", async (req, res) => {
       id: game.id,
       players: game.players,
       creator: game.creator,
-      stateResponse: stateResponse,
+      ...stateResponse,
     };
     res.send(result);
   } catch (e) {

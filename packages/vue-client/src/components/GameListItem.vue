@@ -9,11 +9,7 @@ import { getBoard } from "@/board_map";
 const props = defineProps<{ game: GameInitialResponse }>();
 
 const transformedGameData = computed(() =>
-  uiTransform(
-    props.game.variant,
-    props.game.config,
-    props.game.stateResponse.state,
-  ),
+  uiTransform(props.game.variant, props.game.config, props.game.state),
 );
 
 const variantGameView = computed(() => getBoard(props.game.variant));

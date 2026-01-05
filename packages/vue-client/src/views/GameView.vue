@@ -109,7 +109,7 @@ watchEffect(async () => {
       config.value = result.config;
       players.value = result.players;
       creator.value = result.creator;
-      setNewState(result.stateResponse);
+      setNewState(result);
 
       // Auto-select seat if user occupies exactly one seat
       const userSeats = players.value

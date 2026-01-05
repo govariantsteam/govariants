@@ -304,11 +304,11 @@ export async function leaveSeat(
   return updateSeat(game_id, seat, user, undefined);
 }
 
-export async function getGameState(
+export function getGameState(
   game: GameResponse,
   seat: number | null,
   round: number | null,
-): Promise<GameStateResponse> {
+): GameStateResponse {
   let game_obj = makeGameObject(game.variant, game.config);
 
   for (let i = 0; i < game.moves.length; i++) {

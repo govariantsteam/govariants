@@ -1,29 +1,15 @@
 <script setup lang="ts">
 import {
-  makeGameObject,
-  type GameResponse,
-  getOnlyMove,
   uiTransform,
+  type GameInitialResponse,
 } from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
 import { getBoard } from "@/board_map";
 
-const props = defineProps<{ game: GameResponse }>();
-
-const game = computed(() => {
-  const game_obj = makeGameObject(props.game.variant, props.game.config);
-  props.game.moves.forEach((m) => {
-    const { player, move } = getOnlyMove(m);
-    game_obj.playMove(player, move);
-  });
-  const state = game_obj.exportState();
-  return {
-    state,
-  };
-});
+const props = defineProps<{ game: GameInitialResponse }>();
 
 const transformedGameData = computed(() =>
-  uiTransform(props.game.variant, props.game.config, game.value.state),
+  uiTransform(props.game.variant, props.game.config, props.game.state),
 );
 
 const variantGameView = computed(() => getBoard(props.game.variant));

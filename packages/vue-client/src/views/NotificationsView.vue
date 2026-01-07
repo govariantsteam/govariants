@@ -84,10 +84,6 @@ async function clear(gameId: string): Promise<unknown> {
     .catch(alert)
     .then(load);
 }
-
-async function unsubscribe(gameId: string): Promise<unknown> {
-  return requests.post(`/game/${gameId}/unsubscribe`).catch(alert).then(load);
-}
 </script>
 
 <template>
@@ -112,9 +108,6 @@ async function unsubscribe(gameId: string): Promise<unknown> {
         </button>
         <button aria-label="clear" v-on:click="clear(gameId)">
           <FontAwesomeIcon icon="fa-solid fa-trash" />
-        </button>
-        <button aria-label="unsubscribe" v-on:click="unsubscribe(gameId)">
-          <FontAwesomeIcon icon="fa-solid fa-eye-slash" />
         </button>
       </div>
     </div>

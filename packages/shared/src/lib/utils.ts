@@ -58,6 +58,10 @@ export function getNullIndices(arr: unknown[]) {
   }, []);
 }
 
+export function sum(array: number[]): number {
+  return array.reduce((a, b) => a + b, 0);
+}
+
 export function groupBy<T, K>(arr: T[], selector: (v: T) => K): [K, T[]][] {
   return [
     ...arr

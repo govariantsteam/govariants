@@ -2,7 +2,7 @@
 import { ref, computed, type Ref } from "vue";
 import { useFetch } from "@vueuse/core";
 import {
-  type GameResponse,
+  type GameInitialResponse,
   type GamesFilter,
   gamesFilterToUrlParams,
 } from "@ogfcommunity/variants-shared";
@@ -22,7 +22,7 @@ const url = computed(
 );
 const { data: games } = await useFetch(url, { refetch: true })
   .get()
-  .json<GameResponse[]>();
+  .json<GameInitialResponse[]>();
 const first = () => {
   offset.value = 0;
 };

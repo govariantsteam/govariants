@@ -53,6 +53,7 @@ const time_control = ref<ITimeControlBase | null>(null);
 // admin interface behind a toggle.
 const adminMode = ref<boolean>(false);
 const errorOccured = ref<boolean>(false);
+const creator = ref<User | undefined>();
 const subscription = ref<NotificationType[]>([]);
 
 function setNewState(stateResponse: GameStateResponse): void {
@@ -111,7 +112,18 @@ watchEffect(async () => {
       config.value = result.config;
       players.value = result.players;
       subscription.value = result.subscription ?? [];
-      setNewState(result.stateResponse);
+      creator.value = result.creator;
+      setNewState(result);
+
+      // Auto-select seat if user occupies exactly one seat
+      const userSeats = players.value
+        ?.map((player: User | undefined, index: number) =>
+          player?.id === user.value?.id ? index : null,
+        )
+        .filter((index: number | null): index is number => index !== null);
+      if (userSeats?.length === 1) {
+        setPlayingAs(userSeats[0]);
+      }
     })
     .catch((err) => {
       errorOccured.value = true;
@@ -253,6 +265,7 @@ async function repairGame(): Promise<void> {
           v-bind:gamestate="transformedGameData.gamestate"
           v-bind:config="transformedGameData.config"
           v-bind:displayed_round="displayed_round"
+          v-bind:next-to-play="game_state?.next_to_play"
           v-on:move="makeMove"
         />
         <NavButtons :gameRound="current_round" v-model="view_round" />
@@ -268,6 +281,13 @@ async function repairGame(): Promise<void> {
           <div>
             <span class="info-label">Description:</span>
             <span class="info-attribute">{{ variantDescriptionShort }}</span>
+          </div>
+
+          <div v-if="creator">
+            <span class="info-label">Created by:</span>
+            <span class="info-attribute">{{
+              creator.username ?? creator.id
+            }}</span>
           </div>
         </div>
 

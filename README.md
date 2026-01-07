@@ -33,7 +33,7 @@ See https://github.com/govariantsteam/govariants/pull/249 for information about 
 
 ## Creating a new variant
 
-This PR has a simple example showing how to add chess to the repo: https://github.com/govariantsteam/govariants/pull/105
+See `docs/variant-implementation.md` for a step-by-step guide. If you want a concrete reference, https://github.com/govariantsteam/govariants/pull/105 shows how chess was added earlier.
 
 There are two main files to be concerned with: `shared/src/chess/chess.ts` and `vue-client/src/components/boards/ChessBoard.ts`.  The former specifies the rules of the game while the latter specifies how to render it on the client.
 

@@ -5,11 +5,14 @@ import DriftGoConfigFormVue from "./components/GameCreation/DriftGoConfigForm.vu
 import GridBadukConfigForm from "./components/GameCreation/GridBadukConfigForm.vue";
 import SFractionalConfigForm from "./components/GameCreation/SFractionalConfigForm.vue";
 import PyramidConfigForm from "./components/GameCreation/PyramidConfigForm.vue";
+import RengoConfigForm from "./components/GameCreation/RengoConfigForm.vue";
+import CubeBadukConfigForm from "./components/GameCreation/CubeBadukConfigForm.vue";
 
 export const config_form_map: {
   [variant: string]: Component<{ initialConfig: object }>;
 } = {
   baduk: BadukConfigForm,
+  cube: CubeBadukConfigForm,
   phantom: BadukConfigForm,
   parallel: ParalleGoConfigForm,
   capture: BadukConfigForm,
@@ -23,4 +26,5 @@ export const config_form_map: {
   quantum: BadukConfigForm,
   sfractional: SFractionalConfigForm,
   lighthouse: GridBadukConfigForm,
+  rengo: RengoConfigForm,
 };

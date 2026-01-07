@@ -18,7 +18,9 @@ import {
   deleteUser,
   getUser,
   getUserByName,
+  getUserEmail,
   setUserRole,
+  setUserEmail,
 } from "./users";
 import {
   getOnlyMove,
@@ -31,6 +33,7 @@ import {
 } from "@ogfcommunity/variants-shared";
 import { io } from "./socket_io";
 import { checkCSRFToken, generateCSRFToken } from "./csrf_guard";
+import { sendEmail } from "./email";
 import {
   clearNotifications,
   getUserNotifications,
@@ -69,16 +72,6 @@ router.get("/game/:gameId/sgf", async (req, res) => {
   }
 });
 
-router.get("/games/:gameId", async (req, res) => {
-  try {
-    const game: GameResponse = await getGame(req.params.gameId);
-    res.send(game);
-  } catch (e) {
-    res.status(500);
-    res.json(e.message);
-  }
-});
-
 router.get("/games", async (req, res) => {
   const filter: GamesFilter = {
     user_id: req.query.user_id?.toString(),
@@ -90,7 +83,17 @@ router.get("/games", async (req, res) => {
     Number(req.query.offset),
     filter,
   );
-  res.send(games || 0);
+  const gameStates = games.map(
+    (game): GameInitialResponse => ({
+      id: game.id,
+      variant: game.variant,
+      config: game.config,
+      creator: game.creator,
+      players: game.players,
+      ...getGameState(game, null, null),
+    }),
+  );
+  res.send(gameStates || 0);
 });
 
 router.post("/games", checkCSRFToken, async (req, res) => {
@@ -104,7 +107,12 @@ router.post("/games", checkCSRFToken, async (req, res) => {
   }
 
   try {
-    const game: GameResponse = await createGame(data.variant, data.config);
+    const user = req.user as User;
+    const game: GameResponse = await createGame(
+      data.variant,
+      data.config,
+      user,
+    );
     res.send(game);
   } catch (e) {
     res.status(500);
@@ -157,7 +165,7 @@ router.post("/games/:gameId/leave/:seat", checkCSRFToken, async (req, res) => {
 });
 
 router.post("/register", async (req, res, next) => {
-  const { username, password } = req.body;
+  const { username, password, email } = req.body;
   const user = await getUserByName(username);
   if (user) {
     res.status(500).json(`Username "${username}" already taken!`);
@@ -171,7 +179,7 @@ router.post("/register", async (req, res, next) => {
     return;
   }
 
-  await createUserWithUsernameAndPassword(username, password);
+  await createUserWithUsernameAndPassword(username, password, email);
   passport.authenticate("local", make_auth_cb(req, res))(req, res, next);
 });
 
@@ -201,6 +209,66 @@ router.put("/users/:userId/role", checkCSRFToken, async (req, res) => {
 
     userToUpdate.role = role;
     res.send(userToUpdate);
+  } catch (e) {
+    res.status(500);
+    res.json(e.message);
+  }
+});
+
+router.get("/users/:userId/email", checkCSRFToken, async (req, res) => {
+  try {
+    if (!req.user) {
+      res.status(401);
+      res.json("You must be logged in to view email.");
+      return;
+    }
+
+    const currentUser = req.user as UserResponse;
+
+    // Users can only view their own email (unless they're an admin)
+    if (currentUser.id !== req.params.userId && currentUser.role !== "admin") {
+      res.status(403);
+      res.json("You can only view your own email.");
+      return;
+    }
+
+    const email = await getUserEmail(req.params.userId);
+    res.json({ email: email || null });
+  } catch (e) {
+    res.status(500);
+    res.json(e.message);
+  }
+});
+
+router.put("/users/:userId/email", checkCSRFToken, async (req, res) => {
+  const { email } = req.body;
+  try {
+    if (!req.user) {
+      res.status(401);
+      res.json("You must be logged in to update email.");
+      return;
+    }
+
+    const currentUser = req.user as UserResponse;
+
+    // Users can only update their own email (unless they're an admin)
+    if (currentUser.id !== req.params.userId && currentUser.role !== "admin") {
+      res.status(403);
+      res.json("You can only update your own email.");
+      return;
+    }
+
+    const userToUpdate = await getUser(req.params.userId);
+
+    if (userToUpdate.login_type !== "persistent") {
+      throw new Error(
+        `Cannot set email for user with "${userToUpdate.login_type}" type.`,
+      );
+    }
+
+    await setUserEmail(req.params.userId, email);
+
+    res.json({ success: true, email });
   } catch (e) {
     res.status(500);
     res.json(e.message);
@@ -295,13 +363,14 @@ router.get("/logout", async function (req, res) {
 router.get("/games/:gameId/state/initial", async (req, res) => {
   try {
     const game = await getGame(req.params.gameId);
-    const stateResponse = await getGameState(game, null, null);
+    const stateResponse = getGameState(game, null, null);
     const result: GameInitialResponse = {
       variant: game.variant,
       config: game.config,
       id: game.id,
       players: game.players,
-      stateResponse: stateResponse,
+      creator: game.creator,
+      ...stateResponse,
     };
     if (req.user && game.subscriptions) {
       result.subscription = game.subscriptions[(req.user as User).id] ?? [];
@@ -318,7 +387,7 @@ router.get("/games/:gameId/state", async (req, res) => {
     const seat = req.query.seat === "" ? null : Number(req.query.seat);
     const round = req.query.round === "" ? null : Number(req.query.round);
     const game = await getGame(req.params.gameId);
-    const stateResponse = await getGameState(game, seat, round);
+    const stateResponse = getGameState(game, seat, round);
     res.send(stateResponse);
   } catch (e) {
     res.status(500);
@@ -330,6 +399,35 @@ router.post("/game/:gameId/repair", checkCSRFToken, async (req, res) => {
   try {
     await repairGame(req.params.gameId);
     res.send({});
+  } catch (e) {
+    res.status(500);
+    res.json(e.message);
+  }
+});
+
+router.post("/admin/test-email", checkCSRFToken, async (req, res) => {
+  try {
+    if (!req.user || (req.user as UserResponse).role !== "admin") {
+      res.status(401);
+      res.json("Only admins may send test emails.");
+      return;
+    }
+
+    const { to } = req.body;
+    if (!to) {
+      res.status(400);
+      res.json("Email address is required.");
+      return;
+    }
+
+    await sendEmail(
+      "GoVariants Test Email",
+      to,
+      "Test Email\n\nThis is a test email from GoVariants. If you received this, your email configuration is working correctly!",
+      "<h1>Test Email</h1><p>This is a test email from GoVariants. If you received this, your email configuration is working correctly!</p>",
+    );
+
+    res.json({ success: true, message: "Test email sent successfully." });
   } catch (e) {
     res.status(500);
     res.json(e.message);

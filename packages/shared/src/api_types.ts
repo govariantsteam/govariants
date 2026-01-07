@@ -27,6 +27,7 @@ export interface GameResponse {
   config: { time_control?: ITimeControlConfig };
   players?: Array<User | undefined>;
   time_control?: ITimeControlBase;
+  creator?: User;
   subscriptions?: GameSubscriptions;
 }
 
@@ -57,10 +58,5 @@ export type GameStateResponse = {
   timeControl?: ITimeControlBase;
 };
 
-export type GameInitialResponse = Omit<
-  GameResponse,
-  "moves" | "timeControl"
-> & {
-  stateResponse: GameStateResponse;
-  subscription?: NotificationType[];
-};
+export type GameInitialResponse = Omit<GameResponse, "moves" | "timeControl"> &
+  GameStateResponse & { subscription?: NotificationType[] };

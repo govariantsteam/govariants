@@ -154,6 +154,7 @@ watch(
         v-bind:gamestate="transformedGameData.gamestate"
         v-bind:config="transformedGameData.config"
         v-bind:displayed_round="displayed_round"
+        v-bind:next-to-play="game.next_to_play"
         v-on:move="makeMove"
       />
       <NavButtons v-model="view_round" :gameRound="game.round" />

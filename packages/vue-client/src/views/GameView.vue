@@ -5,6 +5,7 @@ import {
   supportsSGF,
   getDescription,
   uiTransform,
+  NotificationType,
 } from "@ogfcommunity/variants-shared";
 import * as requests from "../requests";
 import SeatComponent from "@/components/GameView/SeatComponent.vue";
@@ -23,6 +24,7 @@ import PlayersToMove from "@/components/GameView/PlayersToMove.vue";
 import DownloadSGF from "@/components/GameView/DownloadSGF.vue";
 import { getPlayingTable } from "@/playing_table_map";
 import Swal from "sweetalert2";
+import SubscriptionDialog from "@/components/GameView/SubscriptionDialog.vue";
 
 const props = defineProps<{ gameId: string }>();
 
@@ -52,6 +54,7 @@ const time_control = ref<ITimeControlBase | null>(null);
 const adminMode = ref<boolean>(false);
 const errorOccured = ref<boolean>(false);
 const creator = ref<User | undefined>();
+const subscription = ref<NotificationType[]>([]);
 
 function setNewState(stateResponse: GameStateResponse): void {
   const { timeControl: timeControl, ...state } = stateResponse;
@@ -108,6 +111,7 @@ watchEffect(async () => {
       variant.value = result.variant;
       config.value = result.config;
       players.value = result.players;
+      subscription.value = result.subscription ?? [];
       creator.value = result.creator;
       setNewState(result);
 
@@ -323,6 +327,11 @@ async function repairGame(): Promise<void> {
               {{ value }}
             </button>
           </div>
+          <SubscriptionDialog
+            :gameId="props.gameId"
+            :subscription="subscription"
+            :disabled="!user"
+          ></SubscriptionDialog>
         </div>
 
         <DownloadSGF v-if="supportsSGF(variant)" :gameId="gameId" />

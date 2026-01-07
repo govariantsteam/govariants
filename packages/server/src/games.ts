@@ -11,6 +11,8 @@ import {
   sanitizeConfig,
   ITimeControlBase,
   UserResponse,
+  NotificationType,
+  GameSubscriptions,
 } from "@ogfcommunity/variants-shared";
 import { ObjectId, WithId, Document, Filter, Collection } from "mongodb";
 import { getDb } from "./db";
@@ -22,14 +24,20 @@ import {
   ValidateTimeControlConfig,
 } from "./time-control/time-control";
 import { updateRatings, supportsRatings } from "./rating/rating";
+import {
+  notifyOfGameEnd,
+  notifyOfNewRound,
+  notifyOfSeatChange,
+} from "./notifications/notifications";
 
 export type GameSchema = {
   variant: string;
   moves: MovesType[];
   config: object;
-  players?: Array<User | undefined>;
+  players: Array<User | undefined>;
   time_control?: ITimeControlBase;
   creator?: User;
+  subscriptions?: GameSubscriptions;
 };
 
 export function gamesCollection(): Collection<GameSchema> {
@@ -106,7 +114,7 @@ export async function createGame(
   // Construct a game from the config to ensure the config is valid
   const gameObj = makeGameObject(variant, config);
 
-  const game = {
+  const game: GameSchema = {
     variant: variant,
     moves: [] as MovesType[],
     config: config,
@@ -218,6 +226,23 @@ export async function handleMoveAndTime(
     await updateRatings(game, game_obj);
   }
 
+  if (isRoundTransition) {
+    const userIdsOnThePlay = game_obj
+      .nextToPlay()
+      .map((index) => game.players[index]?.id)
+      .filter((x) => !!x);
+    await notifyOfNewRound(
+      game.subscriptions ?? {},
+      game.id,
+      game_obj.round,
+      userIdsOnThePlay,
+    );
+  }
+
+  if (game_obj.phase === "gameover") {
+    await notifyOfGameEnd(game.subscriptions ?? {}, game.id, game_obj.result);
+  }
+
   return game;
 }
 
@@ -270,7 +295,9 @@ async function updateSeat(
   user: UserResponse,
   new_user: User | undefined,
 ) {
-  const game = await getGame(game_id);
+  const game = await gamesCollection().findOne({
+    _id: new ObjectId(game_id),
+  });
 
   // If the seat is occupied by another player, throw an error.
   if (
@@ -287,6 +314,13 @@ async function updateSeat(
   await gamesCollection().updateOne(
     { _id: new ObjectId(game_id) },
     { $set: { [`players.${seat}`]: new_user } },
+  );
+  await notifyOfSeatChange(
+    game.subscriptions ?? {},
+    game_id,
+    seat,
+    user.username,
+    new_user !== undefined,
   );
 
   return game.players;
@@ -372,6 +406,32 @@ export async function repairGame(gameId: string): Promise<void> {
   }
 }
 
+export async function subscribeToGameNotifications(
+  gameId: string,
+  userId: string,
+  types: NotificationType[],
+): Promise<boolean> {
+  const nestedKey = `subscriptions.${userId}`;
+  const updateResult = await gamesCollection().updateOne(
+    { _id: new ObjectId(gameId) },
+    {
+      $set: { [nestedKey]: types },
+    },
+  );
+
+  return updateResult.matchedCount === 1;
+}
+
+export async function getGamesById(ids: string[]): Promise<GameResponse[]> {
+  return (
+    await gamesCollection()
+      .find({
+        _id: { $in: ids.map((id) => new ObjectId(id)) },
+      })
+      .toArray()
+  ).map(outwardFacingGame);
+}
+
 function outwardFacingGame(db_game: WithId<GameSchema>): GameResponse {
   const config = sanitizeConfig(db_game.variant, db_game.config);
   return {
@@ -382,5 +442,6 @@ function outwardFacingGame(db_game: WithId<GameSchema>): GameResponse {
     players: db_game.players,
     time_control: db_game.time_control,
     creator: db_game.creator,
+    subscriptions: db_game.subscriptions,
   };
 }

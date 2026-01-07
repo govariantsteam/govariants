@@ -1,5 +1,8 @@
 import express from "express";
-import { makeGameObject } from "@ogfcommunity/variants-shared";
+import {
+  makeGameObject,
+  NotificationsResponse,
+} from "@ogfcommunity/variants-shared";
 import passport, { AuthenticateCallback } from "passport";
 import {
   getGame,
@@ -10,6 +13,8 @@ import {
   leaveSeat,
   getGameState,
   repairGame,
+  subscribeToGameNotifications,
+  getGamesById,
 } from "./games";
 import {
   checkUsername,
@@ -33,6 +38,13 @@ import {
 import { io } from "./socket_io";
 import { checkCSRFToken, generateCSRFToken } from "./csrf_guard";
 import { sendEmail } from "./email";
+import { groupBy } from "../../shared/src/lib/utils";
+import {
+  clearNotifications,
+  getUserNotifications,
+  getUserNotificationsCount,
+  markAsRead,
+} from "./notifications/notifications";
 
 export const router = express.Router();
 
@@ -365,6 +377,9 @@ router.get("/games/:gameId/state/initial", async (req, res) => {
       creator: game.creator,
       ...stateResponse,
     };
+    if (req.user && game.subscriptions) {
+      result.subscription = game.subscriptions[(req.user as User).id] ?? [];
+    }
     res.send(result);
   } catch (e) {
     res.status(500);
@@ -423,3 +438,120 @@ router.post("/admin/test-email", checkCSRFToken, async (req, res) => {
     res.json(e.message);
   }
 });
+
+router.get("/notifications/count", checkCSRFToken, async (req, res) => {
+  if (!req.user) {
+    res.sendStatus(401);
+    return;
+  }
+
+  try {
+    res.send({
+      count: await getUserNotificationsCount((req.user as User).id),
+    });
+  } catch (e) {
+    res.status(500);
+    res.json(e.message);
+  }
+});
+
+router.get("/notifications", checkCSRFToken, async (req, res) => {
+  if (!req.user) {
+    res.send([]);
+    return;
+  }
+
+  try {
+    const userNotifications = await getUserNotifications((req.user as User).id);
+    const groups = groupBy(userNotifications, (n) => n.gameId);
+    const gameIds = groups.map(([gameId, _]) => gameId);
+    const gameStates = (await getGamesById([...gameIds])).map(
+      (game): GameInitialResponse => ({
+        id: game.id,
+        variant: game.variant,
+        config: game.config,
+        creator: game.creator,
+        players: game.players,
+        ...getGameState(game, null, null),
+      }),
+    );
+    const combined: NotificationsResponse[] = groups.map(
+      ([gameId, notifications]) => ({
+        gameId: gameId,
+        notifications: notifications,
+        gameState: gameStates.find((x) => x.id === gameId),
+      }),
+    );
+    res.send(combined);
+  } catch (e) {
+    res.status(500);
+    res.json(e.message);
+  }
+});
+
+router.post("/game/:gameId/subscribe", checkCSRFToken, async (req, res) => {
+  try {
+    const { notificationTypes } = req.body;
+    const userId = (req.user as User).id;
+
+    const success = await subscribeToGameNotifications(
+      req.params.gameId,
+      userId,
+      notificationTypes,
+    );
+
+    if (success) {
+      res.status(200);
+    } else {
+      res.status(500);
+    }
+    res.send(notificationTypes);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+    res.send();
+  }
+});
+
+router.post(
+  "/notifications/:gameId/mark-as-read",
+  checkCSRFToken,
+  async (req, res) => {
+    try {
+      const userId = (req.user as User).id;
+
+      const result = await markAsRead(userId, req.params.gameId);
+
+      if (result.acknowledged) {
+        res.status(200);
+      } else {
+        res.status(500);
+      }
+      res.send({});
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+      res.send({});
+    }
+  },
+);
+
+router.post(
+  "/notifications/:gameId/clear",
+  checkCSRFToken,
+  async (req, res) => {
+    try {
+      const userId = (req.user as User).id;
+
+      const result = await clearNotifications(userId, req.params.gameId);
+
+      if (result.acknowledged) {
+        res.status(200);
+      } else {
+        res.status(500);
+      }
+      res.send({});
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+      res.send({});
+    }
+  },
+);

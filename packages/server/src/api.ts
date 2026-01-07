@@ -1,5 +1,8 @@
 import express from "express";
-import { makeGameObject } from "@ogfcommunity/variants-shared";
+import {
+  makeGameObject,
+  NotificationsResponse,
+} from "@ogfcommunity/variants-shared";
 import passport, { AuthenticateCallback } from "passport";
 import {
   getGame,
@@ -11,6 +14,7 @@ import {
   getGameState,
   repairGame,
   subscribeToGameNotifications,
+  getGamesById,
 } from "./games";
 import {
   checkUsername,
@@ -34,6 +38,7 @@ import {
 import { io } from "./socket_io";
 import { checkCSRFToken, generateCSRFToken } from "./csrf_guard";
 import { sendEmail } from "./email";
+import { groupBy } from "../../shared/src/lib/utils";
 import {
   clearNotifications,
   getUserNotifications,
@@ -457,7 +462,27 @@ router.get("/notifications", checkCSRFToken, async (req, res) => {
   }
 
   try {
-    res.send(await getUserNotifications((req.user as User).id));
+    const userNotifications = await getUserNotifications((req.user as User).id);
+    const groups = groupBy(userNotifications, (n) => n.gameId);
+    const gameIds = groups.map(([gameId, _]) => gameId);
+    const gameStates = (await getGamesById([...gameIds])).map(
+      (game): GameInitialResponse => ({
+        id: game.id,
+        variant: game.variant,
+        config: game.config,
+        creator: game.creator,
+        players: game.players,
+        ...getGameState(game, null, null),
+      }),
+    );
+    const combined: NotificationsResponse[] = groups.map(
+      ([gameId, notifications]) => ({
+        gameId: gameId,
+        notifications: notifications,
+        gameState: gameStates.find((x) => x.id === gameId),
+      }),
+    );
+    res.send(combined);
   } catch (e) {
     res.status(500);
     res.json(e.message);

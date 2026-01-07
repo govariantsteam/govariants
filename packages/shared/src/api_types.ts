@@ -1,5 +1,9 @@
 import { MovesType } from "./lib/utils";
-import { GameSubscriptions, NotificationType } from "./notifications.types";
+import {
+  GameNotification,
+  GameSubscriptions,
+  NotificationType,
+} from "./notifications.types";
 import {
   ITimeControlBase,
   ITimeControlConfig,
@@ -60,3 +64,9 @@ export type GameStateResponse = {
 
 export type GameInitialResponse = Omit<GameResponse, "moves" | "timeControl"> &
   GameStateResponse & { subscription?: NotificationType[] };
+
+export type NotificationsResponse = {
+  gameId: string;
+  notifications: GameNotification[];
+  gameState: GameInitialResponse;
+};

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { computed, effect, Ref, ref, watchEffect } from "vue";
+import { effect, Ref, ref, watchEffect } from "vue";
 import * as requests from "@/requests";
 import { useCurrentUser, useStore } from "@/stores/user";
 import {
   GameNotification,
-  groupBy,
   Notifications,
+  NotificationsResponse,
 } from "@ogfcommunity/variants-shared";
 import { setNotificationsCount } from "@/stores/notifications";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -15,32 +15,34 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import GameListItem from "@/components/GameListItem.vue";
 
 library.add(faCircleCheck, faTrash, faEyeSlash);
 
-const notifications: Ref<GameNotification[] | null> = ref(null);
+const notificationGroups: Ref<NotificationsResponse[] | null> = ref(null);
 const store = useStore();
 const user = useCurrentUser();
-const groupedNotifications = computed(() => {
-  const notificationsArray = notifications.value;
-  if (notificationsArray == null) {
-    return null;
-  }
+// const groupedNotifications = computed(() => {
+//   const notificationsArray = notifications.value;
+//   if (notificationsArray == null) {
+//     return null;
+//   }
 
-  return groupBy(notificationsArray, (n) => n.gameId);
-});
+//   return groupBy(notificationsArray, (n) => n.gameId);
+// });
 
 effect(() =>
   setNotificationsCount(
-    notifications.value?.filter((notification) => !notification.read).length ??
-      0,
+    notificationGroups.value
+      ?.flatMap((x) => x.notifications)
+      .filter((notification) => !notification.read).length ?? 0,
   ),
 );
 
 async function load(): Promise<void> {
   await requests
     .get("/notifications")
-    .then((result) => (notifications.value = result))
+    .then((result) => (notificationGroups.value = result))
     .catch(alert);
 }
 
@@ -48,7 +50,7 @@ watchEffect(async () => {
   if (user.value && store.csrf_token) {
     await load();
   } else {
-    notifications.value = null;
+    notificationGroups.value = null;
   }
 });
 
@@ -91,11 +93,11 @@ async function clear(gameId: string): Promise<unknown> {
     <div>
       <div
         class="card"
-        v-for="[gameId, gameNotifications] in groupedNotifications"
+        v-for="{ gameId, notifications, gameState } in notificationGroups"
         :key="gameId"
       >
-        <RouterLink :to="`/game/${gameId}`">game-{{ gameId }}</RouterLink>
-        <div v-for="(notification, index) in gameNotifications" :key="index">
+        <GameListItem :game="gameState" />
+        <div v-for="(notification, index) in notifications" :key="index">
           <strong v-if="!notification.read" aria-label="unread">
             {{ renderNotification(notification) }}
           </strong>

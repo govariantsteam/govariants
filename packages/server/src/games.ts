@@ -422,6 +422,16 @@ export async function subscribeToGameNotifications(
   return updateResult.matchedCount === 1;
 }
 
+export async function getGamesById(ids: string[]): Promise<GameResponse[]> {
+  return (
+    await gamesCollection()
+      .find({
+        _id: { $in: ids.map((id) => new ObjectId(id)) },
+      })
+      .toArray()
+  ).map(outwardFacingGame);
+}
+
 function outwardFacingGame(db_game: WithId<GameSchema>): GameResponse {
   const config = sanitizeConfig(db_game.variant, db_game.config);
   return {

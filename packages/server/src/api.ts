@@ -33,6 +33,7 @@ import {
 import { io } from "./socket_io";
 import { checkCSRFToken, generateCSRFToken } from "./csrf_guard";
 import { sendEmail } from "./email";
+import { GameErrorDto } from "../../shared/src/api_types";
 
 export const router = express.Router();
 
@@ -77,16 +78,26 @@ router.get("/games", async (req, res) => {
       Number(req.query.offset),
       filter,
     );
-    const gameStates = games.map(
-      (game): GameInitialResponse => ({
-        id: game.id,
-        variant: game.variant,
-        config: game.config,
-        creator: game.creator,
-        players: game.players,
-        ...getGameState(game, null, null),
-      }),
-    );
+    const gameStates = games.map((game) => {
+      try {
+        const stateDto: GameInitialResponse = {
+          id: game.id,
+          variant: game.variant,
+          config: game.config,
+          creator: game.creator,
+          players: game.players,
+          ...getGameState(game, null, null),
+        };
+        return stateDto;
+      } catch (e) {
+        const errorDto: GameErrorDto = {
+          id: game.id,
+          variant: game.variant,
+          message: e.message,
+        };
+        return errorDto;
+      }
+    });
     res.send(gameStates || 0);
   } catch (e) {
     res.status(500);

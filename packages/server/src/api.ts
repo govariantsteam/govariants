@@ -33,7 +33,7 @@ import {
 import { io } from "./socket_io";
 import { checkCSRFToken, generateCSRFToken } from "./csrf_guard";
 import { sendEmail } from "./email";
-import { GameErrorDto } from "../../shared/src/api_types";
+import { GameErrorResponse } from "../../shared/src/api_types";
 
 export const router = express.Router();
 
@@ -90,10 +90,10 @@ router.get("/games", async (req, res) => {
         };
         return stateDto;
       } catch (e) {
-        const errorDto: GameErrorDto = {
+        const errorDto: GameErrorResponse = {
           id: game.id,
           variant: game.variant,
-          message: e.message,
+          errorMessage: e.message,
         };
         return errorDto;
       }

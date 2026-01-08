@@ -2,7 +2,7 @@
 import { ref, computed, type Ref } from "vue";
 import { useFetch } from "@vueuse/core";
 import {
-  type GameErrorDto,
+  type GameErrorResponse,
   type GameInitialResponse,
   type GamesFilter,
   gamesFilterToUrlParams,
@@ -23,7 +23,7 @@ const url = computed(
 );
 const { data: games } = await useFetch(url, { refetch: true })
   .get()
-  .json<(GameInitialResponse | GameErrorDto)[]>();
+  .json<(GameInitialResponse | GameErrorResponse)[]>();
 const first = () => {
   offset.value = 0;
 };
@@ -37,9 +37,13 @@ function setFilter(gamesFilter: GamesFilter) {
   filter.value = gamesFilter;
 }
 function isErrorResult(
-  dto: GameInitialResponse | GameErrorDto,
-): dto is GameErrorDto {
-  return "message" in dto;
+  dto: GameInitialResponse | GameErrorResponse,
+): dto is GameErrorResponse {
+  const messageProperty: Exclude<
+    keyof GameErrorResponse,
+    keyof GameInitialResponse
+  > = "errorMessage";
+  return messageProperty in dto;
 }
 </script>
 
@@ -50,7 +54,7 @@ function isErrorResult(
     <template v-for="game in games" :key="game.id">
       <template v-if="isErrorResult(game)">
         <GameListItemFallback
-          :error="game.message"
+          :error="game.errorMessage"
           :variant="game.variant"
           :game-id="game.id"
         />

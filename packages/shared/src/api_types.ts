@@ -58,3 +58,5 @@ export type GameStateResponse = {
 
 export type GameInitialResponse = Omit<GameResponse, "moves" | "timeControl"> &
   GameStateResponse;
+
+export type GameErrorDto = { id: string; variant: string; message: string };

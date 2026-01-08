@@ -2,6 +2,7 @@
 import { ref, computed, type Ref } from "vue";
 import { useFetch } from "@vueuse/core";
 import {
+  type GameErrorDto,
   type GameInitialResponse,
   type GamesFilter,
   gamesFilterToUrlParams,
@@ -22,7 +23,7 @@ const url = computed(
 );
 const { data: games } = await useFetch(url, { refetch: true })
   .get()
-  .json<GameInitialResponse[]>();
+  .json<(GameInitialResponse | GameErrorDto)[]>();
 const first = () => {
   offset.value = 0;
 };
@@ -35,6 +36,11 @@ const next = () => {
 function setFilter(gamesFilter: GamesFilter) {
   filter.value = gamesFilter;
 }
+function isErrorResult(
+  dto: GameInitialResponse | GameErrorDto,
+): dto is GameErrorDto {
+  return "message" in dto;
+}
 </script>
 
 <template>
@@ -42,17 +48,26 @@ function setFilter(gamesFilter: GamesFilter) {
   <hr />
   <ul>
     <template v-for="game in games" :key="game.id">
-      <VErrorBoundary stop-propagation>
-        <template #boundary="{ hasError, error }">
-          <GameListItemFallback
-            v-if="hasError"
-            :error="error.message"
-            :variant="game.variant"
-            :game-id="game.id"
-          />
-          <GameListItem v-else :game="game" />
-        </template>
-      </VErrorBoundary>
+      <template v-if="isErrorResult(game)">
+        <GameListItemFallback
+          :error="game.message"
+          :variant="game.variant"
+          :game-id="game.id"
+        />
+      </template>
+      <template v-else>
+        <VErrorBoundary stop-propagation>
+          <template #boundary="{ hasError, error }">
+            <GameListItemFallback
+              v-if="hasError"
+              :error="error.message"
+              :variant="game.variant"
+              :game-id="game.id"
+            />
+            <GameListItem v-else :game="game" />
+          </template>
+        </VErrorBoundary>
+      </template>
     </template>
   </ul>
   <button @click="first()" :disabled="offset === 0">First</button>

@@ -30,7 +30,7 @@ module.exports = {
           {
             name: "shared",
             message:
-              "Import the shared package using the package alias: import {X} from '@ogfcommunity/variants-shared/...' (not via a relative path).",
+              "Import the shared package using the package alias: import {X} from '@ogfcommunity/variants-shared' (not via a relative path).",
           },
         ],
       },

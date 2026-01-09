@@ -2,7 +2,6 @@
 import { ref, computed, type Ref } from "vue";
 import { useFetch } from "@vueuse/core";
 import {
-  type GameErrorResponse,
   type GameInitialResponse,
   type GamesFilter,
   gamesFilterToUrlParams,
@@ -23,7 +22,7 @@ const url = computed(
 );
 const { data: games } = await useFetch(url, { refetch: true })
   .get()
-  .json<(GameInitialResponse | GameErrorResponse)[]>();
+  .json<GameInitialResponse[]>();
 const first = () => {
   offset.value = 0;
 };
@@ -36,15 +35,6 @@ const next = () => {
 function setFilter(gamesFilter: GamesFilter) {
   filter.value = gamesFilter;
 }
-function isErrorResult(
-  dto: GameInitialResponse | GameErrorResponse,
-): dto is GameErrorResponse {
-  const messageProperty: Exclude<
-    keyof GameErrorResponse,
-    keyof GameInitialResponse
-  > = "errorMessage";
-  return messageProperty in dto;
-}
 </script>
 
 <template>
@@ -52,26 +42,17 @@ function isErrorResult(
   <hr />
   <ul>
     <template v-for="game in games" :key="game.id">
-      <template v-if="isErrorResult(game)">
-        <GameListItemFallback
-          :error="game.errorMessage"
-          :variant="game.variant"
-          :game-id="game.id"
-        />
-      </template>
-      <template v-else>
-        <VErrorBoundary stop-propagation>
-          <template #boundary="{ hasError, error }">
-            <GameListItemFallback
-              v-if="hasError"
-              :error="error.message"
-              :variant="game.variant"
-              :game-id="game.id"
-            />
-            <GameListItem v-else :game="game" />
-          </template>
-        </VErrorBoundary>
-      </template>
+      <VErrorBoundary stop-propagation>
+        <template #boundary="{ hasError, error }">
+          <GameListItemFallback
+            v-if="hasError"
+            :error="error.message"
+            :variant="game.variant"
+            :game-id="game.id"
+          />
+          <GameListItem v-else :game="game" />
+        </template>
+      </VErrorBoundary>
     </template>
   </ul>
   <button @click="first()" :disabled="offset === 0">First</button>

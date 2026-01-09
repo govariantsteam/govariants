@@ -58,9 +58,3 @@ export type GameStateResponse = {
 
 export type GameInitialResponse = Omit<GameResponse, "moves" | "timeControl"> &
   GameStateResponse;
-
-export type GameErrorResponse = {
-  id: string;
-  variant: string;
-  errorMessage: string;
-};

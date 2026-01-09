@@ -18,5 +18,22 @@ module.exports = {
       },
     ],
     eqeqeq: ["error", "smart"],
+    "no-restricted-imports": [
+      "error",
+      {
+        patterns: [
+          "@ogfcommunity/variants-shared/src/*",
+          "**/shared/**",
+          "shared/**",
+        ],
+        paths: [
+          {
+            name: "shared",
+            message:
+              "Import the shared package using the package alias: import {X} from '@ogfcommunity/variants-shared/...' (not via a relative path).",
+          },
+        ],
+      },
+    ],
   },
 };

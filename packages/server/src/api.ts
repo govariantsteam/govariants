@@ -29,11 +29,11 @@ import {
   User,
   UserResponse,
   GameInitialResponse,
+  GameErrorResponse,
 } from "@ogfcommunity/variants-shared";
 import { io } from "./socket_io";
 import { checkCSRFToken, generateCSRFToken } from "./csrf_guard";
 import { sendEmail } from "./email";
-import { GameErrorResponse } from "../../shared/src/api_types";
 
 export const router = express.Router();
 

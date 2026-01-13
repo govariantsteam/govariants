@@ -22,13 +22,12 @@ module.exports = {
       "error",
       {
         patterns: [
-          "@ogfcommunity/variants-shared/src/*",
-          "**/shared/**",
-          "shared/**",
-        ],
-        paths: [
           {
-            name: "shared",
+            group: [
+              "@ogfcommunity/variants-shared/src/*",
+              "/shared/",
+              "shared/**",
+            ],
             message:
               "Import the shared package using the package alias: import {X} from '@ogfcommunity/variants-shared' (not via a relative path).",
           },

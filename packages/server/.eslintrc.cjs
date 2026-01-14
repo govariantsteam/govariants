@@ -25,7 +25,7 @@ module.exports = {
           {
             group: [
               "@ogfcommunity/variants-shared/src/*",
-              "/shared/",
+              "**/shared/**",
               "shared/**",
             ],
             message:

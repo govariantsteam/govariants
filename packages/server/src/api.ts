@@ -29,6 +29,7 @@ import {
   User,
   UserResponse,
   GameInitialResponse,
+  GameErrorResponse,
 } from "@ogfcommunity/variants-shared";
 import { io } from "./socket_io";
 import { checkCSRFToken, generateCSRFToken } from "./csrf_guard";
@@ -66,27 +67,42 @@ router.get("/game/:gameId/sgf", async (req, res) => {
 });
 
 router.get("/games", async (req, res) => {
-  const filter: GamesFilter = {
-    user_id: req.query.user_id?.toString(),
-    variant: req.query.variant?.toString(),
-  };
+  try {
+    const filter: GamesFilter = {
+      user_id: req.query.user_id?.toString(),
+      variant: req.query.variant?.toString(),
+    };
 
-  const games: GameResponse[] = await getGames(
-    Number(req.query.count),
-    Number(req.query.offset),
-    filter,
-  );
-  const gameStates = games.map(
-    (game): GameInitialResponse => ({
-      id: game.id,
-      variant: game.variant,
-      config: game.config,
-      creator: game.creator,
-      players: game.players,
-      ...getGameState(game, null, null),
-    }),
-  );
-  res.send(gameStates || 0);
+    const games: GameResponse[] = await getGames(
+      Number(req.query.count),
+      Number(req.query.offset),
+      filter,
+    );
+    const gameStates = games.map((game) => {
+      try {
+        const stateDto: GameInitialResponse = {
+          id: game.id,
+          variant: game.variant,
+          config: game.config,
+          creator: game.creator,
+          players: game.players,
+          ...getGameState(game, null, null),
+        };
+        return stateDto;
+      } catch (e) {
+        const errorDto: GameErrorResponse = {
+          id: game.id,
+          variant: game.variant,
+          errorMessage: e.message,
+        };
+        return errorDto;
+      }
+    });
+    res.send(gameStates || 0);
+  } catch (e) {
+    res.status(500);
+    res.json(e.message);
+  }
 });
 
 router.post("/games", checkCSRFToken, async (req, res) => {

@@ -68,5 +68,11 @@ export type GameInitialResponse = Omit<GameResponse, "moves" | "timeControl"> &
 export type NotificationsResponse = {
   gameId: string;
   notifications: GameNotification[];
-  gameState: GameInitialResponse;
+  gameState: GameInitialResponse | GameErrorResponse;
+};
+
+export type GameErrorResponse = {
+  id: string;
+  variant: string;
+  errorMessage: string;
 };

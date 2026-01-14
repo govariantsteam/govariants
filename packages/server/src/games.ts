@@ -13,6 +13,8 @@ import {
   UserResponse,
   NotificationType,
   GameSubscriptions,
+  GameInitialResponse,
+  GameErrorResponse,
 } from "@ogfcommunity/variants-shared";
 import { ObjectId, WithId, Document, Filter, Collection } from "mongodb";
 import { getDb } from "./db";
@@ -444,4 +446,27 @@ function outwardFacingGame(db_game: WithId<GameSchema>): GameResponse {
     creator: db_game.creator,
     subscriptions: db_game.subscriptions,
   };
+}
+
+export function tryComputeState(
+  game: GameResponse,
+): GameInitialResponse | GameErrorResponse {
+  try {
+    const stateDto: GameInitialResponse = {
+      id: game.id,
+      variant: game.variant,
+      config: game.config,
+      creator: game.creator,
+      players: game.players,
+      ...getGameState(game, null, null),
+    };
+    return stateDto;
+  } catch (e) {
+    const errorDto: GameErrorResponse = {
+      id: game.id,
+      variant: game.variant,
+      errorMessage: e.message,
+    };
+    return errorDto;
+  }
 }

@@ -2,6 +2,7 @@ import express from "express";
 import {
   makeGameObject,
   NotificationsResponse,
+  groupBy,
 } from "@ogfcommunity/variants-shared";
 import passport, { AuthenticateCallback } from "passport";
 import {
@@ -15,6 +16,7 @@ import {
   repairGame,
   subscribeToGameNotifications,
   getGamesById,
+  tryComputeState,
 } from "./games";
 import {
   checkUsername,
@@ -38,7 +40,6 @@ import {
 import { io } from "./socket_io";
 import { checkCSRFToken, generateCSRFToken } from "./csrf_guard";
 import { sendEmail } from "./email";
-import { groupBy } from "../../shared/src/lib/utils";
 import {
   clearNotifications,
   getUserNotifications,
@@ -78,27 +79,23 @@ router.get("/game/:gameId/sgf", async (req, res) => {
 });
 
 router.get("/games", async (req, res) => {
-  const filter: GamesFilter = {
-    user_id: req.query.user_id?.toString(),
-    variant: req.query.variant?.toString(),
-  };
+  try {
+    const filter: GamesFilter = {
+      user_id: req.query.user_id?.toString(),
+      variant: req.query.variant?.toString(),
+    };
 
-  const games: GameResponse[] = await getGames(
-    Number(req.query.count),
-    Number(req.query.offset),
-    filter,
-  );
-  const gameStates = games.map(
-    (game): GameInitialResponse => ({
-      id: game.id,
-      variant: game.variant,
-      config: game.config,
-      creator: game.creator,
-      players: game.players,
-      ...getGameState(game, null, null),
-    }),
-  );
-  res.send(gameStates || 0);
+    const games: GameResponse[] = await getGames(
+      Number(req.query.count),
+      Number(req.query.offset),
+      filter,
+    );
+    const gameStates = games.map((game) => tryComputeState(game));
+    res.send(gameStates || 0);
+  } catch (e) {
+    res.status(500);
+    res.json(e.message);
+  }
 });
 
 router.post("/games", checkCSRFToken, async (req, res) => {
@@ -465,15 +462,8 @@ router.get("/notifications", checkCSRFToken, async (req, res) => {
     const userNotifications = await getUserNotifications((req.user as User).id);
     const groups = groupBy(userNotifications, (n) => n.gameId);
     const gameIds = groups.map(([gameId, _]) => gameId);
-    const gameStates = (await getGamesById([...gameIds])).map(
-      (game): GameInitialResponse => ({
-        id: game.id,
-        variant: game.variant,
-        config: game.config,
-        creator: game.creator,
-        players: game.players,
-        ...getGameState(game, null, null),
-      }),
+    const gameStates = (await getGamesById([...gameIds])).map((game) =>
+      tryComputeState(game),
     );
     const combined: NotificationsResponse[] = groups.map(
       ([gameId, notifications]) => ({

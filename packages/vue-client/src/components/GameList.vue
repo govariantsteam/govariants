@@ -2,9 +2,11 @@
 import { ref, computed, type Ref } from "vue";
 import { useFetch } from "@vueuse/core";
 import {
+  type GameErrorResponse,
   type GameInitialResponse,
   type GamesFilter,
   gamesFilterToUrlParams,
+  isErrorResult,
 } from "@ogfcommunity/variants-shared";
 import GameListItem from "@/components/GameListItem.vue";
 import GameListItemFallback from "@/components/GameListItemFallback.vue";
@@ -22,7 +24,7 @@ const url = computed(
 );
 const { data: games } = await useFetch(url, { refetch: true })
   .get()
-  .json<GameInitialResponse[]>();
+  .json<(GameInitialResponse | GameErrorResponse)[]>();
 const first = () => {
   offset.value = 0;
 };
@@ -42,17 +44,26 @@ function setFilter(gamesFilter: GamesFilter) {
   <hr />
   <ul>
     <template v-for="game in games" :key="game.id">
-      <VErrorBoundary stop-propagation>
-        <template #boundary="{ hasError, error }">
-          <GameListItemFallback
-            v-if="hasError"
-            :error="error.message"
-            :variant="game.variant"
-            :game-id="game.id"
-          />
-          <GameListItem v-else :game="game" />
-        </template>
-      </VErrorBoundary>
+      <template v-if="isErrorResult(game)">
+        <GameListItemFallback
+          :error="game.errorMessage"
+          :variant="game.variant"
+          :game-id="game.id"
+        />
+      </template>
+      <template v-else>
+        <VErrorBoundary stop-propagation>
+          <template #boundary="{ hasError, error }">
+            <GameListItemFallback
+              v-if="hasError"
+              :error="error.message"
+              :variant="game.variant"
+              :game-id="game.id"
+            />
+            <GameListItem v-else :game="game" />
+          </template>
+        </VErrorBoundary>
+      </template>
     </template>
   </ul>
   <button @click="first()" :disabled="offset === 0">First</button>

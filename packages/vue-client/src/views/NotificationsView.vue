@@ -4,6 +4,7 @@ import * as requests from "@/requests";
 import { useCurrentUser, useStore } from "@/stores/user";
 import {
   GameNotification,
+  isErrorResult,
   Notifications,
   NotificationsResponse,
 } from "@ogfcommunity/variants-shared";
@@ -16,20 +17,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import GameListItem from "@/components/GameListItem.vue";
+import GameListItemFallback from "@/components/GameListItemFallback.vue";
 
 library.add(faCircleCheck, faTrash, faEyeSlash);
 
 const notificationGroups: Ref<NotificationsResponse[] | null> = ref(null);
 const store = useStore();
 const user = useCurrentUser();
-// const groupedNotifications = computed(() => {
-//   const notificationsArray = notifications.value;
-//   if (notificationsArray == null) {
-//     return null;
-//   }
-
-//   return groupBy(notificationsArray, (n) => n.gameId);
-// });
 
 effect(() =>
   setNotificationsCount(
@@ -96,7 +90,16 @@ async function clear(gameId: string): Promise<unknown> {
         v-for="{ gameId, notifications, gameState } in notificationGroups"
         :key="gameId"
       >
-        <GameListItem :game="gameState" />
+        <template v-if="isErrorResult(gameState)">
+          <GameListItemFallback
+            :error="gameState.errorMessage"
+            :variant="gameState.variant"
+            :game-id="gameState.id"
+          />
+        </template>
+        <template v-else>
+          <GameListItem :game="gameState" />
+        </template>
         <div v-for="(notification, index) in notifications" :key="index">
           <strong v-if="!notification.read" aria-label="unread">
             {{ renderNotification(notification) }}

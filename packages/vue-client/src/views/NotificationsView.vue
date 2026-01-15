@@ -86,47 +86,91 @@ async function clear(gameId: string): Promise<unknown> {
   <main>
     <div>
       <div
-        class="card"
+        class="game-notifications-container"
         v-for="{ gameId, notifications, gameState } in notificationGroups"
         :key="gameId"
       >
-        <template v-if="isErrorResult(gameState)">
-          <GameListItemFallback
-            :error="gameState.errorMessage"
-            :variant="gameState.variant"
-            :game-id="gameState.id"
-          />
-        </template>
-        <template v-else>
-          <GameListItem :game="gameState" />
-        </template>
-        <div v-for="(notification, index) in notifications" :key="index">
-          <strong v-if="!notification.read" aria-label="unread">
-            {{ renderNotification(notification) }}
-          </strong>
-          <span v-else aria-label="read">
-            {{ renderNotification(notification) }}
-          </span>
+        <div class="board-container">
+          <template v-if="isErrorResult(gameState)">
+            <GameListItemFallback
+              :error="gameState.errorMessage"
+              :variant="gameState.variant"
+              :game-id="gameState.id"
+            />
+          </template>
+          <template v-else>
+            <GameListItem :game="gameState" />
+          </template>
+          <div v-for="(notification, index) in notifications" :key="index">
+            <strong v-if="!notification.read" aria-label="unread">
+              {{ renderNotification(notification) }}
+            </strong>
+            <span v-else aria-label="read">
+              {{ renderNotification(notification) }}
+            </span>
+          </div>
         </div>
-        <button aria-label="mark as read" v-on:click="markAsRead(gameId)">
-          <FontAwesomeIcon icon="fa-solid fa-circle-check" />
-        </button>
-        <button aria-label="clear" v-on:click="clear(gameId)">
-          <FontAwesomeIcon icon="fa-solid fa-trash" />
-        </button>
+        <div class="actions-container">
+          <button
+            class="icon-button success-color"
+            aria-label="mark as read"
+            v-on:click="markAsRead(gameId)"
+          >
+            <FontAwesomeIcon icon="fa-solid fa-circle-check" />
+          </button>
+          <button
+            class="icon-button alert-color"
+            aria-label="clear"
+            v-on:click="clear(gameId)"
+          >
+            <FontAwesomeIcon icon="fa-solid fa-trash" />
+          </button>
+        </div>
       </div>
     </div>
   </main>
 </template>
 
 <style scoped>
-.card {
+.game-notifications-container {
   margin: 20px;
   padding: 5px;
   box-shadow: 0 0 5px black;
+  display: flex;
+  flex-direction: row;
   width: fit-content;
+}
+li.game-list-item {
+  width: 300px;
+  &:hover {
+    filter: contrast(85%);
+  }
+}
+.actions-container {
+  width: fit-content;
+  display: flex;
+  flex-direction: column;
+  justify-items: flex-start;
 }
 strong {
   font-weight: 800;
+}
+.icon-button {
+  width: 2em;
+  height: 2em;
+  border-radius: 50%;
+  border: 0px;
+  font-size: 1.5em;
+  cursor: pointer;
+
+  &:not(:hover) {
+    background-color: transparent;
+  }
+}
+.success-color {
+  color: rgba(0, 128, 0, 0.5);
+}
+.alert-color {
+  color: rgba(255, 0, 0, 0.5);
 }
 </style>

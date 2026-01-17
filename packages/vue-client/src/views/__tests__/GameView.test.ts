@@ -84,6 +84,7 @@ describe("GameView - Auto-seating", () => {
           NavButtons: true,
           PlayersToMove: true,
           DownloadSGF: true,
+          SubscriptionDialog: true,
         },
       },
     });

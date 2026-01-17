@@ -6,6 +6,7 @@ import {
   type GameInitialResponse,
   type GamesFilter,
   gamesFilterToUrlParams,
+  isErrorResult,
 } from "@ogfcommunity/variants-shared";
 import GameListItem from "@/components/GameListItem.vue";
 import GameListItemFallback from "@/components/GameListItemFallback.vue";
@@ -35,15 +36,6 @@ const next = () => {
 };
 function setFilter(gamesFilter: GamesFilter) {
   filter.value = gamesFilter;
-}
-function isErrorResult(
-  dto: GameInitialResponse | GameErrorResponse,
-): dto is GameErrorResponse {
-  const messageProperty: Exclude<
-    keyof GameErrorResponse,
-    keyof GameInitialResponse
-  > = "errorMessage";
-  return messageProperty in dto;
 }
 </script>
 

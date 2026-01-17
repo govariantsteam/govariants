@@ -62,7 +62,10 @@ export type GameStateResponse = {
   timeControl?: ITimeControlBase;
 };
 
-export type GameInitialResponse = Omit<GameResponse, "moves" | "timeControl"> &
+export type GameInitialResponse = Omit<
+  GameResponse,
+  "moves" | "timeControl" | "subscriptions"
+> &
   GameStateResponse & { subscription?: NotificationType[] };
 
 export type NotificationsResponse = {

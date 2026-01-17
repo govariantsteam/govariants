@@ -25,6 +25,11 @@ import DownloadSGF from "@/components/GameView/DownloadSGF.vue";
 import { getPlayingTable } from "@/playing_table_map";
 import Swal from "sweetalert2";
 import SubscriptionDialog from "@/components/GameView/SubscriptionDialog.vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faBell } from "@fortawesome/free-solid-svg-icons";
+
+library.add(faBell);
 
 const props = defineProps<{ gameId: string }>();
 
@@ -55,6 +60,7 @@ const adminMode = ref<boolean>(false);
 const errorOccured = ref<boolean>(false);
 const creator = ref<User | undefined>();
 const subscription = ref<NotificationType[]>([]);
+const isDialogOpen = ref(false);
 
 function setNewState(stateResponse: GameStateResponse): void {
   const { timeControl: timeControl, ...state } = stateResponse;
@@ -327,10 +333,18 @@ async function repairGame(): Promise<void> {
               {{ value }}
             </button>
           </div>
+          <button
+            class="icon-button"
+            :disabled="!user"
+            v-on:click="isDialogOpen = true"
+          >
+            <FontAwesomeIcon icon="fa-solid fa-bell" />
+          </button>
           <SubscriptionDialog
             :gameId="props.gameId"
             :subscription="subscription"
-            :disabled="!user"
+            :is-open="isDialogOpen"
+            v-on:close="isDialogOpen = false"
           ></SubscriptionDialog>
         </div>
 

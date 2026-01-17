@@ -12,18 +12,20 @@ import { setNotificationsCount } from "@/stores/notifications";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faCircleCheck,
-  faEyeSlash,
   faTrash,
+  faGear,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import GameListItem from "@/components/GameListItem.vue";
 import GameListItemFallback from "@/components/GameListItemFallback.vue";
+import SubscriptionDialog from "@/components/GameView/SubscriptionDialog.vue";
 
-library.add(faCircleCheck, faTrash, faEyeSlash);
+library.add(faCircleCheck, faTrash, faGear);
 
 const notificationGroups: Ref<NotificationsResponse[] | null> = ref(null);
 const store = useStore();
 const user = useCurrentUser();
+const isDialogOpen = ref(false);
 
 effect(() =>
   setNotificationsCount(
@@ -125,6 +127,20 @@ async function clear(gameId: string): Promise<unknown> {
           >
             <FontAwesomeIcon icon="fa-solid fa-trash" />
           </button>
+          <button
+            class="icon-button grey-color"
+            :disabled="!user"
+            v-on:click="isDialogOpen = true"
+          >
+            <FontAwesomeIcon icon="fa-solid fa-gear" />
+          </button>
+          <SubscriptionDialog
+            v-if="!isErrorResult(gameState)"
+            :gameId="gameId"
+            :subscription="gameState.subscription ?? []"
+            :is-open="isDialogOpen"
+            v-on:close="isDialogOpen = false"
+          ></SubscriptionDialog>
         </div>
       </div>
     </div>
@@ -150,27 +166,20 @@ li.game-list-item {
   width: fit-content;
   display: flex;
   flex-direction: column;
-  justify-items: flex-start;
+}
+.icon-button {
+  font-size: 1.5em;
 }
 strong {
   font-weight: 800;
 }
-.icon-button {
-  width: 2em;
-  height: 2em;
-  border-radius: 50%;
-  border: 0px;
-  font-size: 1.5em;
-  cursor: pointer;
-
-  &:not(:hover) {
-    background-color: transparent;
-  }
-}
 .success-color {
-  color: rgba(0, 128, 0, 0.5);
+  color: rgba(0, 128, 0, 0.7);
 }
 .alert-color {
-  color: rgba(255, 0, 0, 0.5);
+  color: rgba(255, 0, 0, 0.7);
+}
+.grey-color {
+  color: rgba(128, 128, 128, 0.7);
 }
 </style>

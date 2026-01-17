@@ -450,6 +450,7 @@ function outwardFacingGame(db_game: WithId<GameSchema>): GameResponse {
 
 export function tryComputeState(
   game: GameResponse,
+  user?: User,
 ): GameInitialResponse | GameErrorResponse {
   try {
     const stateDto: GameInitialResponse = {
@@ -460,6 +461,9 @@ export function tryComputeState(
       players: game.players,
       ...getGameState(game, null, null),
     };
+    if (user && game.subscriptions) {
+      stateDto.subscription = game.subscriptions[user.id] ?? [];
+    }
     return stateDto;
   } catch (e) {
     const errorDto: GameErrorResponse = {

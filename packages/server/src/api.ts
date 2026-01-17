@@ -91,7 +91,9 @@ router.get("/games", async (req, res) => {
       Number(req.query.offset),
       filter,
     );
-    const gameStates = games.map((game) => tryComputeState(game));
+    const gameStates = games.map((game) =>
+      tryComputeState(game, req.user as User | undefined),
+    );
     res.send(gameStates || 0);
   } catch (e) {
     res.status(500);
@@ -464,7 +466,7 @@ router.get("/notifications", checkCSRFToken, async (req, res) => {
     const groups = groupBy(userNotifications, (n) => n.gameId);
     const gameIds = groups.map(([gameId, _]) => gameId);
     const gameStates = (await getGamesById([...gameIds])).map((game) =>
-      tryComputeState(game),
+      tryComputeState(game, req.user as User),
     );
     const combined: NotificationsResponse[] = groups.map(
       ([gameId, notifications]) => ({
@@ -497,7 +499,7 @@ router.post("/game/:gameId/subscribe", checkCSRFToken, async (req, res) => {
     } else {
       res.status(500);
     }
-    res.send(notificationTypes);
+    res.send({ success: true });
   } catch (error) {
     res.status(500).json({ error: error.message });
     res.send();

@@ -34,5 +34,6 @@ export { generalizedPyramid } from "./lib/graph-utils";
 export type { IHigherOrderConfig, RengoConfig } from "./variants/rengo";
 export * from "./notifications.types";
 export * from "./lib/type-guards";
+export * from "./lib/validators";
 
 export const SITE_NAME = "Go Variants";

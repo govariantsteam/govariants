@@ -36,6 +36,7 @@ import {
   User,
   UserResponse,
   GameInitialResponse,
+  validateNotificationTypeArray,
 } from "@ogfcommunity/variants-shared";
 import { io } from "./socket_io";
 import { checkCSRFToken, generateCSRFToken } from "./csrf_guard";
@@ -482,6 +483,7 @@ router.get("/notifications", checkCSRFToken, async (req, res) => {
 router.post("/game/:gameId/subscribe", checkCSRFToken, async (req, res) => {
   try {
     const { notificationTypes } = req.body;
+    validateNotificationTypeArray(notificationTypes);
     const userId = (req.user as User).id;
 
     const success = await subscribeToGameNotifications(

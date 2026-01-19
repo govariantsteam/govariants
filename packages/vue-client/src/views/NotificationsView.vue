@@ -155,6 +155,9 @@ async function clear(gameId: string): Promise<unknown> {
 <style scoped>
 .notifications-page {
   padding: 2em;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 .game-notifications-container {
   margin: 20px;

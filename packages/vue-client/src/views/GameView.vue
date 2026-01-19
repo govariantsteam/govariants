@@ -302,6 +302,21 @@ async function repairGame(): Promise<void> {
 
       <div>
         <!-- Right column -->
+        <div class="subscribe-button-container">
+          <button
+            class="icon-button subscribe-button"
+            :disabled="!user"
+            v-on:click="isDialogOpen = true"
+          >
+            <FontAwesomeIcon icon="fa-solid fa-bell" />
+          </button>
+          <SubscriptionDialog
+            :gameId="props.gameId"
+            :subscription="subscription"
+            :is-open="isDialogOpen"
+            v-on:close="isDialogOpen = false"
+          ></SubscriptionDialog>
+        </div>
         <div className="seat-list">
           <div v-for="(player, idx) in players" :key="idx">
             <SeatComponent
@@ -333,19 +348,6 @@ async function repairGame(): Promise<void> {
               {{ value }}
             </button>
           </div>
-          <button
-            class="icon-button"
-            :disabled="!user"
-            v-on:click="isDialogOpen = true"
-          >
-            <FontAwesomeIcon icon="fa-solid fa-bell" />
-          </button>
-          <SubscriptionDialog
-            :gameId="props.gameId"
-            :subscription="subscription"
-            :is-open="isDialogOpen"
-            v-on:close="isDialogOpen = false"
-          ></SubscriptionDialog>
         </div>
 
         <DownloadSGF v-if="supportsSGF(variant)" :gameId="gameId" />
@@ -397,5 +399,14 @@ async function repairGame(): Promise<void> {
   background-color: var(--color-warn);
   height: 64px;
   font-size: large;
+}
+.subscribe-button-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+.subscribe-button {
+  color: rgba(16, 29, 212, 0.7);
+  font-size: 1.5em;
 }
 </style>

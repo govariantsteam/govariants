@@ -1,4 +1,4 @@
-import { UpdateResult } from "mongodb";
+import { DeleteResult, UpdateResult } from "mongodb";
 import { notifications } from "../db";
 import { UserNotifications } from "./notifications.types";
 import {
@@ -173,6 +173,12 @@ export async function clearNotifications(
     { userId: userId },
     { $pull: { notifications: { gameId: gameId } } },
   );
+}
+
+export async function deleteAllNotificationsOfUser(
+  userId: string,
+): Promise<DeleteResult> {
+  return notifications().deleteOne({ userId: userId });
 }
 
 function getRecipientIDs(

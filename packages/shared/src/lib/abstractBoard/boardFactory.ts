@@ -1,5 +1,4 @@
 import { Intersection } from "./intersection";
-import { Intersection as IntersectionOld } from "./helper/types/intersection";
 import { Vector2D } from "./helper/types/Vector2D";
 import { CreatePolygonalBoard as createPolygonalBoard } from "./helper/PolygonalBoardHelper";
 import { CreateCircularBoard } from "./helper/CircularBoardHelper";
@@ -294,14 +293,14 @@ function createCustomBoard<TIntersection extends Intersection>(
 }
 
 function convertIntersections<TIntersection extends Intersection>(
-  old: IntersectionOld[],
+  old: Intersection[],
   intersectionConstructor: IntersectionConstructor<TIntersection>,
 ): TIntersection[] {
   const intersections = new Map<number, TIntersection>(
-    old.map((o, index) => [index, new intersectionConstructor(o.Position)]),
+    old.map((o, index) => [index, new intersectionConstructor(o.position)]),
   );
   old.forEach((i, index) =>
-    i.Neighbours.forEach((n) =>
+    i.neighbours.forEach((n) =>
       intersections
         .get(index)!
         .connectTo(intersections.get(old.indexOf(n))!, false),

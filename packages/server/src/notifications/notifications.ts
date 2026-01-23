@@ -15,7 +15,8 @@ function outwardMap(userNotifications: UserNotifications): GameNotification[] {
 export async function getUserNotifications(
   userId: string,
 ): Promise<GameNotification[]> {
-  return outwardMap(await notifications().findOne({ userId: userId }));
+  const userNotifications = await notifications().findOne({ userId: userId });
+  return userNotifications ? outwardMap(userNotifications) : [];
 }
 
 export async function getUserNotificationsCount(

@@ -36,7 +36,7 @@ export type GameSchema = {
   variant: string;
   moves: MovesType[];
   config: object;
-  players: Array<User | undefined>;
+  players?: Array<User | undefined>;
   time_control?: ITimeControlBase;
   creator?: User;
   subscriptions?: GameSubscriptions;

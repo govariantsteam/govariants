@@ -297,9 +297,7 @@ async function updateSeat(
   user: UserResponse,
   new_user: User | undefined,
 ) {
-  const game = await gamesCollection().findOne({
-    _id: new ObjectId(game_id),
-  });
+  const game = await getGame(game_id);
 
   // If the seat is occupied by another player, throw an error.
   if (

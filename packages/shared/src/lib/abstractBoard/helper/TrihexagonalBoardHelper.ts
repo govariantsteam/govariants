@@ -1,6 +1,6 @@
 import { Grid } from "../../grid";
+import { Intersection } from "../intersection";
 import { Vector2D } from "./types/Vector2D";
-import { Intersection } from "./types/intersection";
 
 export class TrihexagonalBoardHelper {
   private readonly x_base_vector: Vector2D;
@@ -55,12 +55,12 @@ export class TrihexagonalBoardHelper {
           return null;
         }
 
-        grid.at({ x: index.x + 1, y: index.y })?.ConnectTo(intersection, true);
-        grid.at({ x: index.x, y: index.y + 1 })?.ConnectTo(intersection, true);
+        grid.at({ x: index.x + 1, y: index.y })?.connectTo(intersection, true);
+        grid.at({ x: index.x, y: index.y + 1 })?.connectTo(intersection, true);
         if (index.x > 0) {
           grid
             .at({ x: index.x - 1, y: index.y + 1 })
-            ?.ConnectTo(intersection, true);
+            ?.connectTo(intersection, true);
         }
 
         return intersection;

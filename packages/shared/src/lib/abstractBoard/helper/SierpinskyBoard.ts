@@ -1,5 +1,5 @@
+import { Intersection } from "../intersection";
 import { Vector2D } from "./types/Vector2D";
-import { Intersection } from "./types/intersection";
 
 export function createSierpinskyBoard(depth: number): Intersection[] {
   const radius = Math.pow(2, depth + 1) / Math.sqrt(3);
@@ -31,7 +31,7 @@ class SierpinskyTriangle {
     this.middleIntersections = corners.map(
       (corner, index) =>
         new Intersection(
-          corner.Position.Add(corners[(index + 1) % 3].Position).Multiply(0.5),
+          corner.position.Add(corners[(index + 1) % 3].position).Multiply(0.5),
         ),
     );
 
@@ -51,9 +51,9 @@ class SierpinskyTriangle {
       this.subTriangles = null;
 
       this.middleIntersections.forEach((intersection, index) => {
-        intersection.ConnectTo(this.middleIntersections[(index + 1) % 3], true);
-        intersection.ConnectTo(corners[index], true);
-        intersection.ConnectTo(corners[(index + 1) % 3], true);
+        intersection.connectTo(this.middleIntersections[(index + 1) % 3], true);
+        intersection.connectTo(corners[index], true);
+        intersection.connectTo(corners[(index + 1) % 3], true);
       });
     }
   }

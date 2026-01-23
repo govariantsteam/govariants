@@ -1,4 +1,4 @@
-import { Intersection } from "./types/intersection";
+import { Intersection } from "../intersection";
 import { Vector2D } from "./types/Vector2D";
 
 export function CreateCircularBoard(
@@ -26,21 +26,21 @@ export function CreateCircularBoard(
     );
     if (i !== 0) {
       for (let j = 0; j < nodes_per_ring; j++) {
-        rings[i][j].ConnectTo(rings[i - 1][j], true);
-        rings[i][j].ConnectTo(rings[i - 1][(j + 1) % nodes_per_ring], true);
+        rings[i][j].connectTo(rings[i - 1][j], true);
+        rings[i][j].connectTo(rings[i - 1][(j + 1) % nodes_per_ring], true);
       }
     }
   }
   for (let j = 1; j < nodes_per_ring; ++j) {
-    rings[0][j].ConnectTo(rings[0][j - 1], true);
-    rings[number_of_rings - 1][j].ConnectTo(
+    rings[0][j].connectTo(rings[0][j - 1], true);
+    rings[number_of_rings - 1][j].connectTo(
       rings[number_of_rings - 1][j - 1],
       true,
     );
   }
 
-  rings[0][nodes_per_ring - 1].ConnectTo(rings[0][0], true);
-  rings[number_of_rings - 1][nodes_per_ring - 1].ConnectTo(
+  rings[0][nodes_per_ring - 1].connectTo(rings[0][0], true);
+  rings[number_of_rings - 1][nodes_per_ring - 1].connectTo(
     rings[number_of_rings - 1][0],
     true,
   );

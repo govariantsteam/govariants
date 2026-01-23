@@ -1,5 +1,5 @@
 import { Vector2D } from "./types/Vector2D";
-import { Intersection } from "./types/intersection";
+import { Intersection } from "../intersection";
 
 //-----------------------------------------------------
 //-----------------------------------------------------
@@ -77,19 +77,19 @@ class PolygonalTile {
       new Intersection(v.Add(Shift6)),
     ];
 
-    this.Intersections[0].ConnectTo(this.Intersections[1], true);
-    this.Intersections[1].ConnectTo(this.Intersections[2], true);
-    this.Intersections[2].ConnectTo(this.Intersections[3], true);
-    this.Intersections[3].ConnectTo(this.Intersections[4], true);
-    this.Intersections[4].ConnectTo(this.Intersections[5], true);
-    this.Intersections[5].ConnectTo(this.Intersections[0], true);
+    this.Intersections[0].connectTo(this.Intersections[1], true);
+    this.Intersections[1].connectTo(this.Intersections[2], true);
+    this.Intersections[2].connectTo(this.Intersections[3], true);
+    this.Intersections[3].connectTo(this.Intersections[4], true);
+    this.Intersections[4].connectTo(this.Intersections[5], true);
+    this.Intersections[5].connectTo(this.Intersections[0], true);
   }
 
   ConnectToRight(tile: PolygonalTile, bothSides: boolean) {
     this.NeighbourTiles[0] = tile;
 
-    this.Intersections[5].ConnectTo(tile.Intersections[1], false);
-    this.Intersections[4].ConnectTo(tile.Intersections[2], false);
+    this.Intersections[5].connectTo(tile.Intersections[1], false);
+    this.Intersections[4].connectTo(tile.Intersections[2], false);
 
     if (bothSides) {
       tile.ConnectToLeft(this, false);
@@ -160,8 +160,8 @@ class PolygonalTile {
   ConnectToTopRight(tile: PolygonalTile, bothSides: boolean) {
     this.NeighbourTiles[1] = tile;
 
-    this.Intersections[0].ConnectTo(tile.Intersections[2], false);
-    this.Intersections[5].ConnectTo(tile.Intersections[3], false);
+    this.Intersections[0].connectTo(tile.Intersections[2], false);
+    this.Intersections[5].connectTo(tile.Intersections[3], false);
 
     if (bothSides) {
       tile.ConnectToBottomLeft(this, false);
@@ -171,8 +171,8 @@ class PolygonalTile {
   ConnectToTopLeft(tile: PolygonalTile, bothSides: boolean) {
     this.NeighbourTiles[2] = tile;
 
-    this.Intersections[0].ConnectTo(tile.Intersections[4], false);
-    this.Intersections[1].ConnectTo(tile.Intersections[3], false);
+    this.Intersections[0].connectTo(tile.Intersections[4], false);
+    this.Intersections[1].connectTo(tile.Intersections[3], false);
 
     if (bothSides) {
       tile.ConnectToBottomRight(this, false);
@@ -182,8 +182,8 @@ class PolygonalTile {
   ConnectToLeft(tile: PolygonalTile, bothSides: boolean) {
     this.NeighbourTiles[3] = tile;
 
-    this.Intersections[1].ConnectTo(tile.Intersections[5], false);
-    this.Intersections[2].ConnectTo(tile.Intersections[4], false);
+    this.Intersections[1].connectTo(tile.Intersections[5], false);
+    this.Intersections[2].connectTo(tile.Intersections[4], false);
 
     if (bothSides) {
       tile.ConnectToRight(this, false);
@@ -193,8 +193,8 @@ class PolygonalTile {
   ConnectToBottomLeft(tile: PolygonalTile, bothSides: boolean) {
     this.NeighbourTiles[4] = tile;
 
-    this.Intersections[2].ConnectTo(tile.Intersections[0], false);
-    this.Intersections[3].ConnectTo(tile.Intersections[5], false);
+    this.Intersections[2].connectTo(tile.Intersections[0], false);
+    this.Intersections[3].connectTo(tile.Intersections[5], false);
 
     if (bothSides) {
       tile.ConnectToTopRight(this, false);
@@ -204,8 +204,8 @@ class PolygonalTile {
   ConnectToBottomRight(tile: PolygonalTile, bothSides: boolean) {
     this.NeighbourTiles[5] = tile;
 
-    this.Intersections[3].ConnectTo(tile.Intersections[1], false);
-    this.Intersections[4].ConnectTo(tile.Intersections[0], false);
+    this.Intersections[3].connectTo(tile.Intersections[1], false);
+    this.Intersections[4].connectTo(tile.Intersections[0], false);
 
     if (bothSides) {
       tile.ConnectToTopLeft(this, false);
@@ -221,7 +221,7 @@ class PolygonalTile {
         this.Intersections[6] = new Intersection(
           this.ReferencePoint.Add(Shift7),
         );
-        this.Intersections[0].ConnectTo(this.Intersections[6], true);
+        this.Intersections[0].connectTo(this.Intersections[6], true);
       } else {
         this.Intersections[6] = this.NeighbourTiles[1].Intersections[9];
       }
@@ -230,7 +230,7 @@ class PolygonalTile {
         this.Intersections[7] = new Intersection(
           this.ReferencePoint.Add(Shift8),
         );
-        this.Intersections[1].ConnectTo(this.Intersections[7], true);
+        this.Intersections[1].connectTo(this.Intersections[7], true);
       } else {
         this.Intersections[7] = this.NeighbourTiles[3].Intersections[16];
       }
@@ -238,8 +238,8 @@ class PolygonalTile {
       this.Intersections[6] = this.NeighbourTiles[2].Intersections[4];
       this.Intersections[7] = this.NeighbourTiles[2].Intersections[3];
     }
-    if (!this.Intersections[6].IsConnectedTo(this.Intersections[7])) {
-      this.Intersections[6].ConnectTo(this.Intersections[7], true);
+    if (!this.Intersections[6].isConnectedTo(this.Intersections[7])) {
+      this.Intersections[6].connectTo(this.Intersections[7], true);
     }
 
     if (this.NeighbourTiles[3] == null) {
@@ -247,7 +247,7 @@ class PolygonalTile {
         this.Intersections[8] = new Intersection(
           this.ReferencePoint.Add(Shift9),
         );
-        this.Intersections[1].ConnectTo(this.Intersections[8], true);
+        this.Intersections[1].connectTo(this.Intersections[8], true);
       } else {
         this.Intersections[8] = this.NeighbourTiles[2].Intersections[11];
       }
@@ -256,7 +256,7 @@ class PolygonalTile {
         this.Intersections[9] = new Intersection(
           this.ReferencePoint.Add(Shift10),
         );
-        this.Intersections[2].ConnectTo(this.Intersections[9], true);
+        this.Intersections[2].connectTo(this.Intersections[9], true);
       } else {
         this.Intersections[9] = this.NeighbourTiles[4].Intersections[6];
       }
@@ -264,11 +264,11 @@ class PolygonalTile {
       this.Intersections[8] = this.NeighbourTiles[3].Intersections[5];
       this.Intersections[9] = this.NeighbourTiles[3].Intersections[4];
     }
-    if (!this.Intersections[7].IsConnectedTo(this.Intersections[8])) {
-      this.Intersections[7].ConnectTo(this.Intersections[8], true);
+    if (!this.Intersections[7].isConnectedTo(this.Intersections[8])) {
+      this.Intersections[7].connectTo(this.Intersections[8], true);
     }
-    if (!this.Intersections[8].IsConnectedTo(this.Intersections[9])) {
-      this.Intersections[8].ConnectTo(this.Intersections[9], true);
+    if (!this.Intersections[8].isConnectedTo(this.Intersections[9])) {
+      this.Intersections[8].connectTo(this.Intersections[9], true);
     }
 
     if (this.NeighbourTiles[4] == null) {
@@ -276,7 +276,7 @@ class PolygonalTile {
         this.Intersections[10] = new Intersection(
           this.ReferencePoint.Add(Shift11),
         );
-        this.Intersections[2].ConnectTo(this.Intersections[10], true);
+        this.Intersections[2].connectTo(this.Intersections[10], true);
       } else {
         this.Intersections[10] = this.NeighbourTiles[3].Intersections[13];
       }
@@ -285,7 +285,7 @@ class PolygonalTile {
         this.Intersections[11] = new Intersection(
           this.ReferencePoint.Add(Shift12),
         );
-        this.Intersections[3].ConnectTo(this.Intersections[11], true);
+        this.Intersections[3].connectTo(this.Intersections[11], true);
       } else {
         this.Intersections[11] = this.NeighbourTiles[5].Intersections[8];
       }
@@ -293,11 +293,11 @@ class PolygonalTile {
       this.Intersections[10] = this.NeighbourTiles[4].Intersections[0];
       this.Intersections[11] = this.NeighbourTiles[4].Intersections[5];
     }
-    if (!this.Intersections[9].IsConnectedTo(this.Intersections[10])) {
-      this.Intersections[9].ConnectTo(this.Intersections[10], true);
+    if (!this.Intersections[9].isConnectedTo(this.Intersections[10])) {
+      this.Intersections[9].connectTo(this.Intersections[10], true);
     }
-    if (!this.Intersections[10].IsConnectedTo(this.Intersections[11])) {
-      this.Intersections[10].ConnectTo(this.Intersections[11], true);
+    if (!this.Intersections[10].isConnectedTo(this.Intersections[11])) {
+      this.Intersections[10].connectTo(this.Intersections[11], true);
     }
 
     if (this.NeighbourTiles[5] == null) {
@@ -305,7 +305,7 @@ class PolygonalTile {
         this.Intersections[12] = new Intersection(
           this.ReferencePoint.Add(Shift13),
         );
-        this.Intersections[3].ConnectTo(this.Intersections[12], true);
+        this.Intersections[3].connectTo(this.Intersections[12], true);
       } else {
         this.Intersections[12] = this.NeighbourTiles[4].Intersections[15];
       }
@@ -314,7 +314,7 @@ class PolygonalTile {
         this.Intersections[13] = new Intersection(
           this.ReferencePoint.Add(Shift14),
         );
-        this.Intersections[4].ConnectTo(this.Intersections[13], true);
+        this.Intersections[4].connectTo(this.Intersections[13], true);
       } else {
         this.Intersections[13] = this.NeighbourTiles[0].Intersections[10];
       }
@@ -322,11 +322,11 @@ class PolygonalTile {
       this.Intersections[12] = this.NeighbourTiles[5].Intersections[1];
       this.Intersections[13] = this.NeighbourTiles[5].Intersections[0];
     }
-    if (!this.Intersections[11].IsConnectedTo(this.Intersections[12])) {
-      this.Intersections[11].ConnectTo(this.Intersections[12], true);
+    if (!this.Intersections[11].isConnectedTo(this.Intersections[12])) {
+      this.Intersections[11].connectTo(this.Intersections[12], true);
     }
-    if (!this.Intersections[12].IsConnectedTo(this.Intersections[13])) {
-      this.Intersections[12].ConnectTo(this.Intersections[13], true);
+    if (!this.Intersections[12].isConnectedTo(this.Intersections[13])) {
+      this.Intersections[12].connectTo(this.Intersections[13], true);
     }
 
     if (this.NeighbourTiles[0] == null) {
@@ -334,7 +334,7 @@ class PolygonalTile {
         this.Intersections[14] = new Intersection(
           this.ReferencePoint.Add(Shift15),
         );
-        this.Intersections[4].ConnectTo(this.Intersections[14], true);
+        this.Intersections[4].connectTo(this.Intersections[14], true);
       } else {
         this.Intersections[14] = this.NeighbourTiles[5].Intersections[17];
       }
@@ -343,7 +343,7 @@ class PolygonalTile {
         this.Intersections[15] = new Intersection(
           this.ReferencePoint.Add(Shift16),
         );
-        this.Intersections[5].ConnectTo(this.Intersections[15], true);
+        this.Intersections[5].connectTo(this.Intersections[15], true);
       } else {
         this.Intersections[15] = this.NeighbourTiles[1].Intersections[12];
       }
@@ -351,11 +351,11 @@ class PolygonalTile {
       this.Intersections[14] = this.NeighbourTiles[0].Intersections[2];
       this.Intersections[15] = this.NeighbourTiles[0].Intersections[1];
     }
-    if (!this.Intersections[13].IsConnectedTo(this.Intersections[14])) {
-      this.Intersections[13].ConnectTo(this.Intersections[14], true);
+    if (!this.Intersections[13].isConnectedTo(this.Intersections[14])) {
+      this.Intersections[13].connectTo(this.Intersections[14], true);
     }
-    if (!this.Intersections[14].IsConnectedTo(this.Intersections[15])) {
-      this.Intersections[14].ConnectTo(this.Intersections[15], true);
+    if (!this.Intersections[14].isConnectedTo(this.Intersections[15])) {
+      this.Intersections[14].connectTo(this.Intersections[15], true);
     }
 
     if (this.NeighbourTiles[1] == null) {
@@ -363,7 +363,7 @@ class PolygonalTile {
         this.Intersections[16] = new Intersection(
           this.ReferencePoint.Add(Shift17),
         );
-        this.Intersections[5].ConnectTo(this.Intersections[16], true);
+        this.Intersections[5].connectTo(this.Intersections[16], true);
       } else {
         this.Intersections[16] = this.NeighbourTiles[0].Intersections[7];
       }
@@ -372,7 +372,7 @@ class PolygonalTile {
         this.Intersections[17] = new Intersection(
           this.ReferencePoint.Add(Shift18),
         );
-        this.Intersections[0].ConnectTo(this.Intersections[17], true);
+        this.Intersections[0].connectTo(this.Intersections[17], true);
       } else {
         this.Intersections[17] = this.NeighbourTiles[2].Intersections[14];
       }
@@ -380,14 +380,14 @@ class PolygonalTile {
       this.Intersections[16] = this.NeighbourTiles[1].Intersections[3];
       this.Intersections[17] = this.NeighbourTiles[1].Intersections[2];
     }
-    if (!this.Intersections[15].IsConnectedTo(this.Intersections[16])) {
-      this.Intersections[15].ConnectTo(this.Intersections[16], true);
+    if (!this.Intersections[15].isConnectedTo(this.Intersections[16])) {
+      this.Intersections[15].connectTo(this.Intersections[16], true);
     }
-    if (!this.Intersections[16].IsConnectedTo(this.Intersections[17])) {
-      this.Intersections[16].ConnectTo(this.Intersections[17], true);
+    if (!this.Intersections[16].isConnectedTo(this.Intersections[17])) {
+      this.Intersections[16].connectTo(this.Intersections[17], true);
     }
-    if (!this.Intersections[17].IsConnectedTo(this.Intersections[6])) {
-      this.Intersections[17].ConnectTo(this.Intersections[6], true);
+    if (!this.Intersections[17].isConnectedTo(this.Intersections[6])) {
+      this.Intersections[17].connectTo(this.Intersections[6], true);
     }
 
     this.Completed = true;
@@ -477,17 +477,17 @@ export function CreatePolygonalBoard(size: number): Intersection[] {
     }
   }
 
-  let minX: number = intersections[0].Position.X;
-  let minY: number = intersections[0].Position.Y;
+  let minX: number = intersections[0].position.X;
+  let minY: number = intersections[0].position.Y;
   for (let i = 0; i < intersections.length; i++) {
-    minX = Math.min(minX, intersections[i].Position.X);
-    minY = Math.min(minY, intersections[i].Position.Y);
+    minX = Math.min(minX, intersections[i].position.X);
+    minY = Math.min(minY, intersections[i].position.Y);
   }
   const shift: Vector2D = new Vector2D(minX, minY);
 
   for (let z = 0; z < intersections.length; z++) {
     const i = intersections[z];
-    i.Position = i.Position.Substract(shift);
+    i.position = i.position.Substract(shift);
   }
 
   return intersections;

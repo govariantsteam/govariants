@@ -4,7 +4,7 @@ require("@rushstack/eslint-patch/modern-module-resolution");
 module.exports = {
   root: true,
   extends: [
-    "plugin:vue/vue3-recommended",
+    "plugin:vue/vue3-recommended", // TODO(#448): Switch to 'vue3-recommended-error' (upgrade to 10.7.0 required)
     "eslint:recommended",
     "@vue/eslint-config-typescript/recommended",
     "@vue/eslint-config-prettier",
@@ -52,10 +52,10 @@ module.exports = {
     ],
     eqeqeq: ["error", "smart"],
 
-    // TODO: Temporarily disabled vue3-recommended rules that require codebase refactoring
-    "vue/prop-name-casing": "off",
-    "vue/no-template-shadow": "off",
-    "vue/require-default-prop": "off",
-    "vue/no-v-html": "off",
+    // TODO(#448): Temporarily disabled vue3-recommended rules require manual fixes
+    "vue/prop-name-casing": "off", // 19 issues
+    "vue/no-template-shadow": "off", // 1 issue
+    "vue/require-default-prop": "off", // 2 issues
+    "vue/no-v-html": "off", // 1 issue
   },
 };

@@ -186,7 +186,7 @@ function getRecipientIDs(
   subscriptions: GameSubscriptions,
   type: NotificationType,
 ): string[] {
-  const IDs = Object.keys(subscriptions);
+  const ids = Object.keys(subscriptions);
   return IDs.filter((id) => subscriptions[id].includes(type));
 }
 

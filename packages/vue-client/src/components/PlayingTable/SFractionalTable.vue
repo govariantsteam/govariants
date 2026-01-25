@@ -29,7 +29,7 @@ function move(move: string) {
   <DefaultBoard
     :gamestate="$props.gamestate"
     :config="$props.config"
-    v-on:move="move"
+    @move="move"
   />
   <div class="center_aligner">
     <MoveSequenceDisplay

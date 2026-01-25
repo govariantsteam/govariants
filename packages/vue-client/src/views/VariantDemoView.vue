@@ -149,15 +149,15 @@ watch(
   <div class="grid-page-layout">
     <div>
       <component
+        :is="variantGameView"
         v-if="variantGameView && game.state"
-        v-bind:is="variantGameView"
-        v-bind:gamestate="transformedGameData.gamestate"
-        v-bind:config="transformedGameData.config"
-        v-bind:displayed_round="displayed_round"
-        v-bind:next-to-play="game.next_to_play"
-        v-on:move="makeMove"
+        :gamestate="transformedGameData.gamestate"
+        :config="transformedGameData.config"
+        :displayed_round="displayed_round"
+        :next-to-play="game.next_to_play"
+        @move="makeMove"
       />
-      <NavButtons v-model="view_round" :gameRound="game.round" />
+      <NavButtons v-model="view_round" :game-round="game.round" />
 
       <div id="variant-info">
         <div>
@@ -179,12 +179,12 @@ watch(
           :user_id="user?.id"
           :occupant="user || undefined"
           :player_n="idx"
-          @select="setPlayingAs(idx)"
           :selected="playing_as"
           :time_control="null"
           :is_players_turn="game.next_to_play?.includes(idx) ?? false"
           :variant="variant"
           :config="config"
+          @select="setPlayingAs(idx)"
         />
       </div>
 
@@ -201,9 +201,9 @@ watch(
       <PlayersToMove :next-to-play="game.next_to_play" />
 
       <component
-        v-bind:is="variantConfigForm"
-        v-bind:initialConfig="getDefaultConfig(variant)"
-        v-on:configChanged="onConfigChange"
+        :is="variantConfigForm"
+        :initial-config="getDefaultConfig(variant)"
+        @config-changed="onConfigChange"
       />
     </div>
 

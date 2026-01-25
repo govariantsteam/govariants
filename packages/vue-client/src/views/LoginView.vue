@@ -28,22 +28,22 @@ const submit = () =>
           <label for="username">Username</label>
           <input
             id="username"
+            v-model="username"
             name="username"
             type="text"
             autocomplete="username"
             required
-            v-model="username"
           />
         </div>
         <div>
           <label for="current-password">Password</label>
           <input
             id="current-password"
+            v-model="password"
             name="password"
             type="password"
             autocomplete="current-password"
             required
-            v-model="password"
           />
         </div>
         <div>
@@ -52,8 +52,8 @@ const submit = () =>
         <hr />
         <input
           type="button"
-          v-on:click="store.guestLogin()"
           value="Log in as guest"
+          @click="store.guestLogin()"
         />
         <div>
           Don't have an account?

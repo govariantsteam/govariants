@@ -100,23 +100,23 @@ const hasTimeConfigForm = computed(
     <h3>Config</h3>
     <template v-if="variantConfigForm">
       <component
-        v-bind:is="variantConfigForm"
-        v-bind:initialConfig="getDefaultConfig(variant)"
-        v-on:configChanged="setConfig"
+        :is="variantConfigForm"
+        :initial-config="getDefaultConfig(variant)"
+        @config-changed="setConfig"
       />
       <TimeControlConfigForm
         v-if="hasTimeConfigForm"
-        v-on:config-changed="setTimeControlConfig"
+        @config-changed="setTimeControlConfig"
       />
-      <button v-on:click="createGame" class="large-button">Create Game</button>
+      <button class="large-button" @click="createGame">Create Game</button>
     </template>
     <template v-else>
-      <textarea v-model="configString"></textarea>
+      <textarea v-model="configString" />
       <TimeControlConfigForm
         v-if="hasTimeConfigForm"
-        v-on:config-changed="setTimeControlConfig"
+        @config-changed="setTimeControlConfig"
       />
-      <button v-on:click="parseConfigThenCreateGame" class="large-button">
+      <button class="large-button" @click="parseConfigThenCreateGame">
         Create Game
       </button>
     </template>

@@ -21,7 +21,7 @@ const variantExists = computed(() => getVariantList().includes(props.variant));
       <div>
         <h1>{{ toUpperCaseFirstLetter(props.variant) }} Variant Rules</h1>
         <p v-if="!rulesDescription">Under Construction</p>
-        <div v-if="rulesDescription" v-html="rulesDescription"></div>
+        <div v-if="rulesDescription" v-html="rulesDescription" />
       </div>
       <div>
         <h1>Demo</h1>

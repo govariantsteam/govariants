@@ -36,7 +36,7 @@ const toggleMenuFn = (event: MouseEvent) => {
     <button class="navHamburgerContainer navElement" @click="toggleMenuFn">
       <font-awesome-icon icon="fa-solid fa-bars" class="navHamburgerMenu" />
     </button>
-    <div class="navContent" v-bind:class="{ closedMenu: is_menu_closed }">
+    <div class="navContent" :class="{ closedMenu: is_menu_closed }">
       <div>
         <RouterLink class="navElement" to="/"
           ><font-awesome-icon

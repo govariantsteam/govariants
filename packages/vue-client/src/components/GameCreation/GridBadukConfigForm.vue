@@ -20,8 +20,8 @@ function emitConfigChange(config: NewBadukConfig) {
 
 <template>
   <BadukConfigForm
-    v-bind:initial-config="$props.initialConfig"
-    v-bind:grid-only="true"
+    :initial-config="$props.initialConfig"
+    :grid-only="true"
     @config-changed="emitConfigChange"
   />
 </template>

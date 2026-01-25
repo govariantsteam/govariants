@@ -48,7 +48,7 @@ function isErrorResult(
 </script>
 
 <template>
-  <GamesFilterForm v-on:filter-change="setFilter"></GamesFilterForm>
+  <GamesFilterForm @filter-change="setFilter" />
   <hr />
   <ul>
     <template v-for="game in games" :key="game.id">
@@ -74,9 +74,9 @@ function isErrorResult(
       </template>
     </template>
   </ul>
-  <button @click="first()" :disabled="offset === 0">First</button>
-  <button @click="previous()" :disabled="offset === 0">Previous</button>
-  <button @click="next()" :disabled="games?.length !== count">Next</button>
+  <button :disabled="offset === 0" @click="first()">First</button>
+  <button :disabled="offset === 0" @click="previous()">Previous</button>
+  <button :disabled="games?.length !== count" @click="next()">Next</button>
   <label>
     Show:
     <select v-model="count">

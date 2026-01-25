@@ -38,21 +38,21 @@ const submit = () =>
           <label for="username">Username</label>
           <input
             id="username"
+            v-model="username"
             name="username"
             type="text"
             autocomplete="username"
             required
-            v-model="username"
           />
         </div>
         <div>
           <label for="email">Email (optional)</label>
           <input
             id="email"
+            v-model="email"
             name="email"
             type="email"
             autocomplete="email"
-            v-model="email"
           />
           <div
             v-if="!isEmailValid"
@@ -65,11 +65,11 @@ const submit = () =>
           <label for="current-password">Password</label>
           <input
             id="current-password"
+            v-model="password"
             name="password"
             type="password"
             autocomplete="current-password"
             required
-            v-model="password"
           />
         </div>
         <div>

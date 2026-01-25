@@ -32,7 +32,7 @@ function emitConfigChange(config: NewBadukConfig) {
 
 <template>
   <BadukConfigForm
-    @config-changed="emitConfigChange($event)"
     :initial-config="$props.initialConfig"
+    @config-changed="emitConfigChange($event)"
   />
 </template>

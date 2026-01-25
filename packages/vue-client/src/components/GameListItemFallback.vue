@@ -4,7 +4,7 @@ const props = defineProps<{ variant: string; gameId: string; error: string }>();
 
 <template>
   <li class="game-list-item">
-    <RouterLink v-bind:to="{ name: 'game', params: { gameId: props.gameId } }">
+    <RouterLink :to="{ name: 'game', params: { gameId: props.gameId } }">
       <div class="error">{{ error }}</div>
       <div class="variant-text">{{ props.variant }}</div>
     </RouterLink>

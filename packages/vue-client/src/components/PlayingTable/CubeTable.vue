@@ -48,7 +48,7 @@ const displayPower = computed(() => {
       :next-to-play="$props.nextToPlay"
       :power="power"
       :debug-graphics="debugGraphics"
-      v-on:move="move"
+      @move="move"
     />
     <div class="controls">
       <label for="power-slider" class="control-label">
@@ -69,7 +69,7 @@ const displayPower = computed(() => {
       </div>
       <div class="checkbox-control">
         <label>
-          <input type="checkbox" v-model="debugGraphics" />
+          <input v-model="debugGraphics" type="checkbox" />
           Debug Graphics
         </label>
       </div>

@@ -17,13 +17,13 @@ const variantGameView = computed(() => getBoard(props.game.variant));
 
 <template>
   <li class="game-list-item">
-    <RouterLink v-bind:to="{ name: 'game', params: { gameId: props.game.id } }">
+    <RouterLink :to="{ name: 'game', params: { gameId: props.game.id } }">
       <div class="event-blocker">
         <component
+          :is="variantGameView"
           v-if="variantGameView"
-          v-bind:is="variantGameView"
-          v-bind:gamestate="transformedGameData.gamestate"
-          v-bind:config="transformedGameData.config"
+          :gamestate="transformedGameData.gamestate"
+          :config="transformedGameData.config"
         />
       </div>
       <div class="variant-text">{{ props.game.variant }}</div>

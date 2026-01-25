@@ -502,7 +502,6 @@ router.post("/game/:gameId/subscribe", checkCSRFToken, async (req, res) => {
     res.send({ success: true });
   } catch (error) {
     res.status(500).json({ error: error.message });
-    res.send();
   }
 });
 
@@ -523,7 +522,6 @@ router.post(
       res.send({});
     } catch (error) {
       res.status(500).json({ error: error.message });
-      res.send({});
     }
   },
 );
@@ -545,7 +543,6 @@ router.post(
       res.send({});
     } catch (error) {
       res.status(500).json({ error: error.message });
-      res.send({});
     }
   },
 );

@@ -26,8 +26,8 @@ const colors_range = computed(() => {
     <font-awesome-icon icon="fa-solid fa-arrow-right" />
     <svg
       v-for="(colors, index) of colors_range"
-      v-bind:key="index"
-      v-bind:viewBox="`0 0 2 2`"
+      :key="index"
+      :viewBox="`0 0 2 2`"
       class="stone_preview"
     >
       <TaegeukStone v-if="colors" :colors="colors" :r="1" :cx="1" :cy="1" />

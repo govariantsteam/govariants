@@ -144,8 +144,8 @@ async function launchDeleteUserDialog() {
             <label for="email">Email:</label>
             <input
               id="email"
-              type="email"
               v-model="newEmail"
+              type="email"
               placeholder="Enter email address (leave empty to unset)"
             />
             <div

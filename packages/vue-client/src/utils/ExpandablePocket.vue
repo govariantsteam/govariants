@@ -27,13 +27,13 @@ onMounted(() => {
 
 <template>
   <div class="expand-panel">
-    <button type="button" @click="toggleExpansion()" class="expand-button">
+    <button type="button" class="expand-button" @click="toggleExpansion()">
       <text> {{ props.label }} </text>
       <font-awesome-icon v-if="isExpanded" icon="fa-solid fa-chevron-up" />
       <font-awesome-icon v-if="!isExpanded" icon="fa-solid fa-chevron-down" />
     </button>
-    <div class="expand-content" :class="{ hidden: !isExpanded }" ref="content">
-      <slot></slot>
+    <div ref="content" class="expand-content" :class="{ hidden: !isExpanded }">
+      <slot />
     </div>
   </div>
 </template>

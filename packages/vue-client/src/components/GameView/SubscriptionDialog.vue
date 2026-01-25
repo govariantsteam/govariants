@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { NotificationType } from "@ogfcommunity/variants-shared";
+import { type NotificationType } from "@ogfcommunity/variants-shared";
 import { createApp, effect, ref, watch } from "vue";
 import Swal from "sweetalert2";
 import * as requests from "@/requests";

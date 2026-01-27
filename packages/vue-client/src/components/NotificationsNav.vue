@@ -27,20 +27,30 @@ watchEffect(async () => {
 
 <template>
   <RouterLink class="navElement" to="/notifications">
-    <v-badge
-      v-if="notificationCount !== null && notificationCount > 0"
-      location="top right"
-      color="error"
-      :content="notificationCount"
-    >
+    <div class="icon-wrapper">
       <font-awesome-icon icon="fa-solid fa-bell" />
-    </v-badge>
-    <font-awesome-icon v-else icon="fa-solid fa-bell" />
+      <span v-if="notificationCount" class="badge">{{
+        Math.min(notificationCount, 99)
+      }}</span>
+    </div>
   </RouterLink>
 </template>
 
 <style scoped>
-::v-deep(.v-badge__badge) {
-  transform: scale(0.7);
+.icon-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.badge {
+  position: absolute;
+  top: -4px;
+  right: -15px;
+  background: red;
+  color: white;
+  font-size: 10px;
+  padding: 2px 4px 3px 4px;
+  border-radius: 999px;
+  line-height: 1;
 }
 </style>

@@ -1,4 +1,4 @@
-import { DeleteResult, UpdateResult } from "mongodb";
+import { UpdateResult } from "mongodb";
 import { notifications } from "../db";
 import { UserNotifications } from "./notifications.types";
 import {
@@ -83,7 +83,7 @@ export async function notifyOfGameEnd(
   subscriptions: GameSubscriptions,
   gameId: string,
   gameResult: string,
-): Promise<UpdateResult<UserNotifications>> {
+): Promise<void> {
   await deleteGameNotifications(getSubscriberIds(subscriptions), gameId, [
     Notifications.myMove,
     Notifications.newRound,
@@ -95,7 +95,7 @@ export async function notifyOfGameEnd(
     params: { result: gameResult },
     read: false,
   };
-  return await addGameNotification(
+  await addGameNotification(
     getRecipientIDs(subscriptions, Notifications.gameEnd),
     newNotification,
   );
@@ -106,7 +106,7 @@ export async function notifyOfNewRound(
   gameId: string,
   round: number,
   nextToPlayIds: string[],
-): Promise<UpdateResult<UserNotifications>> {
+): Promise<void> {
   await deleteGameNotifications(getSubscriberIds(subscriptions), gameId, [
     Notifications.myMove,
     Notifications.newRound,
@@ -130,7 +130,7 @@ export async function notifyOfNewRound(
     ),
     myMoveNotification,
   );
-  return await addGameNotification(
+  await addGameNotification(
     getRecipientIDs(subscriptions, Notifications.newRound),
     newRoundNotification,
   );
@@ -142,14 +142,14 @@ export async function notifyOfSeatChange(
   seat: number,
   user: string | undefined,
   didTakeSeat: boolean,
-): Promise<UpdateResult<UserNotifications>> {
+): Promise<void> {
   const newNotification: GameNotification = {
     gameId: gameId,
     type: Notifications.seatChange,
     params: { seat: seat, user: user, didTakeSeat: didTakeSeat },
     read: false,
   };
-  return await addGameNotification(
+  await addGameNotification(
     getRecipientIDs(subscriptions, Notifications.seatChange),
     newNotification,
   );
@@ -158,8 +158,8 @@ export async function notifyOfSeatChange(
 export async function markAsRead(
   userId: string,
   gameId: string,
-): Promise<UpdateResult<UserNotifications>> {
-  return notifications().updateOne(
+): Promise<void> {
+  await notifications().updateOne(
     { userId: userId },
     { $set: { "notifications.$[notification].read": true } },
     { arrayFilters: [{ "notification.gameId": gameId }] },
@@ -169,8 +169,8 @@ export async function markAsRead(
 export async function clearNotifications(
   userId: string,
   gameId: string,
-): Promise<UpdateResult<UserNotifications>> {
-  return notifications().updateOne(
+): Promise<void> {
+  await notifications().updateOne(
     { userId: userId },
     { $pull: { notifications: { gameId: gameId } } },
   );
@@ -178,8 +178,8 @@ export async function clearNotifications(
 
 export async function deleteAllNotificationsOfUser(
   userId: string,
-): Promise<DeleteResult> {
-  return notifications().deleteOne({ userId: userId });
+): Promise<void> {
+  await notifications().deleteOne({ userId: userId });
 }
 
 function getRecipientIDs(

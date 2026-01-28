@@ -512,13 +512,7 @@ router.post(
     try {
       const userId = (req.user as User).id;
 
-      const result = await markAsRead(userId, req.params.gameId);
-
-      if (result.acknowledged) {
-        res.status(200);
-      } else {
-        res.status(500);
-      }
+      await markAsRead(userId, req.params.gameId);
       res.send({});
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -533,13 +527,7 @@ router.post(
     try {
       const userId = (req.user as User).id;
 
-      const result = await clearNotifications(userId, req.params.gameId);
-
-      if (result.acknowledged) {
-        res.status(200);
-      } else {
-        res.status(500);
-      }
+      await clearNotifications(userId, req.params.gameId);
       res.send({});
     } catch (error) {
       res.status(500).json({ error: error.message });

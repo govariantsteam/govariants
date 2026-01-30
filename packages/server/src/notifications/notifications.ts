@@ -12,6 +12,19 @@ function outwardMap(userNotifications: UserNotifications): GameNotification[] {
   return userNotifications.notifications as GameNotification[];
 }
 
+export async function initUserNotifications(userId: string): Promise<void> {
+  await notifications().updateOne(
+    { userId: userId },
+    {
+      $setOnInsert: {
+        userId: userId,
+        notifications: [],
+      },
+    },
+    { upsert: true },
+  );
+}
+
 export async function getUserNotifications(
   userId: string,
 ): Promise<GameNotification[]> {
@@ -55,7 +68,6 @@ async function addGameNotification(
     {
       $push: { notifications: gameNotification },
     },
-    { upsert: true },
   );
 }
 

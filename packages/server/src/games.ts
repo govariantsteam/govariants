@@ -27,6 +27,7 @@ import {
 } from "./time-control/time-control";
 import { updateRatings, supportsRatings } from "./rating/rating";
 import {
+  initUserNotifications,
   notifyOfGameEnd,
   notifyOfNewRound,
   notifyOfSeatChange,
@@ -420,6 +421,7 @@ export async function subscribeToGameNotifications(
       $set: { [nestedKey]: types },
     },
   );
+  await initUserNotifications(userId);
 
   return updateResult.matchedCount === 1;
 }

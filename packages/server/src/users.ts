@@ -6,6 +6,7 @@ import {
 } from "@ogfcommunity/variants-shared";
 import { Collection, WithId, ObjectId } from "mongodb";
 import { randomBytes, scrypt } from "node:crypto";
+import { deleteAllNotificationsOfUser } from "./notifications/notifications";
 
 export interface GuestUser extends UserResponse {
   token: string;
@@ -222,6 +223,7 @@ export function deleteUser(user_id: string) {
       _id: new ObjectId(user_id),
     })
     .catch(console.error);
+  void deleteAllNotificationsOfUser(user_id);
 }
 
 export function checkUsername(username: string): void {

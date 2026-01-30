@@ -126,3 +126,15 @@ blockquote {
   margin: 1.5em 10px;
   padding: 0.5em 10px;
 }
+
+.icon-button {
+  width: 2em;
+  height: 2em;
+  border-radius: 50%;
+  border: 0px;
+  cursor: pointer;
+
+  &:not(:hover) {
+    background-color: transparent;
+  }
+}

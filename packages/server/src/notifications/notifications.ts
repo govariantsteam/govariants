@@ -1,0 +1,207 @@
+import { UpdateResult } from "mongodb";
+import { notifications } from "../db";
+import { UserNotifications } from "./notifications.types";
+import {
+  GameNotification,
+  GameSubscriptions,
+  Notifications,
+  NotificationType,
+} from "@ogfcommunity/variants-shared";
+
+function outwardMap(userNotifications: UserNotifications): GameNotification[] {
+  return userNotifications.notifications as GameNotification[];
+}
+
+export async function initUserNotifications(userId: string): Promise<void> {
+  await notifications().updateOne(
+    { userId: userId },
+    {
+      $setOnInsert: {
+        userId: userId,
+        notifications: [],
+      },
+    },
+    { upsert: true },
+  );
+}
+
+export async function getUserNotifications(
+  userId: string,
+): Promise<GameNotification[]> {
+  const userNotifications = await notifications().findOne({ userId: userId });
+  return userNotifications ? outwardMap(userNotifications) : [];
+}
+
+export async function getUserNotificationsCount(
+  userId: string,
+): Promise<number> {
+  const queryResult = await notifications()
+    .aggregate([
+      { $match: { userId: userId } },
+      {
+        $project: {
+          num: {
+            $size: {
+              $filter: {
+                input: "$notifications",
+                as: "notification",
+                cond: { $eq: ["$$notification.read", false] },
+              },
+            },
+          },
+        },
+      },
+    ])
+    .toArray();
+
+  return queryResult.at(0)?.num ?? 0;
+}
+
+async function addGameNotification(
+  recipientIds: string[],
+  gameNotification: GameNotification,
+): Promise<UpdateResult<UserNotifications>> {
+  if (!recipientIds.length) return;
+
+  return await notifications().updateMany(
+    { userId: { $in: recipientIds } },
+    {
+      $push: { notifications: gameNotification },
+    },
+  );
+}
+
+async function deleteGameNotifications(
+  userIds: string[],
+  gameId: string,
+  types: NotificationType[],
+): Promise<UpdateResult<UserNotifications>> {
+  if (!userIds.length || !types.length) return;
+
+  return await notifications().updateMany(
+    { userId: { $in: userIds } },
+    {
+      $pull: {
+        notifications: {
+          gameId: { $eq: gameId },
+          type: { $in: types },
+        },
+      },
+    },
+  );
+}
+
+export async function notifyOfGameEnd(
+  subscriptions: GameSubscriptions,
+  gameId: string,
+  gameResult: string,
+): Promise<void> {
+  await deleteGameNotifications(getSubscriberIds(subscriptions), gameId, [
+    Notifications.myMove,
+    Notifications.newRound,
+  ]);
+
+  const newNotification: GameNotification = {
+    gameId: gameId,
+    type: Notifications.gameEnd,
+    params: { result: gameResult },
+    read: false,
+  };
+  await addGameNotification(
+    getRecipientIDs(subscriptions, Notifications.gameEnd),
+    newNotification,
+  );
+}
+
+export async function notifyOfNewRound(
+  subscriptions: GameSubscriptions,
+  gameId: string,
+  round: number,
+  nextToPlayIds: string[],
+): Promise<void> {
+  await deleteGameNotifications(getSubscriberIds(subscriptions), gameId, [
+    Notifications.myMove,
+    Notifications.newRound,
+  ]);
+
+  const newRoundNotification: GameNotification = {
+    gameId: gameId,
+    type: Notifications.newRound,
+    params: { round: round },
+    read: false,
+  };
+  const myMoveNotification: GameNotification = {
+    gameId: gameId,
+    type: Notifications.myMove,
+    params: { round: round },
+    read: false,
+  };
+  await addGameNotification(
+    getRecipientIDs(subscriptions, Notifications.myMove).filter((id) =>
+      nextToPlayIds.includes(id),
+    ),
+    myMoveNotification,
+  );
+  await addGameNotification(
+    getRecipientIDs(subscriptions, Notifications.newRound),
+    newRoundNotification,
+  );
+}
+
+export async function notifyOfSeatChange(
+  subscriptions: GameSubscriptions,
+  gameId: string,
+  seat: number,
+  user: string | undefined,
+  didTakeSeat: boolean,
+): Promise<void> {
+  const newNotification: GameNotification = {
+    gameId: gameId,
+    type: Notifications.seatChange,
+    params: { seat: seat, user: user, didTakeSeat: didTakeSeat },
+    read: false,
+  };
+  await addGameNotification(
+    getRecipientIDs(subscriptions, Notifications.seatChange),
+    newNotification,
+  );
+}
+
+export async function markAsRead(
+  userId: string,
+  gameId: string,
+): Promise<void> {
+  await notifications().updateOne(
+    { userId: userId },
+    { $set: { "notifications.$[notification].read": true } },
+    { arrayFilters: [{ "notification.gameId": gameId }] },
+  );
+}
+
+export async function clearNotifications(
+  userId: string,
+  gameId: string,
+): Promise<void> {
+  await notifications().updateOne(
+    { userId: userId },
+    { $pull: { notifications: { gameId: gameId } } },
+  );
+}
+
+export async function deleteAllNotificationsOfUser(
+  userId: string,
+): Promise<void> {
+  await notifications().deleteOne({ userId: userId });
+}
+
+function getRecipientIDs(
+  subscriptions: GameSubscriptions,
+  type: NotificationType,
+): string[] {
+  const ids = Object.keys(subscriptions);
+  return ids.filter((id) => subscriptions[id].includes(type));
+}
+
+function getSubscriberIds(subscriptions: GameSubscriptions): string[] {
+  return Object.keys(subscriptions);
+}

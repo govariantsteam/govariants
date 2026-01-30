@@ -140,7 +140,7 @@ async function clear(gameId: string): Promise<unknown> {
           :subscription="gameState.subscription ?? []"
           :is-open="isDialogOpen"
           v-on:close="isDialogOpen = false"
-        ></SubscriptionDialog>
+        />
       </div>
     </div>
     <p v-if="user === null">Please log in to view your users notifications.</p>

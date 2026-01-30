@@ -315,7 +315,7 @@ async function repairGame(): Promise<void> {
             :subscription="subscription"
             :is-open="isDialogOpen"
             v-on:close="isDialogOpen = false"
-          ></SubscriptionDialog>
+          />
         </div>
         <div className="seat-list">
           <div v-for="(player, idx) in players" :key="idx">

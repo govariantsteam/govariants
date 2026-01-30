@@ -233,16 +233,18 @@ export async function handleMoveAndTime(
       .nextToPlay()
       .map((index) => game.players[index]?.id)
       .filter((x) => !!x);
-    await notifyOfNewRound(
+    notifyOfNewRound(
       game.subscriptions ?? {},
       game.id,
       game_obj.round,
       userIdsOnThePlay,
-    );
+    ).catch((error) => console.error(error));
   }
 
   if (game_obj.phase === "gameover") {
-    await notifyOfGameEnd(game.subscriptions ?? {}, game.id, game_obj.result);
+    notifyOfGameEnd(game.subscriptions ?? {}, game.id, game_obj.result).catch(
+      (error) => console.error(error),
+    );
   }
 
   return game;

@@ -239,12 +239,12 @@ export async function handleMoveAndTime(
       game.id,
       game_obj.round,
       userIdsOnThePlay,
-    ).catch((error) => console.error(error));
+    ).catch(console.error);
   }
 
   if (game_obj.phase === "gameover") {
     notifyOfGameEnd(game.subscriptions ?? {}, game.id, game_obj.result).catch(
-      (error) => console.error(error),
+      console.error,
     );
   }
 

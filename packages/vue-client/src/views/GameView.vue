@@ -5,6 +5,7 @@ import {
   supportsSGF,
   getDescription,
   uiTransform,
+  NotificationType,
 } from "@ogfcommunity/variants-shared";
 import * as requests from "../requests";
 import SeatComponent from "@/components/GameView/SeatComponent.vue";
@@ -23,6 +24,12 @@ import PlayersToMove from "@/components/GameView/PlayersToMove.vue";
 import DownloadSGF from "@/components/GameView/DownloadSGF.vue";
 import { getPlayingTable } from "@/playing_table_map";
 import Swal from "sweetalert2";
+import SubscriptionDialog from "@/components/GameView/SubscriptionDialog.vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faBell } from "@fortawesome/free-solid-svg-icons";
+
+library.add(faBell);
 
 const props = defineProps<{ gameId: string }>();
 
@@ -52,6 +59,8 @@ const time_control = ref<ITimeControlBase | null>(null);
 const adminMode = ref<boolean>(false);
 const errorOccured = ref<boolean>(false);
 const creator = ref<User | undefined>();
+const subscription = ref<NotificationType[]>([]);
+const isDialogOpen = ref(false);
 
 function setNewState(stateResponse: GameStateResponse): void {
   const { timeControl: timeControl, ...state } = stateResponse;
@@ -108,6 +117,7 @@ watchEffect(async () => {
       variant.value = result.variant;
       config.value = result.config;
       players.value = result.players;
+      subscription.value = result.subscription ?? [];
       creator.value = result.creator;
       setNewState(result);
 
@@ -292,6 +302,21 @@ async function repairGame(): Promise<void> {
 
       <div>
         <!-- Right column -->
+        <div class="subscribe-button-container">
+          <button
+            class="icon-button subscribe-button"
+            :disabled="!user"
+            v-on:click="isDialogOpen = true"
+          >
+            <FontAwesomeIcon icon="fa-solid fa-bell" />
+          </button>
+          <SubscriptionDialog
+            :gameId="props.gameId"
+            :subscription="subscription"
+            :is-open="isDialogOpen"
+            v-on:close="isDialogOpen = false"
+          />
+        </div>
         <div className="seat-list">
           <div v-for="(player, idx) in players" :key="idx">
             <SeatComponent
@@ -374,5 +399,14 @@ async function repairGame(): Promise<void> {
   background-color: var(--color-warn);
   height: 64px;
   font-size: large;
+}
+.subscribe-button-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+.subscribe-button {
+  color: rgba(16, 29, 212, 0.7);
+  font-size: 1.5em;
 }
 </style>

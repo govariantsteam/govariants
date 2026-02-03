@@ -61,3 +61,15 @@ export function getNullIndices(arr: unknown[]) {
 export function sum(array: number[]): number {
   return array.reduce((a, b) => a + b, 0);
 }
+
+export function groupBy<T, K>(arr: T[], selector: (v: T) => K): [K, T[]][] {
+  return [
+    ...arr
+      .reduce((map, item) => {
+        const key = selector(item);
+        (map.get(key) ?? map.set(key, []).get(key)!).push(item);
+        return map;
+      }, new Map<K, T[]>())
+      .entries(),
+  ];
+}

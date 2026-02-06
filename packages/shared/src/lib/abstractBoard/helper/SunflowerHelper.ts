@@ -1,4 +1,4 @@
-import { Intersection } from "./types/intersection";
+import { Intersection } from "../intersection";
 import { Vector2D } from "./types/Vector2D";
 
 export class NGon {
@@ -17,7 +17,7 @@ export class NGon {
       this.vertices.push(new Intersection(vec));
     }
     for (let i = 0; i < n; i++) {
-      this.getVertex(i).ConnectTo(this.getVertex(i + 1), true);
+      this.getVertex(i).connectTo(this.getVertex(i + 1), true);
     }
   }
 
@@ -54,8 +54,8 @@ export function connectTwoSides(
   gon2: NGon,
   index2: number,
 ) {
-  gon1.getVertex(index1).ConnectTo(gon2.getVertex(index2), true);
-  gon1.getVertex(index1 + 1).ConnectTo(gon2.getVertex(index2 - 1), true);
+  gon1.getVertex(index1).connectTo(gon2.getVertex(index2), true);
+  gon1.getVertex(index1 + 1).connectTo(gon2.getVertex(index2 - 1), true);
 }
 
 export function createSunflowerBoard(size: number): Intersection[] {

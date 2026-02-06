@@ -26,19 +26,13 @@ watchEffect(async () => {
 </script>
 
 <template>
-  <RouterLink
-    class="navElement"
-    to="/notifications"
-    aria-label="Notifications"
-    title="Notifications"
-  >
+  <RouterLink class="navElement" to="/notifications">
     <div class="icon-wrapper">
       <font-awesome-icon icon="fa-solid fa-bell" />
       <span v-if="notificationCount" class="badge">{{
         Math.min(notificationCount, 99)
       }}</span>
     </div>
-    <span class="mobile-only">Notifications</span>
   </RouterLink>
 </template>
 
@@ -46,17 +40,6 @@ watchEffect(async () => {
 .icon-wrapper {
   position: relative;
   display: inline-block;
-}
-
-.mobile-only {
-  display: none;
-}
-
-/* Mobile breakpoint - keep in sync with App.vue nav hamburger */
-@media (max-width: 768px) {
-  .mobile-only {
-    display: inline;
-  }
 }
 
 .badge {

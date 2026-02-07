@@ -29,7 +29,9 @@ watchEffect(async () => {
   <RouterLink
     class="navElement"
     to="/notifications"
-    aria-label="Notifications"
+    :aria-label="`Notifications${
+      notificationCount ? `, ${notificationCount} unread` : ''
+    }`"
     title="Notifications"
   >
     <div class="icon-wrapper">

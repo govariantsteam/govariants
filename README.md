@@ -38,3 +38,6 @@ See `docs/variant-implementation.md` for a step-by-step guide. If you want a con
 There are two main files to be concerned with: `shared/src/chess/chess.ts` and `vue-client/src/components/boards/ChessBoard.ts`.  The former specifies the rules of the game while the latter specifies how to render it on the client.
 
 Disclaimer: the structure of the repo is changing rapidly, so the above PR may be outdated.  Feel free to reach out in the [forums thread](https://forums.online-go.com/t/collective-development-of-a-server-for-variants/43682) if you need help creating a variant.
+
+
+test

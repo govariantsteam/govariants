@@ -57,7 +57,7 @@ if (!props.initialConfig) {
     <textarea
       v-model="configStr"
       @input="(event) => onTextChanged((event.target as HTMLInputElement).value)"
-    ></textarea>
+    />
   </form>
   <div class="error">{{ error }}</div>
 </template>

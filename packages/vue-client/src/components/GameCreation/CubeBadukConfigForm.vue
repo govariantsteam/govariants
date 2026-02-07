@@ -39,7 +39,7 @@ watch([faceSize, komi], emitConfigChange);
     </select>
 
     <label>Komi</label>
-    <input type="number" step="0.5" v-model.number="komi" />
+    <input v-model.number="komi" type="number" step="0.5" />
   </form>
 </template>
 

@@ -41,8 +41,8 @@ function positionClicked(pos: Coordinate | number) {
     v-else
     :board="props.gamestate?.board as ((MulticolorStone | null)[] | undefined)"
     :board_config="$props.config.board"
-    @click="positionClicked"
     :background_color="props.gamestate?.backgroundColor"
     :score_board="props.gamestate?.score_board as ((string[] | null)[] | undefined)"
+    @click="positionClicked"
   />
 </template>

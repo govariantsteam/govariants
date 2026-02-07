@@ -45,19 +45,19 @@ const angle_degrees = computed(() => {
 
 <template>
   <circle
-    v-bind:cx="props.cx"
-    v-bind:cy="props.cy"
-    v-bind:r="props.r"
     v-if="colors.length === 1"
-    v-bind:fill="colors[0]"
+    :cx="props.cx"
+    :cy="props.cy"
+    :r="props.r"
+    :fill="colors[0]"
   />
-  <g v-else v-bind:transform="`translate(${props.cx} ${props.cy})`">
+  <g v-else :transform="`translate(${props.cx} ${props.cy})`">
     <path
       v-for="(color, idx) in colors"
-      v-bind:key="idx"
-      v-bind:fill="color"
-      v-bind:d="section_path"
-      v-bind:transform="`rotate(${angle_degrees * idx} 0 0)`"
+      :key="idx"
+      :fill="color"
+      :d="section_path"
+      :transform="`rotate(${angle_degrees * idx} 0 0)`"
     />
   </g>
 </template>

@@ -15,8 +15,8 @@ export const useStore = defineStore("user", {
   actions: {
     async update() {
       const res = await requests.get("/checkLogin");
-      this.user = res.user;
-      this.csrf_token = res.csrf_token;
+      this.user = res?.user ?? null;
+      this.csrf_token = res?.csrf_token ?? null;
     },
 
     async guestLogin() {

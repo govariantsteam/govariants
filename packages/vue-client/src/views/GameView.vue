@@ -306,15 +306,15 @@ async function repairGame(): Promise<void> {
           <button
             class="icon-button subscribe-button"
             :disabled="!user"
-            v-on:click="isDialogOpen = true"
+            @click="isDialogOpen = true"
           >
             <FontAwesomeIcon icon="fa-solid fa-bell" />
           </button>
           <SubscriptionDialog
-            :gameId="props.gameId"
+            :game-id="props.gameId"
             :subscription="subscription"
             :is-open="isDialogOpen"
-            v-on:close="isDialogOpen = false"
+            @close="isDialogOpen = false"
           />
         </div>
         <div className="seat-list">

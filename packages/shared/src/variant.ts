@@ -57,4 +57,11 @@ export interface Variant<
     config: ConfigT,
     state: StateT,
   ) => { config: DefaultBoardConfig; gamestate: DefaultBoardState };
+
+  movePreview?: (
+    config: ConfigT,
+    state: StateT,
+    move: string,
+    player: number,
+  ) => StateT;
 }

@@ -1,4 +1,4 @@
-import { Coordinate, CoordinateLike } from "../lib/coordinate";
+import { Coordinate, CoordinateLike, isSgfRepr } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
 import { getGroup, getOuterBorder } from "../lib/group_utils";
 import { KoDetector, SuperKoDetector } from "../lib/ko_detector";
@@ -342,6 +342,50 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
       },
     };
   }
+
+  static movePreview<T extends BadukState>(
+    config: BadukConfig,
+    state: T,
+    move: string,
+    player: number,
+  ): T {
+    console.log(config, state, move, player);
+    if (player !== 0 && player !== 1) {
+      console.error(
+        `Baduk.movePreview was called with player = ${player}, but only 0 and 1 are expected.`,
+      );
+      return state;
+    }
+
+    let coordinate: Coordinate;
+    if (isGridBadukConfig(config)) {
+      if (!isSgfRepr(move)) {
+        return state;
+      }
+      coordinate = Coordinate.fromSgfRepr(move);
+    } else {
+      if (isNaN(Number(move))) {
+        return state;
+      }
+      coordinate = new Coordinate(Number(move), 0);
+    }
+
+    const playerColor = player === 0 ? Color.BLACK : Color.WHITE;
+    const boardWithPreview = state.board.map((row, row_idx) =>
+      row.map((fieldColor, col_idx) => {
+        if (row_idx === coordinate.y && col_idx === coordinate.x) {
+          return playerColor;
+        }
+        return fieldColor;
+      }),
+    );
+
+    return {
+      ...state,
+      board: boardWithPreview,
+      last_move: move,
+    };
+  }
 }
 
 /** Returns true if the group containing (x, y) has at least one liberty. */
@@ -384,6 +428,7 @@ export const badukVariant: Variant<NewBadukConfig, BadukState> = {
   getPlayerColors: Baduk.getPlayerColors,
   sanitizeConfig: Baduk.sanitizeConfig,
   uiTransform: Baduk.uiTransform,
+  movePreview: Baduk.movePreview,
 };
 
 export const gridBadukVariant = badukVariant as Variant<

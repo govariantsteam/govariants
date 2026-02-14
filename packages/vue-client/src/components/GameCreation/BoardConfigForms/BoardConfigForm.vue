@@ -81,10 +81,7 @@ function emitConfigChange(config: BoardConfig) {
     />
     <ExpandablePocket label="Board preview">
       <div class="event-blocker">
-        <DefaultBoard
-          v-if="boardConfig"
-          :config="{ board: boardConfig }"
-        ></DefaultBoard>
+        <DefaultBoard v-if="boardConfig" :config="{ board: boardConfig }" />
       </div>
     </ExpandablePocket>
   </div>

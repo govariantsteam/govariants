@@ -27,7 +27,7 @@ const filter = computed(() => {
 
 <template>
   <h3>Filter games</h3>
-  <form @change="emitFilter" class="gamesFilterForm">
+  <form class="gamesFilterForm" @change="emitFilter">
     <select v-model="selectedVariant">
       <option value="">All variants</option>
       <option v-for="variant in variants" :key="variant">
@@ -37,7 +37,7 @@ const filter = computed(() => {
 
     <div v-if="user" class="myGamesToggle">
       <label for="onlyMyGamesToggle">games that I play </label>
-      <input id="onlyMyGamesToggle" type="checkbox" v-model="onlyMyGames" />
+      <input id="onlyMyGamesToggle" v-model="onlyMyGames" type="checkbox" />
     </div>
   </form>
 </template>

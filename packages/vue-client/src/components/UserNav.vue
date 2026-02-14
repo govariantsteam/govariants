@@ -15,12 +15,12 @@ store.update();
 </script>
 
 <template>
-  <RouterLink class="navElement" v-if="!user" to="/login"
+  <RouterLink v-if="!user" class="navElement" to="/login"
     ><font-awesome-icon icon="fa-solid fa-right-to-bracket" class="icon" />Log
     in</RouterLink
   >
   <template v-else>
-    <RouterLink class="navElement" v-if="user.role === 'admin'" to="/admin"
+    <RouterLink v-if="user.role === 'admin'" class="navElement" to="/admin"
       ><font-awesome-icon
         icon="fa-solid fa-user-shield"
         class="icon"
@@ -35,8 +35,8 @@ store.update();
     </RouterLink>
     <button
       class="navElement logoutButton"
-      v-on:click="store.logout()"
       click="Log out"
+      @click="store.logout()"
     >
       <font-awesome-icon icon="fa-solid fa-right-from-bracket" class="icon" />
       Log out

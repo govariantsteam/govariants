@@ -93,14 +93,14 @@ const board_1 = computed(() => {
     <DefaultBoard
       :gamestate="board_0"
       :config="props.config"
-      v-on:move="emitMove"
+      @move="emitMove"
     />
   </div>
   <div style="width: 50%; height: min-content; display: inline-block">
     <DefaultBoard
       :gamestate="board_1"
       :config="props.config"
-      v-on:move="emitMove"
+      @move="emitMove"
     />
   </div>
 </template>

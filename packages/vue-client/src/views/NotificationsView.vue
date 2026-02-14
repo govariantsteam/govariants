@@ -88,9 +88,9 @@ async function clear(gameId: string): Promise<unknown> {
 <template>
   <div class="notifications-page">
     <div
-      class="game-notifications-container"
       v-for="{ gameId, notifications, gameState } in notificationGroups"
       :key="gameId"
+      class="game-notifications-container"
     >
       <div class="board-container">
         <template v-if="isErrorResult(gameState)">
@@ -116,30 +116,30 @@ async function clear(gameId: string): Promise<unknown> {
         <button
           class="icon-button success-color"
           aria-label="mark as read"
-          v-on:click="markAsRead(gameId)"
+          @click="markAsRead(gameId)"
         >
           <FontAwesomeIcon icon="fa-solid fa-circle-check" />
         </button>
         <button
           class="icon-button alert-color"
           aria-label="clear"
-          v-on:click="clear(gameId)"
+          @click="clear(gameId)"
         >
           <FontAwesomeIcon icon="fa-solid fa-trash" />
         </button>
         <button
           class="icon-button grey-color"
           :disabled="!user"
-          v-on:click="isDialogOpen = true"
+          @click="isDialogOpen = true"
         >
           <FontAwesomeIcon icon="fa-solid fa-gear" />
         </button>
         <SubscriptionDialog
           v-if="!isErrorResult(gameState)"
-          :gameId="gameId"
+          :game-id="gameId"
           :subscription="gameState.subscription ?? []"
           :is-open="isDialogOpen"
-          v-on:close="isDialogOpen = false"
+          @close="isDialogOpen = false"
         />
       </div>
     </div>

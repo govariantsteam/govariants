@@ -266,15 +266,15 @@ async function repairGame(): Promise<void> {
       <div>
         <!-- Left column -->
         <component
+          :is="variantGameView"
           v-if="variantGameView && transformedGameData"
-          v-bind:is="variantGameView"
-          v-bind:gamestate="transformedGameData.gamestate"
-          v-bind:config="transformedGameData.config"
-          v-bind:displayed_round="displayed_round"
-          v-bind:next-to-play="game_state?.next_to_play"
-          v-on:move="makeMove"
+          :gamestate="transformedGameData.gamestate"
+          :config="transformedGameData.config"
+          :displayed_round="displayed_round"
+          :next-to-play="game_state?.next_to_play"
+          @move="makeMove"
         />
-        <NavButtons :gameRound="current_round" v-model="view_round" />
+        <NavButtons v-model="view_round" :game-round="current_round" />
 
         <div id="variant-info">
           <div>
@@ -306,15 +306,15 @@ async function repairGame(): Promise<void> {
           <button
             class="icon-button subscribe-button"
             :disabled="!user"
-            v-on:click="isDialogOpen = true"
+            @click="isDialogOpen = true"
           >
             <FontAwesomeIcon icon="fa-solid fa-bell" />
           </button>
           <SubscriptionDialog
-            :gameId="props.gameId"
+            :game-id="props.gameId"
             :subscription="subscription"
             :is-open="isDialogOpen"
-            v-on:close="isDialogOpen = false"
+            @close="isDialogOpen = false"
           />
         </div>
         <div className="seat-list">
@@ -324,9 +324,6 @@ async function repairGame(): Promise<void> {
               :admin_mode="adminMode"
               :occupant="player"
               :player_n="idx"
-              @sit="sit(idx)"
-              @leave="leave(idx)"
-              @select="setPlayingAs(idx)"
               :selected="playing_as"
               :time_control="
                 time_control?.forPlayer[idx] ?? createTimeControlPreview(config)
@@ -336,6 +333,9 @@ async function repairGame(): Promise<void> {
               "
               :variant="variant"
               :config="config"
+              @sit="sit(idx)"
+              @leave="leave(idx)"
+              @select="setPlayingAs(idx)"
             />
           </div>
 
@@ -350,7 +350,7 @@ async function repairGame(): Promise<void> {
           </div>
         </div>
 
-        <DownloadSGF v-if="supportsSGF(variant)" :gameId="gameId" />
+        <DownloadSGF v-if="supportsSGF(variant)" :game-id="gameId" />
         <div
           v-if="game_state?.result"
           style="font-weight: bold; font-size: 24pt"
@@ -358,15 +358,11 @@ async function repairGame(): Promise<void> {
           Result: {{ game_state?.result }}
         </div>
         <div v-if="user?.role === 'admin'">
-          <input type="checkbox" v-model="adminMode" id="admin" />
+          <input id="admin" v-model="adminMode" type="checkbox" />
           <label for="admin">Admin Mode</label>
         </div>
       </div>
-      <button
-        class="repair-game-btn"
-        v-if="errorOccured"
-        v-on:click="repairGame"
-      >
+      <button v-if="errorOccured" class="repair-game-btn" @click="repairGame">
         repair game
       </button>
     </div>

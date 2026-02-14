@@ -26,10 +26,10 @@ if (!props.initialConfig) {
 </script>
 
 <template>
-  <form @change="emitConfigChange" class="config-form-column">
+  <form class="config-form-column" @change="emitConfigChange">
     <label>Nodes per Ring</label>
-    <input type="number" min="3" v-model="config.nodesPerRing" />
+    <input v-model="config.nodesPerRing" type="number" min="3" />
     <label>Number of Rings</label>
-    <input type="number" min="3" v-model="config.rings" />
+    <input v-model="config.rings" type="number" min="3" />
   </form>
 </template>

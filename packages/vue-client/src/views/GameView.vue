@@ -5,6 +5,7 @@ import {
   supportsSGF,
   getDescription,
   uiTransform,
+  NotificationType,
 } from "@ogfcommunity/variants-shared";
 import * as requests from "../requests";
 import SeatComponent from "@/components/GameView/SeatComponent.vue";
@@ -23,6 +24,12 @@ import PlayersToMove from "@/components/GameView/PlayersToMove.vue";
 import DownloadSGF from "@/components/GameView/DownloadSGF.vue";
 import { getPlayingTable } from "@/playing_table_map";
 import Swal from "sweetalert2";
+import SubscriptionDialog from "@/components/GameView/SubscriptionDialog.vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faBell } from "@fortawesome/free-solid-svg-icons";
+
+library.add(faBell);
 
 const props = defineProps<{ gameId: string }>();
 
@@ -52,6 +59,8 @@ const time_control = ref<ITimeControlBase | null>(null);
 const adminMode = ref<boolean>(false);
 const errorOccured = ref<boolean>(false);
 const creator = ref<User | undefined>();
+const subscription = ref<NotificationType[]>([]);
+const isDialogOpen = ref(false);
 
 function setNewState(stateResponse: GameStateResponse): void {
   const { timeControl: timeControl, ...state } = stateResponse;
@@ -108,6 +117,7 @@ watchEffect(async () => {
       variant.value = result.variant;
       config.value = result.config;
       players.value = result.players;
+      subscription.value = result.subscription ?? [];
       creator.value = result.creator;
       setNewState(result);
 
@@ -256,15 +266,15 @@ async function repairGame(): Promise<void> {
       <div>
         <!-- Left column -->
         <component
+          :is="variantGameView"
           v-if="variantGameView && transformedGameData"
-          v-bind:is="variantGameView"
-          v-bind:gamestate="transformedGameData.gamestate"
-          v-bind:config="transformedGameData.config"
-          v-bind:displayed_round="displayed_round"
-          v-bind:next-to-play="game_state?.next_to_play"
-          v-on:move="makeMove"
+          :gamestate="transformedGameData.gamestate"
+          :config="transformedGameData.config"
+          :displayed_round="displayed_round"
+          :next-to-play="game_state?.next_to_play"
+          @move="makeMove"
         />
-        <NavButtons :gameRound="current_round" v-model="view_round" />
+        <NavButtons v-model="view_round" :game-round="current_round" />
 
         <div id="variant-info">
           <div>
@@ -292,6 +302,21 @@ async function repairGame(): Promise<void> {
 
       <div>
         <!-- Right column -->
+        <div class="subscribe-button-container">
+          <button
+            class="icon-button subscribe-button"
+            :disabled="!user"
+            @click="isDialogOpen = true"
+          >
+            <FontAwesomeIcon icon="fa-solid fa-bell" />
+          </button>
+          <SubscriptionDialog
+            :game-id="props.gameId"
+            :subscription="subscription"
+            :is-open="isDialogOpen"
+            @close="isDialogOpen = false"
+          />
+        </div>
         <div className="seat-list">
           <div v-for="(player, idx) in players" :key="idx">
             <SeatComponent
@@ -299,9 +324,6 @@ async function repairGame(): Promise<void> {
               :admin_mode="adminMode"
               :occupant="player"
               :player_n="idx"
-              @sit="sit(idx)"
-              @leave="leave(idx)"
-              @select="setPlayingAs(idx)"
               :selected="playing_as"
               :time_control="
                 time_control?.forPlayer[idx] ?? createTimeControlPreview(config)
@@ -311,6 +333,9 @@ async function repairGame(): Promise<void> {
               "
               :variant="variant"
               :config="config"
+              @sit="sit(idx)"
+              @leave="leave(idx)"
+              @select="setPlayingAs(idx)"
             />
           </div>
 
@@ -325,7 +350,7 @@ async function repairGame(): Promise<void> {
           </div>
         </div>
 
-        <DownloadSGF v-if="supportsSGF(variant)" :gameId="gameId" />
+        <DownloadSGF v-if="supportsSGF(variant)" :game-id="gameId" />
         <div
           v-if="game_state?.result"
           style="font-weight: bold; font-size: 24pt"
@@ -333,15 +358,11 @@ async function repairGame(): Promise<void> {
           Result: {{ game_state?.result }}
         </div>
         <div v-if="user?.role === 'admin'">
-          <input type="checkbox" v-model="adminMode" id="admin" />
+          <input id="admin" v-model="adminMode" type="checkbox" />
           <label for="admin">Admin Mode</label>
         </div>
       </div>
-      <button
-        class="repair-game-btn"
-        v-if="errorOccured"
-        v-on:click="repairGame"
-      >
+      <button v-if="errorOccured" class="repair-game-btn" @click="repairGame">
         repair game
       </button>
     </div>
@@ -374,5 +395,14 @@ async function repairGame(): Promise<void> {
   background-color: var(--color-warn);
   height: 64px;
   font-size: large;
+}
+.subscribe-button-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+.subscribe-button {
+  color: rgba(16, 29, 212, 0.7);
+  font-size: 1.5em;
 }
 </style>

@@ -68,14 +68,14 @@ function emitConfigChange() {
     <form @change="emitConfigChange">
       <template v-for="(_, index) in teamSizes" :key="index">
         <label>Size of team {{ index }}</label>
-        <input type="number" min="1" v-model="teamSizes[index]" />
+        <input v-model="teamSizes[index]" type="number" min="1" />
       </template>
 
       <component
-        v-if="variantConfigForm"
         :is="variantConfigForm"
-        :initialConfig="getDefaultConfig(subVariant)"
-        v-on:configChanged="setSubConfig"
+        v-if="variantConfigForm"
+        :initial-config="getDefaultConfig(subVariant)"
+        @config-changed="setSubConfig"
       />
     </form>
   </div>

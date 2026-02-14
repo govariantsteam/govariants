@@ -927,7 +927,7 @@ watch(
 
 <template>
   <div ref="containerRef" class="cube-board-container">
-    <canvas ref="canvasRef" class="cube-board-canvas"></canvas>
+    <canvas ref="canvasRef" class="cube-board-canvas" />
   </div>
 </template>
 

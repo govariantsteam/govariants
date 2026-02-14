@@ -14,13 +14,13 @@ function emitConfigChange() {
 </script>
 
 <template>
-  <form @change="emitConfigChange" class="config-form-column">
+  <form class="config-form-column" @change="emitConfigChange">
     <label>Width</label>
-    <input type="number" min="1" v-model="config.width" />
+    <input v-model="config.width" type="number" min="1" />
     <label>Height</label>
-    <input type="number" min="1" v-model="config.height" />
+    <input v-model="config.height" type="number" min="1" />
     <label>Number of players</label>
-    <input type="number" min="1" v-model="config.num_players" />
+    <input v-model="config.num_players" type="number" min="1" />
     <label>Collision Handling</label>
     <select v-model="config.collision_handling">
       <option :value="'merge'">Merge</option>

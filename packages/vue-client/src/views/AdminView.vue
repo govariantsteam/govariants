@@ -60,7 +60,7 @@ async function sendTestEmail() {
             placeholder="recipient@example.com"
             :disabled="isSending"
           />
-          <button @click="sendTestEmail" :disabled="isSending">
+          <button :disabled="isSending" @click="sendTestEmail">
             {{ isSending ? "Sending..." : "Send Test Email" }}
           </button>
         </div>

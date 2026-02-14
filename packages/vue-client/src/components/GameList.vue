@@ -6,6 +6,7 @@ import {
   type GameInitialResponse,
   type GamesFilter,
   gamesFilterToUrlParams,
+  isErrorResult,
 } from "@ogfcommunity/variants-shared";
 import GameListItem from "@/components/GameListItem.vue";
 import GameListItemFallback from "@/components/GameListItemFallback.vue";
@@ -36,19 +37,10 @@ const next = () => {
 function setFilter(gamesFilter: GamesFilter) {
   filter.value = gamesFilter;
 }
-function isErrorResult(
-  dto: GameInitialResponse | GameErrorResponse,
-): dto is GameErrorResponse {
-  const messageProperty: Exclude<
-    keyof GameErrorResponse,
-    keyof GameInitialResponse
-  > = "errorMessage";
-  return messageProperty in dto;
-}
 </script>
 
 <template>
-  <GamesFilterForm v-on:filter-change="setFilter"></GamesFilterForm>
+  <GamesFilterForm @filter-change="setFilter" />
   <hr />
   <ul>
     <template v-for="game in games" :key="game.id">
@@ -74,9 +66,9 @@ function isErrorResult(
       </template>
     </template>
   </ul>
-  <button @click="first()" :disabled="offset === 0">First</button>
-  <button @click="previous()" :disabled="offset === 0">Previous</button>
-  <button @click="next()" :disabled="games?.length !== count">Next</button>
+  <button :disabled="offset === 0" @click="first()">First</button>
+  <button :disabled="offset === 0" @click="previous()">Previous</button>
+  <button :disabled="games?.length !== count" @click="next()">Next</button>
   <label>
     Show:
     <select v-model="count">

@@ -47,8 +47,8 @@ const isSelected = computed(() => props.selected === props.player_n);
       <div class="timer-and-button">
         <GameTimer
           v-if="time_control && time_config"
-          v-bind:time_control="time_control"
-          v-bind:time_config="time_config"
+          :time_control="time_control"
+          :time_config="time_config"
           :is_seat_selected="false"
         />
         <button v-if="user_id" @click.stop="$emit('sit')">Take Seat</button>
@@ -61,8 +61,8 @@ const isSelected = computed(() => props.selected === props.player_n);
       <div class="timer-and-button">
         <GameTimer
           v-if="time_control && time_config"
-          v-bind:time_control="time_control"
-          v-bind:time_config="time_config"
+          :time_control="time_control"
+          :time_config="time_config"
           :is_seat_selected="isSelected"
         />
         <button
@@ -80,11 +80,7 @@ const isSelected = computed(() => props.selected === props.player_n);
         </button>
       </div>
     </div>
-    <PlayerSymbol
-      v-bind:variant="variant"
-      v-bind:player_nr="player_n"
-      v-bind:config="config"
-    ></PlayerSymbol>
+    <PlayerSymbol :variant="variant" :player_nr="player_n" :config="config" />
   </div>
 </template>
 

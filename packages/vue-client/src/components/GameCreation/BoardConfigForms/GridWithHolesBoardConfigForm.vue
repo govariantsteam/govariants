@@ -61,10 +61,10 @@ if (!props.initialConfig) {
 </script>
 
 <template>
-  <form @change="emitConfigChange" class="config-form-column">
+  <form class="config-form-column" @change="emitConfigChange">
     <label>
       Bitmap
-      <textarea v-model="bitmapString"></textarea>
+      <textarea v-model="bitmapString" />
     </label>
     <div v-if="configError">{{ configError }}</div>
   </form>

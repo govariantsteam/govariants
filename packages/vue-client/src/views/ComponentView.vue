@@ -61,7 +61,7 @@ function update_board_state(pos: Coordinate) {
           :board="board_state"
           @click="update_board_state"
         />
-        <select name="colors" v-model="current_color">
+        <select v-model="current_color" name="colors">
           <option value="blue">Blue</option>
           <option value="red">Red</option>
           <option value="green">Green</option>
@@ -69,25 +69,25 @@ function update_board_state(pos: Coordinate) {
         </select>
         <svg height="600" width="600" viewBox="-300 -300 600 600">
           <TaegeukStone
-            v-bind:r="r"
-            v-bind:cx="cx"
-            v-bind:cy="cy"
-            v-bind:colors="distinct_colors.slice(0, num_colors)"
+            :r="r"
+            :cx="cx"
+            :cy="cy"
+            :colors="distinct_colors.slice(0, num_colors)"
           />
         </svg>
         <div>
           <label>Number of colors (1-20):</label>
-          <input type="number" v-model="num_colors" />
+          <input v-model="num_colors" type="number" />
         </div>
         <div>
           <label>Radius:</label>
-          <input type="number" v-model="r" />
+          <input v-model="r" type="number" />
         </div>
         <div>
           <label>cx:</label>
-          <input type="number" v-model="cx" />
+          <input v-model="cx" type="number" />
           <label>cy:</label>
-          <input type="number" v-model="cy" />
+          <input v-model="cy" type="number" />
         </div>
       </div>
     </div>

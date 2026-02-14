@@ -1,5 +1,10 @@
 import { MovesType } from "./lib/utils";
 import {
+  GameNotification,
+  GameSubscriptions,
+  NotificationType,
+} from "./notifications.types";
+import {
   ITimeControlBase,
   ITimeControlConfig,
 } from "./time_control/time_control.types";
@@ -27,6 +32,7 @@ export interface GameResponse {
   players?: Array<User | undefined>;
   time_control?: ITimeControlBase;
   creator?: User;
+  subscriptions?: GameSubscriptions;
 }
 
 // We may add more roles like "moderator" or "bot" in the future
@@ -56,8 +62,17 @@ export type GameStateResponse = {
   timeControl?: ITimeControlBase;
 };
 
-export type GameInitialResponse = Omit<GameResponse, "moves" | "timeControl"> &
-  GameStateResponse;
+export type GameInitialResponse = Omit<
+  GameResponse,
+  "moves" | "timeControl" | "subscriptions"
+> &
+  GameStateResponse & { subscription?: NotificationType[] };
+
+export type NotificationsResponse = {
+  gameId: string;
+  notifications: GameNotification[];
+  gameState: GameInitialResponse | GameErrorResponse;
+};
 
 export type GameErrorResponse = {
   id: string;

@@ -5,15 +5,39 @@ let mongoServer: MongoMemoryServer;
 
 /**
  * Set up an in-memory MongoDB server for testing.
- * Must be called before importing any modules that use the database.
+ *
+ * CRITICAL ORDERING REQUIREMENT:
+ * This function MUST be called in a beforeAll hook BEFORE any module that uses
+ * the database is imported. This is because:
+ *
+ * 1. The database module reads ATLAS_URI at import time (or first use)
+ * 2. Jest's module caching means once a module is imported, subsequent imports
+ *    return the cached version with the original configuration
+ *
+ * Correct usage:
+ * ```typescript
+ * let app: Express;
+ *
+ * beforeAll(async () => {
+ *   // FIRST: Set up the test database (sets ATLAS_URI)
+ *   await setupTestDb();
+ *
+ *   // THEN: Import modules that depend on the database
+ *   const apiModule = await import("../api");
+ *   // ...
+ * });
+ * ```
+ *
+ * If you see connection errors or tests connecting to wrong database,
+ * check that no database-dependent module is imported at the top of your test file.
  */
 export async function setupTestDb(): Promise<void> {
   mongoServer = await MongoMemoryServer.create();
   // Get base URI and append database name to ensure consistent database usage
   const baseUri = mongoServer.getUri();
-  const uri = baseUri.endsWith("/")
-    ? `${baseUri}govariants`
-    : `${baseUri}/govariants`;
+  const url = new URL(baseUri);
+  url.pathname = "/govariants";
+  const uri = url.toString();
 
   // Set the environment variable before any DB module is imported
   process.env.ATLAS_URI = uri;
@@ -31,8 +55,8 @@ export async function teardownTestDb(): Promise<void> {
   const { getDb } = await import("../../db");
   try {
     await getDb().close();
-  } catch {
-    // ignore if already closed
+  } catch (error) {
+    console.warn("Warning: Error closing database connection:", error);
   }
 
   if (mongoServer) {
@@ -44,10 +68,8 @@ export async function teardownTestDb(): Promise<void> {
  * Get the test MongoDB client for direct database operations in tests.
  * This returns the same client used by the app to ensure consistency.
  */
-export function getTestClient(): MongoClient {
-  // Use dynamic import to avoid circular dependency issues
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { getDb } = require("../../db");
+export async function getTestClient(): Promise<MongoClient> {
+  const { getDb } = await import("../../db");
   return getDb();
 }
 
@@ -56,7 +78,7 @@ export function getTestClient(): MongoClient {
  * Useful for resetting state between tests.
  */
 export async function clearTestDb(): Promise<void> {
-  const client = getTestClient();
+  const client = await getTestClient();
   const db = client.db("govariants");
   const collections = await db.listCollections().toArray();
   await Promise.all(

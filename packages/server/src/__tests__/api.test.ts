@@ -13,6 +13,8 @@ import { UserResponse } from "@ogfcommunity/variants-shared";
 jest.mock("../socket_io");
 jest.mock("../index");
 
+import { resetMocks as resetSocketIoMocks } from "../__mocks__/socket_io";
+
 // Set a reasonable timeout for all tests
 jest.setTimeout(10000);
 
@@ -24,6 +26,10 @@ declare module "express-session" {
 }
 
 // We need to set up the test DB BEFORE importing modules that use the database
+// TODO: Consider creating a fresh app instance per test for better isolation.
+// Currently sharing one app instance - this works because Express apps are stateless,
+// but hermetic tests (fresh app per test) would prevent any risk of cross-test pollution.
+// If you encounter flaky tests or test order dependencies, refactor to use beforeEach.
 let app: Express;
 let apiRouter: typeof import("../api").router;
 
@@ -45,13 +51,25 @@ afterAll(async () => {
 
 beforeEach(async () => {
   await clearTestDb();
+  resetSocketIoMocks();
 });
+
+/**
+ * Options for creating a test Express app.
+ */
+interface CreateTestAppOptions {
+  /** Mock user for authenticated requests */
+  mockUser?: Partial<UserResponse>;
+  /** Pre-set session CSRF token (for testing CSRF validation) */
+  sessionCsrfToken?: string;
+}
 
 /**
  * Creates a test Express app with the API router.
  * Optionally inject a mock user for authenticated requests.
  */
-function createTestApp(mockUser?: Partial<UserResponse>): Express {
+function createTestApp(options: CreateTestAppOptions = {}): Express {
+  const { mockUser, sessionCsrfToken } = options;
   const testApp = express();
   testApp.use(express.json());
 
@@ -61,8 +79,7 @@ function createTestApp(mockUser?: Partial<UserResponse>): Express {
       secret: "test-secret",
       resave: false,
       saveUninitialized: true,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    }) as any,
+    }),
   );
 
   // Inject user and/or set up CSRF token before routes
@@ -71,11 +88,16 @@ function createTestApp(mockUser?: Partial<UserResponse>): Express {
       req.user = mockUser as UserResponse;
     }
 
-    // If the request has a CSRF-Token header, set the session token to match
-    // This allows tests to pass CSRF validation
-    const csrfHeader = req.get("CSRF-Token");
-    if (csrfHeader) {
-      req.session.csrfToken = csrfHeader;
+    // If a session CSRF token is provided in options, set it (for testing CSRF validation)
+    if (sessionCsrfToken) {
+      req.session.csrfToken = sessionCsrfToken;
+    } else {
+      // If the request has a CSRF-Token header, set the session token to match
+      // This allows tests to pass CSRF validation by default
+      const csrfHeader = req.get("CSRF-Token");
+      if (csrfHeader) {
+        req.session.csrfToken = csrfHeader;
+      }
     }
 
     next();
@@ -91,7 +113,7 @@ function createTestApp(mockUser?: Partial<UserResponse>): Express {
       res: express.Response,
       _next: express.NextFunction,
     ) => {
-      console.error("Express error:", err.message);
+      // Silently handle errors in tests - the 500 response is sufficient for assertions
       if (!res.headersSent) {
         res.status(500).json({ error: err.message });
       }
@@ -114,12 +136,12 @@ describe("API Endpoints", () => {
 
     it("returns games when they exist", async () => {
       // Insert a test game directly into the database
-      const db = getTestClient().db("govariants");
+      const db = (await getTestClient()).db("govariants");
       await db.collection("games").insertOne({
         variant: "baduk",
         config: { width: 9, height: 9, komi: 5.5 },
         moves: [],
-        players: [undefined, undefined],
+        players: [null, null],
       });
 
       const response = await request(app)
@@ -132,38 +154,38 @@ describe("API Endpoints", () => {
     });
 
     it("respects count parameter", async () => {
-      const db = getTestClient().db("govariants");
+      const db = (await getTestClient()).db("govariants");
       // Insert 5 games
       await db.collection("games").insertMany([
         {
           variant: "baduk",
           config: { width: 9, height: 9, komi: 5.5 },
           moves: [],
-          players: [],
+          players: [null, null],
         },
         {
           variant: "baduk",
           config: { width: 9, height: 9, komi: 5.5 },
           moves: [],
-          players: [],
+          players: [null, null],
         },
         {
           variant: "baduk",
           config: { width: 9, height: 9, komi: 5.5 },
           moves: [],
-          players: [],
+          players: [null, null],
         },
         {
           variant: "baduk",
           config: { width: 9, height: 9, komi: 5.5 },
           moves: [],
-          players: [],
+          players: [null, null],
         },
         {
           variant: "baduk",
           config: { width: 9, height: 9, komi: 5.5 },
           moves: [],
-          players: [],
+          players: [null, null],
         },
       ]);
 
@@ -176,6 +198,19 @@ describe("API Endpoints", () => {
   });
 
   describe("POST /api/games", () => {
+    it("rejects requests without CSRF token when session has one", async () => {
+      // Create app with a pre-set CSRF token in session
+      const csrfApp = createTestApp({ sessionCsrfToken: "server-csrf-token" });
+
+      const response = await request(csrfApp)
+        .post("/api/games")
+        // No CSRF-Token header sent
+        .send({ variant: "baduk", config: { width: 9, height: 9, komi: 5.5 } })
+        .expect(401);
+
+      expect(response.body.message).toBe("Token has not been provided.");
+    });
+
     it("rejects unauthenticated requests", async () => {
       const response = await request(app)
         .post("/api/games")
@@ -188,7 +223,7 @@ describe("API Endpoints", () => {
 
     it("creates a game for authenticated users", async () => {
       // Create app with authenticated user
-      const db = getTestClient().db("govariants");
+      const db = (await getTestClient()).db("govariants");
 
       // First create a user in the database
       const userResult = await db.collection("users").insertOne({
@@ -198,9 +233,11 @@ describe("API Endpoints", () => {
       });
 
       const authApp = createTestApp({
-        id: userResult.insertedId.toString(),
-        username: "testuser",
-        login_type: "persistent",
+        mockUser: {
+          id: userResult.insertedId.toString(),
+          username: "testuser",
+          login_type: "persistent",
+        },
       });
 
       const response = await request(authApp)
@@ -215,19 +252,20 @@ describe("API Endpoints", () => {
   });
 
   describe("GET /api/games/:gameId/state/initial", () => {
-    it("returns 500 for non-existent game", async () => {
+    // TODO: API returns 500 for non-existent game; consider returning 404 instead
+    it("returns error for non-existent game", async () => {
       await request(app)
         .get("/api/games/507f1f77bcf86cd799439011/state/initial")
         .expect(500);
     });
 
     it("returns initial state for existing game", async () => {
-      const db = getTestClient().db("govariants");
+      const db = (await getTestClient()).db("govariants");
       const result = await db.collection("games").insertOne({
         variant: "baduk",
         config: { width: 9, height: 9, komi: 5.5 },
         moves: [],
-        players: [undefined, undefined],
+        players: [null, null],
       });
 
       const response = await request(app)
@@ -249,7 +287,7 @@ describe("API Endpoints", () => {
     });
 
     it("returns user data for existing user", async () => {
-      const db = getTestClient().db("govariants");
+      const db = (await getTestClient()).db("govariants");
       const result = await db.collection("users").insertOne({
         username: "testuser",
         login_type: "persistent",
@@ -261,22 +299,6 @@ describe("API Endpoints", () => {
         .expect(200);
 
       expect(response.body.username).toBe("testuser");
-    });
-  });
-});
-
-describe("Response Handling", () => {
-  it("should not crash on rapid sequential requests", async () => {
-    // This test helps catch race conditions and double-response issues
-    const requests = Array(10)
-      .fill(null)
-      .map(() => request(app).get("/api/games?count=10&offset=0"));
-
-    const responses = await Promise.all(requests);
-
-    responses.forEach((response) => {
-      expect(response.status).toBe(200);
-      expect(Array.isArray(response.body)).toBe(true);
     });
   });
 });

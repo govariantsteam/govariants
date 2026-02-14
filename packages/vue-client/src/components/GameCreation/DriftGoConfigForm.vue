@@ -23,16 +23,16 @@ function emitConfigChange() {
 </script>
 
 <template>
-  <form @change="emitConfigChange" class="config-form-column">
+  <form class="config-form-column" @change="emitConfigChange">
     <label>Width</label>
-    <input type="number" min="1" v-model="config.board.width" />
+    <input v-model="config.board.width" type="number" min="1" />
     <label>Height</label>
-    <input type="number" min="1" v-model="config.board.height" />
+    <input v-model="config.board.height" type="number" min="1" />
     <label>Komi</label>
-    <input type="number" step="0.5" v-model="config.komi" />
+    <input v-model="config.komi" type="number" step="0.5" />
     <label>X-Shift</label>
-    <input type="number" step="1" v-model="config.xShift" />
+    <input v-model="config.xShift" type="number" step="1" />
     <label>Y-Shift</label>
-    <input type="number" step="1" v-model="config.yShift" />
+    <input v-model="config.yShift" type="number" step="1" />
   </form>
 </template>

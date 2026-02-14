@@ -76,7 +76,7 @@ function emitConfigChange() {
 </script>
 
 <template>
-  <form @change="emitConfigChange" class="config-form-column">
+  <form class="config-form-column" @change="emitConfigChange">
     <h3>Time Control</h3>
     <select v-model="typeRef">
       <option :value="null">Unlimited Time</option>
@@ -88,22 +88,22 @@ function emitConfigChange() {
     </select>
     <template v-if="typeRef !== null">
       <label>Main Time (s)</label>
-      <input type="number" v-model="mainTimeS" />
+      <input v-model="mainTimeS" type="number" />
     </template>
     <template v-if="typeRef === TimeControlType.Fischer">
       <label>Increment</label>
-      <input type="number" v-model="fischerIncrementS" />
+      <input v-model="fischerIncrementS" type="number" />
       <div class="fischerCappedToggle">
         <label for="cappedToggle">Max</label>
-        <input id="cappedToggle" type="checkbox" v-model="fischerCapped" />
+        <input id="cappedToggle" v-model="fischerCapped" type="checkbox" />
       </div>
-      <input v-if="fischerCapped" type="number" v-model="fischerMaxS" />
+      <input v-if="fischerCapped" v-model="fischerMaxS" type="number" />
     </template>
     <template v-if="typeRef && shouldShowPeriodTime(typeRef)">
       <label>Number of Periods</label>
-      <input type="number" v-model="numPeriods" />
+      <input v-model="numPeriods" type="number" />
       <label>Period time</label>
-      <input type="number" v-model="periodTimeS" />
+      <input v-model="periodTimeS" type="number" />
     </template>
   </form>
 </template>

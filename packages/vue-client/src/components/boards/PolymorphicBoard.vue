@@ -29,10 +29,10 @@ const transformedGameData = computed(() =>
 
 <template>
   <component
-    v-if="variantBoard"
     :is="variantBoard"
+    v-if="variantBoard"
     :gamestate="transformedGameData.gamestate"
     :config="transformedGameData.config"
-    v-on:move="emitMove"
+    @move="emitMove"
   />
 </template>

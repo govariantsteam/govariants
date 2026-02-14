@@ -93,7 +93,7 @@ function tick(onThePlaySince: Date): void {
 
 <template>
   <!--This class is referenced in SeatComponent-->
-  <div v-bind:class="{ 'alert-timer': isAlertMode }">
+  <div :class="{ 'alert-timer': isAlertMode }">
     {{ formattedTime }}
   </div>
 </template>

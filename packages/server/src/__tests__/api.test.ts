@@ -18,6 +18,35 @@ import { resetMocks as resetSocketIoMocks } from "../__mocks__/socket_io";
 // Set a reasonable timeout for all tests
 jest.setTimeout(10000);
 
+/** A valid MongoDB ObjectId that doesn't exist in the test database */
+const NON_EXISTENT_ID = "507f1f77bcf86cd799439011";
+
+/** Helper to get the test database */
+async function getTestDb() {
+  return (await getTestClient()).db("govariants");
+}
+
+/** Creates a test game document */
+function makeTestGame(overrides: Record<string, unknown> = {}) {
+  return {
+    variant: "baduk",
+    config: { width: 9, height: 9, komi: 5.5 },
+    moves: [] as unknown[],
+    players: [null, null] as (null | unknown)[],
+    ...overrides,
+  };
+}
+
+/** Creates a test user document */
+function makeTestUser(overrides: Record<string, unknown> = {}) {
+  return {
+    username: "testuser",
+    login_type: "persistent",
+    password_hash: "fake-hash",
+    ...overrides,
+  };
+}
+
 // Extend session type for CSRF token
 declare module "express-session" {
   interface SessionData {
@@ -135,14 +164,8 @@ describe("API Endpoints", () => {
     });
 
     it("returns games when they exist", async () => {
-      // Insert a test game directly into the database
-      const db = (await getTestClient()).db("govariants");
-      await db.collection("games").insertOne({
-        variant: "baduk",
-        config: { width: 9, height: 9, komi: 5.5 },
-        moves: [],
-        players: [null, null],
-      });
+      const db = await getTestDb();
+      await db.collection("games").insertOne(makeTestGame());
 
       const response = await request(app)
         .get("/api/games?count=10&offset=0")
@@ -154,40 +177,10 @@ describe("API Endpoints", () => {
     });
 
     it("respects count parameter", async () => {
-      const db = (await getTestClient()).db("govariants");
-      // Insert 5 games
-      await db.collection("games").insertMany([
-        {
-          variant: "baduk",
-          config: { width: 9, height: 9, komi: 5.5 },
-          moves: [],
-          players: [null, null],
-        },
-        {
-          variant: "baduk",
-          config: { width: 9, height: 9, komi: 5.5 },
-          moves: [],
-          players: [null, null],
-        },
-        {
-          variant: "baduk",
-          config: { width: 9, height: 9, komi: 5.5 },
-          moves: [],
-          players: [null, null],
-        },
-        {
-          variant: "baduk",
-          config: { width: 9, height: 9, komi: 5.5 },
-          moves: [],
-          players: [null, null],
-        },
-        {
-          variant: "baduk",
-          config: { width: 9, height: 9, komi: 5.5 },
-          moves: [],
-          players: [null, null],
-        },
-      ]);
+      const db = await getTestDb();
+      await db
+        .collection("games")
+        .insertMany(Array.from({ length: 5 }, () => makeTestGame()));
 
       const response = await request(app)
         .get("/api/games?count=3&offset=0")
@@ -222,15 +215,8 @@ describe("API Endpoints", () => {
     });
 
     it("creates a game for authenticated users", async () => {
-      // Create app with authenticated user
-      const db = (await getTestClient()).db("govariants");
-
-      // First create a user in the database
-      const userResult = await db.collection("users").insertOne({
-        username: "testuser",
-        login_type: "persistent",
-        password_hash: "fake-hash",
-      });
+      const db = await getTestDb();
+      const userResult = await db.collection("users").insertOne(makeTestUser());
 
       const authApp = createTestApp({
         mockUser: {
@@ -255,18 +241,13 @@ describe("API Endpoints", () => {
     // TODO: API returns 500 for non-existent game; consider returning 404 instead
     it("returns error for non-existent game", async () => {
       await request(app)
-        .get("/api/games/507f1f77bcf86cd799439011/state/initial")
+        .get(`/api/games/${NON_EXISTENT_ID}/state/initial`)
         .expect(500);
     });
 
     it("returns initial state for existing game", async () => {
-      const db = (await getTestClient()).db("govariants");
-      const result = await db.collection("games").insertOne({
-        variant: "baduk",
-        config: { width: 9, height: 9, komi: 5.5 },
-        moves: [],
-        players: [null, null],
-      });
+      const db = await getTestDb();
+      const result = await db.collection("games").insertOne(makeTestGame());
 
       const response = await request(app)
         .get(`/api/games/${result.insertedId.toString()}/state/initial`)
@@ -280,19 +261,15 @@ describe("API Endpoints", () => {
   describe("GET /api/users/:userId", () => {
     it("returns 404 for non-existent user", async () => {
       const response = await request(app)
-        .get("/api/users/507f1f77bcf86cd799439011")
+        .get(`/api/users/${NON_EXISTENT_ID}`)
         .expect(404);
 
       expect(response.body).toContain("does not exist");
     });
 
     it("returns user data for existing user", async () => {
-      const db = (await getTestClient()).db("govariants");
-      const result = await db.collection("users").insertOne({
-        username: "testuser",
-        login_type: "persistent",
-        password_hash: "fake-hash",
-      });
+      const db = await getTestDb();
+      const result = await db.collection("users").insertOne(makeTestUser());
 
       const response = await request(app)
         .get(`/api/users/${result.insertedId.toString()}`)

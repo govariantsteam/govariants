@@ -25,8 +25,8 @@ if (!props.initialConfig) {
 </script>
 
 <template>
-  <form @change="emitConfigChange" class="config-form-column">
+  <form class="config-form-column" @change="emitConfigChange">
     <label>Size</label>
-    <input type="number" min="1" max="6" v-model="config.size" />
+    <input v-model="config.size" type="number" min="1" max="6" />
   </form>
 </template>

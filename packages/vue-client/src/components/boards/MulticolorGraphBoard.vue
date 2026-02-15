@@ -101,15 +101,15 @@ const viewBox = computed(() => {
   <svg
     class="board"
     xmlns="http://www.w3.org/2000/svg"
-    v-bind:viewBox="`${viewBox.minX - 1} ${viewBox.minY - 1} ${
-      viewBox.width + 2
-    } ${viewBox.height + 2}`"
+    :viewBox="`${viewBox.minX - 1} ${viewBox.minY - 1} ${viewBox.width + 2} ${
+      viewBox.height + 2
+    }`"
   >
     <rect
-      v-bind:x="viewBox.minX - 0.5"
-      v-bind:y="viewBox.minY - 0.5"
-      v-bind:width="viewBox.width + 1"
-      v-bind:height="viewBox.height + 1"
+      :x="viewBox.minX - 0.5"
+      :y="viewBox.minY - 0.5"
+      :width="viewBox.width + 1"
+      :height="viewBox.height + 1"
       :fill="background_color ?? '#dcb35c'"
     />
     <g>
@@ -131,10 +131,10 @@ const viewBox = computed(() => {
           .filter((n) => n < index)"
         :key="neighbour_index"
         class="grid"
-        v-bind:x1="intersection.position.X"
-        v-bind:x2="intersections[neighbour_index].position.X"
-        v-bind:y1="intersection.position.Y"
-        v-bind:y2="intersections[neighbour_index].position.Y"
+        :x1="intersection.position.X"
+        :x2="intersections[neighbour_index].position.X"
+        :y1="intersection.position.Y"
+        :y2="intersections[neighbour_index].position.Y"
       />
     </g>
     <g v-for="(intersection, index) in intersections" :key="index">
@@ -174,18 +174,18 @@ const viewBox = computed(() => {
       <template v-for="(intersection, index) in intersections" :key="index">
         <rect
           v-if="!props.board?.at(index)?.disable_move"
-          @click="positionClicked(index)"
-          @mouseover="positionHovered(index)"
           :x="intersection.position.X - 0.5"
           :y="intersection.position.Y - 0.5"
           width="1"
           height="1"
           :fill="hovered == index ? 'pink' : 'transparent'"
           opacity="0.5"
+          @click="positionClicked(index)"
+          @mouseover="positionHovered(index)"
         />
       </template>
     </g>
-    <g></g>
+    <g />
   </svg>
 </template>
 

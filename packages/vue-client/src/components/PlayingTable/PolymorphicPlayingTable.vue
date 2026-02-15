@@ -32,11 +32,11 @@ const transformedGameData = computed(() =>
 
 <template>
   <component
-    v-if="variantPlayingTable"
     :is="variantPlayingTable"
+    v-if="variantPlayingTable"
     :gamestate="transformedGameData.gamestate"
     :config="transformedGameData.config"
     :displayed_round="props.displayed_round"
-    v-on:move="emitMove"
+    @move="emitMove"
   />
 </template>

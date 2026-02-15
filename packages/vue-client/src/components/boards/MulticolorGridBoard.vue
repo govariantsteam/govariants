@@ -42,7 +42,7 @@ function positionHovered(pos: Coordinate) {
   <svg
     class="board"
     xmlns="http://www.w3.org/2000/svg"
-    v-bind:viewBox="`-1 -1 ${width + 1} ${height + 1}`"
+    :viewBox="`-1 -1 ${width + 1} ${height + 1}`"
   >
     <rect
       x="-0.5"
@@ -62,16 +62,16 @@ function positionHovered(pos: Coordinate) {
         width="1"
         height="1"
         :fill="props.board![pos.y][pos.x]!.background_color"
-      ></rect>
+      />
     </g>
     <g>
       <line
         v-for="x in width"
         :key="x"
-        v-bind:x1="x - 1"
-        v-bind:x2="x - 1"
-        v-bind:y1="0"
-        v-bind:y2="height - 1"
+        :x1="x - 1"
+        :x2="x - 1"
+        :y1="0"
+        :y2="height - 1"
         color="pink"
         stroke="pink"
         stroke-width="0.02"
@@ -80,10 +80,10 @@ function positionHovered(pos: Coordinate) {
       <line
         v-for="y in height"
         :key="y"
-        v-bind:x1="0"
-        v-bind:x2="width - 1"
-        v-bind:y1="y - 1"
-        v-bind:y2="y - 1"
+        :x1="0"
+        :x2="width - 1"
+        :y1="y - 1"
+        :y2="y - 1"
         stroke="pink"
         stroke-width="0.02"
       />
@@ -123,7 +123,7 @@ function positionHovered(pos: Coordinate) {
     <g v-if="score_board">
       <ScoreMark
         v-for="(pos, index) in positions.filter((pos) => score_board![pos.y][pos.x] !== null)"
-        v-bind:key="index"
+        :key="index"
         :colors="score_board![pos.y][pos.x]!"
         :cx="pos.x"
         :cy="pos.y"
@@ -135,8 +135,6 @@ function positionHovered(pos: Coordinate) {
           (pos) => !props.board?.at(pos.y)?.at(pos.x)?.disable_move,
         )"
         :key="`${pos.x},${pos.y}`"
-        @click="positionClicked(pos)"
-        @mouseover="positionHovered(pos)"
         :x="pos.x - 0.5"
         :y="pos.y - 0.5"
         width="1"
@@ -145,9 +143,11 @@ function positionHovered(pos: Coordinate) {
           hovered.x === pos.x && hovered.y === pos.y ? 'pink' : 'transparent'
         "
         opacity="0.5"
+        @click="positionClicked(pos)"
+        @mouseover="positionHovered(pos)"
       />
     </g>
-    <g></g>
+    <g />
   </svg>
 </template>
 

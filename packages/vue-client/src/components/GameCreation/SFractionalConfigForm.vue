@@ -41,35 +41,35 @@ function removeSecondaryColor(): void {
 </script>
 
 <template>
-  <form @change="emitConfigChange" class="config-form-column">
+  <form class="config-form-column" @change="emitConfigChange">
     <BoardConfigForm @config-changed="setBoardConfig($event)" />
     <label>Komi</label>
-    <input type="number" step="0.5" v-model="config.komi" />
+    <input v-model="config.komi" type="number" step="0.5" />
 
     <div class="row">
       <label class="grow">Secondary Colors</label>
       <button
         class="no-flex"
         type="button"
-        v-on:click="addSecondaryColor()"
         :disabled="config.secondary_colors.length >= maxNrOfSecondaryColors"
+        @click="addSecondaryColor()"
       >
         +
       </button>
       <button
         class="no-flex"
         type="button"
-        v-on:click="removeSecondaryColor()"
         :disabled="config.secondary_colors.length <= 1"
+        @click="removeSecondaryColor()"
       >
         -
       </button>
     </div>
     <input
-      type="color"
       v-for="(_, index) in config.secondary_colors"
       :key="index"
       v-model="config.secondary_colors[index]"
+      type="color"
     />
   </form>
 </template>

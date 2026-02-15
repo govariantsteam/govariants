@@ -117,4 +117,5 @@ export const driftVariant: Variant<DriftGoConfig, BadukState> = {
   uiTransform: Baduk.uiTransform<DriftGoConfig>,
   sanitizeConfig: DriftGo.sanitizeConfig,
   rulesDescription: drift_rules,
+  movePreview: Baduk.movePreview,
 };

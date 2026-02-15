@@ -2,7 +2,11 @@ import { AbstractGame } from "../abstract_game";
 import { sum } from "../lib/utils";
 import { rengoRulesDescription } from "../templates/rengo_rules";
 import { Variant } from "../variant";
-import { getPlayerColors, makeGameObject } from "../variant_map";
+import {
+  getMovePreview,
+  getPlayerColors,
+  makeGameObject,
+} from "../variant_map";
 import { Baduk } from "./baduk";
 
 export type IHigherOrderConfig = {
@@ -129,5 +133,13 @@ export const rengoVariant: Variant<RengoConfig, object> = {
       config.subVariant,
       config.subVariantConfig,
       getTeamOfPlayer(playerNr, config),
+    ),
+  movePreview: (config, state, move, player) =>
+    getMovePreview(
+      config.subVariant,
+      config.subVariantConfig,
+      state,
+      move,
+      getTeamOfPlayer(player, config),
     ),
 };

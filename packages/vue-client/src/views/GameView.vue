@@ -75,13 +75,17 @@ const creator = ref<User | undefined>();
 const subscription = ref<NotificationType[]>([]);
 const isDialogOpen = ref(false);
 
-const useMovePreview = computed(() => {
-  // In future we probably want to enable users to overwrite this.
+const userEnabledImmediateSubmit = ref(false);
+const doesVariantSupportsMovePreview = computed(() => {
   if (variant.value && game_state.value) {
     return variantSupportsMovePreview(variant.value);
   }
   return false;
 });
+const useMovePreview = computed(
+  () =>
+    doesVariantSupportsMovePreview.value && !userEnabledImmediateSubmit.value,
+);
 const movePreview = ref<{ move: string; player: number } | null>(null);
 function resetMovePreview() {
   movePreview.value = null;
@@ -388,20 +392,33 @@ async function repairGame(): Promise<void> {
           </div>
         </div>
 
-        <template v-if="useMovePreview">
-          <button
-            v-on:click="
-              movePreview
-                ? submitMove({ [movePreview.player]: movePreview.move })
-                : null
-            "
-            :disabled="!movePreview"
-          >
-            submit move
-          </button>
-          <button v-on:click="resetMovePreview()" :disabled="!movePreview">
-            cancel
-          </button>
+        <template v-if="doesVariantSupportsMovePreview">
+          <div>
+            <label for="immediate-submit-checkbox">immediate submit</label>
+            <input
+              type="checkbox"
+              v-model="userEnabledImmediateSubmit"
+              id="immediate-submit-checkbox"
+            />
+          </div>
+          <div>
+            <button
+              v-on:click="
+                movePreview
+                  ? submitMove({ [movePreview.player]: movePreview.move })
+                  : null
+              "
+              :disabled="userEnabledImmediateSubmit || !movePreview"
+            >
+              submit move
+            </button>
+            <button
+              v-on:click="resetMovePreview()"
+              :disabled="userEnabledImmediateSubmit || !movePreview"
+            >
+              cancel
+            </button>
+          </div>
         </template>
 
         <DownloadSGF v-if="supportsSGF(variant)" :gameId="gameId" />

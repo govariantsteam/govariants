@@ -82,4 +82,5 @@ export const cubeBadukVariant: Variant<CubeBadukConfig, BadukState> = {
   getPlayerColors: Baduk.getPlayerColors,
   sanitizeConfig: (config: unknown) => config as CubeBadukConfig,
   uiTransform: Baduk.uiTransform,
+  movePreview: Baduk.movePreview,
 };

@@ -313,4 +313,5 @@ export const quantumVariant: Variant<NewBadukConfig> = {
   // quantum uses its own board, so we shouldn't use
   // Baduk.uiTransform
   uiTransform: undefined,
+  movePreview: undefined,
 };

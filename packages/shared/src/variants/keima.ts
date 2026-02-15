@@ -130,7 +130,7 @@ export function getKeimaMoves(
     .filter((pos) => board.at(pos) === Color.EMPTY);
 }
 
-export const keimaVariant: Variant<NewBadukConfig> = {
+export const keimaVariant: Variant<NewBadukConfig, BadukState> = {
   ...badukVariant,
   gameClass: Keima,
   description:

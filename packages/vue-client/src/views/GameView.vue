@@ -6,16 +6,19 @@ import {
   getDescription,
   uiTransform,
   NotificationType,
+  MovesType,
+  variantSupportsMovePreview,
 } from "@ogfcommunity/variants-shared";
 import * as requests from "../requests";
 import SeatComponent from "@/components/GameView/SeatComponent.vue";
 import { useCurrentUser } from "../stores/user";
-import type {
+import {
   User,
   IPerPlayerTimeControlBase,
   IConfigWithTimeControl,
   GameStateResponse,
   ITimeControlBase,
+  getMovePreview,
 } from "@ogfcommunity/variants-shared";
 import { computed, ref, watchEffect, type Ref } from "vue";
 import { socket } from "../requests";
@@ -40,7 +43,17 @@ const variant = ref("");
 const config: Ref<object | undefined> = ref();
 const transformedGameData = computed(() => {
   if (variant.value && config.value && game_state.value) {
-    return uiTransform(variant.value, config.value, game_state.value.state);
+    const mappedState =
+      movePreview.value === null
+        ? game_state.value.state
+        : getMovePreview(
+            variant.value,
+            config.value,
+            game_state.value.state,
+            movePreview.value.move,
+            movePreview.value.player,
+          );
+    return uiTransform(variant.value, config.value, mappedState);
   }
   return undefined;
 });
@@ -61,6 +74,22 @@ const errorOccured = ref<boolean>(false);
 const creator = ref<User | undefined>();
 const subscription = ref<NotificationType[]>([]);
 const isDialogOpen = ref(false);
+
+const userEnabledImmediateSubmit = ref(false);
+const doesVariantSupportsMovePreview = computed(() => {
+  if (variant.value && game_state.value) {
+    return variantSupportsMovePreview(variant.value);
+  }
+  return false;
+});
+const useMovePreview = computed(
+  () =>
+    doesVariantSupportsMovePreview.value && !userEnabledImmediateSubmit.value,
+);
+const movePreview = ref<{ move: string; player: number } | null>(null);
+function resetMovePreview() {
+  movePreview.value = null;
+}
 
 function setNewState(stateResponse: GameStateResponse): void {
   const { timeControl: timeControl, ...state } = stateResponse;
@@ -158,6 +187,7 @@ const leave = (seat: number) => {
 };
 
 const setPlayingAs = (seat: number) => {
+  movePreview.value = null;
   if (!user.value) {
     playing_as.value = undefined;
     return;
@@ -173,7 +203,7 @@ const setPlayingAs = (seat: number) => {
   }
 };
 
-function makeMove(move_str: string) {
+function makeMove(move_str: string, submitImmediately?: boolean) {
   const move: { [player: number]: string } = {};
 
   if (playing_as.value === undefined) {
@@ -186,8 +216,20 @@ function makeMove(move_str: string) {
     return;
   }
 
+  if (useMovePreview.value && !submitImmediately) {
+    movePreview.value = { move: move_str, player: playing_as.value };
+    return;
+  }
+
   move[playing_as.value] = move_str;
-  requests.post(`/games/${props.gameId}/move`, move).catch(alert);
+  submitMove(move);
+}
+
+function submitMove(move: MovesType) {
+  requests
+    .post(`/games/${props.gameId}/move`, move)
+    .then(resetMovePreview)
+    .catch(alert);
 }
 
 // subscribe to seat changes
@@ -343,12 +385,41 @@ async function repairGame(): Promise<void> {
             <button
               v-for="(value, key) in game_state?.special_moves"
               :key="key"
-              @click="makeMove(key as string)"
+              @click="makeMove(key as string, true)"
             >
               {{ value }}
             </button>
           </div>
         </div>
+
+        <template v-if="doesVariantSupportsMovePreview">
+          <div>
+            <label for="immediate-submit-checkbox">immediate submit</label>
+            <input
+              type="checkbox"
+              v-model="userEnabledImmediateSubmit"
+              id="immediate-submit-checkbox"
+            />
+          </div>
+          <div>
+            <button
+              v-on:click="
+                movePreview
+                  ? submitMove({ [movePreview.player]: movePreview.move })
+                  : null
+              "
+              :disabled="userEnabledImmediateSubmit || !movePreview"
+            >
+              submit move
+            </button>
+            <button
+              v-on:click="resetMovePreview()"
+              :disabled="userEnabledImmediateSubmit || !movePreview"
+            >
+              cancel
+            </button>
+          </div>
+        </template>
 
         <DownloadSGF v-if="supportsSGF(variant)" :game-id="gameId" />
         <div

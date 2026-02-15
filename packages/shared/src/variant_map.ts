@@ -123,6 +123,25 @@ export function uiTransform(variant: string, config: object, state: object) {
   return variant_object.uiTransform(config, state);
 }
 
+export function getMovePreview(
+  variant: string,
+  config: object,
+  state: unknown,
+  move: string,
+  player: number,
+) {
+  const variant_object = variant_map[variant];
+  if (!variant_object || !variant_object.movePreview) {
+    return state;
+  }
+  return variant_object.movePreview(config, state, move, player);
+}
+
+export function variantSupportsMovePreview(variant: string): boolean {
+  const variant_object = variant_map[variant];
+  return !!variant_object?.movePreview;
+}
+
 export function getVariantsWithRulesDescription(): string[] {
   return Object.entries(variant_map)
     .filter(

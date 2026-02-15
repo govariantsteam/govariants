@@ -170,9 +170,42 @@ export class Fractional extends AbstractBaduk<
     const playerConfig = config.players.at(playerNr);
     return playerConfig ? Object.values(playerConfig) : [];
   }
+
+  static movePreview(
+    config: FractionalConfig,
+    state: FractionalState,
+    move: string,
+    player: number,
+  ): FractionalState {
+    try {
+      const idx = Number.parseInt(move);
+      const colorConfig = config.players[player];
+
+      const boardWithPreview = state.boardState.map(
+        (x, index): Color[] | null => {
+          if (index === idx) {
+            return colorConfig.secondaryColor
+              ? [colorConfig.primaryColor, colorConfig.secondaryColor]
+              : [colorConfig.primaryColor];
+          }
+
+          return x;
+        },
+      );
+
+      return {
+        ...state,
+        stagedMove: undefined,
+        lastMoves: [...state.lastMoves, idx],
+        boardState: boardWithPreview,
+      };
+    } catch {
+      return state;
+    }
+  }
 }
 
-export const fractionalVariant: Variant<FractionalConfig> = {
+export const fractionalVariant: Variant<FractionalConfig, FractionalState> = {
   gameClass: Fractional,
   description: "Multiplayer Baduk with multicolored stones and parallel moves",
   rulesDescription: fractionalRulesDescription,
@@ -191,4 +224,5 @@ export const fractionalVariant: Variant<FractionalConfig> = {
     };
   },
   getPlayerColors: Fractional.getPlayerColors,
+  movePreview: Fractional.movePreview,
 };

@@ -136,12 +136,8 @@ blockquote {
     cursor: pointer;
   }
 
-  &:not(:hover) {
-    background-color: transparent;
-  }
-
+  &:not(:hover),
   &[disabled] {
-    filter: grayscale(0.9);
     background-color: transparent;
   }
 }

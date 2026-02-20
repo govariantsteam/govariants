@@ -6,6 +6,7 @@ import {
   type ITimeControlConfig,
   BoardPattern,
   getTimeHandling,
+  getDescription,
 } from "@ogfcommunity/variants-shared";
 import * as requests from "@/requests";
 import router from "@/router";
@@ -22,6 +23,7 @@ let config: IConfigWithOptionalTimeControl;
 let timeControlConfig: ITimeControlConfig | null = null;
 const configString: Ref<string> = ref("");
 const variantConfigForm = computed(() => config_form_map[variant.value]);
+const shortDescription = computed(() => getDescription(variant.value));
 watch(
   variant,
   () => {
@@ -95,6 +97,7 @@ const hasTimeConfigForm = computed(
             {{ variant }}
           </option>
         </select>
+        <span class="variant-description">{{ shortDescription }}</span>
       </div>
     </div>
     <h3>Config</h3>
@@ -135,5 +138,9 @@ textarea {
     margin-top: 5px;
     font-size: large;
   }
+}
+.variant-description {
+  white-space: pre-line;
+  padding: 4px 0;
 }
 </style>

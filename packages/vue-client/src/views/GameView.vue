@@ -402,7 +402,9 @@ async function repairGame(): Promise<void> {
   justify-content: flex-end;
 }
 .subscribe-button {
-  color: rgba(16, 29, 212, 0.7);
   font-size: 1.5em;
+  &:not([disabled]) {
+    color: #293bff;
+  }
 }
 </style>

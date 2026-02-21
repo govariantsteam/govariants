@@ -38,7 +38,7 @@ watchEffect(async () => {
           `/users/${props.userId}/email`,
         );
         email.value = emailResponse.email;
-      } catch (e) {
+      } catch (_e) {
         // User might not have permission or email might not be set
         email.value = null;
       }

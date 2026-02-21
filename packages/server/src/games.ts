@@ -397,7 +397,7 @@ export async function repairGame(gameId: string): Promise<void> {
       gameInstance.playMove(player, move);
       errorlessMoves.push(encoded_move);
     });
-  } catch (error) {
+  } catch (_error) {
     errorOccured = true;
   }
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {
+  getDescription,
   getRulesDescription,
   getVariantList,
 } from "@ogfcommunity/variants-shared";
@@ -20,7 +21,9 @@ const variantExists = computed(() => getVariantList().includes(props.variant));
     <div v-if="variantExists" class="grid-page-layout rules-page">
       <div>
         <h1>{{ toUpperCaseFirstLetter(props.variant) }} Variant Rules</h1>
-        <p v-if="!rulesDescription">Under Construction</p>
+        <p v-if="!rulesDescription" class="description-container">
+          {{ getDescription(variant) }}
+        </p>
         <div v-if="rulesDescription" v-html="rulesDescription" />
       </div>
       <div>
@@ -40,6 +43,10 @@ main {
   max-width: none;
   overflow-x: scroll;
   grid-template-columns: minmax(45ch, 90ch) 1fr;
+}
+
+.description-container {
+  white-space: pre-line;
 }
 
 :deep(strong, h1, h2) {

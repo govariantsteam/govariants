@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { toUpperCaseFirstLetter } from "@/utils/format-utils";
-import { getVariantsWithRulesDescription } from "@ogfcommunity/variants-shared";
+import { getVariantList } from "@ogfcommunity/variants-shared";
 import { RouterLink } from "vue-router";
-
-const variantsWithRulesDescription = getVariantsWithRulesDescription();
 </script>
 
 <template>
@@ -11,7 +9,7 @@ const variantsWithRulesDescription = getVariantsWithRulesDescription();
     <h1>Rule Descriptions</h1>
     <div class="rule-links-container">
       <RouterLink
-        v-for="variant in variantsWithRulesDescription"
+        v-for="variant in getVariantList()"
         :key="variant"
         class="rules-link"
         :to="{ name: 'rules', params: { variant: variant } }"

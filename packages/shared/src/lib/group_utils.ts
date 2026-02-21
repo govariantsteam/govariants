@@ -38,7 +38,6 @@ export interface Fillable<K, V> {
   // It could be interesting to have this be some generic type that is
   // parameterized by V, but unfortunately it's not supported by TS
   // https://github.com/microsoft/TypeScript/issues/1213
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   serialize(): unknown;
 }
 

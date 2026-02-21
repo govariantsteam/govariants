@@ -2,6 +2,7 @@ import { AbstractGame } from "../abstract_game";
 import { Coordinate } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
 import { MovesType } from "../lib/utils";
+import { parallel_rules } from "../templates/parallel_rules";
 import { Variant } from "../variant";
 
 export interface ParallelGoConfig {
@@ -246,6 +247,7 @@ export const parallelVariant: Variant<ParallelGoConfig> = {
   gameClass: ParallelGo,
   description: "Multiplayer Baduk with parallel moves",
   time_handling: "parallel",
+  rulesDescription: parallel_rules,
   defaultConfig(): ParallelGoConfig {
     return {
       width: 19,

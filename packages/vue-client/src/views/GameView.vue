@@ -3,7 +3,6 @@ import {
   HasTimeControlConfig,
   timeControlMap,
   supportsSGF,
-  getDescription,
   uiTransform,
   NotificationType,
 } from "@ogfcommunity/variants-shared";
@@ -28,6 +27,7 @@ import SubscriptionDialog from "@/components/GameView/SubscriptionDialog.vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faBell } from "@fortawesome/free-solid-svg-icons";
+import { toUpperCaseFirstLetter } from "@/utils/format-utils";
 
 library.add(faBell);
 
@@ -49,7 +49,6 @@ const players = ref<User[]>();
 // while viewing history of game, maybe we should prevent player from making a move (accidentally)
 const view_round: Ref<number | null> = ref(null);
 const variantGameView = computed(() => getPlayingTable(variant.value));
-const variantDescriptionShort = computed(() => getDescription(variant.value));
 const user = useCurrentUser();
 const playing_as = ref<undefined | number>(undefined);
 const displayed_round = computed(() => view_round.value ?? current_round.value);
@@ -279,14 +278,9 @@ async function repairGame(): Promise<void> {
         <div id="variant-info">
           <div>
             <span class="info-label">Variant:</span>
-            <span class="info-attribute">
-              {{ variant ?? "unknown" }}
-            </span>
-          </div>
-
-          <div>
-            <span class="info-label">Description:</span>
-            <span class="info-attribute">{{ variantDescriptionShort }}</span>
+            <RouterLink :to="{ name: 'rules', params: { variant: variant } }">{{
+              toUpperCaseFirstLetter(variant)
+            }}</RouterLink>
           </div>
 
           <div v-if="creator">

@@ -142,15 +142,6 @@ export function variantSupportsMovePreview(variant: string): boolean {
   return !!variant_object?.movePreview;
 }
 
-export function getVariantsWithRulesDescription(): string[] {
-  return Object.entries(variant_map)
-    .filter(
-      ([_name, variant]) =>
-        !variant.deprecated && variant.rulesDescription !== undefined,
-    )
-    .map(([name, _variant]) => name);
-}
-
 export function getTimeHandling(
   variant: string,
 ): "sequential" | "parallel" | "none" {

@@ -15,5 +15,6 @@ export const oneColorGoVariant: typeof badukVariant = {
   ...badukVariant,
   gameClass: OneColorGo,
   description: "Baduk with obfuscated stone colors",
-  movePreview: undefined, // using baduk's move preview would be strange
+  movePreview: (config, state, move, _) =>
+    Baduk.movePreview(config, state, move, 1),
 };

@@ -10,7 +10,7 @@ export default defineConfigWithVueTs(
     ignores: ["dist/", "coverage/"],
   },
 
-  pluginVue.configs["flat/recommended"],
+  pluginVue.configs["flat/recommended-error"],
   vueTsConfigs.recommended,
 
   {

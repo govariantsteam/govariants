@@ -8,7 +8,6 @@ import {
   getUser,
   getUserBySessionId,
 } from "./users";
-import bodyParser from "body-parser";
 import path from "path";
 import { connectToDb, getDb } from "./db";
 import passport from "passport";
@@ -87,12 +86,8 @@ passport.deserializeUser<string>(function (id, callback) {
 
 // initialize Express
 const app = express();
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-  }),
-);
-app.use(bodyParser.json()); // TODO: app.use(express.json()) instead? Difference?
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(
   session({
     // TODO: Cookie banner or permission necessary?
@@ -148,7 +143,7 @@ if (isProd) {
   // Setup build path as a static assets path
   app.use(express.static(build_path));
   // Serve index.html on unmatched routes
-  app.get("*", (_req, res) => res.sendFile(indexHtml));
+  app.get("/{*splat}", (_req, res) => res.sendFile(indexHtml));
 }
 
 const PORT = process.env.PORT || 3001;

@@ -73,3 +73,16 @@ export function groupBy<T, K>(arr: T[], selector: (v: T) => K): [K, T[]][] {
       .entries(),
   ];
 }
+
+export function map2d<TSource, TDestination>(
+  arr: TSource[][],
+  map: (
+    entry: TSource,
+    row_index: number,
+    column_index: number,
+  ) => TDestination,
+): TDestination[][] {
+  return arr.map((row, row_index) =>
+    row.map((entry, column_index) => map(entry, row_index, column_index)),
+  );
+}

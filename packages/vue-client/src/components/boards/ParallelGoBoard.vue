@@ -1,5 +1,8 @@
 <script lang="ts">
-import type { MovesType } from "@ogfcommunity/variants-shared";
+import {
+  type MovesType,
+  colors_for_parallel,
+} from "@ogfcommunity/variants-shared";
 
 type Stone = { colors: string[]; annotation?: "CR" };
 
@@ -46,32 +49,7 @@ function isKoStone(colors: number[]) {
 
 // https://sashamaps.net/docs/resources/20-colors/
 const distinct_colors =
-  props.config.num_players === 2
-    ? ["black", "white"]
-    : [
-        "#e6194B",
-        "#3cb44b",
-        "#ffe119",
-        "#4363d8",
-        "#f58231",
-        "#911eb4",
-        "#42d4f4",
-        "#f032e6",
-        "#bfef45",
-        "#fabed4",
-        "#469990",
-        "#dcbeff",
-        "#9A6324",
-        "#fffac8",
-        "#800000",
-        "#aaffc3",
-        "#808000",
-        "#ffd8b1",
-        "#000075",
-        "#a9a9a9",
-        "#ffffff",
-        "#000000",
-      ];
+  props.config.num_players === 2 ? ["black", "white"] : colors_for_parallel;
 
 const emit = defineEmits<{
   (e: "move", pos: string): void;

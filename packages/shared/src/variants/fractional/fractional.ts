@@ -177,31 +177,31 @@ export class Fractional extends AbstractBaduk<
     move: string,
     player: number,
   ): FractionalState {
-    try {
-      const idx = Number.parseInt(move);
-      const colorConfig = config.players[player];
+    const idx = Number.parseInt(move);
+    const colorConfig = config.players.at(player);
 
-      const boardWithPreview = state.boardState.map(
-        (x, index): Color[] | null => {
-          if (index === idx) {
-            return colorConfig.secondaryColor
-              ? [colorConfig.primaryColor, colorConfig.secondaryColor]
-              : [colorConfig.primaryColor];
-          }
-
-          return x;
-        },
-      );
-
-      return {
-        ...state,
-        stagedMove: undefined,
-        lastMoves: [...state.lastMoves, idx],
-        boardState: boardWithPreview,
-      };
-    } catch {
+    if (Number.isNaN(idx) || colorConfig === undefined) {
       return state;
     }
+
+    const boardWithPreview = state.boardState.map(
+      (x, index): Color[] | null => {
+        if (index === idx) {
+          return colorConfig.secondaryColor
+            ? [colorConfig.primaryColor, colorConfig.secondaryColor]
+            : [colorConfig.primaryColor];
+        }
+
+        return x;
+      },
+    );
+
+    return {
+      ...state,
+      stagedMove: undefined,
+      lastMoves: [...state.lastMoves, idx],
+      boardState: boardWithPreview,
+    };
   }
 }
 

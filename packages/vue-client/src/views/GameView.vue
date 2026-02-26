@@ -19,7 +19,7 @@ import {
   ITimeControlBase,
   getMovePreview,
 } from "@ogfcommunity/variants-shared";
-import { computed, ref, watchEffect, type Ref } from "vue";
+import { computed, ref, watch, watchEffect, type Ref } from "vue";
 import { socket } from "../requests";
 import NavButtons from "@/components/GameView/NavButtons.vue";
 import PlayersToMove from "@/components/GameView/PlayersToMove.vue";
@@ -81,12 +81,8 @@ const doesVariantSupportsMovePreview = computed(() => {
   }
   return false;
 });
-const useMovePreview = computed(
-  () =>
-    doesVariantSupportsMovePreview.value && !userEnabledImmediateSubmit.value,
-);
 const movePreview = ref<{ move: string; player: number } | null>(null);
-function resetMovePreview() {
+function clearMovePreview() {
   movePreview.value = null;
 }
 
@@ -130,6 +126,8 @@ async function updateGameState(
     .catch(alert);
   return;
 }
+
+watch(game_state, clearMovePreview);
 
 watchEffect(() => {
   updateGameState(
@@ -215,7 +213,11 @@ function makeMove(move_str: string, submitImmediately?: boolean) {
     return;
   }
 
-  if (useMovePreview.value && !submitImmediately) {
+  if (
+    doesVariantSupportsMovePreview.value &&
+    !userEnabledImmediateSubmit.value &&
+    !submitImmediately
+  ) {
     movePreview.value = { move: move_str, player: playing_as.value };
     return;
   }
@@ -227,7 +229,7 @@ function makeMove(move_str: string, submitImmediately?: boolean) {
 function submitMove(move: MovesType) {
   requests
     .post(`/games/${props.gameId}/move`, move)
-    .then(resetMovePreview)
+    .then(clearMovePreview)
     .catch(alert);
 }
 
@@ -404,13 +406,13 @@ async function repairGame(): Promise<void> {
                   : null
               "
             >
-              submit move
+              Submit move
             </button>
             <button
               :disabled="userEnabledImmediateSubmit || !movePreview"
-              @click="resetMovePreview()"
+              @click="clearMovePreview()"
             >
-              cancel
+              Cancel
             </button>
           </div>
         </template>

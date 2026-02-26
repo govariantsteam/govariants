@@ -86,4 +86,5 @@ export const freezeGoVariant: Variant<NewBadukConfig, FreezeGoState> = {
   gameClass: FreezeGo,
   description: "Baduk but after an Atari, stones can't be captured",
   uiTransform: FreezeGo.uiTransform,
+  movePreview: Baduk.movePreview<FreezeGoState>,
 };

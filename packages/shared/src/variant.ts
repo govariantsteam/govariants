@@ -57,4 +57,15 @@ export interface Variant<
     config: ConfigT,
     state: StateT,
   ) => { config: DefaultBoardConfig; gamestate: DefaultBoardState };
+  /**
+   * Adds a move to the exported game state for the purpose of visualizing a pending move.
+   * Returns the state to be displayed while the move is pending. Implement this function
+   * to enable the submit move button.
+   */
+  movePreview?: (
+    config: ConfigT,
+    state: StateT,
+    move: string,
+    player: number,
+  ) => StateT;
 }

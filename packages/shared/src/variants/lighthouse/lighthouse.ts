@@ -4,7 +4,7 @@ import {
   DefaultBoardState,
   MulticolorStone,
 } from "../../lib/board_types";
-import { Coordinate, CoordinateLike } from "../../lib/coordinate";
+import { Coordinate, CoordinateLike, isSgfRepr } from "../../lib/coordinate";
 import { Grid } from "../../lib/grid";
 import { examineGroup, getGroup, getOuterBorder } from "../../lib/group_utils";
 import { SuperKoDetector } from "../../lib/ko_detector";
@@ -287,6 +287,39 @@ export class Lighthouse extends AbstractGame<
       },
     };
   }
+
+  static movePreview(
+    config: NewGridBadukConfig,
+    state: LighthouseState,
+    move: string,
+    player: number,
+  ): LighthouseState {
+    if (!isSgfRepr(move) || ![0, 1].includes(player)) {
+      console.warn(
+        "lighthouse move preview was called with invalid parameters.",
+      );
+      return state;
+    }
+
+    if (state.score_board) {
+      // game already finished
+      return state;
+    }
+
+    const coordinate = Coordinate.fromSgfRepr(move);
+    const color = player === 0 ? Color.BLACK : Color.WHITE;
+
+    return {
+      board: state.board.map((row, row_idx) =>
+        row.map((field, col_idx) => ({
+          lastKnownInformation: field.lastKnownInformation,
+          visibleColor: coordinate.equals({ x: col_idx, y: row_idx })
+            ? color
+            : field.visibleColor,
+        })),
+      ),
+    };
+  }
 }
 
 export const lighthouseVariant: Variant<NewGridBadukConfig, LighthouseState> = {
@@ -298,6 +331,7 @@ export const lighthouseVariant: Variant<NewGridBadukConfig, LighthouseState> = {
   time_handling: "sequential",
   rulesDescription: lighthouseRules,
   uiTransform: Lighthouse.uiTransform,
+  movePreview: Lighthouse.movePreview,
 };
 
 const darkFieldColor = "#684e14";

@@ -8,6 +8,7 @@ import { Coordinate, CoordinateLike, isSgfRepr } from "../../lib/coordinate";
 import { Grid } from "../../lib/grid";
 import { examineGroup, getGroup, getOuterBorder } from "../../lib/group_utils";
 import { SuperKoDetector } from "../../lib/ko_detector";
+import { map2d } from "../../lib/utils";
 import { lighthouseRules } from "../../templates/lighthouse_rules";
 import { Variant } from "../../variant";
 import { Baduk, Color } from "../baduk";
@@ -310,14 +311,12 @@ export class Lighthouse extends AbstractGame<
     const color = player === 0 ? Color.BLACK : Color.WHITE;
 
     return {
-      board: state.board.map((row, row_idx) =>
-        row.map((field, col_idx) => ({
-          lastKnownInformation: field.lastKnownInformation,
-          visibleColor: coordinate.equals({ x: col_idx, y: row_idx })
-            ? color
-            : field.visibleColor,
-        })),
-      ),
+      board: map2d(state.board, (field, row_idx, col_idx) => ({
+        lastKnownInformation: field.lastKnownInformation,
+        visibleColor: coordinate.equals({ x: col_idx, y: row_idx })
+          ? color
+          : field.visibleColor,
+      })),
     };
   }
 }

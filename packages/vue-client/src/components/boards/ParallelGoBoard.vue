@@ -47,7 +47,6 @@ function isKoStone(colors: number[]) {
   return colors.length === 1 && colors[0] === -1;
 }
 
-// https://sashamaps.net/docs/resources/20-colors/
 const distinct_colors =
   props.config.num_players === 2 ? ["black", "white"] : colors_for_parallel;
 

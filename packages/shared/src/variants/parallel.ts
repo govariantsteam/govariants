@@ -287,6 +287,7 @@ export const parallelVariant: Variant<ParallelGoConfig, ParallelGoState> = {
   ],
 };
 
+// https://sashamaps.net/docs/resources/20-colors/
 export const colors_for_parallel = [
   "#e6194B",
   "#3cb44b",

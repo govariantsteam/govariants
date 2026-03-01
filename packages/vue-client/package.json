@@ -13,7 +13,7 @@
     "test:watch": "vitest",
     "lint:check": "eslint .",
     "lint": "eslint --fix .",
-    "gen-favicon": "rimraf public/favicon.ico && icon-gen --ico -i public/logo.svg -o public --ico-name favicon"
+    "gen-favicon": "icon-gen --ico -i public/logo.svg -o public --ico-name favicon"
   },
   "lint-staged": {
     "src/**/*.+(ts|vue)": [
@@ -56,12 +56,11 @@
     "eslint-config-prettier": "^10",
     "eslint-plugin-prettier": "^5",
     "eslint-plugin-vue": "^10",
-    "icon-gen": "^4.0.0",
+    "icon-gen": "^5.0.0",
     "jsdom": "^27.4.0",
     "postcss": "^8.4.35",
     "postcss-nesting": "^12.0.4",
     "prettier": "^3",
-    "rimraf": "^5.0.5",
     "typescript": "^5.1.6",
     "typescript-eslint": "^8",
     "vite": "^6.0.0",

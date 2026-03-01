@@ -17,6 +17,7 @@ import { SITE_NAME, UserResponse } from "@ogfcommunity/variants-shared";
 import { router as apiRouter } from "./api";
 import * as socket_io from "./socket_io";
 import { ITimeoutService, TimeoutService } from "./time-control/timeout";
+import { HttpError } from "./http-error";
 
 const LOCAL_ORIGIN = [
   "http://127.0.0.1:5173",
@@ -145,6 +146,27 @@ if (isProd) {
   // Serve index.html on unmatched routes
   app.get("/{*splat}", (_req, res) => res.sendFile(indexHtml));
 }
+
+// Centralized error handler — Express 5 forwards rejected promises from async
+// route handlers here automatically, so individual routes no longer need
+// try/catch just to send a 500.
+app.use(
+  (
+    err: unknown,
+    _req: express.Request,
+    res: express.Response,
+    // Express requires the 4-parameter signature to recognise this as an error handler
+    next: express.NextFunction,
+  ) => {
+    if (res.headersSent) {
+      return next(err);
+    }
+    const status = err instanceof HttpError ? err.status : 500;
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(err);
+    res.status(status).json(message);
+  },
+);
 
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {

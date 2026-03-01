@@ -17,7 +17,8 @@ export interface Variant<
 > {
   /** The class that implements AbstractGame and manages the state of an ongoing game */
   gameClass: new (config: ConfigT) => AbstractGame;
-  /** Short description of the Variant (shown to players in-game) */
+  /** Short description of the Variant (displayed in the game creation form and on page
+   * /variants/<variant>/rules if rulesDescription is undefined) */
   description: string;
   /**
    * Long description of the variant.  Supports markdown syntax.

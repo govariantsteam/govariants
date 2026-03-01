@@ -23,6 +23,7 @@ import {
 import { Variant } from "../variant";
 import { SgfRecorder } from "../lib/sgf_recorder";
 import { DefaultBoardState, MulticolorStone } from "../lib/board_types";
+import { map2d } from "../lib/utils";
 
 export enum Color {
   EMPTY = 0,
@@ -349,7 +350,6 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
     move: string,
     player: number,
   ): T {
-    console.log(config, state, move, player);
     if (player !== 0 && player !== 1) {
       console.error(
         `Baduk.movePreview was called with player = ${player}, but only 0 and 1 are expected.`,
@@ -371,13 +371,14 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
     }
 
     const playerColor = player === 0 ? Color.BLACK : Color.WHITE;
-    const boardWithPreview = state.board.map((row, row_idx) =>
-      row.map((fieldColor, col_idx) => {
+    const boardWithPreview = map2d(
+      state.board,
+      (fieldColor, row_idx, col_idx) => {
         if (row_idx === coordinate.y && col_idx === coordinate.x) {
           return playerColor;
         }
         return fieldColor;
-      }),
+      },
     );
 
     return {

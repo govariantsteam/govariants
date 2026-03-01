@@ -228,10 +228,10 @@ export function deleteUser(user_id: string) {
 
 export function checkUsername(username: string): void {
   if (!/^.{4,20}$/.test(username)) {
-    throw "Username must be between 4 and 20 characters long.";
+    throw new Error("Username must be between 4 and 20 characters long.");
   }
   if (!/^[a-zA-Z0-9]*$/.test(username)) {
-    throw "Username can only have alphanumeric characters.";
+    throw new Error("Username can only have alphanumeric characters.");
   }
 }
 

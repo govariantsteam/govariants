@@ -1,9 +1,10 @@
 import { AbstractGame } from "../abstract_game";
 import { Coordinate, isSgfRepr } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
-import { map2d, MovesType } from "../lib/utils";
+import { MovesType } from "../lib/utils";
 import { parallel_rules } from "../templates/parallel_rules";
 import { Variant } from "../variant";
+import { mapBoard } from "./baduk_utils";
 
 export interface ParallelGoConfig {
   width: number;
@@ -246,14 +247,15 @@ export class ParallelGo extends AbstractGame<
       return state;
     }
 
-    const coordinate = Coordinate.fromSgfRepr(move);
+    const moveCoordinate = Coordinate.fromSgfRepr(move);
 
     return {
       ...state,
-      board: map2d(state.board, (entry, row_index, column_index) =>
-        coordinate.equals({ x: column_index, y: row_index })
-          ? [player]
-          : [...entry],
+      board: mapBoard(
+        state.board,
+        (entry, coordinate) =>
+          moveCoordinate.equals(coordinate) ? [player] : [...entry],
+        "2d",
       ),
       staged: {},
     };

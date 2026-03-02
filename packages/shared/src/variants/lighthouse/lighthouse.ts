@@ -8,11 +8,10 @@ import { Coordinate, CoordinateLike, isSgfRepr } from "../../lib/coordinate";
 import { Grid } from "../../lib/grid";
 import { examineGroup, getGroup, getOuterBorder } from "../../lib/group_utils";
 import { SuperKoDetector } from "../../lib/ko_detector";
-import { map2d } from "../../lib/utils";
 import { lighthouseRules } from "../../templates/lighthouse_rules";
 import { Variant } from "../../variant";
 import { Baduk, Color } from "../baduk";
-import { NewGridBadukConfig } from "../baduk_utils";
+import { mapBoard, NewGridBadukConfig } from "../baduk_utils";
 import {
   binaryPlayerNr,
   VisibleField,
@@ -307,16 +306,20 @@ export class Lighthouse extends AbstractGame<
       return state;
     }
 
-    const coordinate = Coordinate.fromSgfRepr(move);
+    const moveCoordinate = Coordinate.fromSgfRepr(move);
     const color = player === 0 ? Color.BLACK : Color.WHITE;
 
     return {
-      board: map2d(state.board, (field, row_idx, col_idx) => ({
-        lastKnownInformation: field.lastKnownInformation,
-        visibleColor: coordinate.equals({ x: col_idx, y: row_idx })
-          ? color
-          : field.visibleColor,
-      })),
+      board: mapBoard(
+        state.board,
+        (field, coordinate) => ({
+          lastKnownInformation: field.lastKnownInformation,
+          visibleColor: moveCoordinate.equals(coordinate)
+            ? color
+            : field.visibleColor,
+        }),
+        "2d",
+      ),
     };
   }
 }

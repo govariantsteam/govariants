@@ -23,7 +23,6 @@ import {
 import { Variant } from "../variant";
 import { SgfRecorder } from "../lib/sgf_recorder";
 import { DefaultBoardState, MulticolorStone } from "../lib/board_types";
-import { map2d } from "../lib/utils";
 
 export enum Color {
   EMPTY = 0,
@@ -357,28 +356,29 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
       return state;
     }
 
-    let coordinate: Coordinate;
+    let moveCoordinate: Coordinate;
     if (isGridBadukConfig(config)) {
       if (!isSgfRepr(move)) {
         return state;
       }
-      coordinate = Coordinate.fromSgfRepr(move);
+      moveCoordinate = Coordinate.fromSgfRepr(move);
     } else {
       if (isNaN(Number(move))) {
         return state;
       }
-      coordinate = new Coordinate(Number(move), 0);
+      moveCoordinate = new Coordinate(Number(move), 0);
     }
 
     const playerColor = player === 0 ? Color.BLACK : Color.WHITE;
-    const boardWithPreview = map2d(
+    const boardWithPreview = mapBoard(
       state.board,
-      (fieldColor, row_idx, col_idx) => {
-        if (row_idx === coordinate.y && col_idx === coordinate.x) {
+      (fieldColor, coordinate) => {
+        if (moveCoordinate.equals(coordinate)) {
           return playerColor;
         }
         return fieldColor;
       },
+      "2d",
     );
 
     return {

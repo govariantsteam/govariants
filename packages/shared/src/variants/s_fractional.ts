@@ -24,7 +24,6 @@ import {
   MulticolorStone,
 } from "../lib/board_types";
 import { examineGroup } from "../lib/group_utils";
-import { map2d } from "../lib/utils";
 
 declare type Color = string;
 declare type PlacementColors = Color[] & ([Color, Color] | []);
@@ -349,27 +348,28 @@ export class SFractional extends AbstractGame<
       return state;
     }
 
-    let coordinate: Coordinate;
+    let moveCoordinate: Coordinate;
     if (isGridBadukConfig(config)) {
       if (!isSgfRepr(move)) {
         return state;
       }
-      coordinate = Coordinate.fromSgfRepr(move);
+      moveCoordinate = Coordinate.fromSgfRepr(move);
     } else {
       if (isNaN(Number(move))) {
         return state;
       }
-      coordinate = new Coordinate(Number(move), 0);
+      moveCoordinate = new Coordinate(Number(move), 0);
     }
 
-    const boardWithPreview = map2d(
+    const boardWithPreview = mapBoard(
       state.board,
-      (fieldColors, row_idx, col_idx) => {
-        if (coordinate.equals({ x: col_idx, y: row_idx })) {
+      (fieldColors, coordinate) => {
+        if (moveCoordinate.equals(coordinate)) {
           return sFractionalMoveColors(state.round, config);
         }
         return fieldColors;
       },
+      "2d",
     );
 
     return {

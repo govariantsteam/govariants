@@ -1,9 +1,10 @@
 import { AbstractGame } from "../abstract_game";
-import { Coordinate } from "../lib/coordinate";
+import { Coordinate, isSgfRepr } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
 import { MovesType } from "../lib/utils";
 import { parallel_rules } from "../templates/parallel_rules";
 import { Variant } from "../variant";
+import { mapBoard } from "./baduk_utils";
 
 export interface ParallelGoConfig {
   width: number;
@@ -235,6 +236,30 @@ export class ParallelGo extends AbstractGame<
       group.stones.forEach((pos) => this.board.set(pos, []));
     });
   }
+
+  static movePreview(
+    _: ParallelGoConfig,
+    state: ParallelGoState,
+    move: string,
+    player: number,
+  ): ParallelGoState {
+    if (!isSgfRepr(move)) {
+      return state;
+    }
+
+    const moveCoordinate = Coordinate.fromSgfRepr(move);
+
+    return {
+      ...state,
+      board: mapBoard(
+        state.board,
+        (entry, coordinate) =>
+          moveCoordinate.equals(coordinate) ? [player] : [...entry],
+        "2d",
+      ),
+      staged: {},
+    };
+  }
 }
 
 interface Group {
@@ -243,7 +268,7 @@ interface Group {
   contains_staged: boolean;
 }
 
-export const parallelVariant: Variant<ParallelGoConfig> = {
+export const parallelVariant: Variant<ParallelGoConfig, ParallelGoState> = {
   gameClass: ParallelGo,
   description: "Multiplayer Baduk with parallel moves",
   time_handling: "parallel",
@@ -256,4 +281,36 @@ export const parallelVariant: Variant<ParallelGoConfig> = {
       collision_handling: "merge",
     };
   },
+  movePreview: ParallelGo.movePreview,
+  getPlayerColors: (config, player) => [
+    config.num_players === 2
+      ? ["black", "white"][player]
+      : colors_for_parallel[player],
+  ],
 };
+
+// https://sashamaps.net/docs/resources/20-colors/
+export const colors_for_parallel = [
+  "#e6194B",
+  "#3cb44b",
+  "#ffe119",
+  "#4363d8",
+  "#f58231",
+  "#911eb4",
+  "#42d4f4",
+  "#f032e6",
+  "#bfef45",
+  "#fabed4",
+  "#469990",
+  "#dcbeff",
+  "#9A6324",
+  "#fffac8",
+  "#800000",
+  "#aaffc3",
+  "#808000",
+  "#ffd8b1",
+  "#000075",
+  "#a9a9a9",
+  "#ffffff",
+  "#000000",
+];

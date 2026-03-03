@@ -49,12 +49,24 @@ export class ChessGame extends AbstractGame<object, ChessState> {
   defaultConfig(): object {
     return {};
   }
+
+  static movePreview(
+    _config: object,
+    state: ChessState,
+    move: string,
+    _player: number,
+  ): ChessState {
+    const game = new Chess(state.fen);
+    game.move(move);
+    return { fen: game.fen() };
+  }
 }
 
-export const chessVariant: Variant = {
+export const chessVariant: Variant<object, ChessState> = {
   gameClass: ChessGame,
   description:
     "Baduk with different types of stones\n the goal is to capture a specific stone",
   time_handling: "sequential",
   defaultConfig: Object,
+  movePreview: ChessGame.movePreview,
 };

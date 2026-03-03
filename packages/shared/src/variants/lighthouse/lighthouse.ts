@@ -11,7 +11,7 @@ import { SuperKoDetector } from "../../lib/ko_detector";
 import { lighthouseRules } from "../../templates/lighthouse_rules";
 import { Variant } from "../../variant";
 import { Baduk, Color } from "../baduk";
-import { NewGridBadukConfig } from "../baduk_utils";
+import { mapBoard, NewGridBadukConfig } from "../baduk_utils";
 import {
   binaryPlayerNr,
   VisibleField,
@@ -306,17 +306,19 @@ export class Lighthouse extends AbstractGame<
       return state;
     }
 
-    const coordinate = Coordinate.fromSgfRepr(move);
+    const moveCoordinate = Coordinate.fromSgfRepr(move);
     const color = player === 0 ? Color.BLACK : Color.WHITE;
 
     return {
-      board: state.board.map((row, row_idx) =>
-        row.map((field, col_idx) => ({
+      board: mapBoard(
+        state.board,
+        (field, coordinate) => ({
           lastKnownInformation: field.lastKnownInformation,
-          visibleColor: coordinate.equals({ x: col_idx, y: row_idx })
+          visibleColor: moveCoordinate.equals(coordinate)
             ? color
             : field.visibleColor,
-        })),
+        }),
+        "2d",
       ),
     };
   }

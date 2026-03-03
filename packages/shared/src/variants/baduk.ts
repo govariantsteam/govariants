@@ -349,7 +349,6 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
     move: string,
     player: number,
   ): T {
-    console.log(config, state, move, player);
     if (player !== 0 && player !== 1) {
       console.error(
         `Baduk.movePreview was called with player = ${player}, but only 0 and 1 are expected.`,
@@ -357,27 +356,29 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
       return state;
     }
 
-    let coordinate: Coordinate;
+    let moveCoordinate: Coordinate;
     if (isGridBadukConfig(config)) {
       if (!isSgfRepr(move)) {
         return state;
       }
-      coordinate = Coordinate.fromSgfRepr(move);
+      moveCoordinate = Coordinate.fromSgfRepr(move);
     } else {
       if (isNaN(Number(move))) {
         return state;
       }
-      coordinate = new Coordinate(Number(move), 0);
+      moveCoordinate = new Coordinate(Number(move), 0);
     }
 
     const playerColor = player === 0 ? Color.BLACK : Color.WHITE;
-    const boardWithPreview = state.board.map((row, row_idx) =>
-      row.map((fieldColor, col_idx) => {
-        if (row_idx === coordinate.y && col_idx === coordinate.x) {
+    const boardWithPreview = mapBoard(
+      state.board,
+      (fieldColor, coordinate) => {
+        if (moveCoordinate.equals(coordinate)) {
           return playerColor;
         }
         return fieldColor;
-      }),
+      },
+      "2d",
     );
 
     return {

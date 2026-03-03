@@ -1,4 +1,4 @@
-import { Coordinate, CoordinateLike } from "../lib/coordinate";
+import { Coordinate, CoordinateLike, isSgfRepr } from "../lib/coordinate";
 import {
   BoardPattern,
   createBoard,
@@ -34,6 +34,7 @@ export type SFractionalState = {
   board: PlacementColors[][];
   lastMove: string;
   score_board?: Color[][];
+  round: number;
 };
 
 export class SFractional extends AbstractGame<
@@ -74,6 +75,7 @@ export class SFractional extends AbstractGame<
       board: this.board.serialize(),
       lastMove: this.last_move,
       ...(this.scoreBoard && { score_board: this.scoreBoard.serialize() }),
+      round: this.round,
     };
   }
 
@@ -332,6 +334,50 @@ export class SFractional extends AbstractGame<
       },
     };
   }
+
+  static movePreview(
+    config: SFractionalConfig,
+    state: SFractionalState,
+    move: string,
+    player: number,
+  ): SFractionalState {
+    if (player !== 0 && player !== 1) {
+      console.error(
+        `SFractional.movePreview was called with player = ${player}, but only 0 and 1 are expected.`,
+      );
+      return state;
+    }
+
+    let moveCoordinate: Coordinate;
+    if (isGridBadukConfig(config)) {
+      if (!isSgfRepr(move)) {
+        return state;
+      }
+      moveCoordinate = Coordinate.fromSgfRepr(move);
+    } else {
+      if (isNaN(Number(move))) {
+        return state;
+      }
+      moveCoordinate = new Coordinate(Number(move), 0);
+    }
+
+    const boardWithPreview = mapBoard(
+      state.board,
+      (fieldColors, coordinate) => {
+        if (moveCoordinate.equals(coordinate)) {
+          return sFractionalMoveColors(state.round, config);
+        }
+        return fieldColors;
+      },
+      "2d",
+    );
+
+    return {
+      ...state,
+      board: boardWithPreview,
+      lastMove: move,
+    };
+  }
 }
 
 /**
@@ -361,4 +407,5 @@ export const sFractionalVariant: Variant<SFractionalConfig, SFractionalState> =
     time_handling: "sequential",
     getPlayerColors: Baduk.getPlayerColors,
     uiTransform: SFractional.uiTransform,
+    movePreview: SFractional.movePreview,
   };

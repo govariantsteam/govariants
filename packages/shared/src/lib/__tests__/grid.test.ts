@@ -85,7 +85,7 @@ test("neighbors", () => {
 
 test("forEach on unset array", () => {
   const g = new Grid(3, 3);
-  const f = jest.fn();
+  const f = vi.fn();
   g.forEach(f);
   expect(f).not.toBeCalled();
 

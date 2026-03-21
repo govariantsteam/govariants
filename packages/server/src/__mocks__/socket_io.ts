@@ -1,5 +1,6 @@
 // Mock for socket.io module
-const mockEmit = jest.fn();
+import { vi } from "vitest";
+const mockEmit = vi.fn();
 const mockIo = {
   emit: mockEmit,
 };

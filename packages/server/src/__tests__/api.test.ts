@@ -10,13 +10,10 @@ import {
 import { UserResponse } from "@ogfcommunity/variants-shared";
 
 // Mock modules BEFORE importing api - this prevents the real index.ts from loading
-jest.mock("../socket_io");
-jest.mock("../index");
+vi.mock("../socket_io");
+vi.mock("../index");
 
 import { resetMocks as resetSocketIoMocks } from "../__mocks__/socket_io";
-
-// Set a reasonable timeout for all tests
-jest.setTimeout(10000);
 
 /** A valid MongoDB ObjectId that doesn't exist in the test database */
 const NON_EXISTENT_ID = "507f1f77bcf86cd799439011";

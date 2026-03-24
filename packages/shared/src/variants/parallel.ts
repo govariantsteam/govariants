@@ -220,8 +220,7 @@ export class ParallelGo extends AbstractGame<
 
     this.board.forEach((colors, pos) => {
       colors.forEach((color) => {
-        let group: Group | undefined = undefined;
-        group = this.getGroup(pos, color, checked);
+        const group = this.getGroup(pos, color, checked);
 
         if (group?.stones.length) {
           groups.push(group);

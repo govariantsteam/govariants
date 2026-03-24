@@ -52,7 +52,7 @@
     "@vue/eslint-config-typescript": "^14",
     "@vue/test-utils": "^2.4.0",
     "@vue/tsconfig": "^0.4.0",
-    "eslint": "^9",
+    "eslint": "^10",
     "eslint-config-prettier": "^10",
     "eslint-plugin-prettier": "^5",
     "eslint-plugin-vue": "^10",

@@ -4,10 +4,18 @@ import {
   type FractionalConfig,
   type FractionalState,
   Intersection,
+  getHoshi,
 } from "@ogfcommunity/variants-shared";
 import { createGraph } from "@ogfcommunity/variants-shared";
 import { computed } from "vue";
 import TaegeukStone from "../TaegeukStone.vue";
+import IntersectionAnnotation from "../IntersectionAnnotation.vue";
+import {
+  STONE_RADIUS,
+  LINE_WIDTH,
+  BOARD_COLOR,
+  STAR_POINT_RADIUS,
+} from "./board_constants";
 
 const props = defineProps<{
   config: FractionalConfig;
@@ -43,6 +51,14 @@ const boardRect = computed(
   },
 );
 const board = computed(() => createGraph(intersections.value, null));
+
+const hoshi = computed(() => {
+  const b = props.config.board;
+  if (b.type === "grid") {
+    return getHoshi(b.width, b.height);
+  }
+  return [];
+});
 
 const viewBox = computed(() => {
   // viewBox is slightly larger than board
@@ -88,6 +104,15 @@ const stagedMove = computed(() =>
         />
       </g>
     </g>
+    <g>
+      <circle
+        v-for="{ x, y } in hoshi"
+        :key="`${x},${y}`"
+        :cx="x"
+        :cy="y"
+        :r="STAR_POINT_RADIUS"
+      />
+    </g>
     <g class="stones">
       <g v-for="(intersection, index) in intersections" :key="index">
         <TaegeukStone
@@ -95,23 +120,21 @@ const stagedMove = computed(() =>
           :colors="[...$props.gamestate.boardState.at(index)]"
           :cx="intersection.position.X"
           :cy="intersection.position.Y"
-          :r="0.47"
+          :r="STONE_RADIUS"
         />
-        <circle
+        <IntersectionAnnotation
           v-if="$props.gamestate.lastMoves.includes(index)"
           :cx="intersection.position.X"
           :cy="intersection.position.Y"
-          r="0.3"
-          stroke="#dbdbdb"
-          stroke-width="0.05"
-          class="last-move-indicator"
+          :r="STONE_RADIUS"
+          annotation="CR"
         />
         <circle
           v-if="!$props.gamestate.boardState.at(index)"
           class="click-placeholder"
           :cx="intersection.position.X"
           :cy="intersection.position.Y"
-          r="0.47"
+          :r="STONE_RADIUS"
           @click="intersectionClicked(index)"
         />
       </g>
@@ -121,27 +144,23 @@ const stagedMove = computed(() =>
       :colors="stagedMove.colors"
       :cx="stagedMove.intersection.position.X"
       :cy="stagedMove.intersection.position.Y"
-      :r="0.47"
+      :r="STONE_RADIUS"
     />
   </svg>
 </template>
 
 <style scoped>
 .board .background {
-  fill: #dcb35c;
+  fill: v-bind(BOARD_COLOR);
 }
 
 line {
   stroke: black;
-  stroke-width: 0.05;
+  stroke-width: v-bind(LINE_WIDTH);
   stroke-linecap: round;
 }
 
 .click-placeholder {
   opacity: 0;
-}
-
-.last-move-indicator {
-  mix-blend-mode: difference;
 }
 </style>

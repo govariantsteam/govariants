@@ -8,6 +8,12 @@ import {
   MulticolorStone,
 } from "@ogfcommunity/variants-shared";
 import { positionsGetter } from "./board_utils";
+import {
+  STONE_RADIUS,
+  LINE_WIDTH,
+  BOARD_COLOR,
+  STAR_POINT_RADIUS,
+} from "./board_constants";
 import ScoreMark from "./ScoreMark.vue";
 
 const props = defineProps<{
@@ -49,7 +55,7 @@ function positionHovered(pos: Coordinate) {
       y="-0.5"
       :width="width"
       :height="height"
-      :fill="background_color ?? '#dcb35c'"
+      :fill="background_color ?? BOARD_COLOR"
     />
     <g v-if="props.board">
       <rect
@@ -72,9 +78,6 @@ function positionHovered(pos: Coordinate) {
         :x2="x - 1"
         :y1="0"
         :y2="height - 1"
-        color="pink"
-        stroke="pink"
-        stroke-width="0.02"
       />
 
       <line
@@ -84,8 +87,6 @@ function positionHovered(pos: Coordinate) {
         :x2="width - 1"
         :y1="y - 1"
         :y2="y - 1"
-        stroke="pink"
-        stroke-width="0.02"
       />
 
       <circle
@@ -93,7 +94,7 @@ function positionHovered(pos: Coordinate) {
         :key="`${x},${y}`"
         :cx="x"
         :cy="y"
-        r="0.12"
+        :r="STAR_POINT_RADIUS"
       />
     </g>
     <g v-if="props.board">
@@ -104,7 +105,7 @@ function positionHovered(pos: Coordinate) {
         :key="`${pos.x},${pos.y}`"
         :cx="pos.x"
         :cy="pos.y"
-        :r="0.48"
+        :r="STONE_RADIUS"
         :colors="props.board[pos.y][pos.x]?.colors ?? []"
       />
     </g>
@@ -116,7 +117,7 @@ function positionHovered(pos: Coordinate) {
         :key="`${x},${y}`"
         :cx="x"
         :cy="y"
-        :r="0.48"
+        :r="STONE_RADIUS"
         :annotation="props.board[y][x]?.annotation!"
       />
     </g>
@@ -154,7 +155,7 @@ function positionHovered(pos: Coordinate) {
 <style scoped>
 line {
   stroke: black;
-  stroke-width: 0.02;
+  stroke-width: v-bind(LINE_WIDTH);
   stroke-linecap: round;
 }
 </style>

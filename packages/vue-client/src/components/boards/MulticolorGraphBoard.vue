@@ -11,6 +11,7 @@ import {
 } from "@ogfcommunity/variants-shared";
 import ScoreMark from "./ScoreMark.vue";
 import { Voronoi, Site, Cell } from "voronoijs";
+import { STONE_RADIUS, LINE_WIDTH, BOARD_COLOR } from "./board_constants";
 
 const props = defineProps<{
   board?: (MulticolorStone | null)[];
@@ -110,7 +111,7 @@ const viewBox = computed(() => {
       :y="viewBox.minY - 0.5"
       :width="viewBox.width + 1"
       :height="viewBox.height + 1"
-      :fill="background_color ?? '#dcb35c'"
+      :fill="background_color ?? BOARD_COLOR"
     />
     <g>
       <template v-for="(_, index) in intersections" :key="index">
@@ -142,7 +143,7 @@ const viewBox = computed(() => {
         :key="`${index}: ${intersection.position.X},${intersection.position.Y}`"
         :cx="intersection.position.X"
         :cy="intersection.position.Y"
-        :r="0.48"
+        :r="STONE_RADIUS"
         :colors="props.board?.at(index)?.colors ?? []"
         @click="positionClicked(index)"
         @mouseover="positionHovered(index)"
@@ -155,7 +156,7 @@ const viewBox = computed(() => {
           :key="index"
           :cx="intersection.position.X"
           :cy="intersection.position.Y"
-          :r="0.48"
+          :r="STONE_RADIUS"
           :annotation="props.board.at(index)?.annotation!"
         />
       </template>
@@ -192,7 +193,7 @@ const viewBox = computed(() => {
 <style scoped>
 line {
   stroke: black;
-  stroke-width: 0.02;
+  stroke-width: v-bind(LINE_WIDTH);
   stroke-linecap: round;
 }
 </style>

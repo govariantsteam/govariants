@@ -12,26 +12,31 @@ module.exports = {
   async up(db, client) {
     await client.withSession((session) =>
       session.withTransaction(async () => {
+        const coll = db.collection("games");
+
         // Find games where at least one player entry is an object (not yet migrated)
-        const games = await db
-          .collection("games")
+        const games = await coll
           .find({ "players.id": { $exists: true } })
           .toArray();
 
-        if (games.length === 0) return;
+        if (games.length > 0) {
+          const ops = games.map((game) => ({
+            updateOne: {
+              filter: { _id: game._id },
+              update: {
+                $set: {
+                  players: game.players.map((p) =>
+                    p && typeof p === "object" && p.id ? p.id : p,
+                  ),
+                },
+              },
+            },
+          }));
+          await coll.bulkWrite(ops, { session });
+        }
 
-        await Promise.all(
-          games.map((game) => {
-            const normalizedPlayers = game.players.map((p) =>
-              p && typeof p === "object" && p.id ? p.id : p,
-            );
-
-            return db.collection("games").updateOne(
-              { _id: game._id },
-              { $set: { players: normalizedPlayers } },
-            );
-          }),
-        );
+        // Add index for the new query pattern (filter by user ID string in players array)
+        await coll.createIndex({ players: 1 }, { name: "game_players" });
       }),
     );
   },
@@ -44,8 +49,12 @@ module.exports = {
   async down(db, client) {
     await client.withSession((session) =>
       session.withTransaction(async () => {
-        const games = await db
-          .collection("games")
+        const coll = db.collection("games");
+
+        // Drop the index added in up()
+        await coll.dropIndex("game_players").catch(() => {});
+
+        const games = await coll
           .find({ players: { $elemMatch: { $type: "string" } } })
           .toArray();
 
@@ -59,7 +68,7 @@ module.exports = {
           }
         }
 
-        // Fetch user documents
+        // Fetch user documents (best effort — data may differ from original)
         const { ObjectId } = require("mongodb");
         const users = await db
           .collection("users")
@@ -75,19 +84,20 @@ module.exports = {
           });
         }
 
-        await Promise.all(
-          games.map((game) => {
-            const restoredPlayers = game.players.map((p) => {
-              if (typeof p !== "string") return p;
-              return usersMap.get(p) ?? { id: p };
-            });
-
-            return db.collection("games").updateOne(
-              { _id: game._id },
-              { $set: { players: restoredPlayers } },
-            );
-          }),
-        );
+        const ops = games.map((game) => ({
+          updateOne: {
+            filter: { _id: game._id },
+            update: {
+              $set: {
+                players: game.players.map((p) => {
+                  if (typeof p !== "string") return p;
+                  return usersMap.get(p) ?? { id: p };
+                }),
+              },
+            },
+          },
+        }));
+        await coll.bulkWrite(ops, { session });
       }),
     );
   },

@@ -134,7 +134,15 @@ export async function createGame(
     throw new Error("Failed to create game.");
   }
 
-  return getGame(result.insertedId.toString());
+  return {
+    id: result.insertedId.toString(),
+    variant: game.variant,
+    moves: game.moves,
+    config: sanitizeConfig(game.variant, game.config),
+    players: game.players?.map((): User | undefined => undefined),
+    time_control: game.time_control,
+    creator: game.creator,
+  };
 }
 
 export async function playMove(

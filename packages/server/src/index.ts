@@ -15,7 +15,9 @@ import { Strategy as CustomStrategy } from "passport-custom";
 import { Strategy as LocalStrategy } from "passport-local";
 import { SITE_NAME, UserResponse } from "@ogfcommunity/variants-shared";
 import { router as apiRouter } from "./api";
+import { getGame } from "./games";
 import * as socket_io from "./socket_io";
+import { validateSeatSubscription } from "./socket_validation";
 import { ITimeoutService, TimeoutService } from "./time-control/timeout";
 import { HttpError } from "./http-error";
 
@@ -89,21 +91,20 @@ passport.deserializeUser<string>(function (id, callback) {
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(
-  session({
-    // TODO: Cookie banner or permission necessary?
-    secret: process.env.SESSION_SECRET || "Corybas aconitiflorus",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      sameSite: "strict",
-      secure: "auto", // TODO: See https://www.npmjs.com/package/express-session,
-      maxAge: 86_400_000 * 180, // 180 days
-      httpOnly: true,
-    },
-    store: MongoStore.create({ client: getDb() }),
-  }),
-);
+const sessionMiddleware = session({
+  // TODO: Cookie banner or permission necessary?
+  secret: process.env.SESSION_SECRET || "Corybas aconitiflorus",
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    sameSite: "strict",
+    secure: "auto", // TODO: See https://www.npmjs.com/package/express-session,
+    maxAge: 86_400_000 * 180, // 180 days
+    httpOnly: true,
+  },
+  store: MongoStore.create({ client: getDb() }),
+});
+app.use(sessionMiddleware);
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -114,6 +115,12 @@ app.use("/api", apiRouter);
 
 socket_io.init(server, LOCAL_ORIGIN);
 const io = socket_io.io();
+
+// Share Express session and passport with Socket.IO
+io.engine.use(sessionMiddleware);
+io.engine.use(passport.initialize());
+io.engine.use(passport.session());
+
 io.on("connection", (socket) => {
   console.log("a user connected");
 
@@ -122,9 +129,21 @@ io.on("connection", (socket) => {
     console.log("ping");
   });
 
-  // source: https://socket.io/how-to/implement-a-subscription-model
   socket.on("subscribe", async (topics) => {
-    await socket.join(topics);
+    // Passport populates .user on the request via the shared session middleware
+    const user = (
+      socket.request as http.IncomingMessage & { user?: UserResponse }
+    ).user;
+
+    for (const topic of topics) {
+      const rejection = await validateSeatSubscription(topic, user, getGame);
+      if (rejection) {
+        console.warn(`Rejected subscription to ${topic}: ${rejection}`);
+        continue;
+      }
+
+      await socket.join(topic);
+    }
   });
 
   socket.on("unsubscribe", async (topics) => {

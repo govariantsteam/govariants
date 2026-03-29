@@ -6,6 +6,7 @@ export function init(server: http.Server, origin: string | string[]) {
   _io = new Server(server, {
     cors: {
       origin,
+      credentials: true,
     },
   });
 }

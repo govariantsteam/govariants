@@ -130,9 +130,10 @@ io.on("connection", (socket) => {
   });
 
   socket.on("subscribe", async (topics) => {
-    const user = (socket.request as unknown as Express.Request).user as
-      | UserResponse
-      | undefined;
+    // Passport populates .user on the request via the shared session middleware
+    const user = (
+      socket.request as http.IncomingMessage & { user?: UserResponse }
+    ).user;
 
     for (const topic of topics) {
       const rejection = await validateSeatSubscription(topic, user, getGame);

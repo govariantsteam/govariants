@@ -1,5 +1,6 @@
 import { getDb } from "./db";
 import {
+  User,
   UserResponse,
   UserRankings,
   UserRole,
@@ -179,6 +180,29 @@ export async function createUserWithSessionId(
     token: session_id,
     login_type: "guest",
   };
+}
+
+export async function getUsersByIds(
+  user_ids: string[],
+): Promise<Map<string, User>> {
+  const uniqueIds = [...new Set(user_ids)];
+  if (uniqueIds.length === 0) return new Map();
+
+  const db_users = await usersCollection()
+    .find({ _id: { $in: uniqueIds.map((id) => new ObjectId(id)) } })
+    .toArray();
+
+  const map = new Map<string, User>();
+  for (const db_user of db_users) {
+    const id = db_user._id.toString();
+    map.set(id, {
+      id,
+      username:
+        db_user.login_type === "persistent" ? db_user.username : undefined,
+      ranking: db_user.ranking,
+    });
+  }
+  return map;
 }
 
 export async function getUser(user_id: string): Promise<UserResponse> {

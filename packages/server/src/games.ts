@@ -136,12 +136,9 @@ export async function createGame(
 
   return {
     id: result.insertedId.toString(),
-    variant: game.variant,
-    moves: game.moves,
+    ...game,
     config: sanitizeConfig(game.variant, game.config),
     players: game.players?.map((): User | undefined => undefined),
-    time_control: game.time_control,
-    creator: game.creator,
   };
 }
 

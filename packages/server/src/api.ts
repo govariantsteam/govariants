@@ -18,6 +18,7 @@ import {
   getGamesById,
   tryComputeState,
 } from "./games";
+import { seatTopic, seatsTopic } from "./socket_validation";
 import {
   checkUsername,
   createUserWithUsernameAndPassword,
@@ -118,17 +119,13 @@ router.post("/games/:gameId/sit/:seat", checkCSRFToken, async (req, res) => {
   const user = req.user as UserResponse | undefined;
 
   try {
-    // Evict existing sockets from the seat room before the new occupant joins
-    const seatRoom = `game/${req.params.gameId}/${req.params.seat}`;
-    io().in(seatRoom).socketsLeave(seatRoom);
-
     const players: User[] = await takeSeat(
       req.params.gameId,
       Number(req.params.seat),
       user,
     );
 
-    io().emit(`game/${req.params.gameId}/seats`, players);
+    io().emit(seatsTopic(req.params.gameId), players);
     res.send(players);
   } catch (e) {
     throw new HttpError(409, e instanceof Error ? e.message : String(e));
@@ -145,10 +142,10 @@ router.post("/games/:gameId/leave/:seat", checkCSRFToken, async (req, res) => {
   );
 
   // Evict all sockets from the seat room so former occupant stops receiving hidden state
-  const seatRoom = `game/${req.params.gameId}/${req.params.seat}`;
-  io().in(seatRoom).socketsLeave(seatRoom);
+  const room = seatTopic(req.params.gameId, req.params.seat);
+  io().in(room).socketsLeave(room);
 
-  io().emit(`game/${req.params.gameId}/seats`, players);
+  io().emit(seatsTopic(req.params.gameId), players);
   res.send(players);
 });
 

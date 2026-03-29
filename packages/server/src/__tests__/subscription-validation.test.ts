@@ -1,5 +1,9 @@
 import { GameResponse, UserResponse } from "@ogfcommunity/variants-shared";
-import { validateSeatSubscription } from "../socket_validation";
+import {
+  validateSeatSubscription,
+  gameTopic,
+  seatTopic,
+} from "../socket_validation";
 
 function makeUser(id: string): UserResponse {
   return { id, login_type: "persistent", username: "testuser" };
@@ -26,7 +30,7 @@ describe("validateSeatSubscription", () => {
 
   it("allows non-seat topics without validation", async () => {
     const result = await validateSeatSubscription(
-      `game/${GAME_ID}`,
+      gameTopic(GAME_ID),
       undefined,
       mockGetGame,
     );
@@ -36,7 +40,7 @@ describe("validateSeatSubscription", () => {
 
   it("rejects seat topic when no user is authenticated", async () => {
     const result = await validateSeatSubscription(
-      `game/${GAME_ID}/0`,
+      seatTopic(GAME_ID, 0),
       undefined,
       mockGetGame,
     );
@@ -48,7 +52,7 @@ describe("validateSeatSubscription", () => {
     mockGetGame.mockRejectedValue(new Error("Game not found"));
 
     const result = await validateSeatSubscription(
-      `game/${GAME_ID}/0`,
+      seatTopic(GAME_ID, 0),
       makeUser("someuser"),
       mockGetGame,
     );
@@ -59,7 +63,7 @@ describe("validateSeatSubscription", () => {
     mockGetGame.mockResolvedValue(makeGame([{ id: "otheruser" }, null]));
 
     const result = await validateSeatSubscription(
-      `game/${GAME_ID}/0`,
+      seatTopic(GAME_ID, 0),
       makeUser("attacker"),
       mockGetGame,
     );
@@ -70,7 +74,7 @@ describe("validateSeatSubscription", () => {
     mockGetGame.mockResolvedValue(makeGame([null, null]));
 
     const result = await validateSeatSubscription(
-      `game/${GAME_ID}/0`,
+      seatTopic(GAME_ID, 0),
       makeUser("someuser"),
       mockGetGame,
     );
@@ -81,7 +85,7 @@ describe("validateSeatSubscription", () => {
     mockGetGame.mockResolvedValue(makeGame([{ id: "rightuser" }, null]));
 
     const result = await validateSeatSubscription(
-      `game/${GAME_ID}/0`,
+      seatTopic(GAME_ID, 0),
       makeUser("rightuser"),
       mockGetGame,
     );

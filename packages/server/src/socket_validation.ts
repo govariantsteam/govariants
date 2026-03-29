@@ -2,6 +2,18 @@ import { GameResponse, UserResponse } from "@ogfcommunity/variants-shared";
 
 export const SEAT_TOPIC_RE = /^game\/([a-f0-9]{24})\/(\d+)$/;
 
+export function gameTopic(gameId: string): string {
+  return `game/${gameId}`;
+}
+
+export function seatTopic(gameId: string, seat: number | string): string {
+  return `game/${gameId}/${seat}`;
+}
+
+export function seatsTopic(gameId: string): string {
+  return `game/${gameId}/seats`;
+}
+
 type GameLookup = (gameId: string) => Promise<GameResponse>;
 
 /**

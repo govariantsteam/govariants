@@ -188,14 +188,8 @@ export async function getUsersByIds(
   const uniqueIds = [...new Set(user_ids)];
   if (uniqueIds.length === 0) return new Map();
 
-  const validObjectIds = uniqueIds
-    .filter((id) => ObjectId.isValid(id))
-    .map((id) => new ObjectId(id));
-
-  if (validObjectIds.length === 0) return new Map();
-
   const db_users = await usersCollection()
-    .find({ _id: { $in: validObjectIds } })
+    .find({ _id: { $in: uniqueIds.map((id) => new ObjectId(id)) } })
     .toArray();
 
   const map = new Map<string, User>();

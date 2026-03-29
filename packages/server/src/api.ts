@@ -118,6 +118,10 @@ router.post("/games/:gameId/sit/:seat", checkCSRFToken, async (req, res) => {
   const user = req.user as UserResponse | undefined;
 
   try {
+    // Evict existing sockets from the seat room before the new occupant joins
+    const seatRoom = `game/${req.params.gameId}/${req.params.seat}`;
+    io().in(seatRoom).socketsLeave(seatRoom);
+
     const players: User[] = await takeSeat(
       req.params.gameId,
       Number(req.params.seat),
@@ -132,7 +136,6 @@ router.post("/games/:gameId/sit/:seat", checkCSRFToken, async (req, res) => {
 });
 
 router.post("/games/:gameId/leave/:seat", checkCSRFToken, async (req, res) => {
-  // TODO: make sure this is set to a valid id once we have user auth
   const user = req.user as UserResponse | undefined;
 
   const players: User[] = await leaveSeat(
@@ -140,6 +143,10 @@ router.post("/games/:gameId/leave/:seat", checkCSRFToken, async (req, res) => {
     Number(req.params.seat),
     user,
   );
+
+  // Evict all sockets from the seat room so former occupant stops receiving hidden state
+  const seatRoom = `game/${req.params.gameId}/${req.params.seat}`;
+  io().in(seatRoom).socketsLeave(seatRoom);
 
   io().emit(`game/${req.params.gameId}/seats`, players);
   res.send(players);
@@ -327,6 +334,17 @@ router.get("/games/:gameId/state", async (req, res) => {
   const seat = req.query.seat === "" ? null : Number(req.query.seat);
   const round = req.query.round === "" ? null : Number(req.query.round);
   const game = await getGame(req.params.gameId);
+
+  // Seat-specific state contains hidden info — verify the user occupies the seat
+  if (seat != null) {
+    const user = req.user as User | undefined;
+    const occupant = game.players?.[seat];
+    if (!user || !occupant || occupant.id !== user.id) {
+      res.status(403).json("You do not occupy this seat.");
+      return;
+    }
+  }
+
   const stateResponse = getGameState(game, seat, round);
   res.send(stateResponse);
 });

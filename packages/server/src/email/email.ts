@@ -69,11 +69,11 @@ export async function sendEmail(
     });
   } catch (error) {
     console.error("Failed to send email:", error);
-    // eslint-disable-next-line preserve-caught-error -- cause is re-logged above
     throw new Error(
       `Failed to send email: ${
         error instanceof Error ? error.message : String(error)
       }`,
+      { cause: error },
     );
   }
 }

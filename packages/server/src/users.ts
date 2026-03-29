@@ -188,13 +188,9 @@ export async function getUsersByIds(
   const uniqueIds = [...new Set(user_ids)];
   if (uniqueIds.length === 0) return new Map();
 
-  const validObjectIds = uniqueIds.flatMap((id) => {
-    try {
-      return [new ObjectId(id)];
-    } catch {
-      return [];
-    }
-  });
+  const validObjectIds = uniqueIds
+    .filter((id) => ObjectId.isValid(id))
+    .map((id) => new ObjectId(id));
 
   if (validObjectIds.length === 0) return new Map();
 

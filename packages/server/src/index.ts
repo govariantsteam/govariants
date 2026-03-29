@@ -15,6 +15,7 @@ import { Strategy as CustomStrategy } from "passport-custom";
 import { Strategy as LocalStrategy } from "passport-local";
 import { SITE_NAME, UserResponse } from "@ogfcommunity/variants-shared";
 import { router as apiRouter } from "./api";
+import { getGame } from "./games";
 import * as socket_io from "./socket_io";
 import { validateSeatSubscription } from "./socket_validation";
 import { ITimeoutService, TimeoutService } from "./time-control/timeout";
@@ -134,7 +135,7 @@ io.on("connection", (socket) => {
       | undefined;
 
     for (const topic of topics) {
-      const rejection = await validateSeatSubscription(topic, user);
+      const rejection = await validateSeatSubscription(topic, user, getGame);
       if (rejection) {
         console.warn(`Rejected subscription to ${topic}: ${rejection}`);
         continue;

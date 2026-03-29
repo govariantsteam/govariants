@@ -1,7 +1,8 @@
-import { UserResponse } from "@ogfcommunity/variants-shared";
-import { getGame } from "./games";
+import { GameResponse, UserResponse } from "@ogfcommunity/variants-shared";
 
 export const SEAT_TOPIC_RE = /^game\/([a-f0-9]{24})\/(\d+)$/;
+
+type GameLookup = (gameId: string) => Promise<GameResponse>;
 
 /**
  * Validates whether a user is allowed to subscribe to a seat-specific topic.
@@ -10,6 +11,7 @@ export const SEAT_TOPIC_RE = /^game\/([a-f0-9]{24})\/(\d+)$/;
 export async function validateSeatSubscription(
   topic: string,
   user: UserResponse | undefined,
+  getGame: GameLookup,
 ): Promise<string | null> {
   const match = topic.match(SEAT_TOPIC_RE);
   if (!match) return null; // Not a seat topic, always allowed

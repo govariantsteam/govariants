@@ -137,7 +137,7 @@ export async function createGame(
   return {
     id: result.insertedId.toString(),
     ...game,
-    config: sanitizeConfig(game.variant, game.config),
+    // TODO: align null/undefined — GameSchema uses null, GameResponse uses undefined
     players: game.players?.map((): User | undefined => undefined),
   };
 }

@@ -26,6 +26,7 @@ import {
   ValidateTimeControlConfig,
 } from "./time-control/time-control";
 import { updateRatings, supportsRatings } from "./rating/rating";
+import { getUsersByIds } from "./users";
 import {
   initUserNotifications,
   notifyOfGameEnd,
@@ -37,7 +38,8 @@ export type GameSchema = {
   variant: string;
   moves: MovesType[];
   config: object;
-  players?: Array<User | undefined>;
+  /** Stored as user ID strings in the database. Hydrated to User objects on read. */
+  players?: Array<string | null>;
   time_control?: ITimeControlBase;
   creator?: User;
   subscriptions?: GameSubscriptions;
@@ -59,26 +61,26 @@ export async function getGames(
 ): Promise<GameResponse[]> {
   const dbFilter: Filter<Document> = {};
   if (filter && filter.user_id) {
-    dbFilter["players.id"] = filter.user_id;
+    dbFilter["players"] = filter.user_id;
   }
   if (filter && filter.variant) {
     dbFilter["variant"] = filter.variant;
   }
 
-  const games = gamesCollection()
+  const db_games = await gamesCollection()
     .find(dbFilter)
     .sort({ _id: -1 })
     .skip(offset || 0)
     .limit(Math.min(count || 10, 100))
     .toArray();
-  return (await games).map(outwardFacingGame);
+  return hydrateGames(db_games);
 }
 
 export async function getGamesWithTimeControl(): Promise<GameResponse[]> {
-  const games = gamesCollection()
+  const db_games = await gamesCollection()
     .find({ time_control: { $ne: null } })
     .toArray();
-  return (await games).map(outwardFacingGame);
+  return hydrateGames(db_games);
 }
 
 export async function getGame(id: string): Promise<GameResponse> {
@@ -90,7 +92,7 @@ export async function getGame(id: string): Promise<GameResponse> {
     throw new Error("Game not found");
   }
 
-  const game = outwardFacingGame(db_game);
+  const [game] = await hydrateGames([db_game]);
   const playerClocks = Object.values(game.time_control?.forPlayer ?? {});
   // bpj 2024-04-04: changed playerClock.remainingTimeMS to playerClock.clockState
   // in order to support more complex clock states such as byo-yomi
@@ -132,10 +134,7 @@ export async function createGame(
     throw new Error("Failed to create game.");
   }
 
-  return {
-    id: result.insertedId.toString(),
-    ...game,
-  };
+  return getGame(result.insertedId.toString());
 }
 
 export async function playMove(
@@ -298,7 +297,7 @@ async function updateSeat(
   game_id: string,
   seat: number,
   user: UserResponse,
-  new_user: User | undefined,
+  new_user_id: string | null,
 ) {
   const game = await getGame(game_id);
 
@@ -312,25 +311,25 @@ async function updateSeat(
     throw new Error("Seat taken!");
   }
 
-  game.players[seat] = new_user;
-
   await gamesCollection().updateOne(
     { _id: new ObjectId(game_id) },
-    { $set: { [`players.${seat}`]: new_user } },
+    { $set: { [`players.${seat}`]: new_user_id } },
   );
   await notifyOfSeatChange(
     game.subscriptions ?? {},
     game_id,
     seat,
     user.username,
-    new_user !== undefined,
+    new_user_id !== null,
   );
 
-  return game.players;
+  // Re-fetch the game to return hydrated players
+  const updated = await getGame(game_id);
+  return updated.players;
 }
 
 export function takeSeat(game_id: string, seat: number, user: UserResponse) {
-  return updateSeat(game_id, seat, user, user);
+  return updateSeat(game_id, seat, user, user.id);
 }
 
 export async function leaveSeat(
@@ -338,7 +337,7 @@ export async function leaveSeat(
   seat: number,
   user: UserResponse,
 ) {
-  return updateSeat(game_id, seat, user, undefined);
+  return updateSeat(game_id, seat, user, null);
 }
 
 export function getGameState(
@@ -427,27 +426,46 @@ export async function subscribeToGameNotifications(
 }
 
 export async function getGamesById(ids: string[]): Promise<GameResponse[]> {
-  return (
-    await gamesCollection()
-      .find({
-        _id: { $in: ids.map((id) => new ObjectId(id)) },
-      })
-      .toArray()
-  ).map(outwardFacingGame);
+  const db_games = await gamesCollection()
+    .find({
+      _id: { $in: ids.map((id) => new ObjectId(id)) },
+    })
+    .toArray();
+  return hydrateGames(db_games);
 }
 
-function outwardFacingGame(db_game: WithId<GameSchema>): GameResponse {
-  const config = sanitizeConfig(db_game.variant, db_game.config);
-  return {
-    id: db_game._id.toString(),
-    variant: db_game.variant,
-    moves: db_game.moves,
-    config,
-    players: db_game.players,
-    time_control: db_game.time_control,
-    creator: db_game.creator,
-    subscriptions: db_game.subscriptions,
-  };
+/**
+ * Hydrate a list of DB games into GameResponse objects,
+ * batch-fetching user data for all player IDs.
+ */
+async function hydrateGames(
+  db_games: WithId<GameSchema>[],
+): Promise<GameResponse[]> {
+  // Collect all player IDs across all games
+  const allPlayerIds: string[] = [];
+  for (const game of db_games) {
+    for (const p of game.players ?? []) {
+      if (p) allPlayerIds.push(p);
+    }
+  }
+
+  const usersMap = await getUsersByIds(allPlayerIds);
+
+  return db_games.map((db_game) => {
+    const config = sanitizeConfig(db_game.variant, db_game.config);
+    return {
+      id: db_game._id.toString(),
+      variant: db_game.variant,
+      moves: db_game.moves,
+      config,
+      players: db_game.players?.map((p) =>
+        p ? (usersMap.get(p) ?? { id: p }) : undefined,
+      ),
+      time_control: db_game.time_control,
+      creator: db_game.creator,
+      subscriptions: db_game.subscriptions,
+    };
+  });
 }
 
 export function tryComputeState(

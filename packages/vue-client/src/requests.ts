@@ -39,4 +39,4 @@ export const post = requestImpl.bind(undefined, "post");
 export const put = requestImpl.bind(undefined, "put");
 export const del: NoPayloadRequest = requestImpl.bind(undefined, "delete");
 
-export const socket = io(SERVER_ORIGIN);
+export const socket = io(SERVER_ORIGIN, { withCredentials: true });

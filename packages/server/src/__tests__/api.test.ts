@@ -259,6 +259,46 @@ describe("API Endpoints", () => {
   });
 
   describe("POST /api/games/:gameId/sit/:seat", () => {
+    it("stores only user ID and returns hydrated player", async () => {
+      const db = await getTestDb();
+      const userResult = await db.collection("users").insertOne(
+        makeTestUser({
+          username: "seatuser",
+          ranking: { baduk: { rating: 1500, rd: 50, vol: 0.06 } },
+        }),
+      );
+      const userId = userResult.insertedId.toString();
+
+      const gameResult = await db
+        .collection("games")
+        .insertOne(makeTestGame({ players: [null, null] }));
+      const gameId = gameResult.insertedId.toString();
+
+      const authApp = createTestApp({
+        mockUser: {
+          id: userId,
+          username: "seatuser",
+          login_type: "persistent",
+        },
+      });
+
+      const response = await request(authApp)
+        .post(`/api/games/${gameId}/sit/0`)
+        .set("CSRF-Token", "test-csrf-token")
+        .expect(200);
+
+      // API returns hydrated User objects
+      expect(response.body[0]).toEqual(
+        expect.objectContaining({ id: userId, username: "seatuser" }),
+      );
+
+      // DB stores only the ID string
+      const dbGame = await db
+        .collection("games")
+        .findOne({ _id: gameResult.insertedId });
+      expect(dbGame.players[0]).toBe(userId);
+    });
+
     it("does not evict sockets when takeSeat fails", async () => {
       const db = await getTestDb();
 
@@ -270,13 +310,10 @@ describe("API Endpoints", () => {
         .collection("users")
         .insertOne(makeTestUser({ username: "userB" }));
 
-      // Create a game with userA in seat 0
+      // Create a game with userA in seat 0 (DB stores only ID strings)
       const game = await db.collection("games").insertOne(
         makeTestGame({
-          players: [
-            { id: userA.insertedId.toString(), username: "userA" },
-            null,
-          ],
+          players: [userA.insertedId.toString(), null],
         }),
       );
       const gameId = game.insertedId.toString();
@@ -296,6 +333,31 @@ describe("API Endpoints", () => {
         .expect(500);
 
       expect(mockSocketsLeave).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("GET /api/games (user filter)", () => {
+    it("filters games by user ID in normalized players array", async () => {
+      const db = await getTestDb();
+      const userResult = await db.collection("users").insertOne(makeTestUser());
+      const userId = userResult.insertedId.toString();
+
+      // One game with the user seated, one without
+      await db
+        .collection("games")
+        .insertOne(makeTestGame({ players: [userId, null] }));
+      await db
+        .collection("games")
+        .insertOne(makeTestGame({ players: [null, null] }));
+
+      const response = await request(app)
+        .get(`/api/games?count=10&offset=0&user_id=${userId}`)
+        .expect(200);
+
+      expect(response.body).toHaveLength(1);
+      expect(response.body[0].players[0]).toEqual(
+        expect.objectContaining({ id: userId, username: "testuser" }),
+      );
     });
   });
 

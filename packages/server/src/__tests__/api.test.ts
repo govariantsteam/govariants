@@ -13,7 +13,10 @@ import { UserResponse } from "@ogfcommunity/variants-shared";
 vi.mock("../socket_io");
 vi.mock("../index");
 
-import { resetMocks as resetSocketIoMocks } from "../__mocks__/socket_io";
+import {
+  resetMocks as resetSocketIoMocks,
+  mockSocketsLeave,
+} from "../__mocks__/socket_io";
 
 /** A valid MongoDB ObjectId that doesn't exist in the test database */
 const NON_EXISTENT_ID = "507f1f77bcf86cd799439011";
@@ -294,6 +297,42 @@ describe("API Endpoints", () => {
         .collection("games")
         .findOne({ _id: gameResult.insertedId });
       expect(dbGame.players[0]).toBe(userId);
+    });
+
+    it("does not evict sockets when takeSeat fails", async () => {
+      const db = await getTestDb();
+
+      // Create two users
+      const userA = await db
+        .collection("users")
+        .insertOne(makeTestUser({ username: "userA" }));
+      const userB = await db
+        .collection("users")
+        .insertOne(makeTestUser({ username: "userB" }));
+
+      // Create a game with userA in seat 0 (DB stores only ID strings)
+      const game = await db.collection("games").insertOne(
+        makeTestGame({
+          players: [userA.insertedId.toString(), null],
+        }),
+      );
+      const gameId = game.insertedId.toString();
+
+      // userB tries to take seat 0 (already occupied by userA)
+      const appB = createTestApp({
+        mockUser: {
+          id: userB.insertedId.toString(),
+          username: "userB",
+          login_type: "persistent",
+        },
+      });
+
+      await request(appB)
+        .post(`/api/games/${gameId}/sit/0`)
+        .set("CSRF-Token", "test-csrf-token")
+        .expect(500);
+
+      expect(mockSocketsLeave).not.toHaveBeenCalled();
     });
   });
 

@@ -19,6 +19,7 @@ import {
 import { ObjectId, WithId, Document, Filter, Collection } from "mongodb";
 import { getDb } from "./db";
 import { io } from "./socket_io";
+import { gameTopic, seatTopic } from "./socket_validation";
 import { getTimeoutService } from "./index";
 import {
   GetInitialTimeControl,
@@ -265,7 +266,7 @@ function emitGame(
   const specialMoves = game_obj.specialMoves();
 
   io()
-    .to(`game/${game_id}`)
+    .to(gameTopic(game_id))
     .emit("move", {
       state: game_obj.exportState(null),
       round: game_obj.round,
@@ -286,7 +287,7 @@ function emitGame(
       seat: seat,
       timeControl: time_control,
     };
-    io().to(`game/${game_id}/${seat}`).emit("move", gameStateResponse);
+    io().to(seatTopic(game_id, seat)).emit("move", gameStateResponse);
   }
 }
 

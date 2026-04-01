@@ -184,9 +184,12 @@ export function createGraph<TIntersection extends Intersection, TColor>(
   intersections: TIntersection[],
   startColor: TColor,
 ): Graph<TColor> {
+  const indexMap = new Map<TIntersection, number>(
+    intersections.map((n, i) => [n, i]),
+  );
   const adjacencyMatrix = intersections.map((intersection) =>
-    intersection.neighbours.map((neighbour) =>
-      intersections.indexOf(neighbour),
+    intersection.neighbours.map(
+      (neighbour) => indexMap.get(neighbour as TIntersection)!,
     ),
   );
   return new Graph<TColor>(adjacencyMatrix).fill(startColor);
@@ -296,6 +299,9 @@ function convertIntersections<TIntersection extends Intersection>(
   old: Intersection[],
   intersectionConstructor: IntersectionConstructor<TIntersection>,
 ): TIntersection[] {
+  const indexMap = new Map<Intersection, number>(
+    old.map((o, index) => [o, index]),
+  );
   const intersections = new Map<number, TIntersection>(
     old.map((o, index) => [index, new intersectionConstructor(o.position)]),
   );
@@ -303,7 +309,7 @@ function convertIntersections<TIntersection extends Intersection>(
     i.neighbours.forEach((n) =>
       intersections
         .get(index)!
-        .connectTo(intersections.get(old.indexOf(n))!, false),
+        .connectTo(intersections.get(indexMap.get(n)!)!, false),
     ),
   );
 

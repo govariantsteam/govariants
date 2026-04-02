@@ -54,3 +54,19 @@ test("create custom board", () => {
   expect(intersections[0].position).toEqual({ X: 0, Y: 0 });
   expect(intersections[0].neighbours).toHaveLength(2);
 });
+
+test("rejects boards exceeding max node limit", () => {
+  // Sierpinski depth 8 = 29,526 intersections, well over the 10K cap
+  expect(() =>
+    createBoard({ type: BoardPattern.Sierpinsky, size: 8 }, Intersection),
+  ).toThrow(/Board too large/);
+});
+
+test("allows boards under the limit", () => {
+  // Sierpinski depth 6 = 3,282 intersections
+  const intersections = createBoard(
+    { type: BoardPattern.Sierpinsky, size: 6 },
+    Intersection,
+  );
+  expect(intersections.length).toBe(3282);
+});

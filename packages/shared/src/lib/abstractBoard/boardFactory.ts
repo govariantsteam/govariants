@@ -150,8 +150,15 @@ export function createBoard<TIntersection extends Intersection>(
       );
       break;
   }
+  if (intersections.length > MAX_BOARD_NODES) {
+    throw new Error(
+      `Board too large: ${intersections.length} intersections (max ${MAX_BOARD_NODES})`,
+    );
+  }
   return intersections;
 }
+
+const MAX_BOARD_NODES = 10000;
 
 function createGridBoard<TIntersection extends Intersection>(
   config: GridBoardConfig,

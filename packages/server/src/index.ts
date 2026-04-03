@@ -13,11 +13,7 @@ import { connectToDb, getDb } from "./db";
 import passport from "passport";
 import { Strategy as CustomStrategy } from "passport-custom";
 import { Strategy as LocalStrategy } from "passport-local";
-import {
-  ConfigError,
-  SITE_NAME,
-  UserResponse,
-} from "@ogfcommunity/variants-shared";
+import { SITE_NAME, UserResponse } from "@ogfcommunity/variants-shared";
 import { router as apiRouter } from "./api";
 import { getGame } from "./games";
 import * as socket_io from "./socket_io";
@@ -184,12 +180,7 @@ app.use(
     if (res.headersSent) {
       return next(err);
     }
-    const status =
-      err instanceof HttpError
-        ? err.status
-        : err instanceof ConfigError
-          ? 400
-          : 500;
+    const status = err instanceof HttpError ? err.status : 500;
     const message = err instanceof Error ? err.message : String(err);
     console.error(err);
     res.status(status).json(message);

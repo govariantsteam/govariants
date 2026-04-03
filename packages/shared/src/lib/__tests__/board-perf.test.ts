@@ -6,13 +6,13 @@ import {
 import { Intersection } from "../abstractBoard/intersection";
 import { Color } from "../../variants/baduk";
 
-// Depth 8 = 29,526 intersections. With the old O(n²) indexOf this took ~400ms;
-// with the Map-based lookup it takes ~15ms. A 500ms budget catches regressions
-// without flaking on slow CI runners.
-test("sierpinski depth 8 board+graph creation completes under 500ms", () => {
+// Depth 7 = 9,843 intersections (under the 10K board cap). With the old O(n²)
+// indexOf this was slow; with the Map-based lookup it takes ~9ms. A 500ms
+// budget catches regressions without flaking on slow CI runners.
+test("sierpinski depth 7 board+graph creation completes under 500ms", () => {
   const start = performance.now();
   const intersections = createBoard(
-    { type: BoardPattern.Sierpinsky, size: 8 },
+    { type: BoardPattern.Sierpinsky, size: 7 },
     Intersection,
   );
   createGraph(intersections, Color.EMPTY);

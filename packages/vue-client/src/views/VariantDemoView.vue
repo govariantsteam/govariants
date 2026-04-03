@@ -22,9 +22,14 @@ const props = defineProps<{ variant: string }>();
 const view_round: Ref<number | null> = ref(null);
 
 const config = ref(getDefaultConfig(props.variant));
-const transformedGameData = computed(() =>
-  uiTransform(props.variant, config.value, game.value.state),
-);
+const transformedGameData = computed(() => {
+  if (!gameOrError.value.game) return null;
+  try {
+    return uiTransform(props.variant, config.value, gameOrError.value.game.state);
+  } catch {
+    return null;
+  }
+});
 const variantConfigForm = computed(() => config_form_map[props.variant]);
 const moves = reactive<Array<MovesType>>([]);
 const playing_as = ref<undefined | number>(undefined);
@@ -35,16 +40,28 @@ const setPlayingAs = (seat: number) => {
   }
   playing_as.value = seat;
 };
-const game = computed(() =>
-  getGame(
-    props.variant,
-    config.value,
-    moves,
-    view_round.value,
-    playing_as.value,
-  ),
-);
-const displayed_round = computed(() => view_round.value ?? moves.length);
+const gameOrError = computed(() => {
+  try {
+    return {
+      game: getGame(
+        props.variant,
+        config.value,
+        moves,
+        view_round.value,
+        playing_as.value,
+      ),
+      error: null,
+    };
+  } catch (e) {
+    return {
+      game: null,
+      error: e instanceof Error ? e.message : String(e),
+    };
+  }
+});
+const game = computed(() => gameOrError.value.game);
+const errorMessage = computed(() => gameOrError.value.error);
+const displayed_round = computed(() => view_round.value ?? game.value?.round ?? 0);
 
 function cloneConfig(config: object): object {
   // here we use this on a vue proxy object,
@@ -85,11 +102,14 @@ function getGame(
   };
 }
 
-const specialMoves = computed(() =>
-  !props.variant || !config.value
-    ? {}
-    : makeGameObject(props.variant, cloneConfig(config.value)).specialMoves(),
-);
+const specialMoves = computed(() => {
+  if (!props.variant || !config.value || !game.value) return {};
+  try {
+    return makeGameObject(props.variant, cloneConfig(config.value)).specialMoves();
+  } catch {
+    return {};
+  }
+});
 const variantGameView = computed(() => getPlayingTable(props.variant));
 const variantDescriptionShort = computed(() => getDescription(props.variant));
 
@@ -137,7 +157,7 @@ function onConfigChange(c: object) {
 watch(
   moves,
   () => {
-    if (game.value.next_to_play.length === 1) {
+    if (game.value && game.value.next_to_play.length === 1) {
       playing_as.value = game.value.next_to_play[0];
     }
   },
@@ -148,16 +168,17 @@ watch(
 <template>
   <div class="grid-page-layout">
     <div>
+      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
       <component
         :is="variantGameView"
-        v-if="variantGameView && game.state"
+        v-if="variantGameView && game && transformedGameData"
         :gamestate="transformedGameData.gamestate"
         :config="transformedGameData.config"
         :displayed_round="displayed_round"
         :next-to-play="game.next_to_play"
         @move="makeMove"
       />
-      <NavButtons v-model="view_round" :game-round="game.round" />
+      <NavButtons v-if="game" v-model="view_round" :game-round="game.round" />
 
       <div id="variant-info">
         <div>
@@ -174,14 +195,14 @@ watch(
       </div>
     </div>
     <div className="seat-list">
-      <div v-for="(_, idx) in game.numPlayers" :key="idx">
+      <div v-for="(_, idx) in game?.numPlayers" :key="idx">
         <SeatComponent
           :user_id="user?.id"
           :occupant="user || undefined"
           :player_n="idx"
           :selected="playing_as"
           :time_control="null"
-          :is_players_turn="game.next_to_play?.includes(idx) ?? false"
+          :is_players_turn="game?.next_to_play?.includes(idx) ?? false"
           :variant="variant"
           :config="config"
           @select="setPlayingAs(idx)"
@@ -198,7 +219,7 @@ watch(
         </button>
       </div>
 
-      <PlayersToMove :next-to-play="game.next_to_play" />
+      <PlayersToMove v-if="game" :next-to-play="game.next_to_play" />
 
       <component
         :is="variantConfigForm"
@@ -207,7 +228,7 @@ watch(
       />
     </div>
 
-    <div v-if="game.result" style="font-weight: bold; font-size: 24pt">
+    <div v-if="game?.result" style="font-weight: bold; font-size: 24pt">
       Result: {{ game.result }}
     </div>
   </div>
@@ -233,5 +254,9 @@ watch(
   .info-attribute {
     white-space: pre-wrap;
   }
+}
+.error-message {
+  color: red;
+  font-weight: bold;
 }
 </style>

@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  ConfigError,
   makeGameObject,
   NotificationsResponse,
   groupBy,
@@ -104,8 +105,19 @@ router.post("/games", checkCSRFToken, async (req, res) => {
   }
 
   const user = req.user as User;
-  const game: GameResponse = await createGame(data.variant, data.config, user);
-  res.send(game);
+  try {
+    const game: GameResponse = await createGame(
+      data.variant,
+      data.config,
+      user,
+    );
+    res.send(game);
+  } catch (e) {
+    if (e instanceof ConfigError) {
+      throw new HttpError(400, e.message);
+    }
+    throw e;
+  }
 });
 
 router.post("/games/:gameId/move", checkCSRFToken, async (req, res) => {

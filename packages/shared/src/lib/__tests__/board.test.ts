@@ -73,34 +73,30 @@ test("allows boards under the limit", () => {
   expect(intersections.length).toBe(3282);
 });
 
-test("estimateNodeCount never undercounts", () => {
-  const configs: BoardConfig[] = [
-    { type: BoardPattern.Grid, width: 19, height: 19 },
-    { type: BoardPattern.Grid, width: 1, height: 1 },
-    { type: BoardPattern.Sierpinsky, size: 7 },
-    { type: BoardPattern.Sierpinsky, size: 3 },
-    { type: BoardPattern.Circular, rings: 5, nodesPerRing: 10 },
-    { type: BoardPattern.Cube, faceSize: 9 },
-    { type: BoardPattern.Cube, faceSize: 2 },
-    {
-      type: BoardPattern.Custom,
-      coordinates: [
-        [0, 0],
-        [1, 0],
-        [0, 1],
-      ],
-      adjacencyList: [[1, 2], [0], [0]],
-    },
-    { type: BoardPattern.Polygonal, size: 3 },
-    { type: BoardPattern.Polygonal, size: 7 },
-    { type: BoardPattern.Trihexagonal, size: 10 },
-    { type: BoardPattern.Sunflower, size: 3 },
-    { type: BoardPattern.Sunflower, size: 5 },
-  ];
-
-  for (const config of configs) {
-    const estimate = estimateNodeCount(config);
-    const actual = createBoard(config, Intersection).length;
-    expect(estimate).toBeGreaterThanOrEqual(actual);
-  }
+test.each<BoardConfig>([
+  { type: BoardPattern.Grid, width: 19, height: 19 },
+  { type: BoardPattern.Grid, width: 1, height: 1 },
+  { type: BoardPattern.Sierpinsky, size: 7 },
+  { type: BoardPattern.Sierpinsky, size: 3 },
+  { type: BoardPattern.Circular, rings: 5, nodesPerRing: 10 },
+  { type: BoardPattern.Cube, faceSize: 9 },
+  { type: BoardPattern.Cube, faceSize: 2 },
+  {
+    type: BoardPattern.Custom,
+    coordinates: [
+      [0, 0],
+      [1, 0],
+      [0, 1],
+    ],
+    adjacencyList: [[1, 2], [0], [0]],
+  },
+  { type: BoardPattern.Polygonal, size: 3 },
+  { type: BoardPattern.Polygonal, size: 7 },
+  { type: BoardPattern.Trihexagonal, size: 10 },
+  { type: BoardPattern.Sunflower, size: 3 },
+  { type: BoardPattern.Sunflower, size: 5 },
+])("estimateNodeCount >= actual for $type", (config) => {
+  const estimate = estimateNodeCount(config);
+  const actual = createBoard(config, Intersection).length;
+  expect(estimate).toBeGreaterThanOrEqual(actual);
 });

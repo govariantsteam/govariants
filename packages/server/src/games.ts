@@ -310,7 +310,7 @@ async function updateSeat(
   // If the seat is occupied by another player, throw an error.
   if (
     game.players?.[seat] != null &&
-    game.players[seat]!.id !== user.id &&
+    game.players[seat]?.id !== user.id &&
     // Admins may do as they please
     user.role !== "admin"
   ) {

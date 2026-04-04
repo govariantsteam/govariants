@@ -80,8 +80,10 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
     // mutates its input
     transition: (playerTimeControl: IPerPlayerTimeControlBase) => void,
   ): ITimeControlBase {
-    // Caller (handleMove) guarantees time_control is set
-    const timeControl = game.time_control!;
+    const timeControl = game.time_control;
+    if (!timeControl) {
+      throw new Error(`Missing time_control for game ${game.id}`);
+    }
     const playerData = timeControl.forPlayer[playerNr];
 
     timeControl.moveTimestamps.push(timestamp);

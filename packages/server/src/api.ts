@@ -414,15 +414,17 @@ router.get("/notifications", checkCSRFToken, async (req, res) => {
   const userNotifications = await getUserNotifications((req.user as User).id);
   const groups = groupBy(userNotifications, (n) => n.gameId);
   const gameIds = groups.map(([gameId, _]) => gameId);
-  const gameStates = (await getGamesById([...gameIds])).map((game) =>
-    tryComputeState(game, req.user as User),
+  const gameStateMap = new Map(
+    (await getGamesById([...gameIds])).map((game) => [
+      game.id,
+      tryComputeState(game, req.user as User),
+    ]),
   );
-  const combined: NotificationsResponse[] = groups.map(
-    ([gameId, notifications]) => ({
-      gameId: gameId,
-      notifications: notifications,
-      gameState: gameStates.find((x) => x.id === gameId)!,
-    }),
+  const combined: NotificationsResponse[] = groups.flatMap(
+    ([gameId, notifications]) => {
+      const gameState = gameStateMap.get(gameId);
+      return gameState ? [{ gameId, notifications, gameState }] : [];
+    },
   );
   res.send(combined);
 });

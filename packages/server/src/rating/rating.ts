@@ -23,8 +23,10 @@ export async function updateRatings(
 
   const glicko_outcome = getGlickoResult(game_obj.result[0]);
 
-  const player_black_id = game.players![0]!.id;
-  const player_white_id = game.players![1]!.id;
+  if (!game.players?.[0] || !game.players?.[1]) return;
+
+  const player_black_id = game.players[0].id;
+  const player_white_id = game.players[1].id;
 
   const db_player_black = await getUser(player_black_id);
   const db_player_white = await getUser(player_white_id);

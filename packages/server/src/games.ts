@@ -79,8 +79,7 @@ export async function getGames(
 
 export async function getGamesWithTimeControl(): Promise<GameResponse[]> {
   const db_games = await gamesCollection()
-    // MongoDB driver can't type $ne:null on optional fields
-    .find({ time_control: { $ne: null } } as unknown as Filter<GameSchema>)
+    .find({ time_control: { $exists: true } })
     .toArray();
   return hydrateGames(db_games);
 }

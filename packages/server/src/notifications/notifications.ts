@@ -60,8 +60,8 @@ export async function getUserNotificationsCount(
 async function addGameNotification(
   recipientIds: string[],
   gameNotification: GameNotification,
-): Promise<UpdateResult<UserNotifications>> {
-  if (!recipientIds.length) return;
+): Promise<UpdateResult<UserNotifications> | undefined> {
+  if (!recipientIds.length) return undefined;
 
   return await notifications().updateMany(
     { userId: { $in: recipientIds } },
@@ -75,8 +75,8 @@ async function deleteGameNotifications(
   userIds: string[],
   gameId: string,
   types: NotificationType[],
-): Promise<UpdateResult<UserNotifications>> {
-  if (!userIds.length || !types.length) return;
+): Promise<UpdateResult<UserNotifications> | undefined> {
+  if (!userIds.length || !types.length) return undefined;
 
   return await notifications().updateMany(
     { userId: { $in: userIds } },
@@ -158,7 +158,7 @@ export async function notifyOfSeatChange(
   const newNotification: GameNotification = {
     gameId: gameId,
     type: Notifications.seatChange,
-    params: { seat: seat, user: user, didTakeSeat: didTakeSeat },
+    params: { seat: seat, user: user ?? "", didTakeSeat: didTakeSeat },
     read: false,
   };
   await addGameNotification(

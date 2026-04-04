@@ -47,7 +47,8 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
 
     // mutates its input
     const transition = makeTransition(
-      (playerData) => timestamp.getTime() - playerData.onThePlaySince.getTime(),
+      (playerData) =>
+        timestamp.getTime() - playerData.onThePlaySince!.getTime(),
       config,
       game.id,
     );
@@ -79,7 +80,8 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
     // mutates its input
     transition: (playerTimeControl: IPerPlayerTimeControlBase) => void,
   ): ITimeControlBase {
-    const timeControl = game.time_control;
+    // Caller (handleMove) guarantees time_control is set
+    const timeControl = game.time_control!;
     const playerData = timeControl.forPlayer[playerNr];
 
     timeControl.moveTimestamps.push(timestamp);
@@ -99,11 +101,10 @@ export class TimeHandlerSequentialMoves implements ITimeHandler {
       );
     nextPlayers.forEach((player) => {
       timeControl.forPlayer[player].onThePlaySince = timestamp;
-      this._timeoutService.scheduleTimeout(
-        game.id,
-        player,
-        this.getMsUntilTimeout(game, player),
-      );
+      const ms = this.getMsUntilTimeout(game, player);
+      if (ms != null) {
+        this._timeoutService.scheduleTimeout(game.id, player, ms);
+      }
     });
 
     return timeControl;

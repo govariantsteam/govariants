@@ -79,7 +79,7 @@ export async function getGames(
 
 export async function getGamesWithTimeControl(): Promise<GameResponse[]> {
   const db_games = await gamesCollection()
-    .find({ time_control: { $ne: null } })
+    .find({ time_control: { $ne: null } } as unknown as Filter<GameSchema>)
     .toArray();
   return hydrateGames(db_games);
 }
@@ -124,7 +124,7 @@ export async function createGame(
     variant: variant,
     moves: [] as MovesType[],
     config: config,
-    time_control: GetInitialTimeControl(variant, config),
+    time_control: GetInitialTimeControl(variant, config) ?? undefined,
     players: new Array(gameObj.numPlayers()).fill(null),
     creator: creator,
   };
@@ -228,7 +228,7 @@ export async function handleMoveAndTime(
 
   if (
     game_obj.phase === "gameover" &&
-    game.players.length === 2 &&
+    game.players?.length === 2 &&
     supportsRatings(game.variant)
   ) {
     await updateRatings(game, game_obj);
@@ -237,13 +237,13 @@ export async function handleMoveAndTime(
   if (isRoundTransition) {
     const userIdsOnThePlay = game_obj
       .nextToPlay()
-      .map((index) => game.players[index]?.id)
+      .map((index) => game.players?.[index]?.id)
       .filter((x) => !!x);
     notifyOfNewRound(
       game.subscriptions ?? {},
       game.id,
       game_obj.round,
-      userIdsOnThePlay,
+      userIdsOnThePlay as string[],
     ).catch(console.error);
   }
 
@@ -260,7 +260,7 @@ function emitGame(
   game_id: string,
   num_players: number,
   game_obj: AbstractGame,
-  time_control: ITimeControlBase,
+  time_control: ITimeControlBase | undefined,
 ): void {
   const next_to_play = game_obj.nextToPlay();
   const specialMoves = game_obj.specialMoves();
@@ -268,7 +268,7 @@ function emitGame(
   io()
     .to(gameTopic(game_id))
     .emit("move", {
-      state: game_obj.exportState(null),
+      state: game_obj.exportState(undefined),
       round: game_obj.round,
       next_to_play: next_to_play,
       special_moves: specialMoves,
@@ -279,7 +279,7 @@ function emitGame(
 
   for (let seat = 0; seat < num_players; seat++) {
     const gameStateResponse: GameStateResponse = {
-      state: game_obj.exportState(seat),
+      state: game_obj.exportState(seat ?? undefined),
       round: game_obj.round,
       next_to_play: next_to_play,
       special_moves: specialMoves,
@@ -309,8 +309,8 @@ async function updateSeat(
 
   // If the seat is occupied by another player, throw an error.
   if (
-    game.players[seat] != null &&
-    game.players[seat].id !== user.id &&
+    game.players?.[seat] != null &&
+    game.players[seat]!.id !== user.id &&
     // Admins may do as they please
     user.role !== "admin"
   ) {
@@ -379,7 +379,7 @@ export function getGameState(
   }
 
   return {
-    state: game_obj.exportState(seat),
+    state: game_obj.exportState(seat ?? undefined),
     round: game_obj.round,
     next_to_play: game_obj.nextToPlay(),
     special_moves: game_obj.specialMoves(),
@@ -458,12 +458,13 @@ async function hydrateGames(
   const usersMap = await getUsersByIds(allPlayerIds);
 
   return db_games.map((db_game) => {
-    const config = sanitizeConfig(db_game.variant, db_game.config);
+    const config =
+      sanitizeConfig(db_game.variant, db_game.config) ?? db_game.config;
     return {
       id: db_game._id.toString(),
       variant: db_game.variant,
       moves: db_game.moves,
-      config,
+      config: config as GameResponse["config"],
       players: db_game.players?.map((p) =>
         p ? (usersMap.get(p) ?? { id: p }) : undefined,
       ),
@@ -495,7 +496,7 @@ export function tryComputeState(
     const errorDto: GameErrorResponse = {
       id: game.id,
       variant: game.variant,
-      errorMessage: e.message,
+      errorMessage: e instanceof Error ? e.message : String(e),
     };
     return errorDto;
   }

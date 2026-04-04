@@ -158,7 +158,7 @@ export async function notifyOfSeatChange(
   const newNotification: GameNotification = {
     gameId: gameId,
     type: Notifications.seatChange,
-    params: { seat: seat, user: user ?? "", didTakeSeat: didTakeSeat },
+    params: { seat: seat, user: user, didTakeSeat: didTakeSeat },
     read: false,
   };
   await addGameNotification(

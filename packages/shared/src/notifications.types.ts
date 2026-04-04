@@ -34,6 +34,6 @@ export type GameNotification =
   | {
       gameId: string;
       type: typeof Notifications.seatChange;
-      params: { seat: number; user: string; didTakeSeat: boolean };
+      params: { seat: number; user: string | undefined; didTakeSeat: boolean };
       read: boolean;
     };

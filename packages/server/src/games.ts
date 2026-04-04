@@ -79,6 +79,7 @@ export async function getGames(
 
 export async function getGamesWithTimeControl(): Promise<GameResponse[]> {
   const db_games = await gamesCollection()
+    // MongoDB driver can't type $ne:null on optional fields
     .find({ time_control: { $ne: null } } as unknown as Filter<GameSchema>)
     .toArray();
   return hydrateGames(db_games);
@@ -238,12 +239,12 @@ export async function handleMoveAndTime(
     const userIdsOnThePlay = game_obj
       .nextToPlay()
       .map((index) => game.players?.[index]?.id)
-      .filter((x) => !!x);
+      .filter((x): x is string => !!x);
     notifyOfNewRound(
       game.subscriptions ?? {},
       game.id,
       game_obj.round,
-      userIdsOnThePlay as string[],
+      userIdsOnThePlay,
     ).catch(console.error);
   }
 

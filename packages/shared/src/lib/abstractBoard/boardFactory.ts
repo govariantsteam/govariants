@@ -89,10 +89,64 @@ export interface IntersectionConstructor<TIntersection extends Intersection> {
   new (vector: Vector2D): TIntersection;
 }
 
+/**
+ * Returns an upper bound on the number of intersections for a given config.
+ * Must be cheap (O(1)) and must never undercount.
+ */
+export function estimateNodeCount(config: BoardConfig): number {
+  switch (config.type) {
+    case BoardPattern.Grid:
+      return config.width * config.height;
+    case BoardPattern.Sierpinsky: {
+      // Exact: 3 + 3*(3^(depth+1) - 1)/2
+      const depth = config.size;
+      return 3 + (3 * (Math.pow(3, depth + 1) - 1)) / 2;
+    }
+    case BoardPattern.Circular:
+      return config.rings * config.nodesPerRing;
+    case BoardPattern.Cube: {
+      // Exact: 6s² - 12s + 8
+      const s = config.faceSize;
+      return 6 * s * s - 12 * s + 8;
+    }
+    case BoardPattern.Custom:
+      return config.coordinates.length;
+    case "gridWithHoles":
+      return config.bitmap.flat().filter((v) => v > 0).length;
+    case BoardPattern.Polygonal: {
+      // Upper bound: each tile has at most 18 intersections
+      const r = Math.floor((config.size - 1) / 2);
+      const tiles = 1 + 3 * r * (r + 1);
+      return tiles * 18;
+    }
+    case BoardPattern.Trihexagonal:
+      // Upper bound: full grid before filtering (~6/7 survive)
+      return config.size * config.size;
+    case BoardPattern.Sunflower: {
+      // Upper bound: hex count * 6 + triangle count * 3 (ignoring shared vertices)
+      const s = config.size;
+      const mid = Math.ceil(s / 2);
+      const smaller = Math.ceil((s + 1) / 2);
+      let hexCount = 0;
+      for (let i = 0; i <= s; i++) {
+        hexCount += smaller + mid - Math.abs(i - mid);
+      }
+      // Triangles ≈ 2× hexagons for interior tiles
+      return hexCount * 6 + hexCount * 2 * 3;
+    }
+  }
+}
+
 export function createBoard<TIntersection extends Intersection>(
   config: BoardConfig,
   intersectionConstructor: IntersectionConstructor<TIntersection>,
 ): TIntersection[] {
+  const estimate = estimateNodeCount(config);
+  if (estimate > MAX_BOARD_NODES) {
+    throw new Error(
+      `Board config too large: estimated ${estimate} intersections (max ${MAX_BOARD_NODES})`,
+    );
+  }
   let intersections: TIntersection[];
   switch (config.type) {
     case BoardPattern.Grid:
@@ -149,11 +203,6 @@ export function createBoard<TIntersection extends Intersection>(
         intersectionConstructor,
       );
       break;
-  }
-  if (intersections.length > MAX_BOARD_NODES) {
-    throw new Error(
-      `Board too large: ${intersections.length} intersections (max ${MAX_BOARD_NODES})`,
-    );
   }
   return intersections;
 }

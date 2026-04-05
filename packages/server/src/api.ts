@@ -297,7 +297,7 @@ function make_auth_cb(
       generateCSRFToken(req);
       return res.json(user);
     });
-  }) as AuthenticateCallback;
+  }) as AuthenticateCallback; // Cast needed: we narrow passport's `any` params to stricter types
 }
 
 router.post("/login", (req, res, next) => {
@@ -420,12 +420,14 @@ router.get("/notifications", checkCSRFToken, async (req, res) => {
       tryComputeState(game, req.user as User),
     ]),
   );
-  const combined: NotificationsResponse[] = groups.flatMap(
-    ([gameId, notifications]) => {
-      const gameState = gameStateMap.get(gameId);
-      return gameState ? [{ gameId, notifications, gameState }] : [];
-    },
-  );
+  const combined: NotificationsResponse[] = groups
+    .filter(([gameId]) => gameStateMap.has(gameId))
+    .map(([gameId, notifications]) => ({
+      gameId,
+      notifications,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      gameState: gameStateMap.get(gameId)!,
+    }));
   res.send(combined);
 });
 

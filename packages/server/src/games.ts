@@ -40,7 +40,7 @@ export type GameSchema = {
   moves: MovesType[];
   config: object;
   /** Stored as user ID strings in the database. Hydrated to User objects on read. */
-  players?: Array<string | null>;
+  players: Array<string | null>;
   time_control?: ITimeControlBase;
   creator?: User;
   subscriptions?: GameSubscriptions;
@@ -139,7 +139,7 @@ export async function createGame(
     id: result.insertedId.toString(),
     ...game,
     // TODO: align null/undefined — GameSchema uses null, GameResponse uses undefined
-    players: game.players?.map((): User | undefined => undefined),
+    players: game.players.map((): User | undefined => undefined),
   };
 }
 
@@ -224,11 +224,11 @@ export async function handleMoveAndTime(
 
   game.moves.push(moves);
 
-  emitGame(game.id, game.players?.length ?? 0, game_obj, timeControl);
+  emitGame(game.id, game.players.length, game_obj, timeControl);
 
   if (
     game_obj.phase === "gameover" &&
-    game.players?.length === 2 &&
+    game.players.length === 2 &&
     supportsRatings(game.variant)
   ) {
     await updateRatings(game, game_obj);
@@ -237,7 +237,7 @@ export async function handleMoveAndTime(
   if (isRoundTransition) {
     const userIdsOnThePlay = game_obj
       .nextToPlay()
-      .map((index) => game.players?.[index]?.id)
+      .map((index) => game.players[index]?.id)
       .filter((x): x is string => !!x);
     notifyOfNewRound(
       game.subscriptions ?? {},
@@ -279,7 +279,7 @@ function emitGame(
 
   for (let seat = 0; seat < num_players; seat++) {
     const gameStateResponse: GameStateResponse = {
-      state: game_obj.exportState(seat ?? undefined),
+      state: game_obj.exportState(seat),
       round: game_obj.round,
       next_to_play: next_to_play,
       special_moves: specialMoves,
@@ -309,8 +309,8 @@ async function updateSeat(
 
   // If the seat is occupied by another player, throw an error.
   if (
-    game.players?.[seat] != null &&
-    game.players[seat]?.id !== user.id &&
+    game.players[seat] != null &&
+    game.players[seat].id !== user.id &&
     // Admins may do as they please
     user.role !== "admin"
   ) {
@@ -450,7 +450,7 @@ async function hydrateGames(
   // Collect all player IDs across all games
   const allPlayerIds: string[] = [];
   for (const game of db_games) {
-    for (const p of game.players ?? []) {
+    for (const p of game.players) {
       if (p) allPlayerIds.push(p);
     }
   }
@@ -458,14 +458,13 @@ async function hydrateGames(
   const usersMap = await getUsersByIds(allPlayerIds);
 
   return db_games.map((db_game) => {
-    const config =
-      sanitizeConfig(db_game.variant, db_game.config) ?? db_game.config;
+    const config = sanitizeConfig(db_game.variant, db_game.config);
     return {
       id: db_game._id.toString(),
       variant: db_game.variant,
       moves: db_game.moves,
       config: config as GameResponse["config"],
-      players: db_game.players?.map((p) =>
+      players: db_game.players.map((p) =>
         p ? (usersMap.get(p) ?? { id: p }) : undefined,
       ),
       time_control: db_game.time_control,

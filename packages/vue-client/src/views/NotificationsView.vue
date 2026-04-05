@@ -26,7 +26,7 @@ library.add(faCircleCheck, faTrash, faGear, faBell);
 const notificationGroups: Ref<NotificationsResponse[] | null> = ref(null);
 const store = useStore();
 const user = useCurrentUser();
-const isDialogOpen = ref(false);
+const idOfOpenDialog = ref("");
 
 effect(() =>
   setNotificationsCount(
@@ -130,7 +130,7 @@ async function clear(gameId: string): Promise<unknown> {
         <button
           class="icon-button grey-color"
           :disabled="!user"
-          @click="isDialogOpen = true"
+          @click="idOfOpenDialog = gameId"
         >
           <FontAwesomeIcon icon="fa-solid fa-gear" />
         </button>
@@ -138,8 +138,8 @@ async function clear(gameId: string): Promise<unknown> {
           v-if="!isErrorResult(gameState)"
           :game-id="gameId"
           :subscription="gameState.subscription ?? []"
-          :is-open="isDialogOpen"
-          @close="isDialogOpen = false"
+          :is-open="gameId === idOfOpenDialog"
+          @close="idOfOpenDialog = ''"
         />
       </div>
     </div>

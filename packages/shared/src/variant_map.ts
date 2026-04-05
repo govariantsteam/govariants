@@ -76,10 +76,7 @@ export function getDefaultConfig(variant: string): object {
   return variant_map[variant]?.defaultConfig();
 }
 
-export function sanitizeConfig(
-  variant: string,
-  config: object,
-): object | undefined {
+export function sanitizeConfig(variant: string, config: object): object {
   const sanitize = variant_map[variant]?.sanitizeConfig;
   if (sanitize == null) {
     return config;

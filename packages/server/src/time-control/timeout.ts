@@ -58,7 +58,9 @@ export class TimeoutService implements ITimeoutService {
 
         for (const playerNr of playersWithTimeout) {
           const t = timeHandler.getMsUntilTimeout(game, playerNr);
-          this.scheduleTimeout(game.id, playerNr, t);
+          if (t != null) {
+            this.scheduleTimeout(game.id, playerNr, t);
+          }
         }
       } catch (error) {
         console.error(error);
@@ -126,6 +128,9 @@ export class TimeoutService implements ITimeoutService {
 
       try {
         const clock = timeControlMap.get(game.config.time_control!.type);
+        if (!clock) {
+          throw new Error(`Invalid time control type in game ${gameId}`);
+        }
         game.time_control!.forPlayer[playerNr].clockState = nullTimeState(
           clock,
           game.config.time_control!,

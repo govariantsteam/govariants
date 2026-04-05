@@ -23,7 +23,7 @@ const mainTimeMs: keyof ITimeControlConfig = "mainTimeMS";
 export function ValidateTimeControlConfig(
   time_control_config: unknown,
 ): time_control_config is ITimeControlConfig {
-  return (
+  return !!(
     time_control_config &&
     typeof time_control_config === "object" &&
     "type" in time_control_config &&
@@ -54,7 +54,7 @@ const forplayer: keyof ITimeControlBase = "forPlayer";
 export function ValidateTimeControlBase(
   time_control: unknown,
 ): time_control is ITimeControlBase {
-  return (
+  return !!(
     time_control &&
     typeof time_control === "object" &&
     moveTimestamps in time_control &&
@@ -130,5 +130,5 @@ export interface ITimeHandler {
    * times out, provided no moves are played.
    * Should only be called on a game with a time control config.
    */
-  getMsUntilTimeout(game: GameResponse, playerNr: number): number;
+  getMsUntilTimeout(game: GameResponse, playerNr: number): number | null;
 }

@@ -67,8 +67,8 @@ passport.use(
   }),
 );
 
-passport.serializeUser<string>(function (user: UserResponse, callback) {
-  callback(null, user.id);
+passport.serializeUser<string>(function (user, callback) {
+  callback(null, (user as UserResponse).id);
 });
 
 passport.deserializeUser<string>(function (id, callback) {

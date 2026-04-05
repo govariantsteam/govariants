@@ -65,16 +65,17 @@ router.get("/game/:gameId/sgf", async (req, res) => {
     game_obj.playMove(player, move);
   });
 
-  if (game_obj.getSGF() === "") {
+  const sgf = game_obj.getSGF?.();
+  if (!sgf || sgf === "") {
     throw new Error(`SGF not supported for variant ${game.variant}`);
-  } else if (game_obj.getSGF() === "non-rectangular") {
+  } else if (sgf === "non-rectangular") {
     throw new Error("SGF for non rectangular boards is not possible");
   } else {
     res.set({
       "Content-Disposition": `attachment; filename="game_${req.params.gameId}.sgf"`,
     });
     res.set("Content-Type", "text/plain");
-    res.send(game_obj.getSGF());
+    res.send(sgf);
   }
 });
 
@@ -129,9 +130,13 @@ router.post("/games/:gameId/move", checkCSRFToken, async (req, res) => {
 
 router.post("/games/:gameId/sit/:seat", checkCSRFToken, async (req, res) => {
   const user = req.user as UserResponse | undefined;
+  if (!user) {
+    res.status(401).json("You must be logged in to take a seat.");
+    return;
+  }
 
   try {
-    const players: User[] = await takeSeat(
+    const players = await takeSeat(
       req.params.gameId,
       Number(req.params.seat),
       user,
@@ -146,8 +151,12 @@ router.post("/games/:gameId/sit/:seat", checkCSRFToken, async (req, res) => {
 
 router.post("/games/:gameId/leave/:seat", checkCSRFToken, async (req, res) => {
   const user = req.user as UserResponse | undefined;
+  if (!user) {
+    res.status(401).json("You must be logged in to leave a seat.");
+    return;
+  }
 
-  const players: User[] = await leaveSeat(
+  const players = await leaveSeat(
     req.params.gameId,
     Number(req.params.seat),
     user,
@@ -188,6 +197,10 @@ router.put("/users/:userId/role", checkCSRFToken, async (req, res) => {
   }
 
   const userToUpdate = await getUser(req.params.userId);
+  if (!userToUpdate) {
+    res.status(404).json("User not found");
+    return;
+  }
 
   if (userToUpdate.login_type !== "persistent") {
     throw new Error(
@@ -236,6 +249,10 @@ router.put("/users/:userId/email", checkCSRFToken, async (req, res) => {
   }
 
   const userToUpdate = await getUser(req.params.userId);
+  if (!userToUpdate) {
+    res.status(404).json("User not found");
+    return;
+  }
 
   if (userToUpdate.login_type !== "persistent") {
     throw new Error(
@@ -272,12 +289,16 @@ function make_auth_cb(
   req: express.Request,
   res: express.Response,
 ): AuthenticateCallback {
-  return (err: Error, user?: Express.User, info?: { message: string }) => {
+  return ((
+    err: Error | null,
+    user?: Express.User | false | null,
+    info?: { message: string },
+  ) => {
     if (err) {
       return res.status(500).json(err.message);
     }
     if (!user) {
-      return res.status(500).json(info.message);
+      return res.status(500).json(info?.message ?? "Authentication failed");
     }
 
     req.logIn(user, function (err) {
@@ -288,7 +309,7 @@ function make_auth_cb(
       generateCSRFToken(req);
       return res.json(user);
     });
-  };
+  }) as AuthenticateCallback; // Cast needed: we narrow passport's `any` params to stricter types
 }
 
 router.post("/login", (req, res, next) => {
@@ -405,16 +426,20 @@ router.get("/notifications", checkCSRFToken, async (req, res) => {
   const userNotifications = await getUserNotifications((req.user as User).id);
   const groups = groupBy(userNotifications, (n) => n.gameId);
   const gameIds = groups.map(([gameId, _]) => gameId);
-  const gameStates = (await getGamesById([...gameIds])).map((game) =>
-    tryComputeState(game, req.user as User),
+  const gameStateMap = new Map(
+    (await getGamesById([...gameIds])).map((game) => [
+      game.id,
+      tryComputeState(game, req.user as User),
+    ]),
   );
-  const combined: NotificationsResponse[] = groups.map(
-    ([gameId, notifications]) => ({
-      gameId: gameId,
-      notifications: notifications,
-      gameState: gameStates.find((x) => x.id === gameId),
-    }),
-  );
+  const combined: NotificationsResponse[] = groups
+    .filter(([gameId]) => gameStateMap.has(gameId))
+    .map(([gameId, notifications]) => ({
+      gameId,
+      notifications,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      gameState: gameStateMap.get(gameId)!,
+    }));
   res.send(combined);
 });
 

@@ -29,7 +29,7 @@ export interface GameResponse {
   variant: string;
   moves: MovesType[];
   config: { time_control?: ITimeControlConfig };
-  players?: Array<User | undefined>;
+  players: Array<User | undefined>;
   time_control?: ITimeControlBase;
   creator?: User;
   subscriptions?: GameSubscriptions;

@@ -1,7 +1,7 @@
 import { Collection, MongoClient } from "mongodb";
 import { UserNotifications } from "./notifications/notifications.types";
 
-let client: MongoClient = undefined;
+let client: MongoClient | undefined;
 
 export async function connectToDb() {
   const ATLAS_URI = process.env.ATLAS_URI || "mongodb://127.0.0.1:27017";

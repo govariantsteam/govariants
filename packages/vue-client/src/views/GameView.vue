@@ -26,11 +26,11 @@ import PlayersToMove from "@/components/GameView/PlayersToMove.vue";
 import DownloadSGF from "@/components/GameView/DownloadSGF.vue";
 import { getPlayingTable } from "@/playing_table_map";
 import Swal from "sweetalert2";
-import SubscriptionDialog from "@/components/GameView/SubscriptionDialog.vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faBell } from "@fortawesome/free-solid-svg-icons";
 import { toUpperCaseFirstLetter } from "@/utils/format-utils";
+import { openSubscriptionDialog } from "@/components/GameView/SubscriptionDialog";
 
 library.add(faBell);
 
@@ -72,7 +72,6 @@ const adminMode = ref<boolean>(false);
 const errorOccured = ref<boolean>(false);
 const creator = ref<User | undefined>();
 const subscription = ref<NotificationType[]>([]);
-const isDialogOpen = ref(false);
 
 const userEnabledImmediateSubmit = ref(false);
 const doesVariantSupportsMovePreview = computed(() => {
@@ -344,16 +343,15 @@ async function repairGame(): Promise<void> {
           <button
             class="icon-button subscribe-button"
             :disabled="!user"
-            @click="isDialogOpen = true"
+            @click="
+              openSubscriptionDialog({
+                gameId: props.gameId,
+                subscription: subscription,
+              }).then((result) => (subscription = [...result]))
+            "
           >
             <FontAwesomeIcon icon="fa-solid fa-bell" />
           </button>
-          <SubscriptionDialog
-            :game-id="props.gameId"
-            :subscription="subscription"
-            :is-open="isDialogOpen"
-            @close="isDialogOpen = false"
-          />
         </div>
         <div className="seat-list">
           <div v-for="(player, idx) in players" :key="idx">

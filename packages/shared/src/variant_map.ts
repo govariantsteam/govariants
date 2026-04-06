@@ -46,7 +46,7 @@ const variant_map: {
   rengo: rengoVariant,
 };
 
-class ConfigError extends Error {
+export class ConfigError extends Error {
   constructor(message: string) {
     super(message);
     this.name = "ConfigError";

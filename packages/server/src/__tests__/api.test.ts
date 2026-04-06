@@ -8,6 +8,7 @@ import {
   getTestClient,
 } from "./helpers/setup";
 import { UserResponse } from "@ogfcommunity/variants-shared";
+import { HttpError } from "../http-error";
 
 // Mock modules BEFORE importing api - this prevents the real index.ts from loading
 vi.mock("../socket_io");
@@ -134,17 +135,18 @@ function createTestApp(options: CreateTestAppOptions = {}): Express {
 
   testApp.use("/api", apiRouter);
 
-  // Error handling middleware - catches double response errors
+  // Error handling middleware - mirrors the centralized handler in index.ts
   testApp.use(
     (
-      err: Error,
+      err: unknown,
       _req: express.Request,
       res: express.Response,
       _next: express.NextFunction,
     ) => {
-      // Silently handle errors in tests - the 500 response is sufficient for assertions
       if (!res.headersSent) {
-        res.status(500).json({ error: err.message });
+        const status = err instanceof HttpError ? err.status : 500;
+        const message = err instanceof Error ? err.message : String(err);
+        res.status(status).json(message);
       }
     },
   );
@@ -212,6 +214,27 @@ describe("API Endpoints", () => {
         .expect(401);
 
       expect(response.body).toContain("register an account");
+    });
+
+    it("returns 400 for invalid config", async () => {
+      const db = await getTestDb();
+      const userResult = await db.collection("users").insertOne(makeTestUser());
+
+      const authApp = createTestApp({
+        mockUser: {
+          id: userResult.insertedId.toString(),
+          username: "testuser",
+          login_type: "persistent",
+        },
+      });
+
+      const response = await request(authApp)
+        .post("/api/games")
+        .set("CSRF-Token", "test-csrf-token")
+        .send({ variant: "baduk", config: { width: -1, height: -1, komi: 0 } })
+        .expect(400);
+
+      expect(response.body).toContain("baduk");
     });
 
     it("creates a game for authenticated users", async () => {
@@ -330,7 +353,7 @@ describe("API Endpoints", () => {
       await request(appB)
         .post(`/api/games/${gameId}/sit/0`)
         .set("CSRF-Token", "test-csrf-token")
-        .expect(500);
+        .expect(409);
 
       expect(mockSocketsLeave).not.toHaveBeenCalled();
     });

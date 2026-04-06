@@ -1,8 +1,10 @@
 import { Color } from "../../variants/baduk";
 import {
   BoardPattern,
+  BoardConfig,
   createBoard,
   createGraph,
+  estimateNodeCount,
 } from "../abstractBoard/boardFactory";
 import { Intersection } from "../abstractBoard/intersection";
 
@@ -53,4 +55,48 @@ test("create custom board", () => {
 
   expect(intersections[0].position).toEqual({ X: 0, Y: 0 });
   expect(intersections[0].neighbours).toHaveLength(2);
+});
+
+test("rejects boards exceeding max node limit", () => {
+  // Sierpinski depth 8 = 29,526 intersections, well over the 10K cap
+  expect(() =>
+    createBoard({ type: BoardPattern.Sierpinsky, size: 8 }, Intersection),
+  ).toThrow(/Board.*too large/);
+});
+
+test("allows boards under the limit", () => {
+  // Sierpinski depth 6 = 3,282 intersections
+  const intersections = createBoard(
+    { type: BoardPattern.Sierpinsky, size: 6 },
+    Intersection,
+  );
+  expect(intersections.length).toBe(3282);
+});
+
+test.each<BoardConfig>([
+  { type: BoardPattern.Grid, width: 19, height: 19 },
+  { type: BoardPattern.Grid, width: 1, height: 1 },
+  { type: BoardPattern.Sierpinsky, size: 7 },
+  { type: BoardPattern.Sierpinsky, size: 3 },
+  { type: BoardPattern.Circular, rings: 5, nodesPerRing: 10 },
+  { type: BoardPattern.Cube, faceSize: 9 },
+  { type: BoardPattern.Cube, faceSize: 2 },
+  {
+    type: BoardPattern.Custom,
+    coordinates: [
+      [0, 0],
+      [1, 0],
+      [0, 1],
+    ],
+    adjacencyList: [[1, 2], [0], [0]],
+  },
+  { type: BoardPattern.Polygonal, size: 3 },
+  { type: BoardPattern.Polygonal, size: 7 },
+  { type: BoardPattern.Trihexagonal, size: 10 },
+  { type: BoardPattern.Sunflower, size: 3 },
+  { type: BoardPattern.Sunflower, size: 5 },
+])("estimateNodeCount >= actual for $type", (config) => {
+  const estimate = estimateNodeCount(config);
+  const actual = createBoard(config, Intersection).length;
+  expect(estimate).toBeGreaterThanOrEqual(actual);
 });

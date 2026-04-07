@@ -19,14 +19,13 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import GameListItem from "@/components/GameListItem.vue";
 import GameListItemFallback from "@/components/GameListItemFallback.vue";
-import SubscriptionDialog from "@/components/GameView/SubscriptionDialog.vue";
+import { openSubscriptionDialog } from "@/components/GameView/SubscriptionDialog";
 
 library.add(faCircleCheck, faTrash, faGear, faBell);
 
 const notificationGroups: Ref<NotificationsResponse[] | null> = ref(null);
 const store = useStore();
 const user = useCurrentUser();
-const isDialogOpen = ref(false);
 
 effect(() =>
   setNotificationsCount(
@@ -128,19 +127,18 @@ async function clear(gameId: string): Promise<unknown> {
           <FontAwesomeIcon icon="fa-solid fa-trash" />
         </button>
         <button
+          v-if="!isErrorResult(gameState)"
           class="icon-button grey-color"
           :disabled="!user"
-          @click="isDialogOpen = true"
+          @click="
+            openSubscriptionDialog({
+              gameId: gameId,
+              subscription: gameState.subscription ?? [],
+            }).then(load)
+          "
         >
           <FontAwesomeIcon icon="fa-solid fa-gear" />
         </button>
-        <SubscriptionDialog
-          v-if="!isErrorResult(gameState)"
-          :game-id="gameId"
-          :subscription="gameState.subscription ?? []"
-          :is-open="isDialogOpen"
-          @close="isDialogOpen = false"
-        />
       </div>
     </div>
     <p v-if="user === null">Please log in to view your users notifications.</p>

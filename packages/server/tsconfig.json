@@ -3,7 +3,7 @@
     "module": "node16",
     "esModuleInterop": true,
     "target": "es2022",
-    "noImplicitAny": true,
+    "strict": true,
     "moduleResolution": "node16",
     "sourceMap": true,
     "outDir": "dist",

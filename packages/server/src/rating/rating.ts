@@ -23,18 +23,21 @@ export async function updateRatings(
 
   const glicko_outcome = getGlickoResult(game_obj.result[0]);
 
+  if (!game.players[0] || !game.players[1]) return;
+
   const player_black_id = game.players[0].id;
   const player_white_id = game.players[1].id;
 
   const db_player_black = await getUser(player_black_id);
   const db_player_white = await getUser(player_white_id);
+  if (!db_player_black || !db_player_white) return;
 
   const glicko_player_black = getGlickoPlayer(
-    db_player_black.ranking[variant],
+    db_player_black.ranking?.[variant],
     ranking,
   );
   const glicko_player_white = getGlickoPlayer(
-    db_player_white.ranking[variant],
+    db_player_white.ranking?.[variant],
     ranking,
   );
 
@@ -70,7 +73,7 @@ export function getGlickoResult(game_result: string): number {
 }
 
 export function getGlickoPlayer(
-  db_player_ranking: UserRanking,
+  db_player_ranking: UserRanking | undefined,
   ranking: Glicko2,
 ): Player {
   if (db_player_ranking === undefined) {
@@ -95,7 +98,7 @@ export function applyPlayerRankingToUserResponse(
     vol: glicko_player.getVol(),
   };
 
-  const player_ranking = player.ranking;
+  const player_ranking = player.ranking ?? {};
   player_ranking[variant] = ranking;
   return player_ranking;
 }

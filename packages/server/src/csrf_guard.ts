@@ -47,7 +47,10 @@ export function checkCSRFToken(
     }
     next();
   } catch (e) {
-    res.status(500).json({ result: false, message: e.message });
+    res.status(500).json({
+      result: false,
+      message: e instanceof Error ? e.message : String(e),
+    });
     return;
   }
 }

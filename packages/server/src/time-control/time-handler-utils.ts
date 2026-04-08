@@ -76,10 +76,10 @@ export function getMsUntilTimeout(
   const clock = timeControlMap.get(config.type);
   if (clock === undefined) {
     console.error(`game with id ${game.id} has invalid time control type`);
-    return;
+    return null;
   }
 
-  const times: ITimeControlBase = game.time_control;
+  const times = game.time_control;
 
   if (times === undefined || times.forPlayer === undefined) {
     // old game with no moves

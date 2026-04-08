@@ -40,7 +40,7 @@ export type GameSchema = {
   moves: MovesType[];
   config: object;
   /** Stored as user ID strings in the database. Hydrated to User objects on read. */
-  players?: Array<string | null>;
+  players: Array<string | null>;
   time_control?: ITimeControlBase;
   creator?: User;
   subscriptions?: GameSubscriptions;
@@ -79,7 +79,7 @@ export async function getGames(
 
 export async function getGamesWithTimeControl(): Promise<GameResponse[]> {
   const db_games = await gamesCollection()
-    .find({ time_control: { $ne: null } })
+    .find({ time_control: { $exists: true } })
     .toArray();
   return hydrateGames(db_games);
 }
@@ -124,7 +124,7 @@ export async function createGame(
     variant: variant,
     moves: [] as MovesType[],
     config: config,
-    time_control: GetInitialTimeControl(variant, config),
+    time_control: GetInitialTimeControl(variant, config) ?? undefined,
     players: new Array(gameObj.numPlayers()).fill(null),
     creator: creator,
   };
@@ -139,7 +139,7 @@ export async function createGame(
     id: result.insertedId.toString(),
     ...game,
     // TODO: align null/undefined — GameSchema uses null, GameResponse uses undefined
-    players: game.players?.map((): User | undefined => undefined),
+    players: game.players.map((): User | undefined => undefined),
   };
 }
 
@@ -224,7 +224,7 @@ export async function handleMoveAndTime(
 
   game.moves.push(moves);
 
-  emitGame(game.id, game.players?.length ?? 0, game_obj, timeControl);
+  emitGame(game.id, game.players.length, game_obj, timeControl);
 
   if (
     game_obj.phase === "gameover" &&
@@ -238,7 +238,7 @@ export async function handleMoveAndTime(
     const userIdsOnThePlay = game_obj
       .nextToPlay()
       .map((index) => game.players[index]?.id)
-      .filter((x) => !!x);
+      .filter((x): x is string => !!x);
     notifyOfNewRound(
       game.subscriptions ?? {},
       game.id,
@@ -260,7 +260,7 @@ function emitGame(
   game_id: string,
   num_players: number,
   game_obj: AbstractGame,
-  time_control: ITimeControlBase,
+  time_control: ITimeControlBase | undefined,
 ): void {
   const next_to_play = game_obj.nextToPlay();
   const specialMoves = game_obj.specialMoves();
@@ -268,7 +268,7 @@ function emitGame(
   io()
     .to(gameTopic(game_id))
     .emit("move", {
-      state: game_obj.exportState(null),
+      state: game_obj.exportState(undefined),
       round: game_obj.round,
       next_to_play: next_to_play,
       special_moves: specialMoves,
@@ -379,7 +379,7 @@ export function getGameState(
   }
 
   return {
-    state: game_obj.exportState(seat),
+    state: game_obj.exportState(seat ?? undefined),
     round: game_obj.round,
     next_to_play: game_obj.nextToPlay(),
     special_moves: game_obj.specialMoves(),
@@ -450,7 +450,7 @@ async function hydrateGames(
   // Collect all player IDs across all games
   const allPlayerIds: string[] = [];
   for (const game of db_games) {
-    for (const p of game.players ?? []) {
+    for (const p of game.players) {
       if (p) allPlayerIds.push(p);
     }
   }
@@ -463,8 +463,8 @@ async function hydrateGames(
       id: db_game._id.toString(),
       variant: db_game.variant,
       moves: db_game.moves,
-      config,
-      players: db_game.players?.map((p) =>
+      config: config as GameResponse["config"],
+      players: db_game.players.map((p) =>
         p ? (usersMap.get(p) ?? { id: p }) : undefined,
       ),
       time_control: db_game.time_control,
@@ -495,7 +495,7 @@ export function tryComputeState(
     const errorDto: GameErrorResponse = {
       id: game.id,
       variant: game.variant,
-      errorMessage: e.message,
+      errorMessage: e instanceof Error ? e.message : String(e),
     };
     return errorDto;
   }

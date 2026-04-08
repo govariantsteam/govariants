@@ -58,8 +58,10 @@ export class TimeHandlerParallelMoves implements ITimeHandler {
 
     // mutates its input
     const transition = makeTransition<PerPlayerTimeControlParallel>(
+      // Non-null: transition is only called when both are set
       (playerData) =>
-        playerData.stagedMoveAt.getTime() - playerData.onThePlaySince.getTime(),
+        playerData.stagedMoveAt!.getTime() -
+        playerData.onThePlaySince!.getTime(),
       config,
       game.id,
     );
@@ -75,7 +77,7 @@ export class TimeHandlerParallelMoves implements ITimeHandler {
     );
   }
 
-  getMsUntilTimeout(game: GameResponse, playerNr: number): number {
+  getMsUntilTimeout(game: GameResponse, playerNr: number): number | null {
     if (
       (game.time_control as TimeControlParallel)?.forPlayer[playerNr]
         .stagedMoveAt !== null
@@ -108,6 +110,9 @@ export class TimeHandlerParallelMoves implements ITimeHandler {
     }
     const timeConfig = game.config.time_control;
     const clockController = timeControlMap.get(timeConfig.type);
+    if (!clockController) {
+      throw new Error(`Invalid time control type in game ${game.id}`);
+    }
 
     if (move === "resign" || move === "timeout") {
       playerData.onThePlaySince = null;
@@ -162,11 +167,10 @@ export class TimeHandlerParallelMoves implements ITimeHandler {
       nextPlayers.forEach((player) => {
         timeControl.forPlayer[player].onThePlaySince = timestamp;
 
-        this._timeoutService.scheduleTimeout(
-          game.id,
-          player,
-          this.getMsUntilTimeout(game, player),
-        );
+        const ms = this.getMsUntilTimeout(game, player);
+        if (ms != null) {
+          this._timeoutService.scheduleTimeout(game.id, player, ms);
+        }
       });
     }
 

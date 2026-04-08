@@ -44,10 +44,12 @@ function usersCollection(): Collection<DbUser> {
   return getDb().db().collection<DbUser>("users");
 }
 
-export async function getUserByName(username: string): Promise<PersistentUser> {
+export async function getUserByName(
+  username: string,
+): Promise<PersistentUser | undefined> {
   const db_user = (await usersCollection().findOne({
     username: { $eq: username },
-  })) as WithId<PersistentUser>;
+  })) as WithId<PersistentUser> | null;
 
   if (!db_user) {
     return undefined;
@@ -112,15 +114,15 @@ function comparePassword(
 ): Promise<boolean> {
   const regex =
     /^s\$N(\d+)\$r(\d+)\$p(\d+)\$([a-zA-Z0-9+/]+=?=?)\$([a-zA-Z0-9+/]+)(=?=?)$/;
-  const [match, NStr, rStr, pStr, saltString, keyString, keyPadding] =
-    passwordHash.match(regex);
+  const result = passwordHash.match(regex);
+  if (!result) throw new Error("Unexpected password hash format");
+  const [, NStr, rStr, pStr, saltString, keyString, keyPadding] = result;
 
   const [N, r, p] = [Number(NStr), Number(rStr), Number(pStr)];
   const saltBuffer = Buffer.from(saltString, "base64");
   const keyLength = Math.floor(keyString.length * 0.75);
 
   return new Promise((resolve, reject) => {
-    if (!match) reject("Unexpected password hash");
     scrypt(
       password,
       saltBuffer,
@@ -205,7 +207,9 @@ export async function getUsersByIds(
   return map;
 }
 
-export async function getUser(user_id: string): Promise<UserResponse> {
+export async function getUser(
+  user_id: string,
+): Promise<UserResponse | undefined> {
   const db_user = await usersCollection().findOne({
     _id: new ObjectId(user_id),
   });

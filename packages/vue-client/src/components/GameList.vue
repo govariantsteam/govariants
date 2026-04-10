@@ -1,46 +1,21 @@
 <script setup lang="ts">
-import { ref, computed, type Ref } from "vue";
-import { useFetch } from "@vueuse/core";
-import {
-  type GameErrorResponse,
-  type GameInitialResponse,
-  type GamesFilter,
-  gamesFilterToUrlParams,
-  isErrorResult,
-} from "@ogfcommunity/variants-shared";
+import { isErrorResult } from "@ogfcommunity/variants-shared";
 import GameListItem from "@/components/GameListItem.vue";
 import GameListItemFallback from "@/components/GameListItemFallback.vue";
 import GamesFilterForm from "@/components/GamesFilterForm.vue";
 import VErrorBoundary from "vue-error-boundary";
+import { gameListStore } from "@/stores/game-list-store";
+import { storeToRefs } from "pinia";
 
 const countOptions = [10, 15, 25, 50];
-const count = ref(countOptions[0]);
-const offset = ref(0);
-const filter: Ref<GamesFilter> = ref({});
-const url = computed(
-  () =>
-    `/api/games?count=${count.value ?? 0}&offset=${offset.value ?? 0}` +
-    gamesFilterToUrlParams(filter.value),
-);
-const { data: games } = await useFetch(url, { refetch: true })
-  .get()
-  .json<(GameInitialResponse | GameErrorResponse)[]>();
-const first = () => {
-  offset.value = 0;
-};
-const previous = () => {
-  offset.value = Math.max(0, offset.value - count.value);
-};
-const next = () => {
-  offset.value += count.value;
-};
-function setFilter(gamesFilter: GamesFilter) {
-  filter.value = gamesFilter;
-}
+
+const store = gameListStore();
+store.load();
+const games = storeToRefs(store).games;
 </script>
 
 <template>
-  <GamesFilterForm @filter-change="setFilter" />
+  <GamesFilterForm @filter-change="store.setFilter" />
   <hr />
   <ul>
     <template v-for="game in games" :key="game.id">
@@ -66,12 +41,26 @@ function setFilter(gamesFilter: GamesFilter) {
       </template>
     </template>
   </ul>
-  <button :disabled="offset === 0" @click="first()">First</button>
-  <button :disabled="offset === 0" @click="previous()">Previous</button>
-  <button :disabled="games?.length !== count" @click="next()">Next</button>
+  <button :disabled="store.pageNumber === 0" @click="store.firstPage()">
+    First
+  </button>
+  <button :disabled="store.pageNumber === 0" @click="store.previousPage()">
+    Previous
+  </button>
+  <button
+    :disabled="games?.length !== store.pageSize"
+    @click="store.nextPage()"
+  >
+    Next
+  </button>
   <label>
     Show:
-    <select v-model="count">
+    <select
+      @change="
+        ($event) =>
+          store.setPageSize(Number(($event.target as any)?.value ?? 0))
+      "
+    >
       <option v-for="option in countOptions" :key="option" :value="option">
         {{ option }}
       </option>

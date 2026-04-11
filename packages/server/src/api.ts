@@ -14,7 +14,6 @@ import {
   takeSeat,
   leaveSeat,
   getGameState,
-  repairGame,
   subscribeToGameNotifications,
   getGamesById,
   tryComputeState,
@@ -377,11 +376,6 @@ router.get("/games/:gameId/state", async (req, res) => {
 
   const stateResponse = getGameState(game, seat, round);
   res.send(stateResponse);
-});
-
-router.post("/game/:gameId/repair", checkCSRFToken, async (req, res) => {
-  await repairGame(req.params.gameId);
-  res.send({});
 });
 
 router.post("/admin/test-email", checkCSRFToken, async (req, res) => {

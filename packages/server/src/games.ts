@@ -389,31 +389,6 @@ export function getGameState(
   };
 }
 
-export async function repairGame(gameId: string): Promise<void> {
-  const game = await getGame(gameId);
-  const gameInstance = makeGameObject(game.variant, game.config);
-  const errorlessMoves: MovesType[] = [];
-  let errorOccured = false;
-
-  // play moves until an error occurred, if any
-  try {
-    game.moves.forEach((encoded_move) => {
-      const { player, move } = getOnlyMove(encoded_move);
-      gameInstance.playMove(player, move);
-      errorlessMoves.push(encoded_move);
-    });
-  } catch (_error) {
-    errorOccured = true;
-  }
-
-  if (errorOccured) {
-    await gamesCollection().updateOne(
-      { _id: new ObjectId(gameId) },
-      { $set: { moves: errorlessMoves } },
-    );
-  }
-}
-
 export async function subscribeToGameNotifications(
   gameId: string,
   userId: string,

@@ -11,10 +11,10 @@ test("Play a game", () => {
   game.playMove(0, "cb");
   game.playMove(1, "bb");
 
-  // check that gobal state is as expected
+  // spectators should see an empty board (no second-tab cheating)
   expect(game.exportState().board).toEqual([
-    [Color.EMPTY, Color.WHITE, Color.BLACK, Color.EMPTY],
-    [Color.EMPTY, Color.WHITE, Color.BLACK, Color.EMPTY],
+    [Color.EMPTY, Color.EMPTY, Color.EMPTY, Color.EMPTY],
+    [Color.EMPTY, Color.EMPTY, Color.EMPTY, Color.EMPTY],
   ]);
 
   // BLACK should not see WHITE
@@ -41,8 +41,8 @@ test("Play a game with captures", () => {
   game.playMove(1, "bb");
 
   expect(game.exportState().board).toEqual([
-    [Color.EMPTY, Color.WHITE],
-    [Color.EMPTY, Color.WHITE],
+    [Color.EMPTY, Color.EMPTY],
+    [Color.EMPTY, Color.EMPTY],
   ]);
   expect(game.exportState(0).board).toEqual([
     [Color.EMPTY, Color.EMPTY],

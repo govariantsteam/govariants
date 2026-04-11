@@ -34,7 +34,10 @@ export abstract class AbstractGame<
 
   abstract playMove(player: number, move: string): void;
 
-  /** Returns complete representation of the game at this point in time. */
+  /** Returns the game state from the perspective of a specific player or observer.
+   *
+   * @param player the 0-indexed seat number of a player, or undefined for observers.
+   */
   abstract exportState(player?: number): GameState;
 
   /**

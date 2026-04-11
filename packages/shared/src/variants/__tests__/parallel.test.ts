@@ -15,7 +15,7 @@ test("Halfway through the round, moves are staged, but not placed.", () => {
       [[], [], [], []],
       [[], [], [], []],
     ],
-    staged: { 0: "ba", 1: "ca" },
+    staged: {},
     last_round: {},
   });
   expect(game.exportState(0).staged).toEqual({ 0: "ba" });

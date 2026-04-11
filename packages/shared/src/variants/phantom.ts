@@ -5,6 +5,10 @@ export class Phantom extends Baduk {
   exportState(player?: number): BadukState {
     const state = super.exportState();
 
+    if (this.phase === "gameover") {
+      return state;
+    }
+
     let board = Grid.from2DArray(state.board);
     board = board.map((color) =>
       color_to_player(color) === player ? color : Color.EMPTY,

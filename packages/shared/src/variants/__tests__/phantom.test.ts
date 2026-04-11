@@ -56,3 +56,24 @@ test("Play a game with captures", () => {
   expect(game.exportState(0).captures).toEqual({ "0": 0, "1": 2 });
   expect(game.exportState(1).captures).toEqual({ "0": 0, "1": 2 });
 });
+
+test("Reveals full board to everyone after the game ends", () => {
+  const game = new Phantom({ width: 4, height: 2, komi: 0.5 });
+  // - W B -
+  // - W B -
+  game.playMove(0, "ca");
+  game.playMove(1, "ba");
+  game.playMove(0, "cb");
+  game.playMove(1, "bb");
+  game.playMove(0, "pass");
+  game.playMove(1, "pass");
+
+  const fullBoard = [
+    [Color.EMPTY, Color.WHITE, Color.BLACK, Color.EMPTY],
+    [Color.EMPTY, Color.WHITE, Color.BLACK, Color.EMPTY],
+  ];
+
+  expect(game.exportState().board).toEqual(fullBoard);
+  expect(game.exportState(0).board).toEqual(fullBoard);
+  expect(game.exportState(1).board).toEqual(fullBoard);
+});

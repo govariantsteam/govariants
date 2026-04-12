@@ -60,8 +60,8 @@ export class Rengo<TSubstate extends object> extends AbstractGame<
     return sum(this.config.teamSizes);
   }
   exportState(player?: number): TSubstate {
-    if (!player) {
-      return this._subGame.exportState(player);
+    if (player === undefined) {
+      return this._subGame.exportState(undefined);
     }
     return this._subGame.exportState(this.getTeamOfPlayer(player));
   }

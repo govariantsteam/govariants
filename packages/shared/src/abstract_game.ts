@@ -105,9 +105,10 @@ export type GamePhase = "play" | "gameover";
  * `phase` is the phase of the overall game. When a completed game is being
  * reviewed at a historical round, the replayed game object's `this.phase` is
  * still `"play"` at that round — pass `phase: "gameover"` here to let
- * hidden-info variants reveal the full state.
+ * hidden-info variants reveal the full state. Omitted phase is treated as
+ * `"play"` (observer-during-play view — no leakage).
  */
 export type ExportContext = {
   player?: number;
-  phase: GamePhase;
+  phase?: GamePhase;
 };

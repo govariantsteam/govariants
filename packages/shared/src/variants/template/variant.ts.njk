@@ -39,10 +39,14 @@ export class {{ namePascal }} extends AbstractGame<
     );
   }
 
-  // Return an object that represents the state of the game as it should be displayed to
-  // the user.  The player parameter can be used to determine which parts of the state
-  // should not be shown.
-  override exportState(/* player?: number */): {{ namePascal }}State {
+  // Return an object that represents the state of the game as it should be
+  // displayed to the user. `context.player` identifies the viewer (or is
+  // undefined for an observer); `context.phase` is the overall game's phase,
+  // which hidden-info variants can use to reveal the full state on
+  // `"gameover"` — including when a finished game is being reviewed at a
+  // historical round where the replayed game object's own `this.phase` is
+  // still `"play"`.
+  override exportState(/* context?: ExportContext */): {{ namePascal }}State {
     return {
       board: this.board.to2DArray(),
     };

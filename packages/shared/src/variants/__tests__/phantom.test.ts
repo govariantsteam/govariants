@@ -18,13 +18,13 @@ test("Play a game", () => {
   ]);
 
   // BLACK should not see WHITE
-  expect(game.exportState(0).board).toEqual([
+  expect(game.exportState({ player: 0, phase: "play" }).board).toEqual([
     [Color.EMPTY, Color.EMPTY, Color.BLACK, Color.EMPTY],
     [Color.EMPTY, Color.EMPTY, Color.BLACK, Color.EMPTY],
   ]);
 
   // WHITE should not see BLACK
-  expect(game.exportState(1).board).toEqual([
+  expect(game.exportState({ player: 1, phase: "play" }).board).toEqual([
     [Color.EMPTY, Color.WHITE, Color.EMPTY, Color.EMPTY],
     [Color.EMPTY, Color.WHITE, Color.EMPTY, Color.EMPTY],
   ]);
@@ -44,20 +44,29 @@ test("Play a game with captures", () => {
     [Color.EMPTY, Color.EMPTY],
     [Color.EMPTY, Color.EMPTY],
   ]);
-  expect(game.exportState(0).board).toEqual([
+  expect(game.exportState({ player: 0, phase: "play" }).board).toEqual([
     [Color.EMPTY, Color.EMPTY],
     [Color.EMPTY, Color.EMPTY],
   ]);
-  expect(game.exportState(1).board).toEqual([
+  expect(game.exportState({ player: 1, phase: "play" }).board).toEqual([
     [Color.EMPTY, Color.WHITE],
     [Color.EMPTY, Color.WHITE],
   ]);
   expect(game.exportState().captures).toEqual({ "0": 0, "1": 2 });
-  expect(game.exportState(0).captures).toEqual({ "0": 0, "1": 2 });
-  expect(game.exportState(1).captures).toEqual({ "0": 0, "1": 2 });
+  expect(game.exportState({ player: 0, phase: "play" }).captures).toEqual({
+    "0": 0,
+    "1": 2,
+  });
+  expect(game.exportState({ player: 1, phase: "play" }).captures).toEqual({
+    "0": 0,
+    "1": 2,
+  });
 });
 
-test("Reveals full board to everyone after the game ends", () => {
+test("Reveals full board to everyone when context.phase is gameover", () => {
+  // Mid-game position — exercising the history-review path where the game
+  // object's own phase is still "play" but the caller knows the overall game
+  // has ended.
   const game = new Phantom({ width: 4, height: 2, komi: 0.5 });
   // - W B -
   // - W B -
@@ -65,15 +74,19 @@ test("Reveals full board to everyone after the game ends", () => {
   game.playMove(1, "ba");
   game.playMove(0, "cb");
   game.playMove(1, "bb");
-  game.playMove(0, "pass");
-  game.playMove(1, "pass");
+
+  expect(game.phase).toBe("play");
 
   const fullBoard = [
     [Color.EMPTY, Color.WHITE, Color.BLACK, Color.EMPTY],
     [Color.EMPTY, Color.WHITE, Color.BLACK, Color.EMPTY],
   ];
 
-  expect(game.exportState().board).toEqual(fullBoard);
-  expect(game.exportState(0).board).toEqual(fullBoard);
-  expect(game.exportState(1).board).toEqual(fullBoard);
+  expect(game.exportState({ phase: "gameover" }).board).toEqual(fullBoard);
+  expect(game.exportState({ player: 0, phase: "gameover" }).board).toEqual(
+    fullBoard,
+  );
+  expect(game.exportState({ player: 1, phase: "gameover" }).board).toEqual(
+    fullBoard,
+  );
 });

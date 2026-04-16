@@ -1,4 +1,4 @@
-import { AbstractGame } from "../abstract_game";
+import { AbstractGame, ExportContext } from "../abstract_game";
 import { Coordinate, isSgfRepr } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
 import { MovesType } from "../lib/utils";
@@ -46,7 +46,8 @@ export class ParallelGo extends AbstractGame<
       .map(() => []);
   }
 
-  exportState(player?: number): ParallelGoState {
+  exportState(context?: ExportContext): ParallelGoState {
+    const player = context?.player;
     let staged = {};
     if (player !== undefined) {
       staged = this.staged[player] ? { [player]: this.staged[player] } : {};

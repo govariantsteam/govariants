@@ -76,29 +76,34 @@ function getGame(
   viewRound: number | null,
   playingAs?: number,
 ) {
-  const game_obj = makeGameObject(variant, cloneConfig(config));
-
-  let state: object | null = null;
-  for (let i = 0; i < moves.length; i++) {
-    if (viewRound !== null && state === null && game_obj.round === viewRound) {
-      state = structuredClone(game_obj.exportState(playingAs));
-    }
-
-    const { player, move } = getOnlyMove(moves[i]);
-    game_obj.playMove(player, move);
+  // Replay all moves first so we know the game's final phase — hidden-info
+  // variants need this to reveal the full state during post-game history
+  // review.
+  const fullGame = makeGameObject(variant, cloneConfig(config));
+  for (const m of moves) {
+    const { player, move } = getOnlyMove(m);
+    fullGame.playMove(player, move);
   }
+  const finalPhase = fullGame.phase;
   const result =
-    game_obj.phase === "gameover" ? game_obj.result || "Game over" : null;
+    finalPhase === "gameover" ? fullGame.result || "Game over" : null;
 
-  if (state === null) {
-    state = game_obj.exportState(playingAs);
+  let stateGame = fullGame;
+  if (viewRound !== null && viewRound < fullGame.round) {
+    stateGame = makeGameObject(variant, cloneConfig(config));
+    for (const m of moves) {
+      if (stateGame.round === viewRound) break;
+      const { player, move } = getOnlyMove(m);
+      stateGame.playMove(player, move);
+    }
   }
+
   return {
     result,
-    state,
-    round: game_obj.round,
-    next_to_play: game_obj.nextToPlay(),
-    numPlayers: game_obj.numPlayers(),
+    state: stateGame.exportState({ player: playingAs, phase: finalPhase }),
+    round: fullGame.round,
+    next_to_play: fullGame.nextToPlay(),
+    numPlayers: fullGame.numPlayers(),
   };
 }
 

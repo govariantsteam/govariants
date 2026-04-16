@@ -8,6 +8,7 @@ import { BoardPattern } from "../../lib/abstractBoard/boardFactory";
 import { Variant } from "../../variant";
 import { fractionalRulesDescription } from "../../templates/fractional_rules";
 import { getNullIndices } from "../../lib/utils";
+import { ExportContext } from "../../abstract_game";
 
 export type Color =
   | "black"
@@ -105,8 +106,9 @@ export class Fractional extends AbstractBaduk<
     }
   }
 
-  exportState(player?: number): FractionalState {
+  exportState(context?: ExportContext): FractionalState {
     // TODO: Deep copy for proper encapsulation
+    const player = context?.player;
     const stagedIntersection = player != null ? this.stagedMoves[player] : null;
     const stagedMove =
       player != null && stagedIntersection

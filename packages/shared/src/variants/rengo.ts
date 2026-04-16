@@ -1,4 +1,4 @@
-import { AbstractGame } from "../abstract_game";
+import { AbstractGame, ExportContext } from "../abstract_game";
 import { sum } from "../lib/utils";
 import { rengoRulesDescription } from "../templates/rengo_rules";
 import { Variant } from "../variant";
@@ -59,11 +59,16 @@ export class Rengo<TSubstate extends object> extends AbstractGame<
   numPlayers(): number {
     return sum(this.config.teamSizes);
   }
-  exportState(player?: number): TSubstate {
+  exportState(context?: ExportContext): TSubstate {
+    const phase = context?.phase ?? "play";
+    const player = context?.player;
     if (player === undefined) {
-      return this._subGame.exportState(undefined);
+      return this._subGame.exportState({ phase });
     }
-    return this._subGame.exportState(this.getTeamOfPlayer(player));
+    return this._subGame.exportState({
+      player: this.getTeamOfPlayer(player),
+      phase,
+    });
   }
   nextToPlay() {
     return this._subGame

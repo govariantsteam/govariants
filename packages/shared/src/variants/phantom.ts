@@ -1,17 +1,18 @@
 import { Baduk, BadukState, badukVariant, Color } from "./baduk";
 import { Grid } from "../lib/grid";
+import { ExportContext } from "../abstract_game";
 
 export class Phantom extends Baduk {
-  exportState(player?: number): BadukState {
+  exportState(context?: ExportContext): BadukState {
     const state = super.exportState();
 
-    if (this.phase === "gameover") {
+    if (context?.phase === "gameover") {
       return state;
     }
 
     let board = Grid.from2DArray(state.board);
     board = board.map((color) =>
-      color_to_player(color) === player ? color : Color.EMPTY,
+      color_to_player(color) === context?.player ? color : Color.EMPTY,
     );
     state.board = board.to2DArray();
     state.last_move = "";

@@ -36,9 +36,16 @@ export abstract class AbstractGame<
 
   /** Returns the game state from the perspective of a specific player or observer.
    *
-   * @param player the 0-indexed seat number of a player, or undefined for observers.
+   * @param context.player the 0-indexed seat number of a player, or undefined for observers.
+   * @param context.phase the phase of the overall game. Hidden-info variants can
+   *   use this to reveal the full state when `"gameover"` — including during
+   *   history review of a completed game, where the replayed game object's own
+   *   phase is still `"play"` at the viewed round.
+   *
+   * When omitted, hidden-info variants default to an observer-during-play view
+   * (no leakage).
    */
-  abstract exportState(player?: number): GameState;
+  abstract exportState(context?: ExportContext): GameState;
 
   /**
    * Returns the list of players that need to play a move the next round.
@@ -91,3 +98,16 @@ export abstract class AbstractGame<
 }
 
 export type GamePhase = "play" | "gameover";
+
+/**
+ * Context passed to `exportState` so variants can tailor the view.
+ *
+ * `phase` is the phase of the overall game. When a completed game is being
+ * reviewed at a historical round, the replayed game object's `this.phase` is
+ * still `"play"` at that round — pass `phase: "gameover"` here to let
+ * hidden-info variants reveal the full state.
+ */
+export type ExportContext = {
+  player?: number;
+  phase: GamePhase;
+};

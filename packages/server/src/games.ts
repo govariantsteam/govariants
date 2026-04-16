@@ -265,10 +265,12 @@ function emitGame(
   const next_to_play = game_obj.nextToPlay();
   const specialMoves = game_obj.specialMoves();
 
+  const phase = game_obj.phase;
+
   io()
     .to(gameTopic(game_id))
     .emit("move", {
-      state: game_obj.exportState(undefined),
+      state: game_obj.exportState({ phase }),
       round: game_obj.round,
       next_to_play: next_to_play,
       special_moves: specialMoves,
@@ -279,7 +281,7 @@ function emitGame(
 
   for (let seat = 0; seat < num_players; seat++) {
     const gameStateResponse: GameStateResponse = {
-      state: game_obj.exportState(seat),
+      state: game_obj.exportState({ player: seat, phase }),
       round: game_obj.round,
       next_to_play: next_to_play,
       special_moves: specialMoves,
@@ -351,35 +353,35 @@ export function getGameState(
   seat: number | null,
   round: number | null,
 ): GameStateResponse {
+  // First replay the full move list so we know the game's final phase.
+  // Hidden-info variants use this to reveal the full state during post-game
+  // history review — at a mid-game round, the replayed object's own phase is
+  // still "play", which is not what the viewer needs.
   let game_obj = makeGameObject(game.variant, game.config);
-
-  for (let i = 0; i < game.moves.length; i++) {
-    if (round !== null && game_obj.round > round) {
-      break;
-    }
-
-    const encoded_move = game.moves[i];
+  for (const encoded_move of game.moves) {
     const { player, move } = getOnlyMove(encoded_move);
     game_obj.playMove(player, move);
   }
+  const finalPhase = game_obj.phase;
 
   if (round !== null && game_obj.round > round) {
-    // user is viewing past round
+    // user is viewing past round — rewind to the requested round
     game_obj = makeGameObject(game.variant, game.config);
-    for (let i = 0; i < game.moves.length; i++) {
+    for (const encoded_move of game.moves) {
       if (game_obj.round === round) {
         // stop at start of round, so staged moves etc. are not included
         break;
       }
-
-      const encoded_move = game.moves[i];
       const { player, move } = getOnlyMove(encoded_move);
       game_obj.playMove(player, move);
     }
   }
 
   return {
-    state: game_obj.exportState(seat ?? undefined),
+    state: game_obj.exportState({
+      player: seat ?? undefined,
+      phase: finalPhase,
+    }),
     round: game_obj.round,
     next_to_play: game_obj.nextToPlay(),
     special_moves: game_obj.specialMoves(),

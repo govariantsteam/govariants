@@ -6,7 +6,17 @@ export class Phantom extends Baduk {
   exportState(context?: ExportContext): BadukState {
     const state = super.exportState();
 
-    if (context?.phase === "gameover") {
+    // Reveal the full board when:
+    // - an observer is viewing a completed game (any round), OR
+    // - a seated player is viewing the final state of a completed game
+    //   (`this.phase === "gameover"` means the replayed object reached the
+    //   end — during history review it's still "play"). This preserves the
+    //   "your own perspective" replay for seated players while keeping the
+    //   magical end-of-game reveal.
+    const gameIsOver = context?.phase === "gameover";
+    const atFinalState = this.phase === "gameover";
+    const isObserver = context?.player === undefined;
+    if (gameIsOver && (isObserver || atFinalState)) {
       return state;
     }
 

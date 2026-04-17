@@ -63,10 +63,38 @@ test("Play a game with captures", () => {
   });
 });
 
-test("Reveals full board to everyone when context.phase is gameover", () => {
-  // Mid-game position — exercising the history-review path where the game
-  // object's own phase is still "play" but the caller knows the overall game
-  // has ended.
+test("Final state of a completed game: everyone sees full board", () => {
+  // Game is replayed all the way through — `this.phase` reaches "gameover".
+  const game = new Phantom({ width: 4, height: 2, komi: 0.5 });
+  // - W B -
+  // - W B -
+  game.playMove(0, "ca");
+  game.playMove(1, "ba");
+  game.playMove(0, "cb");
+  game.playMove(1, "bb");
+  game.playMove(0, "pass");
+  game.playMove(1, "pass");
+
+  expect(game.phase).toBe("gameover");
+
+  const fullBoard = [
+    [Color.EMPTY, Color.WHITE, Color.BLACK, Color.EMPTY],
+    [Color.EMPTY, Color.WHITE, Color.BLACK, Color.EMPTY],
+  ];
+
+  expect(game.exportState({ phase: "gameover" }).board).toEqual(fullBoard);
+  expect(game.exportState({ player: 0, phase: "gameover" }).board).toEqual(
+    fullBoard,
+  );
+  expect(game.exportState({ player: 1, phase: "gameover" }).board).toEqual(
+    fullBoard,
+  );
+});
+
+test("History review of a completed game: observer sees full, seated sees own perspective", () => {
+  // Mid-game position — `this.phase` is still "play" even though the caller
+  // is telling us the overall game has ended. This is exactly the scenario
+  // the server hits when serving a past round of a finished game.
   const game = new Phantom({ width: 4, height: 2, komi: 0.5 });
   // - W B -
   // - W B -
@@ -82,11 +110,17 @@ test("Reveals full board to everyone when context.phase is gameover", () => {
     [Color.EMPTY, Color.WHITE, Color.BLACK, Color.EMPTY],
   ];
 
+  // Observer gets the reveal.
   expect(game.exportState({ phase: "gameover" }).board).toEqual(fullBoard);
-  expect(game.exportState({ player: 0, phase: "gameover" }).board).toEqual(
-    fullBoard,
-  );
-  expect(game.exportState({ player: 1, phase: "gameover" }).board).toEqual(
-    fullBoard,
-  );
+
+  // Seated players see only their own stones — preserves the
+  // replay-from-my-perspective experience.
+  expect(game.exportState({ player: 0, phase: "gameover" }).board).toEqual([
+    [Color.EMPTY, Color.EMPTY, Color.BLACK, Color.EMPTY],
+    [Color.EMPTY, Color.EMPTY, Color.BLACK, Color.EMPTY],
+  ]);
+  expect(game.exportState({ player: 1, phase: "gameover" }).board).toEqual([
+    [Color.EMPTY, Color.WHITE, Color.EMPTY, Color.EMPTY],
+    [Color.EMPTY, Color.WHITE, Color.EMPTY, Color.EMPTY],
+  ]);
 });

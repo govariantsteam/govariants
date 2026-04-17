@@ -7,7 +7,7 @@ const config = {
   board: { type: BoardPattern.Grid as const, width: 4, height: 2 },
 };
 
-function playGameAndResign() {
+function playToResignation() {
   const game = new Lighthouse(config);
   // - W B -
   // - W B -
@@ -19,46 +19,56 @@ function playGameAndResign() {
   return game;
 }
 
-test("gameover: seated player sees full board (post-game reveal)", () => {
-  const game = playGameAndResign();
+function playWithoutEnding() {
+  const game = new Lighthouse(config);
+  game.playMove(0, "ca");
+  game.playMove(1, "ba");
+  game.playMove(0, "cb");
+  game.playMove(1, "bb");
+  return game;
+}
+
+const fullBoard = [
+  [Color.EMPTY, Color.WHITE, Color.BLACK, Color.EMPTY],
+  [Color.EMPTY, Color.WHITE, Color.BLACK, Color.EMPTY],
+];
+
+test("Final state of a completed game: everyone sees full board", () => {
+  const game = playToResignation();
+  expect(game.phase).toBe("gameover");
 
   const asBlack = game.exportState({ player: 0, phase: "gameover" });
   const asWhite = game.exportState({ player: 1, phase: "gameover" });
   const asObserver = game.exportState({ phase: "gameover" });
 
-  const expectedVisible = [
-    [Color.EMPTY, Color.WHITE, Color.BLACK, Color.EMPTY],
-    [Color.EMPTY, Color.WHITE, Color.BLACK, Color.EMPTY],
-  ];
-
   expect(asBlack.board.map((row) => row.map((f) => f.visibleColor))).toEqual(
-    expectedVisible,
+    fullBoard,
   );
   expect(asWhite.board.map((row) => row.map((f) => f.visibleColor))).toEqual(
-    expectedVisible,
+    fullBoard,
   );
   expect(asObserver.board.map((row) => row.map((f) => f.visibleColor))).toEqual(
-    expectedVisible,
+    fullBoard,
   );
 });
 
-test("history review: gameover context reveals even at a pre-gameover replay point", () => {
-  // Replayed game object is still "play" at the viewed round — this is what
-  // the server's history endpoint does for a completed game.
-  const replayed = new Lighthouse(config);
-  replayed.playMove(0, "ca");
-  replayed.playMove(1, "ba");
-  replayed.playMove(0, "cb");
-  replayed.playMove(1, "bb");
+test("History review of a completed game: observer sees full, seated keeps own perspective", () => {
+  // Mid-game position — `this.phase` is still "play" even though the caller
+  // is telling us the overall game has ended. This is what the server hits
+  // when serving a past round of a finished game.
+  const mid = playWithoutEnding();
+  expect(mid.phase).toBe("play");
 
-  expect(replayed.phase).toBe("play");
+  const asObserver = mid.exportState({ phase: "gameover" });
+  expect(asObserver.board.map((row) => row.map((f) => f.visibleColor))).toEqual(
+    fullBoard,
+  );
 
-  const asBlack = replayed.exportState({ player: 0, phase: "gameover" });
-  const visibleAsBlack = asBlack.board.map((row) =>
+  // Seated black should not get the reveal — they see their own perspective,
+  // which does not match the observer's full-board view.
+  const asBlack = mid.exportState({ player: 0, phase: "gameover" });
+  const asBlackView = asBlack.board.map((row) =>
     row.map((f) => f.visibleColor),
   );
-  expect(visibleAsBlack).toEqual([
-    [Color.EMPTY, Color.WHITE, Color.BLACK, Color.EMPTY],
-    [Color.EMPTY, Color.WHITE, Color.BLACK, Color.EMPTY],
-  ]);
+  expect(asBlackView).not.toEqual(fullBoard);
 });

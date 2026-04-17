@@ -112,3 +112,24 @@ export type ExportContext = {
   player?: number;
   phase?: GamePhase;
 };
+
+/**
+ * Shared rule for hidden-info variants deciding whether to reveal the full
+ * state:
+ * - an observer viewing a completed game always sees everything
+ * - a seated player sees everything only when viewing the final state (the
+ *   replayed game object has itself reached `"gameover"`)
+ * - otherwise the caller should return the per-player filtered view
+ *
+ * @param currentPhase the phase of the replayed game object (`this.phase`),
+ *   which differs from `context.phase` during history review
+ */
+export function shouldRevealHiddenInfo(
+  currentPhase: GamePhase,
+  context: ExportContext | undefined,
+): boolean {
+  const gameIsOver = context?.phase === "gameover";
+  const atFinalState = currentPhase === "gameover";
+  const isObserver = context?.player === undefined;
+  return gameIsOver && (isObserver || atFinalState);
+}

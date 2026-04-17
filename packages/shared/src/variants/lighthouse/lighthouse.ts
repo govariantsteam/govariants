@@ -1,4 +1,8 @@
-import { AbstractGame, ExportContext } from "../../abstract_game";
+import {
+  AbstractGame,
+  ExportContext,
+  shouldRevealHiddenInfo,
+} from "../../abstract_game";
 import {
   DefaultBoardConfig,
   DefaultBoardState,
@@ -50,17 +54,7 @@ export class Lighthouse extends AbstractGame<
     const player = context?.player;
     const typedPlayerNr: binaryPlayerNr | null =
       player === 0 || player === 1 ? player : null;
-    // Reveal the full board when:
-    // - an observer is viewing a completed game (any round), OR
-    // - a seated player is viewing the final state of a completed game
-    //   (`this.phase === "gameover"` means the replayed object reached the
-    //   end — during history review it's still "play"). This preserves the
-    //   "your own perspective" replay for seated players while keeping the
-    //   magical end-of-game reveal.
-    const gameIsOver = context?.phase === "gameover";
-    const atFinalState = this.phase === "gameover";
-    const isObserver = player === undefined;
-    const revealAll = gameIsOver && (isObserver || atFinalState);
+    const revealAll = shouldRevealHiddenInfo(this.phase, context);
 
     return {
       board: this.board

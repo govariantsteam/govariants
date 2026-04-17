@@ -1,8 +1,5 @@
-import {
-  AbstractGame,
-  ExportContext,
-  shouldRevealHiddenInfo,
-} from "../../abstract_game";
+import { AbstractGame, ExportContext } from "../../abstract_game";
+import { shouldRevealHiddenInfo } from "../../lib/hidden_info";
 import {
   DefaultBoardConfig,
   DefaultBoardState,

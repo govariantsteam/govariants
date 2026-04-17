@@ -1,6 +1,7 @@
 import { Baduk, BadukState, badukVariant, Color } from "./baduk";
 import { Grid } from "../lib/grid";
-import { ExportContext, shouldRevealHiddenInfo } from "../abstract_game";
+import { ExportContext } from "../abstract_game";
+import { shouldRevealHiddenInfo } from "../lib/hidden_info";
 
 export class Phantom extends Baduk {
   exportState(context?: ExportContext): BadukState {

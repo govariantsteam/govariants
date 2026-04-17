@@ -1,5 +1,6 @@
 import { BadukState, Color, Baduk, badukVariant } from "./baduk";
-import { ExportContext, shouldRevealHiddenInfo } from "../abstract_game";
+import { ExportContext } from "../abstract_game";
+import { shouldRevealHiddenInfo } from "../lib/hidden_info";
 
 export class OneColorGo extends Baduk {
   exportState(context?: ExportContext): BadukState {

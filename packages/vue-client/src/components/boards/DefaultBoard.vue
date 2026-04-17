@@ -32,17 +32,17 @@ function positionClicked(pos: Coordinate | number) {
   <MulticolorGridBoard
     v-if="props.config.board.type === 'grid'"
     :board="props.gamestate?.board as ((MulticolorStone | null)[][] | undefined)"
-    :board_dimensions="props.config.board"
-    :background_color="props.gamestate?.backgroundColor"
-    :score_board="props.gamestate?.score_board as ((string[] | null)[][] | undefined)"
+    :board-dimensions="props.config.board"
+    :background-color="props.gamestate?.backgroundColor"
+    :score-board="props.gamestate?.score_board as ((string[] | null)[][] | undefined)"
     @click="positionClicked"
   />
   <MulticolorGraphBoard
     v-else
     :board="props.gamestate?.board as ((MulticolorStone | null)[] | undefined)"
-    :board_config="$props.config.board"
-    :background_color="props.gamestate?.backgroundColor"
-    :score_board="props.gamestate?.score_board as ((string[] | null)[] | undefined)"
+    :board-config="$props.config.board"
+    :background-color="props.gamestate?.backgroundColor"
+    :score-board="props.gamestate?.score_board as ((string[] | null)[] | undefined)"
     @click="positionClicked"
   />
 </template>

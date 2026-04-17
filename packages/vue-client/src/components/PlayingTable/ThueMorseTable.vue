@@ -10,7 +10,7 @@ import DefaultBoard from "../boards/DefaultBoard.vue";
 defineProps<{
   gamestate: DefaultBoardState;
   config: DefaultBoardConfig;
-  displayed_round: number;
+  displayedRound: number;
 }>();
 
 function getThueMorseColor(n: number): string[] {
@@ -34,7 +34,7 @@ function move(move: string) {
   <div class="center_aligner">
     <MoveSequenceDisplay
       :length="4"
-      :round="displayed_round"
+      :round="displayedRound"
       :get-colors="getThueMorseColor"
     />
   </div>

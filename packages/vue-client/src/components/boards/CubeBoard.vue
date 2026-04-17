@@ -33,6 +33,8 @@ const props = withDefaults(
     debugGraphics?: boolean;
   }>(),
   {
+    gamestate: undefined,
+    nextToPlay: undefined,
     power: 4,
     debugGraphics: false,
   },

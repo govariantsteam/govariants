@@ -18,13 +18,13 @@ import ScoreMark from "./ScoreMark.vue";
 
 const props = defineProps<{
   board?: (MulticolorStone | null)[][];
-  background_color?: string;
-  board_dimensions: { width: number; height: number };
-  score_board?: (string[] | null)[][];
+  backgroundColor?: string;
+  boardDimensions: { width: number; height: number };
+  scoreBoard?: (string[] | null)[][];
 }>();
 
-const width = computed(() => props.board_dimensions.width);
-const height = computed(() => props.board_dimensions.height);
+const width = computed(() => props.boardDimensions.width);
+const height = computed(() => props.boardDimensions.height);
 const positions = computed(positionsGetter(width, height));
 
 const hovered: Ref<Coordinate> = ref(new Coordinate(-1, -1));
@@ -55,7 +55,7 @@ function positionHovered(pos: Coordinate) {
       y="-0.5"
       :width="width"
       :height="height"
-      :fill="background_color ?? BOARD_COLOR"
+      :fill="backgroundColor ?? BOARD_COLOR"
     />
     <g v-if="props.board">
       <rect
@@ -121,11 +121,11 @@ function positionHovered(pos: Coordinate) {
         :annotation="props.board[y][x]?.annotation!"
       />
     </g>
-    <g v-if="score_board">
+    <g v-if="scoreBoard">
       <ScoreMark
-        v-for="(pos, index) in positions.filter((pos) => score_board![pos.y][pos.x] !== null)"
+        v-for="(pos, index) in positions.filter((pos) => scoreBoard![pos.y][pos.x] !== null)"
         :key="index"
-        :colors="score_board![pos.y][pos.x]!"
+        :colors="scoreBoard![pos.y][pos.x]!"
         :cx="pos.x"
         :cy="pos.y"
       />

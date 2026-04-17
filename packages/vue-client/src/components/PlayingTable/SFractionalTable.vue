@@ -10,7 +10,7 @@ import DefaultBoard from "../boards/DefaultBoard.vue";
 const props = defineProps<{
   gamestate: DefaultBoardState;
   config: ReturnType<typeof SFractional.uiTransform>["config"];
-  displayed_round: number;
+  displayedRound: number;
 }>();
 
 function getMoveColor(n: number): string[] {
@@ -34,7 +34,7 @@ function move(move: string) {
   <div class="center_aligner">
     <MoveSequenceDisplay
       :length="Math.min(8, config.secondary_colors.length * 2)"
-      :round="displayed_round"
+      :round="displayedRound"
       :get-colors="getMoveColor"
     />
   </div>

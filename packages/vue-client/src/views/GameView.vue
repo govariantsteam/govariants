@@ -295,7 +295,7 @@ const createTimeControlPreview = (
           v-if="variantGameView && transformedGameData"
           :gamestate="transformedGameData.gamestate"
           :config="transformedGameData.config"
-          :displayed_round="displayed_round"
+          :displayed-round="displayed_round"
           :next-to-play="game_state?.next_to_play"
           @move="makeMove"
         />
@@ -339,15 +339,15 @@ const createTimeControlPreview = (
         <div className="seat-list">
           <div v-for="(player, idx) in players" :key="idx">
             <SeatComponent
-              :user_id="user?.id"
-              :admin_mode="adminMode"
+              :user-id="user?.id"
+              :admin-mode="adminMode"
               :occupant="player"
-              :player_n="idx"
+              :player-n="idx"
               :selected="playing_as"
-              :time_control="
+              :time-control="
                 time_control?.forPlayer[idx] ?? createTimeControlPreview(config)
               "
-              :is_players_turn="
+              :is-players-turn="
                 game_state?.next_to_play?.includes(idx) ?? false
               "
               :variant="variant"

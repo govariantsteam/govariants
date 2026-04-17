@@ -174,7 +174,7 @@ watch(
         v-if="variantGameView && game && transformedGameData"
         :gamestate="transformedGameData.gamestate"
         :config="transformedGameData.config"
-        :displayed_round="displayed_round"
+        :displayed-round="displayed_round"
         :next-to-play="game.next_to_play"
         @move="makeMove"
       />
@@ -197,12 +197,12 @@ watch(
     <div className="seat-list">
       <div v-for="(_, idx) in game?.numPlayers" :key="idx">
         <SeatComponent
-          :user_id="user?.id"
+          :user-id="user?.id"
           :occupant="user || undefined"
-          :player_n="idx"
+          :player-n="idx"
           :selected="playing_as"
-          :time_control="null"
-          :is_players_turn="game?.next_to_play?.includes(idx) ?? false"
+          :time-control="null"
+          :is-players-turn="game?.next_to_play?.includes(idx) ?? false"
           :variant="variant"
           :config="config"
           @select="setPlayingAs(idx)"

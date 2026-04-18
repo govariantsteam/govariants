@@ -60,14 +60,13 @@ export class Rengo<TSubstate extends object> extends AbstractGame<
     return sum(this.config.teamSizes);
   }
   exportState(context?: ExportContext): TSubstate {
-    const phase = context?.phase ?? "play";
-    const player = context?.player;
-    if (player === undefined) {
-      return this._subGame.exportState({ phase });
-    }
+    if (context === undefined) return this._subGame.exportState();
     return this._subGame.exportState({
-      player: this.getTeamOfPlayer(player),
-      phase,
+      ...context,
+      player:
+        context.player !== undefined
+          ? this.getTeamOfPlayer(context.player)
+          : undefined,
     });
   }
   nextToPlay() {

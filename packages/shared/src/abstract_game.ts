@@ -45,7 +45,7 @@ export abstract class AbstractGame<
    * When omitted, hidden-info variants default to an observer-during-play view
    * (no leakage).
    */
-  abstract exportState(context?: ExportContext): GameState;
+  abstract exportState(context: ExportContext): GameState;
 
   /**
    * Returns the list of players that need to play a move the next round.
@@ -110,5 +110,5 @@ export type GamePhase = "play" | "gameover";
  */
 export type ExportContext = {
   player?: number;
-  phase?: GamePhase;
+  phase: GamePhase;
 };

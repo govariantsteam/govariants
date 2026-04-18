@@ -33,7 +33,7 @@ test("rengo + baduk", () => {
   expect(game.numPlayers()).toEqual(4);
   expect(game.round).toEqual(9);
   expect(game.nextToPlay()).toEqual([2]);
-  expect(game.exportState().board).toEqual([
+  expect(game.exportState({ phase: "play" }).board).toEqual([
     [B, B, _],
     [_, B, B],
     [B, W, _],
@@ -44,7 +44,7 @@ test("rengo + baduk", () => {
 
   expect(game.phase).toEqual("gameover");
   expect(game.nextToPlay()).toEqual([]);
-  expect(game.exportState().score_board).toEqual([
+  expect(game.exportState({ phase: "play" }).score_board).toEqual([
     [B, B, B],
     [B, B, B],
     [B, W, _],
@@ -79,7 +79,7 @@ test("rengo + baduk with different team sizes", () => {
   expect(game.numPlayers()).toEqual(5);
   expect(game.round).toEqual(9);
   expect(game.nextToPlay()).toEqual([3]);
-  expect(game.exportState().board).toEqual([
+  expect(game.exportState({ phase: "play" }).board).toEqual([
     [B, B, _],
     [_, B, B],
     [B, W, _],
@@ -90,7 +90,7 @@ test("rengo + baduk with different team sizes", () => {
 
   expect(game.phase).toEqual("gameover");
   expect(game.nextToPlay()).toEqual([]);
-  expect(game.exportState().score_board).toEqual([
+  expect(game.exportState({ phase: "play" }).score_board).toEqual([
     [B, B, B],
     [B, B, B],
     [B, W, _],
@@ -121,7 +121,7 @@ test("rengo + thue-morse", () => {
   game.playMove(1, "ca");
 
   expect(game.nextToPlay()).toEqual([3]);
-  expect(game.exportState().board).toEqual([
+  expect(game.exportState({ phase: "play" }).board).toEqual([
     [B, _, B],
     [B, B, W],
     [_, W, _],
@@ -174,7 +174,7 @@ test("rengo + fractional", () => {
 
   expect(game.round).toEqual(2);
   expect(game.nextToPlay()).toEqual([0, 2, 4, 6]);
-  expect(game.exportState().boardState).toEqual([
+  expect(game.exportState({ phase: "play" }).boardState).toEqual([
     ["B", "G"],
     null,
     null,

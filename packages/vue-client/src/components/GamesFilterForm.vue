@@ -4,31 +4,39 @@ import {
   getVariantList,
   type GamesFilter,
 } from "@ogfcommunity/variants-shared";
-import { type Ref, ref, computed } from "vue";
+import { ref } from "vue";
 
-const emit = defineEmits<{ (e: "filterChange", filter: GamesFilter): void }>();
-function emitFilter() {
-  emit("filterChange", filter.value);
-}
+const filter = defineModel<GamesFilter>();
 
 const variants: string[] = getVariantList();
-const selectedVariant: Ref<string> = ref("");
-const user = useCurrentUser();
-const onlyMyGames = ref(false);
 
-const filter = computed(() => {
-  const gamesFilter: GamesFilter = {
-    user_id: onlyMyGames.value ? user.value?.id : undefined,
-    variant: selectedVariant.value,
-  };
-  return gamesFilter;
-});
+const variant = ref(filter.value?.variant ?? "");
+
+const user = useCurrentUser();
+const onlyMyGames = ref(
+  filter.value?.user_id === user.value?.id ? true : false,
+);
+
+function createFilter(): GamesFilter {
+  const filter: GamesFilter = {};
+  if (variant.value !== "") {
+    filter.variant = variant.value;
+  }
+  if (onlyMyGames.value && user.value) {
+    filter.user_id = user.value.id;
+  }
+  return filter;
+}
+
+function updateFilter(): void {
+  filter.value = createFilter();
+}
 </script>
 
 <template>
   <h3>Filter games</h3>
-  <form class="gamesFilterForm" @change="emitFilter">
-    <select v-model="selectedVariant">
+  <form class="gamesFilterForm" @change="updateFilter">
+    <select v-model="variant">
       <option value="">All variants</option>
       <option v-for="variant in variants" :key="variant">
         {{ variant }}

@@ -14,10 +14,10 @@ import { ExportContext, GamePhase } from "../abstract_game";
  */
 export function shouldRevealHiddenInfo(
   currentPhase: GamePhase,
-  context: ExportContext | undefined,
+  context: ExportContext,
 ): boolean {
-  const gameIsOver = context?.phase === "gameover";
+  const gameIsOver = context.phase === "gameover";
   const atFinalState = currentPhase === "gameover";
-  const isObserver = context?.player === undefined;
+  const isObserver = context.player === undefined;
   return gameIsOver && (isObserver || atFinalState);
 }

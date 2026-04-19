@@ -38,7 +38,7 @@ export class FreezeGo extends Baduk {
   }
 
   override exportState(): FreezeGoState {
-    return { ...super.exportState(), frozen: this.frozen };
+    return { ...super.exportState({ phase: this.phase }), frozen: this.frozen };
   }
 
   static uiTransform<ConfigT extends NewBadukConfig = NewBadukConfig>(

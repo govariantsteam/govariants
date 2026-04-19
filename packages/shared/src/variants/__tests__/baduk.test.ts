@@ -22,7 +22,7 @@ test("Play a game", () => {
   expect(game.nextToPlay()).toEqual([0]);
 
   // check that the final state is as expected
-  expect(game.exportState().board).toEqual([
+  expect(game.exportState({ phase: "play" }).board).toEqual([
     [_, W, B, _],
     [_, W, B, _],
   ]);
@@ -34,7 +34,7 @@ test("Play a game", () => {
 
   expect(game.phase).toBe("gameover");
   expect(game.result).toBe("W+0.5");
-  expect(game.exportState().score_board).toEqual([
+  expect(game.exportState({ phase: "play" }).score_board).toEqual([
     [W, W, B, B],
     [W, W, B, B],
   ]);
@@ -48,7 +48,7 @@ test("Play a game with captures", () => {
   game.playMove(0, "aa");
   game.playMove(1, "ba");
   game.playMove(0, "ab");
-  expect(game.exportState().board).toEqual([
+  expect(game.exportState({ phase: "play" }).board).toEqual([
     [B, W],
     [B, _],
   ]);
@@ -57,7 +57,7 @@ test("Play a game with captures", () => {
   // . W
   // . W
   game.playMove(1, "bb");
-  expect(game.exportState().board).toEqual([
+  expect(game.exportState({ phase: "play" }).board).toEqual([
     [_, W],
     [_, W],
   ]);
@@ -68,7 +68,7 @@ test("Play a game with captures", () => {
   game.playMove(1, "pass");
   expect(game.phase).toBe("gameover");
   expect(game.result).toBe("W+4.5");
-  expect(game.exportState().score_board).toEqual([
+  expect(game.exportState({ phase: "play" }).score_board).toEqual([
     [W, W],
     [W, W],
   ]);
@@ -160,7 +160,7 @@ test("inner group score", () => {
   // . . . . . . . . .
 
   expect(game.result).toBe("W+31"); // 56 - 25
-  expect(game.exportState().score_board).toEqual([
+  expect(game.exportState({ phase: "play" }).score_board).toEqual([
     [W, W, W, W, W, W, W, W, W],
     [W, W, W, W, W, W, W, W, W],
     [W, W, B, B, B, B, B, W, W],
@@ -190,7 +190,7 @@ test("Capture test", () => {
     game.playMove(1, round[1]);
   });
 
-  expect(game.exportState().board).toEqual([
+  expect(game.exportState({ phase: "play" }).board).toEqual([
     [_, W, _],
     [_, W, B],
     [W, W, W],

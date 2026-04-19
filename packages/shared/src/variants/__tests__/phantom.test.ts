@@ -12,7 +12,7 @@ test("Play a game", () => {
   game.playMove(1, "bb");
 
   // spectators should see an empty board (no second-tab cheating)
-  expect(game.exportState().board).toEqual([
+  expect(game.exportState({ phase: "play" }).board).toEqual([
     [Color.EMPTY, Color.EMPTY, Color.EMPTY, Color.EMPTY],
     [Color.EMPTY, Color.EMPTY, Color.EMPTY, Color.EMPTY],
   ]);
@@ -40,7 +40,7 @@ test("Play a game with captures", () => {
   game.playMove(0, "ab");
   game.playMove(1, "bb");
 
-  expect(game.exportState().board).toEqual([
+  expect(game.exportState({ phase: "play" }).board).toEqual([
     [Color.EMPTY, Color.EMPTY],
     [Color.EMPTY, Color.EMPTY],
   ]);
@@ -52,7 +52,10 @@ test("Play a game with captures", () => {
     [Color.EMPTY, Color.WHITE],
     [Color.EMPTY, Color.WHITE],
   ]);
-  expect(game.exportState().captures).toEqual({ "0": 0, "1": 2 });
+  expect(game.exportState({ phase: "play" }).captures).toEqual({
+    "0": 0,
+    "1": 2,
+  });
   expect(game.exportState({ player: 0, phase: "play" }).captures).toEqual({
     "0": 0,
     "1": 2,

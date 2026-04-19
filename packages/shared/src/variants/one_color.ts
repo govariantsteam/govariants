@@ -3,8 +3,8 @@ import { ExportContext } from "../abstract_game";
 import { shouldRevealHiddenInfo } from "../lib/hidden_info";
 
 export class OneColorGo extends Baduk {
-  exportState(context?: ExportContext): BadukState {
-    const state = super.exportState();
+  exportState(context: ExportContext): BadukState {
+    const state = super.exportState(context);
     if (shouldRevealHiddenInfo(this.phase, context)) {
       return state;
     }

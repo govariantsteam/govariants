@@ -78,7 +78,7 @@ export class Keima extends GridBaduk {
 
   exportState(): KeimaState {
     return {
-      ...super.exportState(),
+      ...super.exportState({ phase: this.phase }),
       keima:
         is_keima_move_number(this.move_number) && this.last_move !== "pass"
           ? this.last_move

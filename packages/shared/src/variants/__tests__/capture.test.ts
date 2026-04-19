@@ -13,7 +13,7 @@ test("White wins by capture", () => {
   // capture the black stones on the left
   game.playMove(1, "bb");
 
-  expect(game.exportState().board).toEqual([
+  expect(game.exportState({ phase: "play" }).board).toEqual([
     [Color.EMPTY, Color.WHITE],
     [Color.EMPTY, Color.WHITE],
   ]);
@@ -33,7 +33,7 @@ test("Black wins by capture", () => {
   // capture the white stone on the left
   game.playMove(0, "bb");
 
-  expect(game.exportState().board).toEqual([
+  expect(game.exportState({ phase: "play" }).board).toEqual([
     [Color.BLACK, Color.EMPTY],
     [Color.EMPTY, Color.BLACK],
   ]);

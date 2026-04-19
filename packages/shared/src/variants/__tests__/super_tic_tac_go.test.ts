@@ -16,7 +16,7 @@ test("Play a game", () => {
   expect(game.nextToPlay()).toEqual([0]);
   game.playMove(0, "ee");
 
-  expect(game.exportState().board).toEqual([
+  expect(game.exportState({ phase: "play" }).board).toEqual([
     [B, _, _, _, _, _, _, _, _],
     [_, W, _, _, _, _, _, _, _],
     [_, _, _, _, _, _, _, _, _],

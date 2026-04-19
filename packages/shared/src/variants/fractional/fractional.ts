@@ -106,9 +106,9 @@ export class Fractional extends AbstractBaduk<
     }
   }
 
-  exportState(context?: ExportContext): FractionalState {
+  exportState(context: ExportContext): FractionalState {
     // TODO: Deep copy for proper encapsulation
-    const player = context?.player;
+    const player = context.player;
     const stagedIntersection = player != null ? this.stagedMoves[player] : null;
     const stagedMove =
       player != null && stagedIntersection

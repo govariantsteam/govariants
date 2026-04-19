@@ -47,8 +47,8 @@ export class Lighthouse extends AbstractGame<
     this.board = new LighthouseGrid(config.board.width, config.board.height);
   }
 
-  override exportState(context?: ExportContext): LighthouseState {
-    const player = context?.player;
+  override exportState(context: ExportContext): LighthouseState {
+    const player = context.player;
     const typedPlayerNr: binaryPlayerNr | null =
       player === 0 || player === 1 ? player : null;
     const revealAll = shouldRevealHiddenInfo(this.phase, context);

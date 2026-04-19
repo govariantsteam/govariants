@@ -46,8 +46,8 @@ export class ParallelGo extends AbstractGame<
       .map(() => []);
   }
 
-  exportState(context?: ExportContext): ParallelGoState {
-    const player = context?.player;
+  exportState(context: ExportContext): ParallelGoState {
+    const player = context.player;
     let staged = {};
     if (player !== undefined) {
       staged = this.staged[player] ? { [player]: this.staged[player] } : {};

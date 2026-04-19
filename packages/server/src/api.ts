@@ -431,7 +431,6 @@ router.get("/notifications", checkCSRFToken, async (req, res) => {
     .map(([gameId, notifications]) => ({
       gameId,
       notifications,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       gameState: gameStateMap.get(gameId)!,
     }));
   res.send(combined);

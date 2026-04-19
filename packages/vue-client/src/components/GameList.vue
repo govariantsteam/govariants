@@ -78,7 +78,7 @@ const next = () => {
 </script>
 
 <template>
-  <GamesFilterForm v-model:filter="filter" />
+  <GamesFilterForm v-model="filter" />
   <hr />
   <ul>
     <template v-for="game in games" :key="game.id">

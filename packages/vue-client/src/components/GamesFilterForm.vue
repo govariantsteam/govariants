@@ -6,19 +6,16 @@ import {
 } from "@ogfcommunity/variants-shared";
 import { ref } from "vue";
 
-const props = defineProps<{ filter: GamesFilter }>();
-
-const emit = defineEmits<{ (e: "update:filter", filter: GamesFilter): void }>();
-function emitFilter() {
-  emit("update:filter", createFilter());
-}
+const filter = defineModel<GamesFilter>();
 
 const variants: string[] = getVariantList();
 
-const variant = ref(props.filter.variant ?? "");
+const variant = ref(filter.value?.variant ?? "");
 
 const user = useCurrentUser();
-const onlyMyGames = ref(props.filter.user_id === user.value?.id ? true : false);
+const onlyMyGames = ref(
+  filter.value?.user_id === user.value?.id ? true : false,
+);
 
 function createFilter(): GamesFilter {
   const filter: GamesFilter = {};
@@ -30,11 +27,15 @@ function createFilter(): GamesFilter {
   }
   return filter;
 }
+
+function updateFilter(): void {
+  filter.value = createFilter();
+}
 </script>
 
 <template>
   <h3>Filter games</h3>
-  <form class="gamesFilterForm" @change="emitFilter">
+  <form class="gamesFilterForm" @change="updateFilter">
     <select v-model="variant">
       <option value="">All variants</option>
       <option v-for="variant in variants" :key="variant">

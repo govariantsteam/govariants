@@ -10,7 +10,7 @@ test("Halfway through the round, moves are staged, but not placed.", () => {
   game.playMove(0, "ba");
   game.playMove(1, "ca");
 
-  expect(game.exportState()).toEqual({
+  expect(game.exportState({ phase: "play" })).toEqual({
     board: [
       [[], [], [], []],
       [[], [], [], []],
@@ -18,10 +18,18 @@ test("Halfway through the round, moves are staged, but not placed.", () => {
     staged: {},
     last_round: {},
   });
-  expect(game.exportState(0).staged).toEqual({ 0: "ba" });
-  expect(game.exportState(1).staged).toEqual({ 1: "ca" });
-  expect(Object.keys(game.exportState(2).staged)).toEqual([]);
-  expect(Object.keys(game.exportState(3).staged)).toEqual([]);
+  expect(game.exportState({ player: 0, phase: "play" }).staged).toEqual({
+    0: "ba",
+  });
+  expect(game.exportState({ player: 1, phase: "play" }).staged).toEqual({
+    1: "ca",
+  });
+  expect(
+    Object.keys(game.exportState({ player: 2, phase: "play" }).staged),
+  ).toEqual([]);
+  expect(
+    Object.keys(game.exportState({ player: 3, phase: "play" }).staged),
+  ).toEqual([]);
 });
 
 test("After one round, stones are placed, and no stones are staged.", () => {
@@ -36,7 +44,7 @@ test("After one round, stones are placed, and no stones are staged.", () => {
   game.playMove(2, "bb");
   game.playMove(3, "cb");
 
-  expect(game.exportState()).toEqual({
+  expect(game.exportState({ phase: "play" })).toEqual({
     board: [
       [[], [0], [1], []],
       [[], [2], [3], []],
@@ -71,7 +79,7 @@ test("Collision places no stones. (pass mode)", () => {
   game.playMove(0, "aa");
   game.playMove(1, "aa");
 
-  expect(game.exportState().board).toEqual([
+  expect(game.exportState({ phase: "play" }).board).toEqual([
     [[], []],
     [[], []],
   ]);
@@ -87,7 +95,7 @@ test("Collision places Ko Stone. (ko mode)", () => {
   game.playMove(0, "aa");
   game.playMove(1, "aa");
 
-  expect(game.exportState().board).toEqual([
+  expect(game.exportState({ phase: "play" }).board).toEqual([
     [[-1], []],
     [[], []],
   ]);
@@ -105,7 +113,7 @@ test("Ko stone disappears after one round", () => {
   game.playMove(0, "ba");
   game.playMove(1, "ab");
 
-  expect(game.exportState().board[0][0]).toEqual([]);
+  expect(game.exportState({ phase: "play" }).board[0][0]).toEqual([]);
 });
 
 test("Ko stone still exists midround", () => {
@@ -119,7 +127,7 @@ test("Ko stone still exists midround", () => {
   game.playMove(1, "aa");
   game.playMove(0, "bb");
 
-  expect(game.exportState().board).toEqual([
+  expect(game.exportState({ phase: "play" }).board).toEqual([
     [[-1], []],
     [[], []],
   ]);
@@ -135,7 +143,7 @@ test("Collision places merged stone. (merge mode)", () => {
   game.playMove(0, "aa");
   game.playMove(1, "aa");
 
-  expect(game.exportState().board).toEqual([
+  expect(game.exportState({ phase: "play" }).board).toEqual([
     [[0, 1], []],
     [[], []],
   ]);
@@ -153,7 +161,7 @@ test("Double suicide", () => {
   game.playMove(0, "ba");
   game.playMove(1, "bb");
 
-  expect(game.exportState().board).toEqual([
+  expect(game.exportState({ phase: "play" }).board).toEqual([
     [[], []],
     [[], []],
   ]);
@@ -171,7 +179,9 @@ test("Kill already placed groups first", () => {
   game.playMove(0, "ca");
   game.playMove(1, "ba");
 
-  expect(game.exportState().board).toEqual([[[], [1], [0], []]]);
+  expect(game.exportState({ phase: "play" }).board).toEqual([
+    [[], [1], [0], []],
+  ]);
 });
 
 test("Merge kill", () => {
@@ -186,7 +196,9 @@ test("Merge kill", () => {
   game.playMove(0, "ba");
   game.playMove(1, "ba");
 
-  expect(game.exportState().board).toEqual([[[], [], [1], []]]);
+  expect(game.exportState({ phase: "play" }).board).toEqual([
+    [[], [], [1], []],
+  ]);
 });
 
 test("Double capture by the wall", () => {
@@ -207,7 +219,7 @@ test("Double capture by the wall", () => {
     game.playMove(1, round[1]);
   });
 
-  expect(game.exportState().board).toEqual([
+  expect(game.exportState({ phase: "play" }).board).toEqual([
     [[], [], [], [], [], []],
     [[], [], [], [], [], []],
     [[], [], [1], [0], [], []],

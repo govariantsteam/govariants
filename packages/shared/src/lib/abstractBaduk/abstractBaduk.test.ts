@@ -72,7 +72,7 @@ class AbstractBadukTestGame extends AbstractBaduk<
     return { board: { type: BoardPattern.Grid, height: 19, width: 19 } };
   }
 
-  exportState(_player?: number): TestState {
+  exportState(): TestState {
     return { state: "test" };
   }
 

@@ -14,7 +14,7 @@ describe("CubeBaduk", () => {
 
       const game = new CubeBaduk(config);
 
-      const state = game.exportState();
+      const state = game.exportState({ phase: "play" });
       // State should have 98 intersections for 5x5 cube
       const totalIntersections = state.board.flat().length;
       expect(totalIntersections).toBe(98);
@@ -34,7 +34,7 @@ describe("CubeBaduk", () => {
       // Place a stone on face 0 at position (1, 2) using face-x-y notation
       game.playMove(0, "0-1-2");
 
-      const state = game.exportState();
+      const state = game.exportState({ phase: "play" });
       // Check that a black stone was placed (we need to find its index)
       // Stone at face 0, position (1, 2) should be visible in the board
       const blackStones = state.board.flat().filter((c) => c === Color.BLACK);
@@ -64,7 +64,7 @@ describe("CubeBaduk", () => {
       game.playMove(1, "pass"); // White passes
       game.playMove(0, "0-2-1"); // Black right (should capture white)
 
-      const state = game.exportState();
+      const state = game.exportState({ phase: "play" });
 
       // White stone should have been captured
       const whiteStones = state.board.flat().filter((c) => c === Color.WHITE);
@@ -96,7 +96,7 @@ describe("CubeBaduk", () => {
       // Place at (1, 1) on Front face (just left of the edge)
       game.playMove(0, "0-1-1"); // Black adjacent to first stone
 
-      const state = game.exportState();
+      const state = game.exportState({ phase: "play" });
       // Two black stones should exist (they're adjacent)
       expect(state.board.flat().filter((c) => c === Color.BLACK).length).toBe(
         2,
@@ -146,7 +146,7 @@ describe("CubeBaduk", () => {
       // Now add the final liberty from the Right face
       game.playMove(0, "1-1-1"); // Black on Right face, closing the last liberty
 
-      const state = game.exportState();
+      const state = game.exportState({ phase: "play" });
 
       // White stone should have been captured
       const whiteStones = state.board.flat().filter((c) => c === Color.WHITE);

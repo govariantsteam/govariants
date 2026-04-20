@@ -1,4 +1,5 @@
-import { AbstractGame } from "../../abstract_game";
+import { AbstractGame, ExportContext } from "../../abstract_game";
+import { shouldRevealHiddenInfo } from "../../lib/hidden_info";
 import {
   DefaultBoardConfig,
   DefaultBoardState,
@@ -46,14 +47,15 @@ export class Lighthouse extends AbstractGame<
     this.board = new LighthouseGrid(config.board.width, config.board.height);
   }
 
-  override exportState(player?: number): LighthouseState {
+  override exportState(context: ExportContext): LighthouseState {
+    const player = context.player;
     const typedPlayerNr: binaryPlayerNr | null =
       player === 0 || player === 1 ? player : null;
-    const isGameOver = this.phase === "gameover";
+    const revealAll = shouldRevealHiddenInfo(this.phase, context);
 
     return {
       board: this.board
-        .map((field) => field.exportFor(typedPlayerNr, isGameOver))
+        .map((field) => field.exportFor(typedPlayerNr, revealAll))
         .serialize(),
       ...(this.score_board && { score_board: this.score_board.serialize() }),
     };

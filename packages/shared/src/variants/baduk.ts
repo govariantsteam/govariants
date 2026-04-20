@@ -2,7 +2,7 @@ import { Coordinate, CoordinateLike, isSgfRepr } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
 import { getGroup, getOuterBorder } from "../lib/group_utils";
 import { KoDetector, SuperKoDetector } from "../lib/ko_detector";
-import { AbstractGame } from "../abstract_game";
+import { AbstractGame, ExportContext } from "../abstract_game";
 import {
   BoardPattern,
   createBoard,
@@ -95,7 +95,7 @@ export class Baduk extends AbstractGame<NewBadukConfig, BadukState> {
     }
   }
 
-  override exportState(): BadukState {
+  override exportState(_context: ExportContext): BadukState {
     return {
       board: this.board.serialize(),
       next_to_play: this.next_to_play,

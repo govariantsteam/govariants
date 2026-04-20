@@ -91,7 +91,7 @@ export class DriftGo extends GridBaduk {
   }
 
   override exportState(): BadukState {
-    const state = super.exportState();
+    const state = super.exportState({ phase: this.phase });
     return {
       ...state,
       last_move: isSgfRepr(state.last_move)

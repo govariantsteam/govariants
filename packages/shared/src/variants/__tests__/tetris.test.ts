@@ -17,7 +17,7 @@ test("Play a game", () => {
   expect(game.nextToPlay()).toEqual([0]);
 
   // check that the final state is as expected
-  expect(game.exportState().board).toEqual([
+  expect(game.exportState({ phase: "play" }).board).toEqual([
     [Color.EMPTY, Color.WHITE, Color.BLACK, Color.EMPTY],
     [Color.EMPTY, Color.WHITE, Color.BLACK, Color.EMPTY],
   ]);

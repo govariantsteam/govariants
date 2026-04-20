@@ -24,6 +24,7 @@ const variantExists = computed(() => getVariantList().includes(props.variant));
         <p v-if="!rulesDescription" class="description-container">
           {{ getDescription(variant) }}
         </p>
+        <!-- eslint-disable-next-line vue/no-v-html -- rulesDescription is author-controlled HTML from the shared package, never user input -->
         <div v-if="rulesDescription" v-html="rulesDescription" />
       </div>
       <div>

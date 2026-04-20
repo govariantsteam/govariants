@@ -5,13 +5,13 @@ import { computed } from "vue";
 
 const props = defineProps<{
   variant: string;
-  player_nr: number;
+  playerNr: number;
   config: object | undefined;
 }>();
 
 const colors = computed(() =>
   props.config
-    ? getPlayerColors(props.variant, props.config, props.player_nr)
+    ? getPlayerColors(props.variant, props.config, props.playerNr)
     : [],
 );
 </script>

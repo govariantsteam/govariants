@@ -56,12 +56,6 @@ export default defineConfigWithVueTs(
         },
       ],
       eqeqeq: ["error", "smart"],
-
-      // TODO(#448): Temporarily disabled vue3-recommended rules require manual fixes
-      "vue/prop-name-casing": "off", // 19 issues
-      "vue/no-template-shadow": "off", // 1 issue
-      "vue/require-default-prop": "off", // 2 issues
-      "vue/no-v-html": "off", // 1 issue
     },
   },
 

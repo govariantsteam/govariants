@@ -38,8 +38,8 @@ function updateFilter(): void {
   <form class="gamesFilterForm" @change="updateFilter">
     <select v-model="variant">
       <option value="">All variants</option>
-      <option v-for="variant in variants" :key="variant">
-        {{ variant }}
+      <option v-for="variantOption in variants" :key="variantOption">
+        {{ variantOption }}
       </option>
     </select>
 

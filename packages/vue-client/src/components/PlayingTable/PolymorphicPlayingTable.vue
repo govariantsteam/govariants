@@ -6,7 +6,7 @@ import { computed } from "vue";
 const props = defineProps<{
   config: IHigherOrderConfig;
   gamestate: object;
-  displayed_round: number;
+  displayedRound: number;
 }>();
 
 const emit = defineEmits<{
@@ -36,7 +36,7 @@ const transformedGameData = computed(() =>
     v-if="variantPlayingTable"
     :gamestate="transformedGameData.gamestate"
     :config="transformedGameData.config"
-    :displayed_round="props.displayed_round"
+    :displayed-round="props.displayedRound"
     @move="emitMove"
   />
 </template>

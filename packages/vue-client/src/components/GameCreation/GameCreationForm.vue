@@ -93,8 +93,11 @@ const hasTimeConfigForm = computed(
       <div class="col">
         <label>Variant</label>
         <select v-model="variant">
-          <option v-for="variant in variants" :key="variant">
-            {{ variant }}
+          <option
+            v-for="variantOption in variants"
+            :key="variantOption"
+          >
+            {{ variantOption }}
           </option>
         </select>
         <span class="variant-description">{{ shortDescription }}</span>

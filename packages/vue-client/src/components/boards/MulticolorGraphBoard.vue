@@ -15,13 +15,13 @@ import { STONE_RADIUS, LINE_WIDTH, BOARD_COLOR } from "./board_constants";
 
 const props = defineProps<{
   board?: (MulticolorStone | null)[];
-  background_color?: string;
-  board_config: BoardConfig;
-  score_board?: (string[] | null)[];
+  backgroundColor?: string;
+  boardConfig: BoardConfig;
+  scoreBoard?: (string[] | null)[];
 }>();
 
 const intersections = computed(() =>
-  createBoard(props.board_config, Intersection),
+  createBoard(props.boardConfig, Intersection),
 );
 const graph = computed(() => createGraph(intersections.value, null));
 
@@ -111,7 +111,7 @@ const viewBox = computed(() => {
       :y="viewBox.minY - 0.5"
       :width="viewBox.width + 1"
       :height="viewBox.height + 1"
-      :fill="background_color ?? BOARD_COLOR"
+      :fill="backgroundColor ?? BOARD_COLOR"
     />
     <g>
       <template v-for="(_, index) in intersections" :key="index">
@@ -161,11 +161,11 @@ const viewBox = computed(() => {
         />
       </template>
     </g>
-    <g v-if="score_board">
+    <g v-if="scoreBoard">
       <template v-for="(intersection, index) in intersections" :key="index">
         <ScoreMark
-          v-if="score_board?.at(index)"
-          :colors="score_board[index]!"
+          v-if="scoreBoard?.at(index)"
+          :colors="scoreBoard[index]!"
           :cx="intersection.position.X"
           :cy="intersection.position.Y"
         />

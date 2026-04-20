@@ -9,13 +9,13 @@ import GameTimer from "../GameTimer.vue";
 import PlayerSymbol from "./PlayerSymbol.vue";
 
 const props = defineProps<{
-  user_id?: string;
-  admin_mode?: boolean;
+  userId?: string;
+  adminMode?: boolean;
   occupant?: User;
-  player_n: number;
+  playerN: number;
   selected?: number;
-  time_control: IPerPlayerTimeControlBase | null;
-  is_players_turn: boolean;
+  timeControl: IPerPlayerTimeControlBase | null;
+  isPlayersTurn: boolean;
   variant: string;
   config: object | undefined;
 }>();
@@ -29,29 +29,29 @@ const hasLeaveCallback = computed(
   // https://stackoverflow.com/a/76208995/5001502
   () => !!getCurrentInstance()?.vnode.props?.onLeave,
 );
-const time_config = computed(
+const timeConfig = computed(
   () => (props.config as IConfigWithTimeControl).time_control,
 );
-const isSelected = computed(() => props.selected === props.player_n);
+const isSelected = computed(() => props.selected === props.playerN);
 </script>
 
 <template>
   <div
     class="seat"
-    :class="{ selected: isSelected, 'to-move': is_players_turn }"
+    :class="{ selected: isSelected, 'to-move': isPlayersTurn }"
     @click="$emit('select')"
   >
-    <p class="seat-number">{{ player_n }}</p>
+    <p class="seat-number">{{ playerN }}</p>
 
     <div v-if="occupant == null">
       <div class="timer-and-button">
         <GameTimer
-          v-if="time_control && time_config"
-          :time_control="time_control"
-          :time_config="time_config"
-          :is_seat_selected="false"
+          v-if="timeControl && timeConfig"
+          :time-control="timeControl"
+          :time-config="timeConfig"
+          :is-seat-selected="false"
         />
-        <button v-if="user_id" @click.stop="$emit('sit')">Take Seat</button>
+        <button v-if="userId" @click.stop="$emit('sit')">Take Seat</button>
       </div>
     </div>
     <div v-else>
@@ -60,19 +60,19 @@ const isSelected = computed(() => props.selected === props.player_n);
       </p>
       <div class="timer-and-button">
         <GameTimer
-          v-if="time_control && time_config"
-          :time_control="time_control"
-          :time_config="time_config"
-          :is_seat_selected="isSelected"
+          v-if="timeControl && timeConfig"
+          :time-control="timeControl"
+          :time-config="timeConfig"
+          :is-seat-selected="isSelected"
         />
         <button
-          v-if="hasLeaveCallback && occupant.id === user_id"
+          v-if="hasLeaveCallback && occupant.id === userId"
           @click.stop="$emit('leave')"
         >
           Leave Seat
         </button>
         <button
-          v-if="hasLeaveCallback && occupant.id !== user_id && admin_mode"
+          v-if="hasLeaveCallback && occupant.id !== userId && adminMode"
           class="btn-danger"
           @click.stop="$emit('leave')"
         >
@@ -80,7 +80,7 @@ const isSelected = computed(() => props.selected === props.player_n);
         </button>
       </div>
     </div>
-    <PlayerSymbol :variant="variant" :player_nr="player_n" :config="config" />
+    <PlayerSymbol :variant="variant" :player-nr="playerN" :config="config" />
   </div>
 </template>
 

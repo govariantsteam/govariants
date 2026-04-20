@@ -9,7 +9,7 @@ import type {
 defineProps<{
   gamestate: DefaultBoardState;
   config: CubeBadukConfig;
-  displayed_round: number;
+  displayedRound: number;
   nextToPlay?: number[];
 }>();
 

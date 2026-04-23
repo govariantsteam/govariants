@@ -40,6 +40,7 @@
     "voronoijs": "^1.0.0",
     "vue": "^3.4.25",
     "vue-error-boundary": "^2.0.3",
+    "vue-i18n": "^11.3.2",
     "vue-router": "^4.2.2",
     "vue3-chessboard": "^1.2.0"
   },

@@ -1,3 +1,4 @@
+import RizomaBoard from "@/components/boards/RizomaBoard.vue";
 import ParallelGoBoard from "@/components/boards/ParallelGoBoard.vue";
 import ChessBoard from "@/components/boards/ChessBoard.vue";
 import FractionalBoard from "@/components/boards/FractionalBoard.vue";
@@ -16,6 +17,7 @@ const board_map: {
   keima: KeimaBoard,
   quantum: QuantumBoard,
   rengo: PolymorphicBoard,
+  rizoma: RizomaBoard as Component<{ config: unknown; gamestate: unknown }>,
 };
 
 export function getBoard(variant: string) {

@@ -7,6 +7,7 @@ import SFractionalConfigForm from "./components/GameCreation/SFractionalConfigFo
 import PyramidConfigForm from "./components/GameCreation/PyramidConfigForm.vue";
 import RengoConfigForm from "./components/GameCreation/RengoConfigForm.vue";
 import CubeBadukConfigForm from "./components/GameCreation/CubeBadukConfigForm.vue";
+import RizomaConfigForm from "./components/GameCreation/RizomaConfigForm.vue";
 
 export const config_form_map: {
   [variant: string]: Component<{ initialConfig: object }>;
@@ -27,4 +28,5 @@ export const config_form_map: {
   sfractional: SFractionalConfigForm,
   lighthouse: GridBadukConfigForm,
   rengo: RengoConfigForm,
+  rizoma: RizomaConfigForm,
 };

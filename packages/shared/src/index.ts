@@ -37,3 +37,9 @@ export * from "./lib/type-guards";
 export * from "./lib/validators";
 
 export const SITE_NAME = "Go Variants";
+export {
+  type RizomaConfig,
+  type RizomaBoardConfig,
+  type RizomaState,
+  type BoardScore,
+} from "./variants/rizoma";

@@ -17,7 +17,7 @@ const board_map: {
   keima: KeimaBoard,
   quantum: QuantumBoard,
   rengo: PolymorphicBoard,
-  rizoma: RizomaBoard as Component<{ config: unknown; gamestate: unknown }>,
+  rizoma: RizomaBoard,
 };
 
 export function getBoard(variant: string) {

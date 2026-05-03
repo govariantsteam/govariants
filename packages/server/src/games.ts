@@ -185,15 +185,6 @@ export async function handleMoveAndTime(
 
   const { player: playerNr, move: new_move } = getOnlyMove(moves);
 
-  const nextPlayers = game_obj.nextToPlay();
-  if (
-    nextPlayers.length > 0 &&
-    new_move !== "resign" &&
-    !nextPlayers.includes(playerNr)
-  ) {
-    throw new Error(`It is not player ${playerNr}'s turn`);
-  }
-
   const previousRound = game_obj.round;
   game_obj.playMove(playerNr, new_move);
   const isRoundTransition = previousRound !== game_obj.round;

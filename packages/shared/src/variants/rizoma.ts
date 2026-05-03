@@ -1,7 +1,8 @@
-import { Coordinate } from "../lib/coordinate";
+import { Coordinate, type CoordinateLike } from "../lib/coordinate";
 import { Grid } from "../lib/grid";
 import { AbstractGame } from "../abstract_game";
 import { Variant } from "../variant";
+import { getGroup, getOuterBorder, examineGroup } from "../lib/group_utils";
 
 type Color = 0 | 1 | null;
 
@@ -41,7 +42,7 @@ export class Rizoma extends AbstractGame<RizomaConfig, RizomaState> {
   private transfer_source_board: number = -1;
   private first_move_on_board: (0 | 1 | null)[];
   private consecutive_passes: number = 0;
-  private ko_point: (Coordinate | null)[];
+  private ko_point: (CoordinateLike | null)[];
   private ko_board: number = -1;
   // Which player is forbidden from immediately recapturing. -1 = no restriction.
   private ko_forbidden_player: -1 | 0 | 1 = -1;
@@ -84,6 +85,10 @@ export class Rizoma extends AbstractGame<RizomaConfig, RizomaState> {
   }
 
   override playMove(player: number, move: string): void {
+    if (player !== this.next_to_play) {
+      throw new Error(`It is not player ${player}'s turn`);
+    }
+
     if (move === "resign") {
       this.phase = "gameover";
       this.result = player === 0 ? "W+R" : "B+R";
@@ -95,16 +100,17 @@ export class Rizoma extends AbstractGame<RizomaConfig, RizomaState> {
       return;
     }
 
+    if (move === "keep_prisoners") {
+      // Forfeit bonus moves; captured stones remain as scoring prisoners.
+      // Does NOT count as a pass for the double-pass game-end rule.
+      this.pending_transfers = 0;
+      this.transfer_source_board = -1;
+      this.switchPlayer();
+      super.increaseRound();
+      return;
+    }
+
     if (move === "pass") {
-      if (this.pending_transfers > 0) {
-        // "Keep prisoners" — forfeit bonus moves, keep captures as scoring prisoners.
-        // Does NOT count as a pass for the double-pass game-end rule.
-        this.pending_transfers = 0;
-        this.transfer_source_board = -1;
-        this.switchPlayer();
-        super.increaseRound();
-        return;
-      }
       this.consecutive_passes++;
       if (this.consecutive_passes >= 2) {
         this.phase = "gameover";
@@ -194,28 +200,31 @@ export class Rizoma extends AbstractGame<RizomaConfig, RizomaState> {
     opponent: 0 | 1,
   ): number {
     const board = this.boards[boardIndex];
-    const { width, height } = this.config.boards[boardIndex];
     let totalCaptured = 0;
 
-    for (const neighbor of this.getNeighbors(lastMove, width, height)) {
-      if (board.at(neighbor) === opponent) {
-        const group = this.getGroup(board, neighbor, opponent, width, height);
-        if (this.getLiberties(board, group, width, height) === 0) {
-          for (const stone of group) board.set(stone, null);
-          totalCaptured += group.length;
-          if (group.length === 1) {
-            // Single-stone capture: set ko. The opponent (whose stone was taken)
-            // is forbidden from immediately recapturing this position.
-            this.ko_point[boardIndex] = group[0];
-            this.ko_board = boardIndex;
-            this.ko_forbidden_player = opponent;
-          } else {
-            // Multi-stone capture: no ko. Clear any ko that was on this board.
-            this.ko_point[boardIndex] = null;
-            if (this.ko_board === boardIndex) {
-              this.ko_board = -1;
-              this.ko_forbidden_player = -1;
-            }
+    for (const neighbor of board.neighbors(lastMove)) {
+      if (board.at(neighbor) !== opponent) continue;
+      const { members, liberties } = examineGroup({
+        index: neighbor,
+        board,
+        groupIdentifier: (v) => v === opponent,
+        libertyIdentifier: (v) => v === null,
+      });
+      if (liberties === 0) {
+        members.forEach((stone) => board.set(stone, null));
+        totalCaptured += members.length;
+        if (members.length === 1) {
+          // Single-stone capture: set ko. The opponent (whose stone was taken)
+          // is forbidden from immediately recapturing this position.
+          this.ko_point[boardIndex] = members[0];
+          this.ko_board = boardIndex;
+          this.ko_forbidden_player = opponent;
+        } else {
+          // Multi-stone capture: no ko. Clear any ko that was on this board.
+          this.ko_point[boardIndex] = null;
+          if (this.ko_board === boardIndex) {
+            this.ko_board = -1;
+            this.ko_forbidden_player = -1;
           }
         }
       }
@@ -223,74 +232,16 @@ export class Rizoma extends AbstractGame<RizomaConfig, RizomaState> {
 
     const playerColor = board.at(lastMove);
     if (playerColor !== null && playerColor !== undefined) {
-      const ownGroup = this.getGroup(
+      const { liberties: ownLiberties } = examineGroup({
+        index: lastMove,
         board,
-        lastMove,
-        playerColor,
-        width,
-        height,
-      );
-      if (this.getLiberties(board, ownGroup, width, height) === 0)
-        throw new Error("Suicide move not allowed");
+        groupIdentifier: (v) => v === playerColor,
+        libertyIdentifier: (v) => v === null,
+      });
+      if (ownLiberties === 0) throw new Error("Suicide move not allowed");
     }
 
     return totalCaptured;
-  }
-
-  private getNeighbors(
-    coord: Coordinate,
-    width: number,
-    height: number,
-  ): Coordinate[] {
-    const result: Coordinate[] = [];
-    for (const [dx, dy] of [
-      [0, 1],
-      [0, -1],
-      [1, 0],
-      [-1, 0],
-    ]) {
-      const nx = coord.x + dx;
-      const ny = coord.y + dy;
-      if (nx >= 0 && nx < width && ny >= 0 && ny < height)
-        result.push(new Coordinate(nx, ny));
-    }
-    return result;
-  }
-
-  private getGroup(
-    board: Grid<Color>,
-    start: Coordinate,
-    color: Color,
-    width: number,
-    height: number,
-  ): Coordinate[] {
-    const group: Coordinate[] = [];
-    const visited = new Set<string>();
-    const queue = [start];
-    while (queue.length > 0) {
-      const curr = queue.pop()!;
-      const key = `${curr.x},${curr.y}`;
-      if (visited.has(key)) continue;
-      visited.add(key);
-      if (board.at(curr) !== color) continue;
-      group.push(curr);
-      for (const n of this.getNeighbors(curr, width, height))
-        if (!visited.has(`${n.x},${n.y}`)) queue.push(n);
-    }
-    return group;
-  }
-
-  private getLiberties(
-    board: Grid<Color>,
-    group: Coordinate[],
-    width: number,
-    height: number,
-  ): number {
-    const liberties = new Set<string>();
-    for (const stone of group)
-      for (const n of this.getNeighbors(stone, width, height))
-        if (board.at(n) === null) liberties.add(`${n.x},${n.y}`);
-    return liberties.size;
   }
 
   private calculateResult(): string {
@@ -298,8 +249,8 @@ export class Rizoma extends AbstractGame<RizomaConfig, RizomaState> {
     let totalWhite = 0;
     this.board_scores = [];
     for (let i = 0; i < this.boards.length; i++) {
-      const { width, height, komi } = this.config.boards[i];
-      const t = this.countTerritory(this.boards[i], width, height);
+      const { komi } = this.config.boards[i];
+      const t = this.countTerritory(this.boards[i]);
       const firstMove = this.first_move_on_board[i];
       // Second opener on each board receives that board's komi.
       const komi_recipient: 0 | 1 | null =
@@ -322,45 +273,27 @@ export class Rizoma extends AbstractGame<RizomaConfig, RizomaState> {
     return "Draw";
   }
 
-  private countTerritory(
-    board: Grid<Color>,
-    width: number,
-    height: number,
-  ): { black: number; white: number } {
+  private countTerritory(board: Grid<Color>): { black: number; white: number } {
     const visited = new Set<string>();
     let black = 0;
     let white = 0;
-    for (let x = 0; x < width; x++) {
-      for (let y = 0; y < height; y++) {
-        const coord = new Coordinate(x, y);
-        const key = `${x},${y}`;
-        if (visited.has(key)) continue;
-        const val = board.at(coord);
-        if (val !== null && val !== undefined) continue;
-        const region: Coordinate[] = [];
-        const borders = new Set<Color>();
-        const queue = [coord];
-        while (queue.length > 0) {
-          const curr = queue.pop()!;
-          const k = `${curr.x},${curr.y}`;
-          if (visited.has(k)) continue;
-          visited.add(k);
-          const cellVal = board.at(curr);
-          if (cellVal !== null && cellVal !== undefined) {
-            borders.add(cellVal);
-            continue;
-          }
-          region.push(curr);
-          for (const n of this.getNeighbors(curr, width, height))
-            if (!visited.has(`${n.x},${n.y}`)) queue.push(n);
-        }
-        if (borders.size === 1) {
-          const owner = [...borders][0];
-          if (owner === 0) black += region.length;
-          else if (owner === 1) white += region.length;
-        }
+    board.forEach((val, coord) => {
+      if (val !== null) return;
+      const key = `${coord.x},${coord.y}`;
+      if (visited.has(key)) return;
+      const region = getGroup(coord, board);
+      region.forEach((c) => visited.add(`${c.x},${c.y}`));
+      const borderColors = new Set(
+        getOuterBorder(region, board)
+          .map((c) => board.at(c))
+          .filter((v): v is 0 | 1 => v !== null && v !== undefined),
+      );
+      if (borderColors.size === 1) {
+        const owner = [...borderColors][0];
+        if (owner === 0) black += region.length;
+        else if (owner === 1) white += region.length;
       }
-    }
+    });
     return { black, white };
   }
 
@@ -369,10 +302,9 @@ export class Rizoma extends AbstractGame<RizomaConfig, RizomaState> {
   }
 
   override specialMoves(): { [key: string]: string } {
-    return {
-      pass: this.pending_transfers > 0 ? "Keep prisoners" : "Pass",
-      resign: "Resign",
-    };
+    return this.pending_transfers > 0
+      ? { keep_prisoners: "Keep prisoners", resign: "Resign" }
+      : { pass: "Pass", resign: "Resign" };
   }
 }
 
@@ -418,33 +350,6 @@ Territory is counted across all boards and summed. Dynamic komi is added per boa
       global_komi: 0.5,
     };
   },
-  sanitizeConfig(config: object): RizomaConfig {
-    const c = config as Record<string, unknown>;
-    // Handle old format: { board_sizes: [{width, height}], komi?: number }
-    if (Array.isArray(c["board_sizes"])) {
-      const oldKomi = typeof c["komi"] === "number" ? c["komi"] : 0;
-      return {
-        boards: (c["board_sizes"] as { width: number; height: number }[]).map(
-          (s) => ({ width: s.width, height: s.height, komi: oldKomi }),
-        ),
-        global_komi: 0,
-      };
-    }
-    const boards = Array.isArray(c["boards"])
-      ? (c["boards"] as RizomaBoardConfig[]).map((b) => ({
-          width: b.width ?? 7,
-          height: b.height ?? 7,
-          komi: b.komi ?? 0,
-        }))
-      : [
-          { width: 7, height: 7, komi: 0 },
-          { width: 7, height: 7, komi: 0 },
-        ];
-    return {
-      boards,
-      global_komi: typeof c["global_komi"] === "number" ? c["global_komi"] : 0,
-    };
-  },
   getPlayerColors(_config: RizomaConfig, playerNr: number): string[] {
     return playerNr === 0 ? ["black"] : ["white"];
   },
@@ -454,7 +359,12 @@ Territory is counted across all boards and summed. Dynamic komi is added per boa
     move: string,
     player: number,
   ): RizomaState {
-    if (move === "pass" || move === "resign" || move === "timeout")
+    if (
+      move === "pass" ||
+      move === "keep_prisoners" ||
+      move === "resign" ||
+      move === "timeout"
+    )
       return state;
     const parts = move.split(":");
     if (parts.length !== 2) return state;

@@ -11,7 +11,7 @@ import type { MulticolorStone } from "@ogfcommunity/variants-shared";
 
 const props = defineProps<{
   config: RizomaConfig;
-  gamestate?: RizomaState;
+  gamestate: RizomaState;
 }>();
 
 const emit = defineEmits<{

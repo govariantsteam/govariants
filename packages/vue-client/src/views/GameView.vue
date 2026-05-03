@@ -302,7 +302,7 @@ const createTimeControlPreview = (
         <NavButtons v-model="view_round" :game-round="current_round" />
 
         <div id="variant-info">
-          <div v-if="variant">
+          <div>
             <span class="info-label">Variant:</span>
             <RouterLink :to="{ name: 'rules', params: { variant: variant } }">{{
               toUpperCaseFirstLetter(variant)

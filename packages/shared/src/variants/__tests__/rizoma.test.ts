@@ -103,10 +103,10 @@ test("Keep prisoners does not count toward double-pass game end", () => {
   // Player 0 should have 1 pending transfer.
   expect(game.exportState().pending_transfers).toBe(1);
 
-  // Player 0 keeps prisoners (pass with pending_transfers > 0).
-  game.playMove(0, "pass");
+  // Player 0 keeps prisoners via the dedicated move.
+  game.playMove(0, "keep_prisoners");
 
-  // Game must NOT be over — keeping prisoners is not a game-ending pass.
+  // Game must NOT be over — keep_prisoners is not a game-ending pass.
   expect(game.phase).not.toBe("gameover");
   expect(game.exportState().pending_transfers).toBe(0);
 });

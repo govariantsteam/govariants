@@ -1,9 +1,9 @@
 {
   "welcome": "Willkommen bei {site_name}!",
   "home": "Eingang",
-  "about": "Kontakt",
+  "about": "Über uns",
   "rules": "Regeln",
-  "login": "Einloggen",
-  "logout": "Ausloggen",
-  "admin": "Administrator"
+  "login": "Anmelden",
+  "logout": "Abmelden",
+  "admin": "Administration"
 }

@@ -25,7 +25,11 @@ const config = ref(getDefaultConfig(props.variant));
 const transformedGameData = computed(() => {
   if (!gameOrError.value.game) return null;
   try {
-    return uiTransform(props.variant, config.value, gameOrError.value.game.state);
+    return uiTransform(
+      props.variant,
+      config.value,
+      gameOrError.value.game.state,
+    );
   } catch {
     return null;
   }
@@ -61,7 +65,9 @@ const gameOrError = computed(() => {
 });
 const game = computed(() => gameOrError.value.game);
 const errorMessage = computed(() => gameOrError.value.error);
-const displayed_round = computed(() => view_round.value ?? game.value?.round ?? 0);
+const displayed_round = computed(
+  () => view_round.value ?? game.value?.round ?? 0,
+);
 
 function cloneConfig(config: object): object {
   // here we use this on a vue proxy object,
@@ -104,16 +110,13 @@ function getGame(
     round: fullGame.round,
     next_to_play: fullGame.nextToPlay(),
     numPlayers: fullGame.numPlayers(),
+    specialMoves: fullGame.specialMoves(),
   };
 }
 
 const specialMoves = computed(() => {
-  if (!props.variant || !config.value || !game.value) return {};
-  try {
-    return makeGameObject(props.variant, cloneConfig(config.value)).specialMoves();
-  } catch {
-    return {};
-  }
+  if (!gameOrError.value.game) return {};
+  return gameOrError.value.game.specialMoves;
 });
 const variantGameView = computed(() => getPlayingTable(props.variant));
 const variantDescriptionShort = computed(() => getDescription(props.variant));

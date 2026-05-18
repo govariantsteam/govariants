@@ -16,15 +16,15 @@ store.update();
 
 <template>
   <RouterLink v-if="!user" class="navElement" to="/login"
-    ><font-awesome-icon icon="fa-solid fa-right-to-bracket" class="icon" />Log
-    in</RouterLink
+    ><font-awesome-icon icon="fa-solid fa-right-to-bracket" class="icon" />{{
+      $t("login")
+    }}</RouterLink
   >
   <template v-else>
     <RouterLink v-if="user.role === 'admin'" class="navElement" to="/admin"
-      ><font-awesome-icon
-        icon="fa-solid fa-user-shield"
-        class="icon"
-      />Admin</RouterLink
+      ><font-awesome-icon icon="fa-solid fa-user-shield" class="icon" />{{
+        $t("admin")
+      }}</RouterLink
     >
     <RouterLink
       class="navElement"
@@ -39,7 +39,7 @@ store.update();
       @click="store.logout()"
     >
       <font-awesome-icon icon="fa-solid fa-right-from-bracket" class="icon" />
-      Log out
+      {{ $t("logout") }}
     </button>
   </template>
 </template>

@@ -31,32 +31,26 @@ const toggleMenuFn = (event: MouseEvent) => {
 
 <template>
   <nav>
-    <RouterLink class="navLogo" to="/"
-      ><img class="navLogoImg" src="/favicon.ico"
-    /></RouterLink>
+    <RouterLink class="navLogo" to="/">
+      <img class="navLogoImg" src="/favicon.ico" />
+    </RouterLink>
     <button class="navHamburgerContainer navElement" @click="toggleMenuFn">
       <font-awesome-icon icon="fa-solid fa-bars" class="navHamburgerMenu" />
     </button>
     <div class="navContent" :class="{ closedMenu: is_menu_closed }">
       <div>
-        <RouterLink class="navElement" to="/"
-          ><font-awesome-icon
-            icon="fa-solid fa-house"
-            class="icon"
-          />Home</RouterLink
-        >
-        <RouterLink class="navElement" to="/about"
-          ><font-awesome-icon
-            icon="fa-solid fa-circle-info"
-            class="icon"
-          />About</RouterLink
-        >
-        <RouterLink class="navElement" to="/variants/rules-list"
-          ><font-awesome-icon
-            icon="fa-solid fa-book"
-            class="icon"
-          />Rules</RouterLink
-        >
+        <RouterLink class="navElement" to="/">
+          <font-awesome-icon icon="fa-solid fa-house" class="icon" />
+          {{ $t("home") }}
+        </RouterLink>
+        <RouterLink class="navElement" to="/about">
+          <font-awesome-icon icon="fa-solid fa-circle-info" class="icon" />
+          {{ $t("about") }}
+        </RouterLink>
+        <RouterLink class="navElement" to="/variants/rules-list">
+          <font-awesome-icon icon="fa-solid fa-book" class="icon" />
+          {{ $t("rules") }}
+        </RouterLink>
         <NotificationsNav />
       </div>
       <div>

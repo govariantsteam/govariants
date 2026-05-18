@@ -8,7 +8,7 @@ import { SITE_NAME } from "@ogfcommunity/variants-shared";
   <main>
     <div class="grid-page-layout">
       <div>
-        <h2>Welcome to {{ SITE_NAME }}!</h2>
+        <h2>{{ $t("welcome", { site_name: SITE_NAME }) }}</h2>
         <GameCreationForm />
       </div>
       <div>

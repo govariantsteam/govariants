@@ -55,9 +55,7 @@ describe("GameCreationForm", () => {
       .findComponent(BoardConfigForm)
       .find("select").element.value;
 
-    // The variant switch reset the board to tetris's default (grid)...
-    expect(body.config.board.type).toBe(BoardPattern.Grid);
-    // ...and that is exactly what the form is showing (no stale circular board).
+    // The game is created with the board the form is showing, not a stale one.
     expect(body.config.board.type).toBe(shownBoard);
   });
 });

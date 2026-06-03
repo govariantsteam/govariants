@@ -19,43 +19,45 @@ describe("GameCreationForm", () => {
     vi.clearAllMocks();
   });
 
-  // Regression test: baduk, tetris, capture, phantom, etc. all use the same
-  // BadukConfigForm. Without a :key on the dynamic <component>, switching
-  // between them reused the form instance, so the board shape shown in the
-  // form (and preview) could diverge from the config actually submitted.
-  it("creates the game with the board shape currently shown in the form after switching variant", async () => {
+  // baduk, tetris, capture, phantom, etc. all use the same BadukConfigForm.
+  // Without a :key on the dynamic <component>, switching between them reused
+  // the form instance, so the board shown in the form could diverge from the
+  // board actually submitted. Switching variant resets the board to the new
+  // variant's default, and the game must be created with that same board.
+  it("creates the game with the board shown in the form after switching variant", async () => {
     const wrapper = mount(GameCreationForm, {
-      global: {
-        stubs: { TimeControlConfigForm: true, DefaultBoard: true },
-      },
+      global: { stubs: { TimeControlConfigForm: true, DefaultBoard: true } },
     });
     await flushPromises();
 
-    // Default variant is a Baduk-family variant (baduk). Choose a custom board.
-    const patternSelect = wrapper.findComponent(BoardConfigForm).find("select");
-    await patternSelect.setValue(BoardPattern.Custom);
+    // Start on baduk (the default), pick a circular board...
+    await wrapper
+      .findComponent(BoardConfigForm)
+      .find("select")
+      .setValue(BoardPattern.Circular);
     await flushPromises();
 
-    // Switch to another Baduk-family variant that reuses the same config form.
-    const variantSelect = wrapper.find("select");
-    await variantSelect.setValue("tetris");
+    // ...then switch to tetris, which reuses the same config form.
+    await wrapper.find("select").setValue("tetris");
     await flushPromises();
 
-    // Create the game.
-    await wrapper.find("button.large-button").trigger("click");
+    const createButton = wrapper
+      .findAll("button")
+      .find((b) => b.text() === "Create Game");
+    if (!createButton) throw new Error("Create Game button not found");
+    await createButton.trigger("click");
     await flushPromises();
 
-    expect(requests.post).toHaveBeenCalledTimes(1);
     const body = vi.mocked(requests.post).mock.calls[0][1] as {
       config: { board: { type: string } };
     };
-
-    // The board shape the form is currently showing after the variant switch.
-    const shownPattern = wrapper
+    const shownBoard = wrapper
       .findComponent(BoardConfigForm)
-      .find("select")
-      .element.value;
+      .find("select").element.value;
 
-    expect(body.config.board.type).toBe(shownPattern);
+    // The variant switch reset the board to tetris's default (grid)...
+    expect(body.config.board.type).toBe(BoardPattern.Grid);
+    // ...and that is exactly what the form is showing (no stale circular board).
+    expect(body.config.board.type).toBe(shownBoard);
   });
 });

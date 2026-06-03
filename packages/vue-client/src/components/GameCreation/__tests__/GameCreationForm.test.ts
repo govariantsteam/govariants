@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { mount, flushPromises } from "@vue/test-utils";
+import { render, fireEvent } from "@testing-library/vue";
+import { flushPromises } from "@vue/test-utils";
 import { BoardPattern } from "@ogfcommunity/variants-shared";
 import GameCreationForm from "../GameCreationForm.vue";
-import BoardConfigForm from "../BoardConfigForms/BoardConfigForm.vue";
 import * as requests from "@/requests";
 
 vi.mock("@/requests", () => ({
@@ -25,35 +25,28 @@ describe("GameCreationForm", () => {
   // board actually submitted. Switching variant resets the board to the new
   // variant's default, and the game must be created with that same board.
   it("creates the game with the board shown in the form after switching variant", async () => {
-    const wrapper = mount(GameCreationForm, {
+    const { getByLabelText, getByRole } = render(GameCreationForm, {
       global: { stubs: { TimeControlConfigForm: true, DefaultBoard: true } },
     });
     await flushPromises();
 
     // Start on baduk (the default), pick a circular board...
-    await wrapper
-      .findComponent(BoardConfigForm)
-      .find("select")
-      .setValue(BoardPattern.Circular);
+    await fireEvent.update(getByLabelText("Pattern"), BoardPattern.Circular);
     await flushPromises();
 
     // ...then switch to tetris, which reuses the same config form.
-    await wrapper.find("select").setValue("tetris");
+    await fireEvent.update(getByLabelText("Variant"), "tetris");
     await flushPromises();
 
-    const createButton = wrapper
-      .findAll("button")
-      .find((b) => b.text() === "Create Game");
-    if (!createButton) throw new Error("Create Game button not found");
-    await createButton.trigger("click");
+    // The board the form is showing after the variant switch.
+    const shownBoard = (getByLabelText("Pattern") as HTMLSelectElement).value;
+
+    await fireEvent.click(getByRole("button", { name: "Create Game" }));
     await flushPromises();
 
     const body = vi.mocked(requests.post).mock.calls[0][1] as {
       config: { board: { type: string } };
     };
-    const shownBoard = wrapper
-      .findComponent(BoardConfigForm)
-      .find("select").element.value;
 
     // The game is created with the board the form is showing, not a stale one.
     expect(body.config.board.type).toBe(shownBoard);

@@ -107,6 +107,7 @@ const hasTimeConfigForm = computed(
     <template v-if="variantConfigForm">
       <component
         :is="variantConfigForm"
+        :key="variant"
         :initial-config="getDefaultConfig(variant)"
         @config-changed="setConfig"
       />

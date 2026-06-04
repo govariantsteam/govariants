@@ -91,8 +91,8 @@ const hasTimeConfigForm = computed(
     <h3>Create a game</h3>
     <div>
       <div class="col">
-        <label>Variant</label>
-        <select v-model="variant">
+        <label for="variant-select">Variant</label>
+        <select id="variant-select" v-model="variant">
           <option
             v-for="variantOption in variants"
             :key="variantOption"
@@ -107,6 +107,7 @@ const hasTimeConfigForm = computed(
     <template v-if="variantConfigForm">
       <component
         :is="variantConfigForm"
+        :key="variant"
         :initial-config="getDefaultConfig(variant)"
         @config-changed="setConfig"
       />

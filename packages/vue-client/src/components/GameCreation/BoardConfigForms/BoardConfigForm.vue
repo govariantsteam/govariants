@@ -33,8 +33,8 @@ function emitConfigChange(config: BoardConfig) {
 <template>
   <div class="config-form-column">
     <template v-if="$props.gridOnly !== true">
-      <label>Pattern</label>
-      <select v-model="board_type">
+      <label for="board-pattern-select">Pattern</label>
+      <select id="board-pattern-select" v-model="board_type">
         <option :value="BoardPattern.Grid">Rectangular</option>
         <option :value="BoardPattern.GridWithHoles">
           Rectangular with holes

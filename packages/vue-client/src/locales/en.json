@@ -17,5 +17,10 @@
     "title": "Create a game",
     "variant": "Variant",
     "button": "Create Game"
+  },
+  "game-filter": {
+    "title": "Filter games",
+    "all-variants": "All variants",
+    "my-games": "games that I play"
   }
 }

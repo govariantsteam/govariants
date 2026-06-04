@@ -17,5 +17,10 @@
     "title": "Neues Spiel",
     "variant": "Variante",
     "button": "Spiel erstellen"
+  },
+  "game-filter": {
+    "title": "Spiele filtern",
+    "all-variants": "Alle Varianten",
+    "my-games": "Meine Spiele"
   }
 }

@@ -88,15 +88,12 @@ const hasTimeConfigForm = computed(
 
 <template>
   <div className="game-creation-form">
-    <h3>Create a game</h3>
+    <h3>{{ $t("game-creation.title") }}</h3>
     <div>
       <div class="col">
-        <label for="variant-select">Variant</label>
+        <label for="variant-select">{{ $t("game-creation.variant") }}</label>
         <select id="variant-select" v-model="variant">
-          <option
-            v-for="variantOption in variants"
-            :key="variantOption"
-          >
+          <option v-for="variantOption in variants" :key="variantOption">
             {{ variantOption }}
           </option>
         </select>
@@ -115,7 +112,9 @@ const hasTimeConfigForm = computed(
         v-if="hasTimeConfigForm"
         @config-changed="setTimeControlConfig"
       />
-      <button class="large-button" @click="createGame">Create Game</button>
+      <button class="large-button" @click="createGame">
+        {{ $t("game-creation.button") }}
+      </button>
     </template>
     <template v-else>
       <textarea v-model="configString" />
@@ -124,7 +123,7 @@ const hasTimeConfigForm = computed(
         @config-changed="setTimeControlConfig"
       />
       <button class="large-button" @click="parseConfigThenCreateGame">
-        Create Game
+        {{ $t("game-creation.button") }}
       </button>
     </template>
   </div>

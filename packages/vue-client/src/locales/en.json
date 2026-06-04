@@ -12,5 +12,10 @@
     "first": "First",
     "previous": "Previous",
     "next": "Next"
+  },
+  "game-creation": {
+    "title": "Create a game",
+    "variant": "Variant",
+    "button": "Create Game"
   }
 }

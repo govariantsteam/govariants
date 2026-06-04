@@ -16,6 +16,7 @@
   "game-creation": {
     "title": "Create a game",
     "variant": "Variant",
+    "config": "Config",
     "button": "Create Game"
   },
   "game-filter": {

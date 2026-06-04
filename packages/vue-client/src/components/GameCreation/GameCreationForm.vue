@@ -100,7 +100,7 @@ const hasTimeConfigForm = computed(
         <span class="variant-description">{{ shortDescription }}</span>
       </div>
     </div>
-    <h3>Config</h3>
+    <h3>{{ $t("game-creation.config") }}</h3>
     <template v-if="variantConfigForm">
       <component
         :is="variantConfigForm"

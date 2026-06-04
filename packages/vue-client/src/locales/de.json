@@ -5,5 +5,12 @@
   "rules": "Regeln",
   "login": "Anmelden",
   "logout": "Abmelden",
-  "admin": "Administration"
+  "admin": "Administration",
+  "notifications": "Nachrichten",
+  "pagination": {
+    "size-label": "Anzahl:",
+    "first": "Anfang",
+    "previous": "Zurück",
+    "next": "Vorwärts"
+  }
 }

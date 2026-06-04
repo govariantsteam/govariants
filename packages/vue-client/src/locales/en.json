@@ -5,5 +5,12 @@
   "rules": "Rules",
   "login": "Log in",
   "logout": "Log out",
-  "admin": "Admin"
+  "admin": "Admin",
+  "notifications": "Notifications",
+  "pagination": {
+    "size-label": "show:",
+    "first": "First",
+    "previous": "Previous",
+    "next": "Next"
+  }
 }

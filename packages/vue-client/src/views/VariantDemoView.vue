@@ -5,11 +5,11 @@ import {
   getDefaultConfig,
   getDescription,
   uiTransform,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 import SeatComponent from "@/components/GameView/SeatComponent.vue";
 import { useCurrentUser } from "../stores/user";
 import { computed, reactive, ref, watch, type Ref } from "vue";
-import type { MovesType } from "@ogfcommunity/variants-shared";
+import type { MovesType } from "@govariants/shared";
 import NavButtons from "@/components/GameView/NavButtons.vue";
 import PlayersToMove from "@/components/GameView/PlayersToMove.vue";
 import { config_form_map } from "@/config_form_map";

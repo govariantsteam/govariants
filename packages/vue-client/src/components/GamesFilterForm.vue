@@ -3,7 +3,7 @@ import { useCurrentUser } from "@/stores/user";
 import {
   getVariantList,
   type GamesFilter,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 import { ref } from "vue";
 
 const filter = defineModel<GamesFilter>();

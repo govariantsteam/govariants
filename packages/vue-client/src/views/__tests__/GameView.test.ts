@@ -3,7 +3,7 @@ import { mount, flushPromises } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 import GameView from "../GameView.vue";
 import * as requests from "../../requests";
-import type { User } from "@ogfcommunity/variants-shared";
+import type { User } from "@govariants/shared";
 
 // Mock the requests module
 vi.mock("../../requests", () => ({

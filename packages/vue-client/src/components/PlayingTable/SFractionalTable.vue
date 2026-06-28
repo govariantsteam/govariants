@@ -3,7 +3,7 @@ import {
   DefaultBoardState,
   SFractional,
   sFractionalMoveColors,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 import MoveSequenceDisplay from "../MoveSequenceDisplay.vue";
 import DefaultBoard from "../boards/DefaultBoard.vue";
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BoardConfig, BoardPattern } from "@ogfcommunity/variants-shared";
+import { BoardConfig, BoardPattern } from "@govariants/shared";
 import { type Ref, ref } from "vue";
 import GridBoardConfigForm from "./GridBoardConfigForm.vue";
 import GridWithHolesBoardConfigForm from "./GridWithHolesBoardConfigForm.vue";

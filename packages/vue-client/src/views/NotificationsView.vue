@@ -7,7 +7,7 @@ import {
   isErrorResult,
   Notifications,
   NotificationsResponse,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 import { setNotificationsCount } from "@/stores/notifications";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {

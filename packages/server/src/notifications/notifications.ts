@@ -6,7 +6,7 @@ import {
   GameSubscriptions,
   Notifications,
   NotificationType,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 
 function outwardMap(userNotifications: UserNotifications): GameNotification[] {
   return userNotifications.notifications as GameNotification[];

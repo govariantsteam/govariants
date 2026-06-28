@@ -1,4 +1,4 @@
-import { type NotificationType } from "@ogfcommunity/variants-shared";
+import { type NotificationType } from "@govariants/shared";
 import { createApp, ref } from "vue";
 import Swal from "sweetalert2";
 import * as requests from "@/requests";

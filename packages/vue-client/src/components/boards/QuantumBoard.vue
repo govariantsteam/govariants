@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Color, type CoordinateLike } from "@ogfcommunity/variants-shared";
+import { Color, type CoordinateLike } from "@govariants/shared";
 </script>
 
 <script setup lang="ts">
@@ -11,7 +11,7 @@ import {
   MulticolorStone,
   NewBadukConfig,
   moveToIndex,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 import { computed } from "vue";
 
 const props = defineProps<{

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TrihexagonalBoardConfig } from "@ogfcommunity/variants-shared";
+import { TrihexagonalBoardConfig } from "@govariants/shared";
 import { ref } from "vue";
 
 const defaultConfig: TrihexagonalBoardConfig = {

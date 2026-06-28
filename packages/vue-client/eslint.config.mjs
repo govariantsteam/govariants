@@ -45,12 +45,12 @@ export default defineConfigWithVueTs(
           patterns: [
             {
               group: [
-                "@ogfcommunity/variants-shared/src/*",
+                "@govariants/shared/src/*",
                 "**/shared/**",
                 "shared/**",
               ],
               message:
-                "Import the shared package using the package alias: import {X} from '@ogfcommunity/variants-shared' (not via a relative path).",
+                "Import the shared package using the package alias: import {X} from '@govariants/shared' (not via a relative path).",
             },
           ],
         },

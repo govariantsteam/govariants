@@ -1,5 +1,5 @@
 {
-  "name": "@ogfcommunity/variants-server",
+  "name": "@govariants/server",
   "main": "dist/index.js",
   "scripts": {
     "start": "nodemon ./src/index.ts",
@@ -17,7 +17,7 @@
     ]
   },
   "dependencies": {
-    "@ogfcommunity/variants-shared": "1.0.0",
+    "@govariants/shared": "1.0.0",
     "@types/express": "^5.0.6",
     "@types/express-session": "^1.18.2",
     "@types/migrate-mongo": "10.0.5",

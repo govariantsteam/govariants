@@ -5,7 +5,7 @@ import {
   getVariantList,
   makeGameObject,
   RengoConfig,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 import { ref, watch, type Component } from "vue";
 
 const props = defineProps<{

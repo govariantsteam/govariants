@@ -4,7 +4,7 @@ import {
   CustomBoardConfig,
   validateCustomBoardConfig,
   getCustomBoardConfigWarning,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 import { ref } from "vue";
 
 const defaultConfigStr = `{

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { UserResponse, UserRole } from "@ogfcommunity/variants-shared";
+import { UserResponse, UserRole } from "@govariants/shared";
 import { ref, watchEffect, computed } from "vue";
 import * as requests from "../requests";
 import { useCurrentUser } from "@/stores/user";

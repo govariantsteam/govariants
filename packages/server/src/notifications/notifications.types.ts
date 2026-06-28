@@ -1,4 +1,4 @@
-import { NotificationType } from "@ogfcommunity/variants-shared";
+import { NotificationType } from "@govariants/shared";
 
 export type DBGameNotification = {
   gameId: string;

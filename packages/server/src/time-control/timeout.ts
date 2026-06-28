@@ -4,7 +4,7 @@ import {
   getOnlyMove,
   makeGameObject,
   timeControlMap,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 import { nullTimeState } from "./time-handler-utils";
 import { getTimeHandler } from "./time-control";
 

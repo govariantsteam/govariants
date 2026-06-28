@@ -7,7 +7,7 @@ import {
   ITimeControlBase,
   TimeControlType,
   makeGameObject,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 import { TestClock } from "../clock";
 import { TimeHandlerSequentialMoves } from "../time-handler-sequential";
 import { TestTimeoutService } from "../mocks/timeout-service.mock";

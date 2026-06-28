@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CircularBoardConfig } from "@ogfcommunity/variants-shared";
+import { CircularBoardConfig } from "@govariants/shared";
 import { ref } from "vue";
 
 const defaultConfig: CircularBoardConfig = {

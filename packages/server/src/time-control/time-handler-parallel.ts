@@ -6,7 +6,7 @@ import {
   PerPlayerTimeControlParallel,
   TimeControlParallel,
   timeControlMap,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 import { ITimeoutService } from "./timeout";
 import { ITimeHandler } from "./time-control";
 import { IClock } from "./clock";

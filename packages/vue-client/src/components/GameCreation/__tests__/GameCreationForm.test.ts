@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, fireEvent } from "@testing-library/vue";
 import { flushPromises } from "@vue/test-utils";
-import { BoardPattern } from "@ogfcommunity/variants-shared";
+import { BoardPattern } from "@govariants/shared";
 import GameCreationForm from "../GameCreationForm.vue";
 import * as requests from "@/requests";
 

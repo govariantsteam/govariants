@@ -3,7 +3,7 @@ import type {
   User,
   IPerPlayerTimeControlBase,
   IConfigWithTimeControl,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 import { computed, getCurrentInstance } from "vue";
 import GameTimer from "../GameTimer.vue";
 import PlayerSymbol from "./PlayerSymbol.vue";

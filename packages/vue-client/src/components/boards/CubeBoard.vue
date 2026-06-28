@@ -22,7 +22,7 @@ import {
   projectToSquircle,
   calculateSquircleNormal,
   getHoshi,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 
 const props = withDefaults(
   defineProps<{

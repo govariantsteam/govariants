@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getPlayingTable } from "@/playing_table_map";
-import { IHigherOrderConfig, uiTransform } from "@ogfcommunity/variants-shared";
+import { IHigherOrderConfig, uiTransform } from "@govariants/shared";
 import { computed } from "vue";
 
 const props = defineProps<{

@@ -4,7 +4,7 @@ import {
   makeGameObject,
   NotificationsResponse,
   groupBy,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 import passport, { AuthenticateCallback } from "passport";
 import {
   getGame,
@@ -38,7 +38,7 @@ import {
   UserResponse,
   GameInitialResponse,
   validateNotificationTypeArray,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 import { io } from "./socket_io";
 import { checkCSRFToken, generateCSRFToken } from "./csrf_guard";
 import { sendEmail } from "./email";

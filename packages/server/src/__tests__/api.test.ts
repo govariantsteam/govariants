@@ -7,7 +7,7 @@ import {
   clearTestDb,
   getTestClient,
 } from "./helpers/setup";
-import { UserResponse } from "@ogfcommunity/variants-shared";
+import { UserResponse } from "@govariants/shared";
 import { HttpError } from "../http-error";
 
 // Mock modules BEFORE importing api - this prevents the real index.ts from loading

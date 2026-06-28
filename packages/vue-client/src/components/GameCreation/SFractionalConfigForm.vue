@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BoardConfig, SFractionalConfig } from "@ogfcommunity/variants-shared";
+import { BoardConfig, SFractionalConfig } from "@govariants/shared";
 import BoardConfigForm from "./BoardConfigForms/BoardConfigForm.vue";
 import { reactive } from "vue";
 

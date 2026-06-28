@@ -1,5 +1,5 @@
 {
-  "name": "@ogfcommunity/variants-monorepo",
+  "name": "@govariants/monorepo",
   "version": "1.0.0",
   "description": "A place to play Go variants, brought to you by the OGF community.",
   "main": "index.js",
@@ -11,9 +11,9 @@
     "test": "yarn workspaces foreach -pti run test",
     "lint:check": "yarn workspaces foreach -pti run lint:check",
     "lint": "yarn workspaces foreach -pti run lint",
-    "start:server": "yarn workspace @ogfcommunity/variants-server run start",
-    "start:client": "yarn workspace @ogfcommunity/variants-vue-client run start",
-    "start:shared": "yarn workspace @ogfcommunity/variants-shared run start",
+    "start:server": "yarn workspace @govariants/server run start",
+    "start:client": "yarn workspace @govariants/vue-client run start",
+    "start:shared": "yarn workspace @govariants/shared run start",
     "new-variant": "node  ./scripts/create-new-app.js",
     "postinstall": "husky"
   },

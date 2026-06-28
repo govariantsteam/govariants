@@ -5,7 +5,7 @@ import {
   PerPlayerTimeControlParallel,
   TimeControlType,
   parallelVariant,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 import { TestClock } from "../clock";
 import { TimeHandlerParallelMoves } from "../time-handler-parallel";
 import { TestTimeoutService } from "../mocks/timeout-service.mock";

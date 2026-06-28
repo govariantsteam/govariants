@@ -1,2 +1,2 @@
-release: yarn workspace @ogfcommunity/variants-server migrate
-web: yarn workspace @ogfcommunity/variants-server launch
+release: yarn workspace @govariants/server migrate
+web: yarn workspace @govariants/server launch

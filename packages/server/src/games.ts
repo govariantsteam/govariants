@@ -15,7 +15,7 @@ import {
   GameSubscriptions,
   GameInitialResponse,
   GameErrorResponse,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 import { ObjectId, WithId, Document, Filter, Collection } from "mongodb";
 import { getDb } from "./db";
 import { io } from "./socket_io";

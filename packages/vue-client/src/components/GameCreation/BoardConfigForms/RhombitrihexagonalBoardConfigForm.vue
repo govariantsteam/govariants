@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { RhombitrihexagonalBoardConfig } from "@ogfcommunity/variants-shared";
+import { RhombitrihexagonalBoardConfig } from "@govariants/shared";
 import { ref } from "vue";
 
 const defaultConfig: RhombitrihexagonalBoardConfig = {

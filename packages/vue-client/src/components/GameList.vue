@@ -7,7 +7,7 @@ import {
   type GamesFilter,
   gamesFilterToUrlParams,
   isErrorResult,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 import GameListItem from "@/components/GameListItem.vue";
 import GameListItemFallback from "@/components/GameListItemFallback.vue";
 import GamesFilterForm from "@/components/GamesFilterForm.vue";

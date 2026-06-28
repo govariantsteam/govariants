@@ -6,7 +6,7 @@ import {
   Coordinate,
   getHoshi,
   MulticolorStone,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 import { positionsGetter } from "./board_utils";
 import {
   STONE_RADIUS,

@@ -2,9 +2,9 @@
 import {
   DefaultBoardConfig,
   DefaultBoardState,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 import MoveSequenceDisplay from "../MoveSequenceDisplay.vue";
-import { count_binary_ones } from "@ogfcommunity/variants-shared";
+import { count_binary_ones } from "@govariants/shared";
 import DefaultBoard from "../boards/DefaultBoard.vue";
 
 defineProps<{

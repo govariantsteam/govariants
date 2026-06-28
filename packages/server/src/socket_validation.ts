@@ -1,4 +1,4 @@
-import { GameResponse, UserResponse } from "@ogfcommunity/variants-shared";
+import { GameResponse, UserResponse } from "@govariants/shared";
 
 export const SEAT_TOPIC_RE = /^game\/([a-f0-9]{24})\/(\d+)$/;
 

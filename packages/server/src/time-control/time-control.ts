@@ -6,8 +6,8 @@ import {
   TimeControlType,
   IFischerConfig,
   getTimeHandling,
-} from "@ogfcommunity/variants-shared";
-import { AbstractGame, GameResponse } from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
+import { AbstractGame, GameResponse } from "@govariants/shared";
 import { Clock } from "./clock";
 import { getTimeoutService } from "..";
 import { TimeHandlerSequentialMoves } from "./time-handler-sequential";

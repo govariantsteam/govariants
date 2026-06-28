@@ -3,7 +3,7 @@ import {
   IPerPlayerTimeControlBase,
   TimeControlType,
   badukVariant,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 import {
   getMsUntilTimeout,
   initialState,

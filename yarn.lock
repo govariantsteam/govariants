@@ -752,16 +752,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@govariants/monorepo@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "@govariants/monorepo@workspace:."
-  dependencies:
-    "@types/jsdom": ^21.1.7
-    husky: ^9.1.7
-    lint-staged: ^15.2.11
-  languageName: unknown
-  linkType: soft
-
 "@govariants/server@workspace:packages/server":
   version: 0.0.0-use.local
   resolution: "@govariants/server@workspace:packages/server"
@@ -4534,6 +4524,16 @@ __metadata:
   checksum: cc6d8e655e360955bdccaca51a12a474268f95bb793fc3e1f2bdadb075f28bfd1fd988dab872daf77a61d78cbaf13744bc8727a17cfb1d150d76047d805375f3
   languageName: node
   linkType: hard
+
+"govariants@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "govariants@workspace:."
+  dependencies:
+    "@types/jsdom": ^21.1.7
+    husky: ^9.1.7
+    lint-staged: ^15.2.11
+  languageName: unknown
+  linkType: soft
 
 "graceful-fs@npm:^4.1.6, graceful-fs@npm:^4.2.0, graceful-fs@npm:^4.2.6":
   version: 4.2.11

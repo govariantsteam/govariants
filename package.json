@@ -1,6 +1,7 @@
 {
-  "name": "@govariants/monorepo",
+  "name": "govariants",
   "version": "1.0.0",
+  "private": true,
   "description": "A place to play Go variants, brought to you by the OGF community.",
   "main": "index.js",
   "license": "AGPL-3.0",

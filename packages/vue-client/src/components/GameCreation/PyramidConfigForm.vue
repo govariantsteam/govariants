@@ -6,7 +6,7 @@ import {
   NewBadukConfig,
   generalizedPyramid,
   PyramidConfig,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 import BadukConfigForm from "./BadukConfigForm.vue";
 
 defineProps<{

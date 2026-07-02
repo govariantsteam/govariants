@@ -13,7 +13,7 @@ import { connectToDb, getDb } from "./db";
 import passport from "passport";
 import { Strategy as CustomStrategy } from "passport-custom";
 import { Strategy as LocalStrategy } from "passport-local";
-import { SITE_NAME, UserResponse } from "@ogfcommunity/variants-shared";
+import { SITE_NAME, UserResponse } from "@govariants/shared";
 import { router as apiRouter } from "./api";
 import { getGame } from "./games";
 import * as socket_io from "./socket_io";

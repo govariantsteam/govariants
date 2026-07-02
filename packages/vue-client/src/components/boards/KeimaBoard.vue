@@ -7,8 +7,8 @@ import {
   Color,
   getWidthAndHeight,
   getKeimaMoves,
-} from "@ogfcommunity/variants-shared";
-import { GridBadukConfig } from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
+import { GridBadukConfig } from "@govariants/shared";
 import { computed } from "vue";
 
 const props = defineProps<{

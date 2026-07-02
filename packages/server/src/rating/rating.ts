@@ -4,7 +4,7 @@ import {
   UserRanking,
   UserRankings,
   UserResponse,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 import { Glicko2, Player } from "glicko2";
 import { updateUserRanking, getUser } from "../users";
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, watch } from "vue";
-import type { RizomaConfig } from "@ogfcommunity/variants-shared";
+import type { RizomaConfig } from "@govariants/shared";
 
 const props = defineProps<{
   initialConfig: RizomaConfig;

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SierpinskyBoardConfig } from "@ogfcommunity/variants-shared";
+import { SierpinskyBoardConfig } from "@govariants/shared";
 import { ref } from "vue";
 
 const defaultConfig: SierpinskyBoardConfig = {

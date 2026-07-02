@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getPlayerColors } from "@ogfcommunity/variants-shared";
+import { getPlayerColors } from "@govariants/shared";
 import TaegeukStone from "../TaegeukStone.vue";
 import { computed } from "vue";
 

@@ -1,6 +1,6 @@
 import { defineStore, storeToRefs } from "pinia";
 import * as requests from "../requests";
-import type { UserResponse } from "@ogfcommunity/variants-shared";
+import type { UserResponse } from "@govariants/shared";
 import type { Ref } from "vue";
 
 interface UserStoreStateTree {

@@ -6,13 +6,13 @@ board color etc.
 
 <script setup lang="ts">
 import MulticolorGridBoard from "./MulticolorGridBoard.vue";
-import { Coordinate, indexToMove } from "@ogfcommunity/variants-shared";
+import { Coordinate, indexToMove } from "@govariants/shared";
 import MulticolorGraphBoard from "./MulticolorGraphBoard.vue";
 import {
   DefaultBoardConfig,
   DefaultBoardState,
   MulticolorStone,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 
 const props = defineProps<{
   config: DefaultBoardConfig;

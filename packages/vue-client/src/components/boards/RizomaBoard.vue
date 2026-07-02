@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import MulticolorGridBoard from "./MulticolorGridBoard.vue";
-import { Coordinate } from "@ogfcommunity/variants-shared";
+import { Coordinate } from "@govariants/shared";
 import type {
   RizomaConfig,
   RizomaState,
   BoardScore,
-} from "@ogfcommunity/variants-shared";
-import type { MulticolorStone } from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
+import type { MulticolorStone } from "@govariants/shared";
 
 const props = defineProps<{
   config: RizomaConfig;

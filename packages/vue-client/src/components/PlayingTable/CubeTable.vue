@@ -4,7 +4,7 @@ import CubeBoard from "../boards/CubeBoard.vue";
 import type {
   CubeBadukConfig,
   DefaultBoardState,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 
 defineProps<{
   gamestate: DefaultBoardState;

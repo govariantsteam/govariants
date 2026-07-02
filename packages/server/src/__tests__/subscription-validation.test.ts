@@ -1,4 +1,4 @@
-import { GameResponse, UserResponse } from "@ogfcommunity/variants-shared";
+import { GameResponse, UserResponse } from "@govariants/shared";
 import {
   validateSeatSubscription,
   gameTopic,

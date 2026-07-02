@@ -8,7 +8,7 @@ import {
   Intersection,
   createGraph,
   MulticolorStone,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 import ScoreMark from "./ScoreMark.vue";
 import { Voronoi, Site, Cell } from "voronoijs";
 import { STONE_RADIUS, LINE_WIDTH, BOARD_COLOR } from "./board_constants";

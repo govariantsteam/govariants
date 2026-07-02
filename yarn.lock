@@ -752,6 +752,112 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@govariants/server@workspace:packages/server":
+  version: 0.0.0-use.local
+  resolution: "@govariants/server@workspace:packages/server"
+  dependencies:
+    "@eslint/js": ^10
+    "@govariants/shared": 1.0.0
+    "@types/express": ^5.0.6
+    "@types/express-session": ^1.18.2
+    "@types/migrate-mongo": 10.0.5
+    "@types/nodemailer": ^7.0.11
+    "@types/passport": ^1.0.17
+    "@types/passport-local": ^1.0.35
+    "@types/supertest": ^6.0.3
+    connect-mongo: ^5.0.0
+    eslint: ^10
+    express: ^5.2.1
+    express-session: ^1.17.3
+    glicko2: ^1.2.1
+    migrate-mongo: ^12.1.3
+    mongodb: ^5.6.0
+    mongodb-memory-server: ^11.0.1
+    nodemailer: ^7.0.11
+    nodemon: ^3.1.14
+    passport: ^0.6.0
+    passport-custom: ^1.1.1
+    passport-local: ^1.0.0
+    prettier: ^3.0.0
+    socket.io: ^4.8.1
+    supertest: ^7.2.2
+    ts-node: ^10.9.1
+    typescript: ^5.1.6
+    typescript-eslint: ^8
+    vitest: ^3.0.0
+  languageName: unknown
+  linkType: soft
+
+"@govariants/shared@1.0.0, @govariants/shared@workspace:packages/shared":
+  version: 0.0.0-use.local
+  resolution: "@govariants/shared@workspace:packages/shared"
+  dependencies:
+    "@eslint/js": ^10
+    "@types/markdown-it": ^14.1.2
+    chess.js: ^1.0.0-beta.6
+    eslint: ^10
+    markdown-it: ^14.1.0
+    nunjucks: ^3.2.4
+    prettier: ^3.0.0
+    ts-node: ^10.9.1
+    typescript: ^5.1.6
+    typescript-eslint: ^8
+    vitest: ^3.0.0
+  languageName: unknown
+  linkType: soft
+
+"@govariants/vue-client@workspace:packages/vue-client":
+  version: 0.0.0-use.local
+  resolution: "@govariants/vue-client@workspace:packages/vue-client"
+  dependencies:
+    "@fortawesome/fontawesome-svg-core": ^6.5.1
+    "@fortawesome/free-brands-svg-icons": ^6.5.1
+    "@fortawesome/free-regular-svg-icons": ^6.5.1
+    "@fortawesome/free-solid-svg-icons": ^6.5.1
+    "@fortawesome/vue-fontawesome": latest-3
+    "@govariants/shared": 1.0.0
+    "@testing-library/vue": ^8.1.0
+    "@tsconfig/node18": ^18.2.0
+    "@types/jsdom": ^21.1.7
+    "@types/node": ^20.3.3
+    "@types/three": ^0.182.0
+    "@types/validator": ^13.15.10
+    "@vitejs/plugin-vue": ^5.0.0
+    "@vue/eslint-config-prettier": ^10
+    "@vue/eslint-config-typescript": ^14
+    "@vue/test-utils": ^2.4.0
+    "@vue/tsconfig": ^0.4.0
+    "@vueuse/core": ^10.2.1
+    chessground: ^8.3.12
+    eslint: ^10
+    eslint-config-prettier: ^10
+    eslint-plugin-prettier: ^5
+    eslint-plugin-vue: ^10
+    icon-gen: ^5.0.0
+    jsdom: ^27.4.0
+    npm-run-all2: ^6.1.2
+    pinia: ^2.1.4
+    postcss: ^8.4.35
+    postcss-nesting: ^12.0.4
+    prettier: ^3
+    socket.io-client: ^4.8.1
+    sweetalert2: ^11.15.3
+    three: ^0.182.0
+    typescript: ^5.1.6
+    typescript-eslint: ^8
+    validator: ^13.15.23
+    vite: ^6.0.0
+    vitest: ^3.0.0
+    voronoijs: ^1.0.0
+    vue: ^3.4.25
+    vue-error-boundary: ^2.0.3
+    vue-i18n: ^11.3.2
+    vue-router: ^4.2.2
+    vue-tsc: ^2.2.0
+    vue3-chessboard: ^1.2.0
+  languageName: unknown
+  linkType: soft
+
 "@humanfs/core@npm:^0.19.1":
   version: 0.19.1
   resolution: "@humanfs/core@npm:0.19.1"
@@ -1116,122 +1222,6 @@ __metadata:
   checksum: 68951c589e9a4328698a35fd82fe71909a257d6f2ede0434d236fa55634f0fbcad9bb8755553ce5849bd25ee6f019f4d435921ac715c853582c4a7f5983c8d4a
   languageName: node
   linkType: hard
-
-"@ogfcommunity/variants-monorepo@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "@ogfcommunity/variants-monorepo@workspace:."
-  dependencies:
-    "@types/jsdom": ^21.1.7
-    husky: ^9.1.7
-    lint-staged: ^15.2.11
-  languageName: unknown
-  linkType: soft
-
-"@ogfcommunity/variants-server@workspace:packages/server":
-  version: 0.0.0-use.local
-  resolution: "@ogfcommunity/variants-server@workspace:packages/server"
-  dependencies:
-    "@eslint/js": ^10
-    "@ogfcommunity/variants-shared": 1.0.0
-    "@types/express": ^5.0.6
-    "@types/express-session": ^1.18.2
-    "@types/migrate-mongo": 10.0.5
-    "@types/nodemailer": ^7.0.11
-    "@types/passport": ^1.0.17
-    "@types/passport-local": ^1.0.35
-    "@types/supertest": ^6.0.3
-    connect-mongo: ^5.0.0
-    eslint: ^10
-    express: ^5.2.1
-    express-session: ^1.17.3
-    glicko2: ^1.2.1
-    migrate-mongo: ^12.1.3
-    mongodb: ^5.6.0
-    mongodb-memory-server: ^11.0.1
-    nodemailer: ^7.0.11
-    nodemon: ^3.1.14
-    passport: ^0.6.0
-    passport-custom: ^1.1.1
-    passport-local: ^1.0.0
-    prettier: ^3.0.0
-    socket.io: ^4.8.1
-    supertest: ^7.2.2
-    ts-node: ^10.9.1
-    typescript: ^5.1.6
-    typescript-eslint: ^8
-    vitest: ^3.0.0
-  languageName: unknown
-  linkType: soft
-
-"@ogfcommunity/variants-shared@1.0.0, @ogfcommunity/variants-shared@workspace:packages/shared":
-  version: 0.0.0-use.local
-  resolution: "@ogfcommunity/variants-shared@workspace:packages/shared"
-  dependencies:
-    "@eslint/js": ^10
-    "@types/markdown-it": ^14.1.2
-    chess.js: ^1.0.0-beta.6
-    eslint: ^10
-    markdown-it: ^14.1.0
-    nunjucks: ^3.2.4
-    prettier: ^3.0.0
-    ts-node: ^10.9.1
-    typescript: ^5.1.6
-    typescript-eslint: ^8
-    vitest: ^3.0.0
-  languageName: unknown
-  linkType: soft
-
-"@ogfcommunity/variants-vue-client@workspace:packages/vue-client":
-  version: 0.0.0-use.local
-  resolution: "@ogfcommunity/variants-vue-client@workspace:packages/vue-client"
-  dependencies:
-    "@fortawesome/fontawesome-svg-core": ^6.5.1
-    "@fortawesome/free-brands-svg-icons": ^6.5.1
-    "@fortawesome/free-regular-svg-icons": ^6.5.1
-    "@fortawesome/free-solid-svg-icons": ^6.5.1
-    "@fortawesome/vue-fontawesome": latest-3
-    "@ogfcommunity/variants-shared": 1.0.0
-    "@testing-library/vue": ^8.1.0
-    "@tsconfig/node18": ^18.2.0
-    "@types/jsdom": ^21.1.7
-    "@types/node": ^20.3.3
-    "@types/three": ^0.182.0
-    "@types/validator": ^13.15.10
-    "@vitejs/plugin-vue": ^5.0.0
-    "@vue/eslint-config-prettier": ^10
-    "@vue/eslint-config-typescript": ^14
-    "@vue/test-utils": ^2.4.0
-    "@vue/tsconfig": ^0.4.0
-    "@vueuse/core": ^10.2.1
-    chessground: ^8.3.12
-    eslint: ^10
-    eslint-config-prettier: ^10
-    eslint-plugin-prettier: ^5
-    eslint-plugin-vue: ^10
-    icon-gen: ^5.0.0
-    jsdom: ^27.4.0
-    npm-run-all2: ^6.1.2
-    pinia: ^2.1.4
-    postcss: ^8.4.35
-    postcss-nesting: ^12.0.4
-    prettier: ^3
-    socket.io-client: ^4.8.1
-    sweetalert2: ^11.15.3
-    three: ^0.182.0
-    typescript: ^5.1.6
-    typescript-eslint: ^8
-    validator: ^13.15.23
-    vite: ^6.0.0
-    vitest: ^3.0.0
-    voronoijs: ^1.0.0
-    vue: ^3.4.25
-    vue-error-boundary: ^2.0.3
-    vue-i18n: ^11.3.2
-    vue-router: ^4.2.2
-    vue-tsc: ^2.2.0
-    vue3-chessboard: ^1.2.0
-  languageName: unknown
-  linkType: soft
 
 "@one-ini/wasm@npm:0.1.1":
   version: 0.1.1
@@ -4534,6 +4524,16 @@ __metadata:
   checksum: cc6d8e655e360955bdccaca51a12a474268f95bb793fc3e1f2bdadb075f28bfd1fd988dab872daf77a61d78cbaf13744bc8727a17cfb1d150d76047d805375f3
   languageName: node
   linkType: hard
+
+"govariants@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "govariants@workspace:."
+  dependencies:
+    "@types/jsdom": ^21.1.7
+    husky: ^9.1.7
+    lint-staged: ^15.2.11
+  languageName: unknown
+  linkType: soft
 
 "graceful-fs@npm:^4.1.6, graceful-fs@npm:^4.2.0, graceful-fs@npm:^4.2.6":
   version: 4.2.11

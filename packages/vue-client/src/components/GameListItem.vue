@@ -2,7 +2,7 @@
 import {
   uiTransform,
   type GameInitialResponse,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 import { computed } from "vue";
 import { getBoard } from "@/board_map";
 

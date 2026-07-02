@@ -9,10 +9,10 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
-      "@ogfcommunity/variants-shared/src": fileURLToPath(
+      "@govariants/shared/src": fileURLToPath(
         new URL("../shared/src", import.meta.url),
       ),
-      "@ogfcommunity/variants-shared": fileURLToPath(
+      "@govariants/shared": fileURLToPath(
         new URL("../shared/src", import.meta.url),
       ),
     },

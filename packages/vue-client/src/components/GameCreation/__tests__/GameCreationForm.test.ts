@@ -3,6 +3,7 @@ import { render, fireEvent } from "@testing-library/vue";
 import { flushPromises } from "@vue/test-utils";
 import { BoardPattern } from "@ogfcommunity/variants-shared";
 import GameCreationForm from "../GameCreationForm.vue";
+import i18n from "@/i18n";
 import * as requests from "@/requests";
 
 vi.mock("@/requests", () => ({
@@ -12,12 +13,6 @@ vi.mock("@/requests", () => ({
 
 vi.mock("@/router", () => ({
   default: { push: vi.fn() },
-}));
-
-vi.mock("vue-i18n", () => ({
-  useI18n: () => ({
-    t: (key: string) => key,
-  }),
 }));
 
 describe("GameCreationForm", () => {
@@ -32,7 +27,10 @@ describe("GameCreationForm", () => {
   // variant's default, and the game must be created with that same board.
   it("creates the game with the board shown in the form after switching variant", async () => {
     const { getByLabelText, getByRole } = render(GameCreationForm, {
-      global: { stubs: { TimeControlConfigForm: true, DefaultBoard: true } },
+      global: {
+        plugins: [i18n],
+        stubs: { TimeControlConfigForm: true, DefaultBoard: true },
+      },
     });
     await flushPromises();
 

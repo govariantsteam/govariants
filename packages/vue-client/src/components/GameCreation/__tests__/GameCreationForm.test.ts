@@ -14,6 +14,12 @@ vi.mock("@/router", () => ({
   default: { push: vi.fn() },
 }));
 
+vi.mock("vue-i18n", () => ({
+  useI18n: () => ({
+    t: (key: string) => key,
+  }),
+}));
+
 describe("GameCreationForm", () => {
   beforeEach(() => {
     vi.clearAllMocks();

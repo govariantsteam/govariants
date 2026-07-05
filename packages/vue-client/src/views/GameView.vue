@@ -7,7 +7,7 @@ import {
   NotificationType,
   MovesType,
   variantSupportsMovePreview,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 import * as requests from "../requests";
 import SeatComponent from "@/components/GameView/SeatComponent.vue";
 import { useCurrentUser } from "../stores/user";
@@ -18,7 +18,7 @@ import {
   GameStateResponse,
   ITimeControlBase,
   getMovePreview,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 import { computed, ref, watch, watchEffect, type Ref } from "vue";
 import { socket } from "../requests";
 import NavButtons from "@/components/GameView/NavButtons.vue";

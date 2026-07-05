@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { toUpperCaseFirstLetter } from "@/utils/format-utils";
-import { getVariantList } from "@ogfcommunity/variants-shared";
+import { getVariantList } from "@govariants/shared";
 import { RouterLink } from "vue-router";
 </script>
 

@@ -1,10 +1,5 @@
 import { getDb } from "./db";
-import {
-  User,
-  UserResponse,
-  UserRankings,
-  UserRole,
-} from "@ogfcommunity/variants-shared";
+import { User, UserResponse, UserRankings, UserRole } from "@govariants/shared";
 import { Collection, WithId, ObjectId } from "mongodb";
 import { randomBytes, scrypt } from "node:crypto";
 import { deleteAllNotificationsOfUser } from "./notifications/notifications";

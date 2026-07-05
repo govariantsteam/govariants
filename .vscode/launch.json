@@ -10,7 +10,7 @@
             "request": "launch",
             "cwd": "${workspaceFolder}/packages/server",
             "runtimeExecutable": "yarn",
-            "runtimeArgs": ["workspace", "@ogfcommunity/variants-server", "run", "start"],
+            "runtimeArgs": ["workspace", "@govariants/server", "run", "start"],
             "outputCapture": "std",
         },
         {
@@ -19,7 +19,7 @@
             "request": "launch",
             "cwd": "${workspaceFolder}/packages/vue-client",
             "runtimeExecutable": "yarn",
-            "runtimeArgs": ["workspace", "@ogfcommunity/variants-vue-client", "run", "dev"],
+            "runtimeArgs": ["workspace", "@govariants/vue-client", "run", "dev"],
         },
     ],
     "compounds": [

@@ -3,7 +3,7 @@ import {
   getDescription,
   getRulesDescription,
   getVariantList,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 import { computed } from "vue";
 import VariantDemoView from "./VariantDemoView.vue";
 import { toUpperCaseFirstLetter } from "@/utils/format-utils";

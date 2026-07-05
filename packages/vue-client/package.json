@@ -1,5 +1,5 @@
 {
-  "name": "@ogfcommunity/variants-vue-client",
+  "name": "@govariants/vue-client",
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
@@ -26,7 +26,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.5.1",
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@fortawesome/vue-fontawesome": "latest-3",
-    "@ogfcommunity/variants-shared": "1.0.0",
+    "@govariants/shared": "1.0.0",
     "@types/jsdom": "^21.1.7",
     "@types/three": "^0.182.0",
     "@vueuse/core": "^10.2.1",

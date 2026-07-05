@@ -2,7 +2,7 @@
 import {
   type MovesType,
   colors_for_parallel,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 
 type Stone = { colors: string[]; annotation?: "CR" };
 
@@ -34,8 +34,8 @@ import {
   Coordinate,
   type ParallelGoConfig,
   type ParallelGoState,
-} from "@ogfcommunity/variants-shared";
-import { Grid } from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
+import { Grid } from "@govariants/shared";
 import { computed } from "vue";
 
 const props = defineProps<{

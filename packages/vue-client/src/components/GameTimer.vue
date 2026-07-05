@@ -4,7 +4,7 @@ import {
   type IPerPlayerTimeControlBase,
   timeControlMap,
   type ITimeControlConfig,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 import { isDefined } from "@vueuse/core";
 import { stop_and_speak } from "@/utils/voice-synthesizer";
 import { useInterval } from "@/utils/restartable_interval";

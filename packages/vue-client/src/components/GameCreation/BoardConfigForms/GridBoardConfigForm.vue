@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { GridBoardConfig } from "@ogfcommunity/variants-shared";
+import { GridBoardConfig } from "@govariants/shared";
 import { ref } from "vue";
 
 const defaultConfig: GridBoardConfig = {

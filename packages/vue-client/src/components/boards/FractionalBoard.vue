@@ -5,8 +5,8 @@ import {
   type FractionalState,
   Intersection,
   getHoshi,
-} from "@ogfcommunity/variants-shared";
-import { createGraph } from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
+import { createGraph } from "@govariants/shared";
 import { computed } from "vue";
 import TaegeukStone from "../TaegeukStone.vue";
 import IntersectionAnnotation from "../IntersectionAnnotation.vue";

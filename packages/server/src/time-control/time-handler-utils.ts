@@ -7,7 +7,7 @@ import {
   TimeControl,
   makeGameObject,
   timeControlMap,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 
 export function initialState(
   variant: string,

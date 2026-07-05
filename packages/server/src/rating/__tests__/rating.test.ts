@@ -5,11 +5,7 @@ import {
   getGlickoResult,
 } from "../rating";
 import { Glicko2 } from "glicko2";
-import {
-  UserRanking,
-  UserRankings,
-  UserResponse,
-} from "@ogfcommunity/variants-shared";
+import { UserRanking, UserRankings, UserResponse } from "@govariants/shared";
 
 test("supportsRatings", () => {
   const supportsRating = supportsRatings("chess");

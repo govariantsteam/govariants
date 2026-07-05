@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BoardConfig, NewBadukConfig } from "@ogfcommunity/variants-shared";
+import { BoardConfig, NewBadukConfig } from "@govariants/shared";
 import BoardConfigForm from "./BoardConfigForms/BoardConfigForm.vue";
 
 const props = defineProps<{

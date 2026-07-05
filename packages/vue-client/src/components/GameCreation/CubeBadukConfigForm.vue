@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CubeBadukConfig, BoardPattern } from "@ogfcommunity/variants-shared";
+import { CubeBadukConfig, BoardPattern } from "@govariants/shared";
 import { ref, watch } from "vue";
 
 const props = defineProps<{

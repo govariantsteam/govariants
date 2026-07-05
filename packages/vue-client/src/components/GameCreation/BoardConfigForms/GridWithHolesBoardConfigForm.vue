@@ -2,7 +2,7 @@
 import {
   GridWithHolesBoardConfig,
   assertRectangular2DArrayOf,
-} from "@ogfcommunity/variants-shared";
+} from "@govariants/shared";
 import { ref, watch } from "vue";
 
 const defaultConfig: GridWithHolesBoardConfig = {

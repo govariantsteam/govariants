@@ -9,9 +9,9 @@
   "notifications": "Nachrichten",
   "pagination": {
     "size-label": "Anzahl:",
-    "first": "Anfang",
+    "first": "Zum Anfang",
     "previous": "Zurück",
-    "next": "Vorwärts"
+    "next": "Vor"
   },
   "game-creation": {
     "title": "Neues Spiel",

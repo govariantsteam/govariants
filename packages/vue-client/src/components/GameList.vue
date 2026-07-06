@@ -104,11 +104,17 @@ const next = () => {
       </template>
     </template>
   </ul>
-  <button :disabled="offset === 0" @click="first()">First</button>
-  <button :disabled="offset === 0" @click="previous()">Previous</button>
-  <button :disabled="games?.length !== pageSize" @click="next()">Next</button>
+  <button :disabled="offset === 0" @click="first()">
+    {{ $t("pagination.first") }}
+  </button>
+  <button :disabled="offset === 0" @click="previous()">
+    {{ $t("pagination.previous") }}
+  </button>
+  <button :disabled="games?.length !== pageSize" @click="next()">
+    {{ $t("pagination.next") }}
+  </button>
   <label>
-    Show:
+    {{ $t("pagination.size-label") }}
     <select v-model="pageSize">
       <option v-for="option in pageSizeOptions" :key="option" :value="option">
         {{ option }}

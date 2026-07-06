@@ -5,5 +5,23 @@
   "rules": "Rules",
   "login": "Log in",
   "logout": "Log out",
-  "admin": "Admin"
+  "admin": "Admin",
+  "notifications": "Notifications",
+  "pagination": {
+    "size-label": "show:",
+    "first": "First",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "game-creation": {
+    "title": "Create a game",
+    "variant": "Variant",
+    "config": "Config",
+    "button": "Create Game"
+  },
+  "game-filter": {
+    "title": "Filter games",
+    "all-variants": "All variants",
+    "my-games": "games that I play"
+  }
 }

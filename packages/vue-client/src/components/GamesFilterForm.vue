@@ -34,17 +34,17 @@ function updateFilter(): void {
 </script>
 
 <template>
-  <h3>Filter games</h3>
+  <h3>{{ $t("game-filter.title") }}</h3>
   <form class="gamesFilterForm" @change="updateFilter">
     <select v-model="variant">
-      <option value="">All variants</option>
+      <option value="">{{ $t("game-filter.all-variants") }}</option>
       <option v-for="variantOption in variants" :key="variantOption">
         {{ variantOption }}
       </option>
     </select>
 
     <div v-if="user" class="myGamesToggle">
-      <label for="onlyMyGamesToggle">games that I play </label>
+      <label for="onlyMyGamesToggle">{{ $t("game-filter.my-games") }}</label>
       <input id="onlyMyGamesToggle" v-model="onlyMyGames" type="checkbox" />
     </div>
   </form>

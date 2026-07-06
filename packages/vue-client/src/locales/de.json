@@ -5,5 +5,23 @@
   "rules": "Regeln",
   "login": "Anmelden",
   "logout": "Abmelden",
-  "admin": "Administration"
+  "admin": "Administration",
+  "notifications": "Nachrichten",
+  "pagination": {
+    "size-label": "Anzahl:",
+    "first": "Zum Anfang",
+    "previous": "Zurück",
+    "next": "Vor"
+  },
+  "game-creation": {
+    "title": "Neues Spiel",
+    "variant": "Variante",
+    "config": "Einstellung",
+    "button": "Spiel erstellen"
+  },
+  "game-filter": {
+    "title": "Spiele filtern",
+    "all-variants": "Alle Varianten",
+    "my-games": "Meine Spiele"
+  }
 }

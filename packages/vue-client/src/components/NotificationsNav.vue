@@ -40,7 +40,7 @@ watchEffect(async () => {
         Math.min(notificationCount, 99)
       }}</span>
     </div>
-    <span class="mobile-only">Notifications</span>
+    <span class="mobile-only">{{ $t("notifications") }}</span>
   </RouterLink>
 </template>
 

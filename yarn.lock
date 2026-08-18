@@ -477,7 +477,7 @@ __metadata:
     postcss-nesting: ^12.0.4
     prettier: ^3
     socket.io-client: ^4.8.1
-    sweetalert2: ^11.15.3
+    sweetalert2: ^11.22.4
     three: ^0.182.0
     typescript: ^5.1.6
     typescript-eslint: ^8
@@ -6855,10 +6855,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sweetalert2@npm:^11.15.3":
-  version: 11.21.2
-  resolution: "sweetalert2@npm:11.21.2"
-  checksum: 52b4edb35bc2f140c58906611a5ff989f1d83f0ba024d14f8b25f9ea29df44dafffc7d496e8e0f49600528d7eb17014a53e4c31b09edba7a5cddb4446f2d14a2
+"sweetalert2@npm:^11.22.4":
+  version: 11.22.4
+  resolution: "sweetalert2@npm:11.22.4"
+  checksum: 2d9072f53002de082a5d290133e0f485b5e405d9e6b53d043fee74db395a508510131e5e3e68e0c7528fea773383098f552a473d117a0123a4eaec8a604bbe9d
   languageName: node
   linkType: hard
 

@@ -409,7 +409,7 @@ __metadata:
     migrate-mongo: ^12.1.3
     mongodb: ^5.6.0
     mongodb-memory-server: ^11.0.1
-    nodemailer: ^7.0.11
+    nodemailer: ^9.0.1
     nodemon: ^3.1.14
     passport: ^0.6.0
     passport-custom: ^1.1.1
@@ -5431,10 +5431,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemailer@npm:^7.0.11":
-  version: 7.0.13
-  resolution: "nodemailer@npm:7.0.13"
-  checksum: 3faf2549a1e7cef03e8a20ee7816fd9012f2de4faa98f185998ecb10a8d97d048f12dc20b4efc1fa82c342ec27407329c74ac9143e8d6135c6f5da05a04f54d6
+"nodemailer@npm:^9.0.1":
+  version: 9.0.1
+  resolution: "nodemailer@npm:9.0.1"
+  checksum: 7b8544b855b37e868f0cd596eb2afe5a9d0a54411c3c6db248c42d3f1a493cbe7e27d44ce10ad1720883175a4ad07339faffa596eab24b7ced7ef01fd63e7315
   languageName: node
   linkType: hard
 

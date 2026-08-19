@@ -43,6 +43,7 @@ import { io } from "./socket_io";
 import { checkCSRFToken, generateCSRFToken } from "./csrf_guard";
 import { sendEmail } from "./email";
 import { HttpError } from "./http-error";
+import { authLimiter } from "./rate_limit";
 import {
   clearNotifications,
   getUserNotifications,
@@ -169,7 +170,7 @@ router.post("/games/:gameId/leave/:seat", checkCSRFToken, async (req, res) => {
   res.send(players);
 });
 
-router.post("/register", async (req, res, next) => {
+router.post("/register", authLimiter, async (req, res, next) => {
   const { username, password, email } = req.body;
   const user = await getUserByName(username);
   if (user) {
@@ -311,11 +312,11 @@ function make_auth_cb(
   }) as AuthenticateCallback; // Cast needed: we narrow passport's `any` params to stricter types
 }
 
-router.post("/login", (req, res, next) => {
+router.post("/login", authLimiter, (req, res, next) => {
   passport.authenticate("local", make_auth_cb(req, res))(req, res, next);
 });
 
-router.get("/guestLogin", function (req, res, next) {
+router.get("/guestLogin", authLimiter, function (req, res, next) {
   passport.authenticate("guest", make_auth_cb(req, res))(req, res, next);
 });
 

@@ -20,6 +20,7 @@ import * as socket_io from "./socket_io";
 import { validateSeatSubscription } from "./socket_validation";
 import { ITimeoutService, TimeoutService } from "./time-control/timeout";
 import { HttpError } from "./http-error";
+import { staticLimiter } from "./rate_limit";
 
 const LOCAL_ORIGIN = [
   "http://127.0.0.1:5173",
@@ -89,6 +90,12 @@ passport.deserializeUser<string>(function (id, callback) {
 
 // initialize Express
 const app = express();
+// In production we sit behind a single reverse proxy, so trust exactly one hop:
+// req.ip must be the client address for rate limiting to key on the right party
+// (and for the session cookie's `secure: "auto"` to detect HTTPS).
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+}
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 const sessionMiddleware = session({
@@ -163,7 +170,7 @@ if (isProd) {
   // Setup build path as a static assets path
   app.use(express.static(build_path));
   // Serve index.html on unmatched routes
-  app.get("/{*splat}", (_req, res) => res.sendFile(indexHtml));
+  app.get("/{*splat}", staticLimiter, (_req, res) => res.sendFile(indexHtml));
 }
 
 // Centralized error handler — Express 5 forwards rejected promises from async

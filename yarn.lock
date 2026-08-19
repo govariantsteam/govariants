@@ -395,6 +395,7 @@ __metadata:
     connect-mongo: ^5.0.0
     eslint: ^10
     express: ^5.2.1
+    express-rate-limit: ^8.6.2
     express-session: ^1.17.3
     glicko2: ^1.2.1
     migrate-mongo: ^12.1.3
@@ -3241,6 +3242,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"express-rate-limit@npm:^8.6.2":
+  version: 8.6.2
+  resolution: "express-rate-limit@npm:8.6.2"
+  dependencies:
+    debug: ^4.4.3
+    ip-address: ^10.2.0
+  peerDependencies:
+    express: ">= 4.11"
+  checksum: 3fb4658eb38a4a9d2aaa36791ac0d080efdba238aa9d0339eb17379c0936c649463e484a273b5ce4a4a6029a2c91062aedb2394a09d464998cf32a486d9cd518
+  languageName: node
+  linkType: hard
+
 "express-session@npm:^1.17.3":
   version: 1.19.0
   resolution: "express-session@npm:1.19.0"
@@ -3948,7 +3961,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ip-address@npm:^10.1.1":
+"ip-address@npm:^10.1.1, ip-address@npm:^10.2.0":
   version: 10.5.0
   resolution: "ip-address@npm:10.5.0"
   checksum: ffb64aea3ab0bf975b237954f89bf3c37cb5fc9d078cf5868408e54d29636d14618ed67dafcde664b3cdfc778ee78c811286cf67e59d1243a0c198d05aa47683

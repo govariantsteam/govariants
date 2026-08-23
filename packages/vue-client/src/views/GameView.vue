@@ -20,6 +20,7 @@ import {
   getMovePreview,
 } from "@govariants/shared";
 import { computed, ref, watch, watchEffect, type Ref } from "vue";
+import { useLocalStorage } from "@vueuse/core";
 import { socket } from "../requests";
 import NavButtons from "@/components/GameView/NavButtons.vue";
 import PlayersToMove from "@/components/GameView/PlayersToMove.vue";
@@ -71,7 +72,13 @@ const adminMode = ref<boolean>(false);
 const creator = ref<User | undefined>();
 const subscription = ref<NotificationType[]>([]);
 
-const userEnabledImmediateSubmit = ref(false);
+// This is a client-specific preference: someone may want immediate submit
+// on desktop but not on their phone, so it lives in localStorage rather
+// than on the user account.
+const userEnabledImmediateSubmit = useLocalStorage(
+  "govariants:immediate-submit",
+  false,
+);
 const doesVariantSupportsMovePreview = computed(() => {
   if (variant.value && game_state.value) {
     return variantSupportsMovePreview(variant.value);
@@ -82,6 +89,14 @@ const movePreview = ref<{ move: string; player: number } | null>(null);
 function clearMovePreview() {
   movePreview.value = null;
 }
+
+// A pending preview can't be submitted or cancelled once immediate submit is
+// on (both buttons are disabled), so drop it when the setting is switched on.
+watch(userEnabledImmediateSubmit, (enabled) => {
+  if (enabled) {
+    clearMovePreview();
+  }
+});
 
 function setNewState(stateResponse: GameStateResponse): void {
   const { timeControl: timeControl, ...state } = stateResponse;

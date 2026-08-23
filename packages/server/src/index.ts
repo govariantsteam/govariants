@@ -88,13 +88,30 @@ passport.deserializeUser<string>(function (id, callback) {
     });
 });
 
+function parseTrustProxy(value: string | undefined): number | undefined {
+  if (value === undefined || value === "") {
+    return undefined;
+  }
+  const hops = Number(value);
+  if (!Number.isInteger(hops)) {
+    throw new Error(
+      `TRUST_PROXY must be a whole number of proxy hops; got "${value}"`,
+    );
+  }
+  return hops;
+}
+
 // initialize Express
 const app = express();
-// In production we sit behind a single reverse proxy, so trust exactly one hop:
-// req.ip must be the client address for rate limiting to key on the right party
-// (and for the session cookie's `secure: "auto"` to detect HTTPS).
-if (process.env.NODE_ENV === "production") {
-  app.set("trust proxy", 1);
+// Behind a reverse proxy, req.ip is the proxy's address unless Express is told
+// how far to trust X-Forwarded-For. That matters for rate limiting (every
+// client would otherwise share one bucket) and for the session cookie's
+// `secure: "auto"` HTTPS detection. Deployments that sit behind a proxy set
+// TRUST_PROXY to the number of hops ("1"); leave it unset when serving
+// directly, as in development.
+const trustProxy = parseTrustProxy(process.env.TRUST_PROXY);
+if (trustProxy !== undefined) {
+  app.set("trust proxy", trustProxy);
 }
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());

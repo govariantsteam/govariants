@@ -8,6 +8,7 @@ export * from "./abstract_game";
 export * from "./variant_map";
 export * from "./api_types";
 export * from "./lib/grid";
+export * from "./lib/dimensions";
 export * from "./lib/coordinate";
 export * from "./lib/grid_compat";
 export * from "./lib/board_types";

@@ -55,7 +55,7 @@ const board = computed(() => createGraph(intersections.value, null));
 const hoshi = computed(() => {
   const b = props.config.board;
   if (b.type === "grid") {
-    return getHoshi(b.width, b.height);
+    return getHoshi(b);
   }
   return [];
 });

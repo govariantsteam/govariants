@@ -23,9 +23,10 @@ SOFTWARE.
 */
 
 import { Coordinate } from "./coordinate";
+import { type DimensionsLike } from "./dimensions";
 
 /** @returns the coordinates of the hoshi for a given board size */
-export function getHoshi(width: number, height: number): Coordinate[] {
+export function getHoshi({ width, height }: DimensionsLike): Coordinate[] {
   const ret: Coordinate[] = [];
   const addStar = (i: number, j: number) =>
     // We subtract one here because the BesoGo implementation is 1-indexed

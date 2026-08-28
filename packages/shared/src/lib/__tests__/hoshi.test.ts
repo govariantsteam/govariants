@@ -1,7 +1,7 @@
 import { getHoshi } from "../hoshi";
 
 test("19x19 has the standard star points", () => {
-  const hoshi = getHoshi(19, 19);
+  const hoshi = getHoshi({ width: 19, height: 19 });
   hoshi.sort((a, b) => {
     if (a.x === b.x) {
       return a.y - b.y;

@@ -21,6 +21,7 @@ import {
 } from "@govariants/shared";
 import { computed, ref, watch, watchEffect, type Ref } from "vue";
 import { useLocalStorage } from "@vueuse/core";
+import { LOCAL_STORAGE_KEYS } from "@/local_storage_keys";
 import { socket } from "../requests";
 import NavButtons from "@/components/GameView/NavButtons.vue";
 import PlayersToMove from "@/components/GameView/PlayersToMove.vue";
@@ -72,11 +73,8 @@ const adminMode = ref<boolean>(false);
 const creator = ref<User | undefined>();
 const subscription = ref<NotificationType[]>([]);
 
-// This is a client-specific preference: someone may want immediate submit
-// on desktop but not on their phone, so it lives in localStorage rather
-// than on the user account.
 const userEnabledImmediateSubmit = useLocalStorage(
-  "govariants:immediate-submit",
+  LOCAL_STORAGE_KEYS.immediateSubmit,
   false,
 );
 const doesVariantSupportsMovePreview = computed(() => {

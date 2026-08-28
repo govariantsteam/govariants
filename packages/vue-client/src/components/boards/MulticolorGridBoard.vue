@@ -90,7 +90,7 @@ function positionHovered(pos: Coordinate) {
       />
 
       <circle
-        v-for="{ x, y } in getHoshi(width, height)"
+        v-for="{ x, y } in getHoshi(props.boardDimensions)"
         :key="`${x},${y}`"
         :cx="x"
         :cy="y"

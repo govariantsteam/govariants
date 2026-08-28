@@ -519,7 +519,7 @@ function createCubeBoard() {
  * Add star points to each face of the cube
  */
 function addStarPoints(size: number, faceOffset: number) {
-  const hoshiCoords = getHoshi(size, size);
+  const hoshiCoords = getHoshi({ width: size, height: size });
 
   // For each of the 6 faces, add star points
   for (let face = 0; face < 6; face++) {

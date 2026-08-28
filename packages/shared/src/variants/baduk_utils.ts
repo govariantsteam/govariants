@@ -3,6 +3,7 @@ import {
   BoardPattern,
   GridBoardConfig,
   createBoard,
+  estimateNodeCount,
 } from "../lib/abstractBoard/boardFactory";
 import { Intersection } from "../lib/abstractBoard/intersection";
 import { Coordinate, CoordinateLike } from "../lib/coordinate";
@@ -54,13 +55,17 @@ export function isInBounds(
     return Dimensions.from(getWidthAndHeight(config)).isInBounds(index);
   }
   // Graph boards are indexed by a single number, packed into the x coordinate.
-  // Their intersections aren't described by a width and height, so the only
-  // way to count them is to lay the board out.
-  return (
-    index.y === 0 &&
-    index.x >= 0 &&
-    index.x < createBoard(config.board, Intersection).length
-  );
+  if (index.y !== 0 || index.x < 0) {
+    return false;
+  }
+  // estimateNodeCount never undercounts, so anything at or past it is out of
+  // bounds without having to look at the board.
+  if (index.x >= estimateNodeCount(config.board)) {
+    return false;
+  }
+  // Some shapes share or filter out intersections, so below the estimate the
+  // only exact count is the one we get by laying the board out.
+  return index.x < createBoard(config.board, Intersection).length;
 }
 
 export function isLegacyBadukConfig(

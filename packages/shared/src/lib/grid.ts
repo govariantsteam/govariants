@@ -1,4 +1,5 @@
 import { Coordinate, type CoordinateLike } from "./coordinate";
+import { Dimensions } from "./dimensions";
 import { Fillable } from "./group_utils";
 
 /**
@@ -7,40 +8,38 @@ import { Fillable } from "./group_utils";
  */
 export class Grid<T> implements Fillable<CoordinateLike, T> {
   private arr: Array<T>;
-  constructor(
-    public readonly width: number,
-    public readonly height: number,
-  ) {
-    if (width < 0) {
-      throw new Error("Invalid array width");
-    }
+  public readonly dims: Dimensions;
 
-    this.arr = new Array(width * height);
+  constructor(width: number, height: number) {
+    this.dims = new Dimensions(width, height);
+    this.arr = new Array(this.dims.area);
+  }
+
+  get width(): number {
+    return this.dims.width;
+  }
+
+  get height(): number {
+    return this.dims.height;
   }
 
   at(index: CoordinateLike): T | undefined {
-    const w = this.width;
-    const h = this.height;
-
-    index = handleNegativeIndices(index, w, h);
+    index = this.dims.resolveNegativeIndices(index);
 
     if (!this.isInBounds(index)) {
       return undefined;
     }
-    return this.arr[coordinate_to_flat_index(index, w)];
+    return this.arr[this.dims.toFlatIndex(index)];
   }
 
   set(index: CoordinateLike, value: T): void {
-    const w = this.width;
-    const h = this.height;
-
-    index = handleNegativeIndices(index, w, h);
+    index = this.dims.resolveNegativeIndices(index);
 
     if (!this.isInBounds(index)) {
       return;
     }
 
-    this.arr[coordinate_to_flat_index(index, w)] = value;
+    this.arr[this.dims.toFlatIndex(index)] = value;
   }
 
   map<S>(
@@ -50,11 +49,7 @@ export class Grid<T> implements Fillable<CoordinateLike, T> {
     const ret = new Grid<S>(this.width, this.height);
     ret.arr = this.arr.map(
       (value: T, flat_index: number) =>
-        callbackfn(
-          value,
-          flat_index_to_coordinate(flat_index, this.width),
-          this,
-        ),
+        callbackfn(value, this.dims.fromFlatIndex(flat_index), this),
       thisArg,
     );
     return ret;
@@ -65,7 +60,7 @@ export class Grid<T> implements Fillable<CoordinateLike, T> {
     thisArg?: this,
   ): void {
     this.arr.forEach((value: T, flat_index: number) => {
-      callbackfn(value, flat_index_to_coordinate(flat_index, this.width), this);
+      callbackfn(value, this.dims.fromFlatIndex(flat_index), this);
     }, thisArg);
   }
 
@@ -103,25 +98,12 @@ export class Grid<T> implements Fillable<CoordinateLike, T> {
     return this;
   }
 
-  neighbors(index: CoordinateLike) {
-    if (!this.isInBounds(index)) {
-      // An alternative is to return edge points for some out-of-bounds inputs,
-      // but our floodfill algorithms depend on an empty array here.
-      return [];
-    }
-    const { x, y } = index;
-    return [
-      { x, y: y - 1 },
-      { x, y: y + 1 },
-      { x: x - 1, y },
-      { x: x + 1, y },
-    ].filter((index) => this.isInBounds(index));
+  neighbors(index: CoordinateLike): Coordinate[] {
+    return this.dims.neighbors(index);
   }
 
-  isInBounds({ x, y }: CoordinateLike) {
-    const w = this.width;
-    const h = this.height;
-    return x < w && y < h && x >= 0 && y >= 0;
+  isInBounds(index: CoordinateLike): boolean {
+    return this.dims.isInBounds(index);
   }
 
   reduce<OutT>(
@@ -138,7 +120,7 @@ export class Grid<T> implements Fillable<CoordinateLike, T> {
         callbackfn(
           previousValue,
           currentValue,
-          flat_index_to_coordinate(flat_index, this.width),
+          this.dims.fromFlatIndex(flat_index),
           this,
         ),
       initialValue,
@@ -148,31 +130,4 @@ export class Grid<T> implements Fillable<CoordinateLike, T> {
   serialize() {
     return this.to2DArray();
   }
-}
-
-function flat_index_to_coordinate(index: number, width: number): Coordinate {
-  return new Coordinate(index % width, Math.floor(index / width));
-}
-
-function coordinate_to_flat_index(
-  { x, y }: CoordinateLike,
-  width: number,
-): number {
-  return y * width + x;
-}
-
-/** If index is negative, count from the end of the row or column. */
-function handleNegativeIndices(
-  { x, y }: CoordinateLike,
-  w: number,
-  h: number,
-): Coordinate {
-  // Backwards indexing
-  if (x < 0) {
-    x = w + x;
-  }
-  if (y < 0) {
-    y = h + y;
-  }
-  return new Coordinate(x, y);
 }

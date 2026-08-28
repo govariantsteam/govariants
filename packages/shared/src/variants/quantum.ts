@@ -1,6 +1,7 @@
 import { AbstractGame } from "../abstract_game";
 import { BoardPattern } from "../lib/abstractBoard/boardFactory";
 import { Coordinate, CoordinateLike } from "../lib/coordinate";
+import { Dimensions } from "../lib/dimensions";
 import { quantumRulesDescription } from "../templates/quantum_rules";
 import { Variant } from "../variant";
 import { Baduk, BadukBoard, BadukConfig, badukVariant, Color } from "./baduk";
@@ -77,6 +78,18 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
     return new Coordinate(Number(move), 0);
   }
 
+  private isInBounds(pos: CoordinateLike): boolean {
+    if (isGridBadukConfig(this.config)) {
+      return Dimensions.from(getWidthAndHeight(this.config)).isInBounds(pos);
+    }
+    // Graph boards have no width and height - only the board itself knows
+    // which nodes exist.
+    return new BadukHelper({
+      ...this.config,
+      komi: 0,
+    }).badukGame.board.isInBounds(pos);
+  }
+
   private encodeMove(pos: Coordinate): string {
     if (isGridBadukConfig(this.config)) {
       return pos.toSgfRepr();
@@ -121,13 +134,7 @@ export class QuantumGo extends AbstractGame<NewBadukConfig, QuantumGoState> {
     }
 
     const pos = this.decodeMove(move);
-    // TODO: add a Dimensions class (#216) and look at that instead of
-    // building a grid for no reason
-    if (
-      !new BadukHelper({ ...this.config, komi: 0 }).badukGame.board.isInBounds(
-        pos,
-      )
-    ) {
+    if (!this.isInBounds(pos)) {
       throw new Error("Out of bounds!");
     }
 

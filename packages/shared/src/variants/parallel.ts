@@ -205,12 +205,7 @@ export class ParallelGo extends AbstractGame<
   }
 
   private isOutOfBounds(pos: Coordinate) {
-    return (
-      pos.x < 0 ||
-      pos.y < 0 ||
-      pos.x >= this.board.width ||
-      pos.y >= this.board.height
-    );
+    return !this.board.dims.isInBounds(pos);
   }
 
   private removeGroupsIf(predicate: (group: Group) => boolean) {

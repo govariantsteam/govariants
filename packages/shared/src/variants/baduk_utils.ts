@@ -2,8 +2,11 @@ import {
   BoardConfig,
   BoardPattern,
   GridBoardConfig,
+  createBoard,
 } from "../lib/abstractBoard/boardFactory";
+import { Intersection } from "../lib/abstractBoard/intersection";
 import { Coordinate, CoordinateLike } from "../lib/coordinate";
+import { Dimensions } from "../lib/dimensions";
 import { Grid } from "../lib/grid";
 import { BadukConfig } from "./baduk";
 
@@ -38,6 +41,26 @@ export function getWidthAndHeight(config: GridBadukConfig): {
   const width = "board" in config ? config.board.width : config.width;
   const height = "board" in config ? config.board.height : config.height;
   return { width: width, height: height };
+}
+
+/** @returns whether index refers to an intersection of the board described by
+ * config.
+ */
+export function isInBounds(
+  config: BadukConfig,
+  index: CoordinateLike,
+): boolean {
+  if (isGridBadukConfig(config)) {
+    return Dimensions.from(getWidthAndHeight(config)).isInBounds(index);
+  }
+  // Graph boards are indexed by a single number, packed into the x coordinate.
+  // Their intersections aren't described by a width and height, so the only
+  // way to count them is to lay the board out.
+  return (
+    index.y === 0 &&
+    index.x >= 0 &&
+    index.x < createBoard(config.board, Intersection).length
+  );
 }
 
 export function isLegacyBadukConfig(

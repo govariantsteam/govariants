@@ -151,10 +151,10 @@ io.engine.use(passport.session());
 io.on("connection", (socket) => {
   console.log("a user connected");
 
-  // Passport populates .user on the request via the shared session middleware.
-  // It is read once, during the handshake, so a socket that outlives a login or
-  // logout keeps the identity it connected with — the client re-handshakes on
-  // those transitions.
+  // Passport populates .user on the request via the shared session middleware,
+  // which runs on the handshake request only. This is therefore the identity the
+  // socket connected with, and it does not change for the socket's lifetime: a
+  // socket that outlives a login or logout keeps the old one (see #557).
   const user = (
     socket.request as http.IncomingMessage & { user?: UserResponse }
   ).user;

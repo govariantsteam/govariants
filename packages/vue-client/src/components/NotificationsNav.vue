@@ -2,19 +2,22 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faBell } from "@fortawesome/free-solid-svg-icons";
-import { watchEffect } from "vue";
+import { onUnmounted, watchEffect } from "vue";
 import * as requests from "@/requests";
 import { useCurrentUser, useStore } from "@/stores/user";
 import {
   setNotificationsCount,
   useNotificationsCount,
 } from "@/stores/notifications";
+import { NOTIFICATIONS_COUNT_EVENT } from "@govariants/shared";
 
 library.add(faBell);
 const notificationCount = useNotificationsCount();
 const store = useStore();
 const user = useCurrentUser();
 
+// The fetch only covers the count at page load; the server pushes every later
+// change to this user's own room.
 watchEffect(async () => {
   if (user.value && store.csrf_token) {
     await requests
@@ -22,6 +25,11 @@ watchEffect(async () => {
       .then((result) => setNotificationsCount(result.count))
       .catch(alert);
   }
+});
+
+requests.socket.on(NOTIFICATIONS_COUNT_EVENT, setNotificationsCount);
+onUnmounted(() => {
+  requests.socket.off(NOTIFICATIONS_COUNT_EVENT, setNotificationsCount);
 });
 </script>
 

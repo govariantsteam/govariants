@@ -1,3 +1,10 @@
+/**
+ * Socket.IO event carrying the recipient's unread notification count. Emitted
+ * to a user's own room whenever their notifications change, so open clients can
+ * update their badge without polling.
+ */
+export const NOTIFICATIONS_COUNT_EVENT = "notifications_count";
+
 export const Notifications = {
   gameEnd: 1,
   newRound: 2,

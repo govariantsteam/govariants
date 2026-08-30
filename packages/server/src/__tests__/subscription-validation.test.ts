@@ -1,8 +1,9 @@
 import { GameResponse, UserResponse } from "@govariants/shared";
 import {
-  validateSeatSubscription,
+  validateSubscription,
   gameTopic,
   seatTopic,
+  userNotificationsTopic,
 } from "../socket_validation";
 
 function makeUser(id: string): UserResponse {
@@ -21,7 +22,7 @@ function makeGame(players: ({ id: string } | null)[]): GameResponse {
 
 const GAME_ID = "507f1f77bcf86cd799439011";
 
-describe("validateSeatSubscription", () => {
+describe("validateSubscription", () => {
   const mockGetGame = vi.fn<(id: string) => Promise<GameResponse>>();
 
   beforeEach(() => {
@@ -29,7 +30,7 @@ describe("validateSeatSubscription", () => {
   });
 
   it("allows non-seat topics without validation", async () => {
-    const result = await validateSeatSubscription(
+    const result = await validateSubscription(
       gameTopic(GAME_ID),
       undefined,
       mockGetGame,
@@ -38,8 +39,19 @@ describe("validateSeatSubscription", () => {
     expect(mockGetGame).not.toHaveBeenCalled();
   });
 
+  it("rejects a user topic even when it is the subscriber's own", async () => {
+    const user = makeUser("someuser");
+
+    const result = await validateSubscription(
+      userNotificationsTopic(user.id),
+      user,
+      mockGetGame,
+    );
+    expect(result).toBe("user topics are not client-subscribable");
+  });
+
   it("rejects seat topic when no user is authenticated", async () => {
-    const result = await validateSeatSubscription(
+    const result = await validateSubscription(
       seatTopic(GAME_ID, 0),
       undefined,
       mockGetGame,
@@ -51,7 +63,7 @@ describe("validateSeatSubscription", () => {
   it("rejects seat topic when game does not exist", async () => {
     mockGetGame.mockRejectedValue(new Error("Game not found"));
 
-    const result = await validateSeatSubscription(
+    const result = await validateSubscription(
       seatTopic(GAME_ID, 0),
       makeUser("someuser"),
       mockGetGame,
@@ -62,7 +74,7 @@ describe("validateSeatSubscription", () => {
   it("rejects seat topic when user does not occupy the seat", async () => {
     mockGetGame.mockResolvedValue(makeGame([{ id: "otheruser" }, null]));
 
-    const result = await validateSeatSubscription(
+    const result = await validateSubscription(
       seatTopic(GAME_ID, 0),
       makeUser("attacker"),
       mockGetGame,
@@ -73,7 +85,7 @@ describe("validateSeatSubscription", () => {
   it("rejects seat topic when seat is empty", async () => {
     mockGetGame.mockResolvedValue(makeGame([null, null]));
 
-    const result = await validateSeatSubscription(
+    const result = await validateSubscription(
       seatTopic(GAME_ID, 0),
       makeUser("someuser"),
       mockGetGame,
@@ -84,7 +96,7 @@ describe("validateSeatSubscription", () => {
   it("allows seat topic when user occupies the seat", async () => {
     mockGetGame.mockResolvedValue(makeGame([{ id: "rightuser" }, null]));
 
-    const result = await validateSeatSubscription(
+    const result = await validateSubscription(
       seatTopic(GAME_ID, 0),
       makeUser("rightuser"),
       mockGetGame,

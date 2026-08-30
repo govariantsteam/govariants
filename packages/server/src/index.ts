@@ -17,7 +17,10 @@ import { SITE_NAME, UserResponse } from "@govariants/shared";
 import { router as apiRouter } from "./api";
 import { getGame } from "./games";
 import * as socket_io from "./socket_io";
-import { validateSeatSubscription } from "./socket_validation";
+import {
+  userNotificationsTopic,
+  validateSubscription,
+} from "./socket_validation";
 import { ITimeoutService, TimeoutService } from "./time-control/timeout";
 import { HttpError } from "./http-error";
 import { staticLimiter } from "./rate_limit";
@@ -148,19 +151,28 @@ io.engine.use(passport.session());
 io.on("connection", (socket) => {
   console.log("a user connected");
 
+  // Passport populates .user on the request via the shared session middleware.
+  // It is read once, during the handshake, so a socket that outlives a login or
+  // logout keeps the identity it connected with — the client re-handshakes on
+  // those transitions.
+  const user = (
+    socket.request as http.IncomingMessage & { user?: UserResponse }
+  ).user;
+
+  if (user) {
+    // Joined here rather than on request, so that a client cannot listen in on
+    // another user's notifications.
+    void socket.join(userNotificationsTopic(user.id));
+  }
+
   socket.on("ping", function (data) {
     io.emit("pong", data);
     console.log("ping");
   });
 
   socket.on("subscribe", async (topics) => {
-    // Passport populates .user on the request via the shared session middleware
-    const user = (
-      socket.request as http.IncomingMessage & { user?: UserResponse }
-    ).user;
-
     for (const topic of topics) {
-      const rejection = await validateSeatSubscription(topic, user, getGame);
+      const rejection = await validateSubscription(topic, user, getGame);
       if (rejection) {
         console.warn(`Rejected subscription to ${topic}: ${rejection}`);
         continue;

@@ -4,9 +4,12 @@ import { UserNotifications } from "./notifications.types";
 import {
   GameNotification,
   GameSubscriptions,
+  NOTIFICATIONS_COUNT_EVENT,
   Notifications,
   NotificationType,
 } from "@govariants/shared";
+import { io } from "../socket_io";
+import { userNotificationsTopic } from "../socket_validation";
 
 function outwardMap(userNotifications: UserNotifications): GameNotification[] {
   return userNotifications.notifications as GameNotification[];
@@ -35,11 +38,25 @@ export async function getUserNotifications(
 export async function getUserNotificationsCount(
   userId: string,
 ): Promise<number> {
+  return (await getUserNotificationsCounts([userId])).get(userId) ?? 0;
+}
+
+/**
+ * Unread count per user, keyed by id. Users without a notifications document
+ * are reported as zero rather than omitted.
+ */
+async function getUserNotificationsCounts(
+  userIds: string[],
+): Promise<Map<string, number>> {
+  const counts = new Map(userIds.map((userId) => [userId, 0]));
+  if (!counts.size) return counts;
+
   const queryResult = await notifications()
     .aggregate([
-      { $match: { userId: userId } },
+      { $match: { userId: { $in: [...counts.keys()] } } },
       {
         $project: {
+          userId: 1,
           num: {
             $size: {
               $filter: {
@@ -54,7 +71,24 @@ export async function getUserNotificationsCount(
     ])
     .toArray();
 
-  return queryResult.at(0)?.num ?? 0;
+  for (const { userId, num } of queryResult) {
+    counts.set(userId, num);
+  }
+
+  return counts;
+}
+
+/**
+ * Pushes each user's unread count to their own room, so that clients already on
+ * the site update their badge instead of showing the count they loaded with.
+ */
+async function emitNotificationsCounts(userIds: string[]): Promise<void> {
+  const counts = await getUserNotificationsCounts(userIds);
+  for (const [userId, count] of counts) {
+    io()
+      .to(userNotificationsTopic(userId))
+      .emit(NOTIFICATIONS_COUNT_EVENT, count);
+  }
 }
 
 async function addGameNotification(
@@ -96,7 +130,8 @@ export async function notifyOfGameEnd(
   gameId: string,
   gameResult: string,
 ): Promise<void> {
-  await deleteGameNotifications(getSubscriberIds(subscriptions), gameId, [
+  const subscriberIds = getSubscriberIds(subscriptions);
+  await deleteGameNotifications(subscriberIds, gameId, [
     Notifications.myMove,
     Notifications.newRound,
   ]);
@@ -111,6 +146,8 @@ export async function notifyOfGameEnd(
     getRecipientIDs(subscriptions, Notifications.gameEnd),
     newNotification,
   );
+
+  await emitNotificationsCounts(subscriberIds);
 }
 
 export async function notifyOfNewRound(
@@ -119,7 +156,8 @@ export async function notifyOfNewRound(
   round: number,
   nextToPlayIds: string[],
 ): Promise<void> {
-  await deleteGameNotifications(getSubscriberIds(subscriptions), gameId, [
+  const subscriberIds = getSubscriberIds(subscriptions);
+  await deleteGameNotifications(subscriberIds, gameId, [
     Notifications.myMove,
     Notifications.newRound,
   ]);
@@ -146,6 +184,8 @@ export async function notifyOfNewRound(
     getRecipientIDs(subscriptions, Notifications.newRound),
     newRoundNotification,
   );
+
+  await emitNotificationsCounts(subscriberIds);
 }
 
 export async function notifyOfSeatChange(
@@ -161,10 +201,10 @@ export async function notifyOfSeatChange(
     params: { seat: seat, user: user, didTakeSeat: didTakeSeat },
     read: false,
   };
-  await addGameNotification(
-    getRecipientIDs(subscriptions, Notifications.seatChange),
-    newNotification,
-  );
+  const recipientIds = getRecipientIDs(subscriptions, Notifications.seatChange);
+  await addGameNotification(recipientIds, newNotification);
+
+  await emitNotificationsCounts(recipientIds);
 }
 
 export async function markAsRead(
@@ -176,6 +216,8 @@ export async function markAsRead(
     { $set: { "notifications.$[notification].read": true } },
     { arrayFilters: [{ "notification.gameId": gameId }] },
   );
+
+  await emitNotificationsCounts([userId]);
 }
 
 export async function clearNotifications(
@@ -186,6 +228,8 @@ export async function clearNotifications(
     { userId: userId },
     { $pull: { notifications: { gameId: gameId } } },
   );
+
+  await emitNotificationsCounts([userId]);
 }
 
 export async function deleteAllNotificationsOfUser(

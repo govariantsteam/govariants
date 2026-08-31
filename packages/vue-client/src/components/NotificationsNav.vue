@@ -2,37 +2,24 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faBell } from "@fortawesome/free-solid-svg-icons";
-import { watchEffect } from "vue";
-import * as requests from "@/requests";
-import { useCurrentUser, useStore } from "@/stores/user";
-import {
-  setNotificationsCount,
-  useNotificationsCount,
-} from "@/stores/notifications";
+import { useNotificationsCount } from "@/stores/notifications";
 
 library.add(faBell);
 const notificationCount = useNotificationsCount();
-const store = useStore();
-const user = useCurrentUser();
-
-watchEffect(async () => {
-  if (user.value && store.csrf_token) {
-    await requests
-      .get("/notifications/count")
-      .then((result) => setNotificationsCount(result.count))
-      .catch(alert);
-  }
-});
 </script>
 
 <template>
   <RouterLink
     class="navElement"
     to="/notifications"
-    :aria-label="`Notifications${
-      notificationCount ? `, ${notificationCount} unread` : ''
-    }`"
-    title="Notifications"
+    :aria-label="
+      notificationCount
+        ? `${$t('notifications')} (${$t('notifications-unread', {
+            count: notificationCount,
+          })})`
+        : $t('notifications')
+    "
+    :title="$t('notifications')"
   >
     <div class="icon-wrapper">
       <font-awesome-icon icon="fa-solid fa-bell" />
@@ -40,7 +27,6 @@ watchEffect(async () => {
         Math.min(notificationCount, 99)
       }}</span>
     </div>
-    <span class="mobile-only">{{ $t("notifications") }}</span>
   </RouterLink>
 </template>
 
@@ -48,17 +34,6 @@ watchEffect(async () => {
 .icon-wrapper {
   position: relative;
   display: inline-block;
-}
-
-.mobile-only {
-  display: none;
-}
-
-/* Mobile breakpoint - keep in sync with App.vue nav hamburger */
-@media (max-width: 768px) {
-  .mobile-only {
-    display: inline;
-  }
 }
 
 .badge {

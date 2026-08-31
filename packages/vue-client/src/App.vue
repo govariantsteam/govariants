@@ -2,15 +2,32 @@
 import { RouterLink, RouterView } from "vue-router";
 import UserNav from "./components/UserNav.vue";
 import NotificationsNav from "./components/NotificationsNav.vue";
-import { ref } from "vue";
+import { ref, watchEffect } from "vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faBars, faBook } from "@fortawesome/free-solid-svg-icons";
 import { faHouse } from "@fortawesome/free-solid-svg-icons";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
+import * as requests from "@/requests";
+import { useCurrentUser, useStore } from "@/stores/user";
+import { setNotificationsCount } from "@/stores/notifications";
 
 library.add(faBars, faHouse, faCircleInfo, faBook);
 const is_menu_closed = ref(true);
+
+// The bell is rendered twice (see below), so the unread count is fetched here
+// rather than in NotificationsNav: one request no matter how many are mounted.
+const user_store = useStore();
+const user = useCurrentUser();
+
+watchEffect(async () => {
+  if (user.value && user_store.csrf_token) {
+    await requests
+      .get("/notifications/count")
+      .then((result) => setNotificationsCount(result.count))
+      .catch(alert);
+  }
+});
 
 const closeMenuFn = (event: MouseEvent) => {
   event.stopPropagation();
@@ -34,6 +51,14 @@ const toggleMenuFn = (event: MouseEvent) => {
     <RouterLink class="navLogo" to="/">
       <img class="navLogoImg" src="/favicon.ico" />
     </RouterLink>
+    <!--
+      The bell is rendered in two places and exactly one copy is ever visible
+      (see the .navBell* rules below). On mobile the nav links collapse behind
+      the hamburger, so a bell inside .navContent would hide the unread badge
+      until the menu is opened; it lives in the bar instead. On desktop nothing
+      is collapsed, so it stays with the other nav links.
+    -->
+    <NotificationsNav class="navBellBar" />
     <button class="navHamburgerContainer navElement" @click="toggleMenuFn">
       <font-awesome-icon icon="fa-solid fa-bars" class="navHamburgerMenu" />
     </button>
@@ -51,7 +76,7 @@ const toggleMenuFn = (event: MouseEvent) => {
           <font-awesome-icon icon="fa-solid fa-book" class="icon" />
           {{ $t("rules") }}
         </RouterLink>
-        <NotificationsNav />
+        <NotificationsNav class="navBellMenu" />
       </div>
       <div>
         <UserNav />
@@ -90,6 +115,11 @@ nav {
     }
   }
 
+  /* Hidden until the nav collapses; .navBellMenu is the visible copy here. */
+  a.navBellBar {
+    display: none;
+  }
+
   .navContent {
     display: flex;
     justify-content: space-between;
@@ -110,6 +140,16 @@ nav {
       .navHamburgerMenu {
         display: flex;
       }
+    }
+
+    /* Swap which bell is visible: the bar one, kept beside the hamburger. */
+    a.navBellBar {
+      display: flex;
+      margin-left: auto;
+    }
+
+    a.navBellMenu {
+      display: none;
     }
 
     .navContent {

@@ -460,6 +460,41 @@ export const borderWarVariant: Variant<BorderWarConfig, BorderWarState> = {
   gameClass: BorderWar,
   description:
     "战争号角-边境线 v9.0\n 双方在风云边境线布阵，前4手建立据点；在对方领土/边境围空、围困、吃子得分，己方领土围困/吃子可补兵；破坏对方已得分包围圈得防御分。",
+  rulesDescription: `# Border War (战争号角-边境线) v9.0
+
+A **19×19** Go-like territory variant. Players fight across a central **borderline**
+(row 10) on a 19-row board. The goal is not to enclose the most area, but to **score by
+attacking into the opponent's half**.
+
+## Goal
+Score more points than your opponent (White gets **+5 komi** at game end).
+Each side has a **piece limit of 90**.
+
+## Deploy phase (first 4 moves)
+- Moves 1–4: Black 2 + White 2 stones in alternating order.
+- Each stone **must be placed on your own territory** (rows 1–9 for Black, rows 11–19
+  for White — **not** on the borderline row 10).
+- Every deploy stone automatically becomes a **stronghold**.
+
+## Zones
+- **Black territory**: rows 1–9 · **White territory**: rows 11–19 · **Borderline**: row 10.
+- **Attack zone** (the *only* place that scores): the opponent's territory + the borderline.
+- **Defense zone**: your own territory + the borderline.
+
+## Scoring
+- **Territory** (empty points enclosed in the attack zone): **+2 / point**.
+- **Siege** (enemy groups with no liberties, in the attack zone): **+3 / captured stone**.
+- **Capture** in the attack zone: **+4 / captured stone** (ordinary stones).
+- **Stronghold captured**: **+10**, no war damage, and no capture score.
+- **War damage**: **−1** for each ordinary stone captured from you.
+- **Komi**: White **+5** at game end.
+
+## Troop replenishment (no scoring)
+- Capturing or sieging enemy stones **on your own territory or the borderline**
+  replenishes troops instead of scoring.
+
+## Game end
+Double pass (two consecutive passes) triggers final scoring.`,
   time_handling: "sequential",
   defaultConfig: BorderWar.defaultConfig,
   getPlayerColors: BorderWar.getPlayerColors,

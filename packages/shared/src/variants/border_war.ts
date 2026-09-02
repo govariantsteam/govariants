@@ -111,6 +111,7 @@ export class BorderWar extends AbstractGame<BorderWarConfig, BorderWarState> {
   protected annihilate: NumP = { 0: 0, 1: 0 }; // 吃子次数（子数，仅攻击区）
   protected normalLost: NumP = { 0: 0, 1: 0 }; // 普通战损子数
   protected strongholdTaken: NumP = { 0: 0, 1: 0 }; // 提对方据点次数
+  protected soldierBonus: NumP = { 0: 0, 1: 0 }; // 防御区提吃/围困回补兵力（只增不减）
 
   constructor(config: BorderWarConfig) {
     super(config);
@@ -177,8 +178,12 @@ export class BorderWar extends AbstractGame<BorderWarConfig, BorderWarState> {
       throw Error("Deploy phase: must place in your own territory.");
     }
 
-    // 兵力上限：落子消耗1兵
-    if (this.pieces_on_board[player] + 1 > this.config.pieceLimit) {
+    // 兵力上限：落子消耗1兵（可部署 = 上限 − 占用 + 补兵）
+    const available =
+      this.config.pieceLimit -
+      this.pieces_on_board[player] +
+      this.soldierBonus[player];
+    if (available <= 0) {
       throw Error("No pieces left to deploy.");
     }
 
@@ -199,10 +204,7 @@ export class BorderWar extends AbstractGame<BorderWarConfig, BorderWarState> {
     });
 
     if (captured_here.length > 0) {
-      const caps = this.board.to2DArray();
-      void caps;
-      // 每提一子：占防御区/边境则补兵；吃子分仅计攻击区（对方领土/边境）
-      let replenish = 0;
+      // 每提一子：提吃分仅计攻击区（对方领土/边境）；防御区（己方领土/边境）提普通子回补兵力
       let ateAttack = 0;
       let strongholdHit = 0;
       const oppStrongholds = this.strongholds[oppPlayer];
@@ -215,17 +217,16 @@ export class BorderWar extends AbstractGame<BorderWarConfig, BorderWarState> {
           strongholdHit += 1;
           continue;
         }
-        // 普通子：战损 -1；攻击区吃子分 +4；防御区补兵
+        // 普通子：战损 -1；攻击区吃子分 +4；防御区补兵 +1
         this.normalLost[oppPlayer] += 1;
         if (isAttackZone(c.y, color)) ateAttack += 1;
-        if (isDefenseZone(c.y, color)) replenish += 1;
+        if (isDefenseZone(c.y, color)) this.soldierBonus[player] += 1;
       }
       this.captures[player] += captured_here.length;
       this.annihilate[player] += ateAttack;
       this.strongholdTaken[player] += strongholdHit;
-      // 补兵：己方领土/边境提普通子 → 回补兵力（兵力占用随盘面减，天然回补）
-      // 注意：被提子的兵力已扣减（pieces_on_board 减），补兵体现在减少的占用；此处无需额外操作。
-      void replenish;
+      // 注：无气组在围棋引擎中会立即被提走，围困本身不会滞留盘上；
+      // 因此「围困补兵」在本实现中由「防御区提吃普通子补兵」天然覆盖（两者同一路径）。
     }
 
     // 布局阶段：前 DEPLOY_STONES_PER_SIDE 枚（本手序）成据点
@@ -265,8 +266,18 @@ export class BorderWar extends AbstractGame<BorderWarConfig, BorderWarState> {
         1: [...this.strongholds[1]],
       },
       pieces_left: {
-        0: this.config.pieceLimit - this.pieces_on_board[0],
-        1: this.config.pieceLimit - this.pieces_on_board[1],
+        0: Math.max(
+          0,
+          this.config.pieceLimit -
+            this.pieces_on_board[0] +
+            this.soldierBonus[0],
+        ),
+        1: Math.max(
+          0,
+          this.config.pieceLimit -
+            this.pieces_on_board[1] +
+            this.soldierBonus[1],
+        ),
       },
       deploy_done: this.deploy_done,
       score: this.liveScore(),

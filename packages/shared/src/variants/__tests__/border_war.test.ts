@@ -32,6 +32,25 @@ describe("战争号角-边境线", () => {
     expect(() => g.playMove(0, "aj")).toThrow(/own territory/);
   });
 
+  test("防御区提吃普通子：回补兵力 +1", () => {
+    const g = newGame();
+    // 布局：黑 aa、ab，白 ak、al（都是据点）
+    g.playMove(0, "aa");
+    g.playMove(1, "ak");
+    g.playMove(0, "ab");
+    g.playMove(1, "al");
+    // 黑在自己领土 bf(1,5) 布点，白落 a5(0,5)；黑再填 ae(0,4)、ag(0,6) 提掉白 a5
+    g.playMove(0, "bf");
+    g.playMove(1, "af");
+    g.playMove(0, "ae");
+    g.playMove(1, "pass");
+    g.playMove(0, "ag"); // a5 四气（ae/ag/bf 已是黑）→ 提走白 a5，黑防御区补兵 +1
+    const st = g.exportState({ phase: "play" });
+    // 黑占用 = aa+ab+bf+ae+ag = 5，补兵 +1 → 剩余兵力 = 90 - 5 + 1 = 86
+    expect(st.pieces_left[0]).toBe(86);
+    expect(st.score.casualty[1]).toBe(-1); // 白普通子战损
+  });
+
   test("提吃据点：+10 奖励，不计战损、不计吃子分", () => {
     const g = newGame();
     // 布局：白据点 ak(x0,y10)、al(x0,y11)

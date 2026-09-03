@@ -470,8 +470,8 @@ function groupHasLiberties(
 export const borderWarVariant: Variant<BorderWarConfig, BorderWarState> = {
   gameClass: BorderWar,
   description:
-    "战争号角-边境线 v9.0\n 双方在风云边境线布阵，前4手建立据点；在对方领土/边境围空、围困、吃子得分，己方领土围困/吃子可补兵；破坏对方已得分包围圈得防御分。",
-  rulesDescription: `# Border War (战争号角-边境线) v9.0
+    "Border War (War Horn: Borderline) v9.0\n Players deploy on either side of a central borderline; the first 4 moves build strongholds on your own territory. Score territory, sieges and captures in the opponent's half or on the borderline; capturing or sieging on your own side replenishes troops. Breaking an opponent's scored enclosure earns defense points.",
+  rulesDescription: `# Border War (War Horn: Borderline) v9.0
 
 A **19×19** Go-like territory variant. Players fight across a central **borderline**
 (row 10) on a 19-row board. The goal is not to enclose the most area, but to **score by

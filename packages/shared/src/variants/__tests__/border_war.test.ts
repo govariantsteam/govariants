@@ -70,7 +70,7 @@ describe("战争号角-边境线", () => {
     expect(st.strongholds[1]).toHaveLength(0);
     expect(st.score.stronghold[0]).toBe(20); // 2 × +10
     expect(st.score.casualty[1]).toBe(0); // 不计战损
-    expect(st.score.territory[0]).toBe(0); // 据点提走不计吃子分
+    expect(st.score.captures[0]).toBe(0); // 据点提走不计吃子分
     // 双虚终局
     g.playMove(1, "pass");
     g.playMove(0, "pass");
@@ -92,7 +92,7 @@ describe("战争号角-边境线", () => {
     g.playMove(1, "pass");
     g.playMove(0, "bi"); // 提掉白 bj
     const st = g.exportState({ phase: "play" });
-    expect(st.score.territory[0]).toBe(4); // +4 吃子分
+    expect(st.score.captures[0]).toBe(4); // +4 吃子分
     expect(st.score.casualty[1]).toBe(-1); // 战损
     // 双虚终局
     g.playMove(1, "pass");
@@ -105,5 +105,27 @@ describe("战争号角-边境线", () => {
     expect(g.exportState({ phase: "play" }).pieces_left[0]).toBe(90);
     g.playMove(0, "aa");
     expect(g.exportState({ phase: "play" }).pieces_left[0]).toBe(89);
+  });
+
+  test("双虚终局：finalizeScore 产出有效 g.result", () => {
+    const g = newGame();
+    g.playMove(0, "aa");
+    g.playMove(1, "ak");
+    g.playMove(0, "ab");
+    g.playMove(1, "al");
+    g.playMove(0, "aj");
+    g.playMove(1, "pass");
+    g.playMove(0, "bk");
+    g.playMove(1, "pass");
+    g.playMove(0, "bl");
+    g.playMove(1, "pass");
+    g.playMove(0, "am"); // 提掉白据点 {ak,al}
+    g.result = undefined; // 清零，确认确实走 finalizeScore 而非残留
+    g.playMove(1, "pass");
+    g.playMove(0, "pass"); // 双虚 → finalizeScore
+    expect(g.phase).toBe("gameover");
+    expect(typeof g.result).toBe("string");
+    expect(g.result).toMatch(/^(B\+|W\+|Tie)/);
+    expect(typeof g.numeric_result).toBe("number");
   });
 });

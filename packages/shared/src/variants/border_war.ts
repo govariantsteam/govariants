@@ -82,7 +82,7 @@ export interface BorderWarState {
   deploy_done: boolean; // 布局阶段是否结束
   // 实时分数面板（不含白贴目；点差由 finalize 结算）
   score: {
-    territory: NumP; // 占领分：围空+2 + 围困+3 + 吃子+4/子（攻击区）
+    captures: NumP; // 吃子分：+4/子（攻击区）
     stronghold: NumP; // 据点奖励 +10/次
     casualty: NumP; // 战损 -1/子（负值）
   };
@@ -115,8 +115,13 @@ export class BorderWar extends AbstractGame<BorderWarConfig, BorderWarState> {
 
   constructor(config: BorderWarConfig) {
     super(config);
-    if (this.config.board.width > 52 || this.config.board.height > 52) {
-      throw new Error("BorderWar does not support sizes greater than 52");
+    if (
+      this.config.board.width !== BOARD_SIZE ||
+      this.config.board.height !== BOARD_SIZE
+    ) {
+      throw new Error(
+        `BorderWar requires a ${BOARD_SIZE}×${BOARD_SIZE} board.`,
+      );
     }
     this.board = new Grid<Color>(
       this.config.board.width,
@@ -288,9 +293,9 @@ export class BorderWar extends AbstractGame<BorderWarConfig, BorderWarState> {
   private liveScore() {
     // 围困/围空用简化的实时计算：仅用于观察面板。
     // 权威结果以 finalizeScore 为准。
-    const territory = { 0: this.annihilate[0] * 4, 1: this.annihilate[1] * 4 };
+    const captures = { 0: this.annihilate[0] * 4, 1: this.annihilate[1] * 4 };
     return {
-      territory,
+      captures,
       stronghold: {
         0: this.strongholdTaken[0] * 10,
         1: this.strongholdTaken[1] * 10,
@@ -330,7 +335,7 @@ export class BorderWar extends AbstractGame<BorderWarConfig, BorderWarState> {
     bk_total += siege[0];
     wt_total += siege[1];
 
-    bk_total += this.config.komi === this.config.komi ? 0 : 0; // 贴目记白
+    // 白方贴目（默认 +5）
     wt_total += this.config.komi;
 
     this.numeric_result = bk_total - wt_total;
@@ -352,6 +357,7 @@ export class BorderWar extends AbstractGame<BorderWarConfig, BorderWarState> {
       group.forEach((p) => visited.set(p, true));
       const border = getOuterBorder(group, this.board);
       const borderColors = border.map((p) => this.board.at(p) as Color);
+      if (borderColors.length === 0) return; // 无外边界：整盘无包围者，不判占领
       const owner = borderColors[0];
       if (borderColors.every((c) => c === owner)) {
         const colorOf = owner === Color.BLACK ? 0 : 1;
@@ -478,8 +484,9 @@ A **19×19** Go-like territory variant. Players fight across a central **borderl
 attacking into the opponent's half**.
 
 ## Goal
-Score more points than your opponent (White gets **+5 komi** at game end).
-Each side has a **piece limit of 90**.
+Score more points than your opponent (White gets **+5 komi** at game end; both
+"komi" and "pieceLimit" are config-driven — the values shown are the defaults).
+Each side has a **piece limit of 90** (default).
 
 ## Deploy phase (first 4 moves)
 - Moves 1–4: Black 2 + White 2 stones in alternating order.

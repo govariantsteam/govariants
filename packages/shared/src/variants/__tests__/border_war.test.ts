@@ -128,4 +128,24 @@ describe("战争号角-边境线", () => {
     expect(g.result).toMatch(/^(B\+|W\+|Tie)/);
     expect(typeof g.numeric_result).toBe("number");
   });
+
+  test("劫规则：立即回提还原局面被禁止（superko）", () => {
+    const g = newGame();
+    // 布局（据点远离角部劫争区）：黑 if/jf，白 il/jl
+    g.playMove(0, "if");
+    g.playMove(1, "il");
+    g.playMove(0, "jf");
+    g.playMove(1, "jl");
+    // 搭一个角部单点劫：黑 bb(1,1)、ca(2,0)，白 ab(0,1)、ba(1,0)
+    g.playMove(0, "bb");
+    g.playMove(1, "ab");
+    g.playMove(0, "ca");
+    g.playMove(1, "ba"); // 白 ba 只剩 (0,0) 一气
+    g.playMove(0, "aa"); // 黑 aa 提掉白 ba
+    // 白立即回提 ba 会还原落子 aa 前的局面 → 应抛错
+    expect(() => g.playMove(1, "ba")).toThrow(/repeated/);
+    // 白改下别处（如边境）仍可继续
+    g.playMove(1, "aj");
+    expect(g.phase).not.toBe("gameover");
+  });
 });

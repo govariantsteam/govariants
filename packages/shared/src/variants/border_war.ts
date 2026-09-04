@@ -12,6 +12,7 @@ import { SgfRecorder } from "../lib/sgf_recorder";
 import { DefaultBoardState } from "../lib/board_types";
 import { NewGridBadukConfig, mapBoard } from "./baduk_utils";
 import { BoardPattern } from "../lib/abstractBoard/boardFactory";
+import { KoDetector, SuperKoDetector } from "../lib/ko_detector";
 
 // 数字键 player 0/1 的简单映射（替代 {0,1} 字面量，提供索引签名）
 type NumP = Record<number, number>;
@@ -106,6 +107,7 @@ export class BorderWar extends AbstractGame<BorderWarConfig, BorderWarState> {
   // 兵力/据点
   protected pieces_on_board: NumP = { 0: 0, 1: 0 };
   protected strongholds: StrongholdMap = { 0: new Set(), 1: new Set() };
+  protected ko_detector: KoDetector;
 
   // 事件计数（与引擎 Counters 对齐）
   protected annihilate: NumP = { 0: 0, 1: 0 }; // 吃子次数（子数，仅攻击区）
@@ -128,6 +130,7 @@ export class BorderWar extends AbstractGame<BorderWarConfig, BorderWarState> {
       this.config.board.height,
     ).fill(Color.EMPTY);
     this.sgf = new SgfRecorder(this.config.board, this.config.komi);
+    this.ko_detector = new SuperKoDetector();
   }
 
   override numPlayers(): number {
@@ -241,6 +244,19 @@ export class BorderWar extends AbstractGame<BorderWarConfig, BorderWarState> {
     ) {
       this.strongholds[player].add(pos.toSgfRepr());
     }
+
+    this.postValidateMove(pos);
+  }
+
+  /** 落子/提子后校验：禁自杀；禁使局面还原的劫着（positional superko，含基本劫禁着） */
+  protected postValidateMove(pos: Coordinate): void {
+    if (!groupHasLiberties(getGroup(pos, this.board), this.board)) {
+      throw Error("Move is suicidal!");
+    }
+    this.ko_detector.push({
+      board: this.board,
+      next_to_play: this.next_to_play,
+    });
   }
 
   protected prepareForNextMove(move: string): void {
@@ -510,6 +526,11 @@ Each side has a **piece limit of 90** (default).
 ## Troop replenishment (no scoring)
 - Capturing or sieging enemy stones **on your own territory or the borderline**
   replenishes troops instead of scoring.
+
+## Ko
+A move that restores a previously seen board position is forbidden (positional
+superko). This includes the basic one-point ko: you may not immediately
+recapture the point just vacated to restore the prior position.
 
 ## Game end
 Double pass (two consecutive passes) triggers final scoring.`,

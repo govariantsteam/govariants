@@ -404,4 +404,38 @@ describe("API Endpoints", () => {
       expect(response.body.username).toBe("testuser");
     });
   });
+
+  describe("GET /api/admin/stats", () => {
+    it("rejects anonymous requests", async () => {
+      const response = await request(app).get("/api/admin/stats").expect(401);
+
+      expect(response.body).toContain("Only admins");
+    });
+
+    it("rejects logged-in non-admins", async () => {
+      const userApp = createTestApp({
+        mockUser: { id: "user-id", login_type: "persistent" },
+      });
+
+      await request(userApp).get("/api/admin/stats").expect(401);
+    });
+
+    it("returns stats for admins", async () => {
+      const adminApp = createTestApp({
+        mockUser: { id: "admin-id", login_type: "persistent", role: "admin" },
+      });
+      const db = await getTestDb();
+      await db.collection("games").insertOne(makeTestGame());
+
+      const response = await request(adminApp)
+        .get("/api/admin/stats")
+        .expect(200);
+
+      expect(response.body.games.total).toBe(1);
+      expect(response.body.variants).toEqual([
+        expect.objectContaining({ variant: "baduk", games: 1 }),
+      ]);
+      expect(response.body.weeklyGames).toHaveLength(12);
+    });
+  });
 });

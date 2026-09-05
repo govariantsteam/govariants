@@ -4,6 +4,7 @@ import * as requests from "../requests";
 import { useCurrentUser } from "@/stores/user";
 import Swal from "sweetalert2";
 import router from "@/router";
+import AdminStats from "@/components/AdminStats.vue";
 
 const loggedInUser = useCurrentUser();
 const testEmailAddress = ref<string>("");
@@ -65,11 +66,20 @@ async function sendTestEmail() {
           </button>
         </div>
       </section>
+
+      <div class="stats-panel">
+        <AdminStats />
+      </div>
     </div>
   </main>
 </template>
 
 <style scoped>
+/* The page layout is two columns from 1024px up; the dashboard wants all of it. */
+.stats-panel {
+  grid-column: 1 / -1;
+}
+
 .admin-section {
   margin-bottom: 2rem;
   padding: 1rem;

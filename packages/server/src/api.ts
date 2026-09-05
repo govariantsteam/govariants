@@ -42,6 +42,7 @@ import {
 import { io } from "./socket_io";
 import { checkCSRFToken, generateCSRFToken } from "./csrf_guard";
 import { sendEmail } from "./email";
+import { getSiteStats } from "./stats";
 import { HttpError } from "./http-error";
 import { authLimiter } from "./rate_limit";
 import {
@@ -399,6 +400,15 @@ router.post("/admin/test-email", checkCSRFToken, async (req, res) => {
   );
 
   res.json({ success: true, message: "Test email sent successfully." });
+});
+
+router.get("/admin/stats", checkCSRFToken, async (req, res) => {
+  if (!req.user || (req.user as UserResponse).role !== "admin") {
+    res.status(401).json("Only admins may view site stats.");
+    return;
+  }
+
+  res.json(await getSiteStats());
 });
 
 router.get("/notifications/count", checkCSRFToken, async (req, res) => {

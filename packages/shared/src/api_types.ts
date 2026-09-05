@@ -79,3 +79,54 @@ export type GameErrorResponse = {
   variant: string;
   errorMessage: string;
 };
+
+/** One bucket of the site-stats weekly game-creation series. */
+export type WeeklyGameCount = {
+  /** ISO date of the Monday that starts the (UTC) week. */
+  weekStart: string;
+  games: number;
+};
+
+export type VariantStats = {
+  variant: string;
+  games: number;
+  gamesLast30Days: number;
+  /** Games where every seat is occupied. */
+  seatsFilled: number;
+  /** Games with at least one move played. */
+  withMoves: number;
+  totalMoves: number;
+};
+
+export type TimeControlUsage = {
+  /** Human-readable time control name, or "Unlimited" when none is configured. */
+  label: string;
+  games: number;
+};
+
+/**
+ * Aggregate site usage, computed on demand from the games, users and sessions
+ * collections. Deliberately contains no per-user or per-game identifiers.
+ */
+export type SiteStatsResponse = {
+  generatedAt: string;
+  games: {
+    total: number;
+    createdLast7Days: number;
+    createdLast30Days: number;
+    seatsFilled: number;
+    withMoves: number;
+    totalMoves: number;
+  };
+  users: {
+    total: number;
+    registered: number;
+    guest: number;
+    registeredLast30Days: number;
+    /** Sessions whose cookie has not yet expired — a rough "recently active" count. */
+    activeSessions: number;
+  };
+  variants: VariantStats[];
+  weeklyGames: WeeklyGameCount[];
+  timeControls: TimeControlUsage[];
+};

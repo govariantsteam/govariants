@@ -8,6 +8,7 @@ import PyramidConfigForm from "./components/GameCreation/PyramidConfigForm.vue";
 import RengoConfigForm from "./components/GameCreation/RengoConfigForm.vue";
 import CubeBadukConfigForm from "./components/GameCreation/CubeBadukConfigForm.vue";
 import RizomaConfigForm from "./components/GameCreation/RizomaConfigForm.vue";
+import BorderWarConfigForm from "./components/GameCreation/BorderWarConfigForm.vue";
 
 export const config_form_map: {
   [variant: string]: Component<{ initialConfig: object }>;
@@ -29,4 +30,5 @@ export const config_form_map: {
   lighthouse: GridBadukConfigForm,
   rengo: RengoConfigForm,
   rizoma: RizomaConfigForm,
+  "border war": BorderWarConfigForm,
 };

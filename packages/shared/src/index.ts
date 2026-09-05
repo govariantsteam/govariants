@@ -1,6 +1,18 @@
 export * from "./variants/baduk";
 export * from "./variants/cube";
 export * from "./variants/phantom";
+export {
+  BOARD_SIZE,
+  BORDER_ROW,
+  PIECE_LIMIT,
+  KOMI_DEFAULT,
+  DEPLOY_MOVES,
+  DEPLOY_STONES_PER_SIDE,
+  Zone,
+  BorderWar,
+  borderWarVariant,
+} from "./variants/border_war";
+export type { BorderWarConfig, BorderWarState } from "./variants/border_war";
 export * from "./variants/capture";
 export * from "./variants/parallel";
 export * from "./variants/quantum";

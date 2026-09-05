@@ -21,6 +21,8 @@ const notificationStore = defineStore("notifications", () => {
         .get("/notifications/count")
         .then((result) => set(result.count))
         .catch(alert);
+    } else {
+      unreadCount.value = null;
     }
   });
 

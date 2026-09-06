@@ -82,7 +82,7 @@ export type GameErrorResponse = {
 
 /** One bucket of the site-stats weekly game-creation series. */
 export type WeeklyGameCount = {
-  /** ISO date of the Monday that starts the (UTC) week. */
+  /** ISO timestamp of midnight UTC on the Monday that starts the week. */
   weekStart: string;
   games: number;
 };

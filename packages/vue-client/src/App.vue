@@ -34,6 +34,7 @@ const toggleMenuFn = (event: MouseEvent) => {
     <RouterLink class="navLogo" to="/">
       <img class="navLogoImg" src="/favicon.ico" />
     </RouterLink>
+    <NotificationsNav class="navNotificationsMobile" />
     <button class="navHamburgerContainer navElement" @click="toggleMenuFn">
       <font-awesome-icon icon="fa-solid fa-bars" class="navHamburgerMenu" />
     </button>
@@ -51,7 +52,7 @@ const toggleMenuFn = (event: MouseEvent) => {
           <font-awesome-icon icon="fa-solid fa-book" class="icon" />
           {{ $t("rules") }}
         </RouterLink>
-        <NotificationsNav />
+        <NotificationsNav class="navNotificationsDesktop" />
       </div>
       <div>
         <UserNav />
@@ -90,6 +91,10 @@ nav {
     }
   }
 
+  a.navNotificationsMobile {
+    display: none;
+  }
+
   .navContent {
     display: flex;
     justify-content: space-between;
@@ -104,6 +109,16 @@ nav {
 @media (max-width: 768px) {
   nav {
     justify-content: space-between;
+
+    /* The bell lives in the top bar, not inside the hamburger menu. */
+    a.navNotificationsMobile {
+      display: flex;
+      margin-left: auto;
+    }
+
+    a.navNotificationsDesktop {
+      display: none;
+    }
 
     .navHamburgerContainer {
       display: flex;

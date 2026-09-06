@@ -110,17 +110,12 @@ nav {
   nav {
     justify-content: space-between;
 
-    /* The glyph is 1em, so this one number sizes it and its badge, in scale
-       with the hamburger beside it. */
     a.navNotificationsMobile {
       display: flex;
       margin-left: auto;
       font-size: calc(var(--navbar-height) * 0.56);
     }
 
-    /* A glyph this size has room for the badge on its corner, placed as a
-       fraction of the icon. Flex drops the line-height slack an inline-block
-       leaves under the svg, which those fractions would measure against. */
     a.navNotificationsMobile :deep(.icon-wrapper) {
       display: flex;
     }

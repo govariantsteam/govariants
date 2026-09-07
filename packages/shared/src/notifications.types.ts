@@ -44,3 +44,19 @@ export type GameNotification =
       params: { seat: number; user: string | undefined; didTakeSeat: boolean };
       read: boolean;
     };
+
+/**
+ * The parts of a browser PushSubscription the server needs in order to send a
+ * message to it. Matches the shape of `PushSubscription.toJSON()`.
+ */
+export type PushSubscriptionJSON = {
+  endpoint: string;
+  keys: { p256dh: string; auth: string };
+};
+
+/** The JSON body the server encrypts into a push message. */
+export type PushPayload = {
+  title: string;
+  body: string;
+  gameId: string;
+};

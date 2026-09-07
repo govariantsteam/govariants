@@ -3,6 +3,7 @@ import { User, UserResponse, UserRankings, UserRole } from "@govariants/shared";
 import { Collection, WithId, ObjectId } from "mongodb";
 import { randomBytes, scrypt } from "node:crypto";
 import { deleteAllNotificationsOfUser } from "./notifications/notifications";
+import { deleteAllPushSubscriptionsOfUser } from "./notifications/push";
 
 export interface GuestUser extends UserResponse {
   token: string;
@@ -247,6 +248,7 @@ export function deleteUser(user_id: string) {
     })
     .catch(console.error);
   void deleteAllNotificationsOfUser(user_id);
+  void deleteAllPushSubscriptionsOfUser(user_id);
 }
 
 export function checkUsername(username: string): void {

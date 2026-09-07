@@ -38,6 +38,7 @@ import {
   UserResponse,
   GameInitialResponse,
   validateNotificationTypeArray,
+  validatePushSubscription,
 } from "@govariants/shared";
 import { io } from "./socket_io";
 import { checkCSRFToken, generateCSRFToken } from "./csrf_guard";
@@ -51,6 +52,12 @@ import {
   getUserNotificationsCount,
   markAsRead,
 } from "./notifications/notifications";
+import {
+  deletePushSubscription,
+  getVapidPublicKey,
+  hasPushSubscription,
+  savePushSubscription,
+} from "./notifications/push";
 
 export const router = express.Router();
 
@@ -487,3 +494,65 @@ router.post(
     res.send({});
   },
 );
+
+// The browser needs the VAPID public key before it can create a subscription.
+// A null key means the deployment has push turned off, which the client uses to
+// hide the opt-in entirely.
+router.get("/notifications/push/key", checkCSRFToken, async (_req, res) => {
+  res.send({ publicKey: getVapidPublicKey() });
+});
+
+router.post(
+  "/notifications/push/subscribe",
+  checkCSRFToken,
+  async (req, res) => {
+    if (!req.user) {
+      res.sendStatus(401);
+      return;
+    }
+
+    const { subscription } = req.body;
+    validatePushSubscription(subscription);
+
+    await savePushSubscription((req.user as User).id, subscription);
+    res.send({});
+  },
+);
+
+router.post(
+  "/notifications/push/unsubscribe",
+  checkCSRFToken,
+  async (req, res) => {
+    if (!req.user) {
+      res.sendStatus(401);
+      return;
+    }
+
+    const { endpoint } = req.body;
+    if (typeof endpoint !== "string" || !endpoint) {
+      throw new HttpError(400, "endpoint is required");
+    }
+
+    await deletePushSubscription((req.user as User).id, endpoint);
+    res.send({});
+  },
+);
+
+// A browser can hold a PushSubscription the server has no record of — after the
+// user was deleted, say. The opt-in toggle asks here so it shows the state the
+// server will actually act on.
+router.post("/notifications/push/status", checkCSRFToken, async (req, res) => {
+  if (!req.user) {
+    res.send({ subscribed: false });
+    return;
+  }
+
+  const { endpoint } = req.body;
+  if (typeof endpoint !== "string" || !endpoint) {
+    throw new HttpError(400, "endpoint is required");
+  }
+
+  res.send({
+    subscribed: await hasPushSubscription((req.user as User).id, endpoint),
+  });
+});

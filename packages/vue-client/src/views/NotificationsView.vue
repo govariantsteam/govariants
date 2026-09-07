@@ -3,10 +3,9 @@ import { effect, Ref, ref, watchEffect } from "vue";
 import * as requests from "@/requests";
 import { useCurrentUser, useStore } from "@/stores/user";
 import {
-  GameNotification,
   isErrorResult,
-  Notifications,
   NotificationsResponse,
+  renderNotification,
 } from "@govariants/shared";
 import { setNotificationsCount } from "@/stores/notifications";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -20,6 +19,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import GameListItem from "@/components/GameListItem.vue";
 import GameListItemFallback from "@/components/GameListItemFallback.vue";
 import { openSubscriptionDialog } from "@/components/GameView/SubscriptionDialog";
+import PushNotificationToggle from "@/components/PushNotificationToggle.vue";
 
 library.add(faCircleCheck, faTrash, faGear, faBell);
 
@@ -50,25 +50,6 @@ watchEffect(async () => {
   }
 });
 
-function renderNotification(notification: GameNotification): string {
-  switch (notification.type) {
-    case Notifications.gameEnd: {
-      return `Game has ended with result ${notification.params.result}.`;
-    }
-    case Notifications.myMove: {
-      return `It's your move in round ${notification.params.round}.`;
-    }
-    case Notifications.newRound: {
-      return `Round ${notification.params.round} has started.`;
-    }
-    case Notifications.seatChange: {
-      return `${notification.params.user} has ${
-        notification.params.didTakeSeat ? "taken" : "left"
-      } seat ${notification.params.seat}.`;
-    }
-  }
-}
-
 async function markAsRead(gameId: string): Promise<unknown> {
   return requests
     .post(`/notifications/${gameId}/mark-as-read`)
@@ -86,6 +67,7 @@ async function clear(gameId: string): Promise<unknown> {
 
 <template>
   <div class="notifications-page">
+    <PushNotificationToggle />
     <div
       v-for="{ gameId, notifications, gameState } in notificationGroups"
       :key="gameId"

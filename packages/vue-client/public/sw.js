@@ -20,28 +20,35 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("push", (event) => {
-  if (!event.data) {
-    return;
-  }
-
-  let payload;
+  // The subscription is userVisibleOnly, which obliges us to show a
+  // notification for every push we receive. Returning early on an unreadable
+  // payload would break that contract — the browser then shows a generic
+  // "site updated in the background" notice of its own, and repeatedly
+  // failing to show one can cost us the subscription. So every path below
+  // ends in showNotification.
+  let payload = null;
   try {
-    payload = event.data.json();
+    payload = event.data ? event.data.json() : null;
   } catch {
-    return;
+    payload = null;
   }
 
-  event.waitUntil(
-    self.registration.showNotification(payload.title, {
-      body: payload.body,
-      icon: "/logo.svg",
-      badge: "/logo.svg",
-      // Notifications about the same game replace each other rather than
-      // stacking up, so a game left running overnight is one notification.
-      tag: payload.gameId,
-      data: { gameId: payload.gameId },
-    }),
-  );
+  const title = (payload && payload.title) || "Go Variants";
+  const options = {
+    body:
+      (payload && payload.body) || "Something happened in one of your games.",
+    icon: "/logo.svg",
+    badge: "/logo.svg",
+  };
+
+  if (payload && payload.gameId) {
+    // Notifications about the same game replace each other rather than
+    // stacking up, so a game left running overnight is one notification.
+    options.tag = payload.gameId;
+    options.data = { gameId: payload.gameId };
+  }
+
+  event.waitUntil(self.registration.showNotification(title, options));
 });
 
 self.addEventListener("notificationclick", (event) => {

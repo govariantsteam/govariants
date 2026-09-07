@@ -541,13 +541,15 @@ router.post(
 // A browser can hold a PushSubscription the server has no record of — after the
 // user was deleted, say. The opt-in toggle asks here so it shows the state the
 // server will actually act on.
-router.post("/notifications/push/status", checkCSRFToken, async (req, res) => {
+router.get("/notifications/push/status", checkCSRFToken, async (req, res) => {
   if (!req.user) {
     res.send({ subscribed: false });
     return;
   }
 
-  const { endpoint } = req.body;
+  // A repeated query parameter arrives as an array, so this checks the type
+  // rather than just the presence.
+  const { endpoint } = req.query;
   if (typeof endpoint !== "string" || !endpoint) {
     throw new HttpError(400, "endpoint is required");
   }

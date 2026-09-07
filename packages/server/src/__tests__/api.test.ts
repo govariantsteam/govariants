@@ -438,4 +438,100 @@ describe("API Endpoints", () => {
       expect(response.body.weeklyGames).toHaveLength(12);
     });
   });
+  describe("/api/notifications/push", () => {
+    const USER_ID = "507f1f77bcf86cd799439011";
+    const ENDPOINT = "https://push.example.com/abc?token=x&y=z";
+    const SUBSCRIPTION = {
+      endpoint: ENDPOINT,
+      keys: { p256dh: "p256dh-value", auth: "auth-value" },
+    };
+
+    function authedApp() {
+      return createTestApp({ mockUser: { id: USER_ID, username: "someone" } });
+    }
+
+    it("serves the VAPID public key, or null when push is unconfigured", async () => {
+      const response = await request(app)
+        .get("/api/notifications/push/key")
+        .expect(200);
+
+      // The test process sets no VAPID keys, so push reports itself as off.
+      expect(response.body).toEqual({ publicKey: null });
+    });
+
+    it("stores a subscription and reports it through the status route", async () => {
+      const authApp = authedApp();
+
+      await request(authApp)
+        .post("/api/notifications/push/subscribe")
+        .send({ subscription: SUBSCRIPTION })
+        .expect(200);
+
+      const response = await request(authApp)
+        .get("/api/notifications/push/status")
+        .query({ endpoint: ENDPOINT })
+        .expect(200);
+
+      expect(response.body).toEqual({ subscribed: true });
+    });
+
+    it("reports an endpoint the server does not know about", async () => {
+      const response = await request(authedApp())
+        .get("/api/notifications/push/status")
+        .query({ endpoint: "https://push.example.com/never-seen" })
+        .expect(200);
+
+      expect(response.body).toEqual({ subscribed: false });
+    });
+
+    it("stops reporting a subscription once it is removed", async () => {
+      const authApp = authedApp();
+
+      await request(authApp)
+        .post("/api/notifications/push/subscribe")
+        .send({ subscription: SUBSCRIPTION })
+        .expect(200);
+      await request(authApp)
+        .post("/api/notifications/push/unsubscribe")
+        .send({ endpoint: ENDPOINT })
+        .expect(200);
+
+      const response = await request(authApp)
+        .get("/api/notifications/push/status")
+        .query({ endpoint: ENDPOINT })
+        .expect(200);
+
+      expect(response.body).toEqual({ subscribed: false });
+    });
+
+    it("requires an endpoint on the status route", async () => {
+      await request(authedApp())
+        .get("/api/notifications/push/status")
+        .expect(400);
+    });
+
+    it("rejects a repeated endpoint parameter", async () => {
+      // Express turns a repeated query parameter into an array, which must not
+      // reach the database as one.
+      await request(authedApp())
+        .get("/api/notifications/push/status?endpoint=a&endpoint=b")
+        .expect(400);
+    });
+
+    it("reports not subscribed rather than erroring when logged out", async () => {
+      const response = await request(app)
+        .get("/api/notifications/push/status")
+        .query({ endpoint: ENDPOINT })
+        .expect(200);
+
+      expect(response.body).toEqual({ subscribed: false });
+    });
+
+    it("rejects a malformed subscription", async () => {
+      await request(authedApp())
+        .post("/api/notifications/push/subscribe")
+        .send({ subscription: { endpoint: ENDPOINT } })
+        .expect(500);
+    });
+  });
 });

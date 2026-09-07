@@ -87,9 +87,11 @@ export async function getPushState(): Promise<PushState> {
 
   // The browser can hold a subscription the server has no record of — after a
   // user was deleted, say — so the server has the final say on the state.
-  const { subscribed } = await requests.post("/notifications/push/status", {
-    endpoint: subscription.endpoint,
-  });
+  const { subscribed } = await requests.get(
+    `/notifications/push/status?endpoint=${encodeURIComponent(
+      subscription.endpoint,
+    )}`,
+  );
   return subscribed ? "enabled" : "disabled";
 }
 

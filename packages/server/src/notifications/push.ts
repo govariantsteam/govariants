@@ -61,14 +61,25 @@ export async function savePushSubscription(
   userId: string,
   subscription: PushSubscriptionJSON,
 ): Promise<void> {
+  // Rebuilt field by field rather than storing the request body as it arrived.
+  // The route validates the shape, but the object can still carry properties we
+  // never asked for, and this is the last point before the database: coercing
+  // each field guarantees a string reaches the query filter, where a nested
+  // object would otherwise be read as a query operator.
+  const endpoint = String(subscription.endpoint);
+  const keys = {
+    p256dh: String(subscription.keys.p256dh),
+    auth: String(subscription.keys.auth),
+  };
+
   // Keyed on the endpoint rather than the user: a browser has exactly one
   // endpoint, so re-subscribing after a key rotation, or signing in as someone
   // else on the same browser, should replace the record instead of adding one.
   await pushSubscriptions().updateOne(
-    { endpoint: subscription.endpoint },
+    { endpoint: endpoint },
     {
-      $set: { userId: userId, keys: subscription.keys },
-      $setOnInsert: { endpoint: subscription.endpoint, createdAt: new Date() },
+      $set: { userId: userId, keys: keys },
+      $setOnInsert: { endpoint: endpoint, createdAt: new Date() },
     },
     { upsert: true },
   );

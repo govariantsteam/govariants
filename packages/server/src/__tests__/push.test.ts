@@ -106,6 +106,39 @@ describe("subscription storage", () => {
     expect(await push.hasPushSubscription(USER_B, "endpoint-1")).toBe(true);
   });
 
+  test("stores only the fields we asked for", async () => {
+    // The shape validator accepts extra properties, so the storage layer is
+    // what keeps arbitrary client JSON out of the document.
+    await push.savePushSubscription(USER_A, {
+      ...makeSubscription("endpoint-1"),
+      keys: {
+        p256dh: "p256dh-endpoint-1",
+        auth: "auth-endpoint-1",
+        smuggled: "nope",
+      },
+      alsoSmuggled: "nope",
+    } as unknown as Parameters<typeof push.savePushSubscription>[1]);
+
+    const [stored] = await storedSubscriptions();
+    expect(stored.keys).toEqual({
+      p256dh: "p256dh-endpoint-1",
+      auth: "auth-endpoint-1",
+    });
+    expect(stored).not.toHaveProperty("alsoSmuggled");
+  });
+
+  test("coerces a non-string endpoint instead of querying with it", async () => {
+    // A query operator smuggled in as the endpoint must not reach Mongo as an
+    // object, or it would match (and overwrite) somebody else's row.
+    await push.savePushSubscription(USER_A, {
+      endpoint: { $ne: null },
+      keys: { p256dh: "p", auth: "a" },
+    } as unknown as Parameters<typeof push.savePushSubscription>[1]);
+
+    const [stored] = await storedSubscriptions();
+    expect(typeof stored.endpoint).toBe("string");
+  });
+
   test("deleting is scoped to the owning user", async () => {
     await push.savePushSubscription(USER_A, makeSubscription("endpoint-1"));
 

@@ -13,23 +13,67 @@ notifications is all a user chooses; push simply mirrors whatever they picked.
 
 ## Push setup
 
-Push needs a [VAPID](https://datatracker.ietf.org/doc/html/rfc8292) key pair,
-which identifies this server to the browsers' push services. Generate one:
+Push is off until it is configured, so a fresh checkout needs these steps once.
+
+### 1. Generate a VAPID key pair
+
+[VAPID](https://datatracker.ietf.org/doc/html/rfc8292) is how a push service
+(Google's, Mozilla's, Apple's) knows a message really came from this server. The
+key pair identifies the _server_, not a user. Generate one per deployment and
+keep reusing it — generating new keys on every boot would invalidate everyone's
+subscriptions.
+
+From the repository root, this prints the two lines ready to paste:
+
+```sh
+node -e "const k=require('web-push').generateVAPIDKeys();console.log('VAPID_PUBLIC_KEY='+k.publicKey);console.log('VAPID_PRIVATE_KEY='+k.privateKey)"
+```
 
 ```
-node -e "console.log(require('web-push').generateVAPIDKeys())"
+VAPID_PUBLIC_KEY=BJ-dUCpgIqkajCzFD2WPGXTJqJS455Phsm...   # 87 chars
+VAPID_PRIVATE_KEY=bSxNnF8b_6zxCE85A3yfs2EeA5tjSVqv...   # 43 chars
 ```
 
-Then configure:
+`web-push` also ships a CLI, if you prefer its labelled output:
+
+```sh
+yarn workspace @govariants/server exec web-push generate-vapid-keys
+```
+
+### 2. Set three environment variables
 
 | Variable            | Required | Description                                             | Example                       |
 | ------------------- | -------- | ------------------------------------------------------- | ----------------------------- |
-| `VAPID_PUBLIC_KEY`  | Yes      | Public half of the key pair, sent to the browser        | `BG3wqss...`                  |
-| `VAPID_PRIVATE_KEY` | Yes      | Private half; keep it secret                            | `81sgMh7...`                  |
+| `VAPID_PUBLIC_KEY`  | Yes      | Public half; the server hands it to the browser         | `BJ-dUCpg...`                 |
+| `VAPID_PRIVATE_KEY` | Yes      | Private half; secret, never commit it                   | `bSxNnF8b...`                 |
 | `VAPID_SUBJECT`     | Yes      | Contact for the push service; `mailto:` or `https:` URL | `mailto:admin@govariants.com` |
 
-With any of them unset the server logs one warning and skips push entirely; the
-client hides the opt-in, and in-app notifications carry on as before.
+`VAPID_SUBJECT` must be a `mailto:` or `https:` URL — a bare email address is
+rejected, and push stays off with an error in the log. It exists so a push
+service operator can get in touch about a misbehaving sender.
+
+There is no `.env` loading in this project, so for local development export the
+variables in the shell you start the server from:
+
+```sh
+export VAPID_PUBLIC_KEY=BJ-dUCpg...
+export VAPID_PRIVATE_KEY=bSxNnF8b...
+export VAPID_SUBJECT=mailto:you@example.com
+yarn start
+```
+
+In production set them wherever the deployment keeps its config; on Heroku that
+is `heroku config:set VAPID_PUBLIC_KEY=... VAPID_PRIVATE_KEY=... VAPID_SUBJECT=...`.
+
+Only the server needs configuring. The client fetches the public key from
+`/api/notifications/push/key` at runtime, so there is nothing to set at build
+time and nothing to rebuild when the keys change.
+
+### Behaviour when unconfigured or rotated
+
+With any of the three unset the server logs one warning at first use and skips
+push entirely; the client hides the opt-in, and in-app notifications carry on as
+before. This is the normal state for a dev checkout that has not opted in.
 
 Rotating the keys invalidates existing subscriptions. The client notices that
 its stored subscription was made against a different public key and re-subscribes

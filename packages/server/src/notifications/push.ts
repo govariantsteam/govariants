@@ -1,3 +1,20 @@
+/**
+ * Browser push delivery, alongside the in-app notifications in
+ * ./notifications.ts. Both fan out from addGameNotification, so a user's
+ * per-game subscription decides what is sent; push only decides where.
+ *
+ * Push needs a VAPID key pair, which identifies this server to the browsers'
+ * push services. Generate one per deployment and keep it — new keys invalidate
+ * every existing subscription:
+ *
+ *     yarn workspace @govariants/server exec web-push generate-vapid-keys
+ *
+ * Set the two halves as VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY, plus
+ * VAPID_SUBJECT: a contact a push service operator can use to reach us about a
+ * misbehaving sender. It must be a mailto: or https: URL — a bare email
+ * address is rejected. With any of the three unset the server logs one warning
+ * and skips push entirely, which is the normal state for a dev checkout.
+ */
 import webpush, { WebPushError } from "web-push";
 import { pushSubscriptions } from "../db";
 import {

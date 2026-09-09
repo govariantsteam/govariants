@@ -105,10 +105,7 @@ async function addGameNotification(
     },
   );
 
-  // Every game notification funnels through here, so this is the one place
-  // that needs to fan out to the browser. Sending after the write means a
-  // notification clicked through immediately is already on the notifications
-  // page; not awaiting it means a slow push service cannot hold up a move.
+  // Not awaited: push is best-effort and must not cause a move to fail.
   sendPushNotification(recipientIds, gameNotification).catch(console.error);
 
   return result;

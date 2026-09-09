@@ -56,7 +56,16 @@ async function storedSubscriptions() {
   return db.collection("push_subscriptions").find({}).toArray();
 }
 
+const VAPID_VARS = [
+  "VAPID_PUBLIC_KEY",
+  "VAPID_PRIVATE_KEY",
+  "VAPID_SUBJECT",
+] as const;
+let savedEnv: Partial<Record<(typeof VAPID_VARS)[number], string | undefined>>;
+
 beforeAll(async () => {
+  // web-push is mocked, so these never have to be real keys.
+  savedEnv = Object.fromEntries(VAPID_VARS.map((v) => [v, process.env[v]]));
   process.env.VAPID_PUBLIC_KEY = "test-public-key";
   process.env.VAPID_PRIVATE_KEY = "test-private-key";
   process.env.VAPID_SUBJECT = "mailto:test@example.com";
@@ -66,6 +75,16 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
+  // process.env is shared by every test file in this worker, so put it back.
+  for (const name of VAPID_VARS) {
+    const value = savedEnv[name];
+    if (value === undefined) {
+      delete process.env[name];
+    } else {
+      process.env[name] = value;
+    }
+  }
+
   await teardownTestDb();
 });
 
@@ -73,6 +92,10 @@ beforeEach(async () => {
   await clearTestDb();
   mocks.sendNotification.mockReset();
   mocks.sendNotification.mockResolvedValue(undefined);
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
 });
 
 describe("subscription storage", () => {
@@ -220,7 +243,6 @@ describe("sendPushNotification", () => {
     await push.sendPushNotification([USER_A], MY_MOVE);
 
     expect(await storedSubscriptions()).toHaveLength(1);
-    vi.mocked(console.error).mockRestore();
   });
 
   test("a failing push service does not reject", async () => {
@@ -233,8 +255,6 @@ describe("sendPushNotification", () => {
     await expect(
       push.sendPushNotification([USER_A], MY_MOVE),
     ).resolves.toBeUndefined();
-
-    vi.mocked(console.error).mockRestore();
   });
 });
 
@@ -255,7 +275,6 @@ test("push is inert when VAPID keys are not configured", async () => {
     expect(mocks.sendNotification).not.toHaveBeenCalled();
   } finally {
     process.env.VAPID_PUBLIC_KEY = saved;
-    vi.mocked(console.warn).mockRestore();
     vi.resetModules();
   }
 });

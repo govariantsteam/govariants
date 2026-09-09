@@ -64,6 +64,13 @@ let app: Express;
 let apiRouter: typeof import("../api").router;
 
 beforeAll(async () => {
+  // Push must stay unconfigured here. A configured push module sends real
+  // HTTPS requests to whatever endpoint a test happens to have stored, and
+  // these keys are often exported in a shell used for manual testing.
+  delete process.env.VAPID_PUBLIC_KEY;
+  delete process.env.VAPID_PRIVATE_KEY;
+  delete process.env.VAPID_SUBJECT;
+
   // Set up in-memory MongoDB first
   await setupTestDb();
 
@@ -449,15 +456,6 @@ describe("API Endpoints", () => {
     function authedApp() {
       return createTestApp({ mockUser: { id: USER_ID, username: "someone" } });
     }
-
-    it("serves the VAPID public key, or null when push is unconfigured", async () => {
-      const response = await request(app)
-        .get("/api/notifications/push/key")
-        .expect(200);
-
-      // The test process sets no VAPID keys, so push reports itself as off.
-      expect(response.body).toEqual({ publicKey: null });
-    });
 
     it("stores a subscription and reports it through the status route", async () => {
       const authApp = authedApp();

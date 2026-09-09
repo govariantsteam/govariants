@@ -1,5 +1,6 @@
 import { defineStore, storeToRefs } from "pinia";
 import * as requests from "../requests";
+import { disablePush } from "../utils/push";
 import type { UserResponse } from "@govariants/shared";
 import type { Ref } from "vue";
 
@@ -42,6 +43,12 @@ export const useStore = defineStore("user", {
     },
 
     async logout() {
+      // Unsubscribing needs an authenticated request, so it has to happen
+      // before the session ends. A subscription left behind keeps delivering
+      // this account's notifications to a browser nobody is signed in to, and
+      // it is scoped to this browser, so other devices stay subscribed.
+      await disablePush().catch(console.error);
+
       await requests.get("/logout");
       this.user = null;
       this.csrf_token = null;

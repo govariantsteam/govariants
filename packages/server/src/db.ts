@@ -1,5 +1,8 @@
 import { Collection, MongoClient } from "mongodb";
-import { UserNotifications } from "./notifications/notifications.types";
+import {
+  DBPushSubscription,
+  UserNotifications,
+} from "./notifications/notifications.types";
 
 let client: MongoClient | undefined;
 
@@ -29,4 +32,8 @@ export function getDb() {
 
 export function notifications(): Collection<UserNotifications> {
   return getDb().db().collection<UserNotifications>("notifications");
+}
+
+export function pushSubscriptions(): Collection<DBPushSubscription> {
+  return getDb().db().collection<DBPushSubscription>("push_subscriptions");
 }

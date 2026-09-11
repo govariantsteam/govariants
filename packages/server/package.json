@@ -24,6 +24,7 @@
     "@types/nodemailer": "^7.0.11",
     "@types/passport": "^1.0.17",
     "@types/passport-local": "^1.0.35",
+    "@types/web-push": "^3.6.4",
     "connect-mongo": "^5.0.0",
     "express": "^5.2.1",
     "express-rate-limit": "^8.6.2",
@@ -38,7 +39,8 @@
     "passport-local": "^1.0.0",
     "socket.io": "^4.8.1",
     "ts-node": "^10.9.1",
-    "typescript": "^5.1.6"
+    "typescript": "^5.1.6",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@eslint/js": "^10",

@@ -1,6 +1,7 @@
 import { UpdateResult } from "mongodb";
 import { notifications } from "../db";
 import { UserNotifications } from "./notifications.types";
+import { sendPushNotification } from "./push";
 import {
   GameNotification,
   GameSubscriptions,
@@ -97,12 +98,17 @@ async function addGameNotification(
 ): Promise<UpdateResult<UserNotifications> | undefined> {
   if (!recipientIds.length) return undefined;
 
-  return await notifications().updateMany(
+  const result = await notifications().updateMany(
     { userId: { $in: recipientIds } },
     {
       $push: { notifications: gameNotification },
     },
   );
+
+  // Not awaited: push is best-effort and must not cause a move to fail.
+  sendPushNotification(recipientIds, gameNotification).catch(console.error);
+
+  return result;
 }
 
 async function deleteGameNotifications(

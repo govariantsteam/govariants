@@ -99,9 +99,15 @@ type UsersFacet = {
  * Aggregate usage numbers for the admin dashboard.
  *
  * Everything here is derived from documents we already store, so no additional
- * tracking is involved and nothing user-identifying is returned. Games and users
- * have no created-at field; `_id` is an ObjectId, whose leading four bytes are a
- * second-resolution creation timestamp, so `$toDate: "$_id"` recovers it.
+ * tracking is involved and nothing user-identifying is returned. Creation time
+ * comes out of `_id`, an ObjectId whose leading four bytes are a second-resolution
+ * insert timestamp, which `$toDate: "$_id"` recovers.
+ *
+ * TODO: games and users now store a `createdAt` date — backfilled from that same
+ * ObjectId timestamp, so the values are identical — and these pipelines should
+ * read the stored field instead. The `$addFields` stages below overwrite it with
+ * the derived value, which would hide any `createdAt` that is deliberately set to
+ * something other than the insert time.
  *
  * Note that "finished" is not among the metrics: whether a game has ended is not
  * stored, and deriving it means replaying every game's moves through its variant.

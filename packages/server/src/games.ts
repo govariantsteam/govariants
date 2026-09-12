@@ -44,6 +44,7 @@ export type GameSchema = {
   time_control?: ITimeControlBase;
   creator?: User;
   subscriptions?: GameSubscriptions;
+  createdAt: Date;
 };
 
 export function gamesCollection(): Collection<GameSchema> {
@@ -120,7 +121,7 @@ export async function createGame(
   // Construct a game from the config to ensure the config is valid
   const gameObj = makeGameObject(variant, config);
 
-  const game: GameSchema = {
+  const game: Omit<GameSchema, "createdAt"> = {
     variant: variant,
     moves: [] as MovesType[],
     config: config,
@@ -129,7 +130,10 @@ export async function createGame(
     creator: creator,
   };
 
-  const result = await gamesCollection().insertOne(game);
+  const result = await gamesCollection().insertOne({
+    ...game,
+    createdAt: new Date(),
+  });
 
   if (!result) {
     throw new Error("Failed to create game.");

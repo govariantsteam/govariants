@@ -3,4 +3,5 @@
 // from their answer on desktop.
 export const LOCAL_STORAGE_KEYS = {
   immediateSubmit: "govariants:immediate-submit",
+  locale: "govariants:locale",
 } as const;

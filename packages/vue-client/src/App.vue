@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
 import UserNav from "./components/UserNav.vue";
+import UserNavMobile from "./components/UserNavMobile.vue";
 import NotificationsNav from "./components/NotificationsNav.vue";
 import { ref } from "vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -55,7 +56,8 @@ const toggleMenuFn = (event: MouseEvent) => {
         <NotificationsNav class="navNotificationsDesktop" />
       </div>
       <div>
-        <UserNav />
+        <UserNav class="userNavDesktop" />
+        <UserNavMobile class="userNavMobile" />
       </div>
     </div>
   </nav>
@@ -102,6 +104,10 @@ nav {
 
     div {
       display: flex;
+    }
+
+    .userNavMobile {
+      display: none;
     }
   }
 }
@@ -151,6 +157,14 @@ nav {
 
       div {
         flex-direction: column;
+      }
+
+      .userNavDesktop {
+        display: none;
+      }
+
+      .userNavMobile {
+        display: flex;
       }
 
       &.closedMenu {

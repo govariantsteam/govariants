@@ -9,6 +9,7 @@ export interface GuestUser extends UserResponse {
   token: string;
   login_type: "guest";
   ranking?: UserRankings;
+  createdAt: Date;
 }
 
 // Not currently used, but the plan is to use LocalStrategy from Password.js
@@ -19,6 +20,7 @@ export interface PersistentUser extends UserResponse {
   login_type: "persistent";
   ranking?: UserRankings;
   email?: string;
+  createdAt: Date;
 }
 
 export async function updateUserRanking(
@@ -57,6 +59,7 @@ export async function getUserByName(
     password_hash: db_user.password_hash,
     login_type: db_user.login_type,
     ranking: db_user.ranking,
+    createdAt: db_user.createdAt,
   };
 }
 
@@ -75,6 +78,7 @@ export async function getUserBySessionId(
     id: db_user._id.toString(),
     token: db_user.token,
     login_type: db_user.login_type,
+    createdAt: db_user.createdAt,
   };
 }
 
@@ -144,6 +148,7 @@ export async function createUserWithUsernameAndPassword(
     password_hash,
     login_type: "persistent",
     ranking: {},
+    createdAt: new Date(),
     ...(email && { email }),
   };
 
@@ -169,14 +174,17 @@ export async function authenticateUser(
 export async function createUserWithSessionId(
   session_id: string,
 ): Promise<GuestUser> {
+  const createdAt = new Date();
   const result = await usersCollection().insertOne({
     token: session_id,
     login_type: "guest",
+    createdAt,
   });
   return {
     id: result.insertedId.toString(),
     token: session_id,
     login_type: "guest",
+    createdAt,
   };
 }
 

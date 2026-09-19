@@ -59,7 +59,6 @@ export type GameStateResponse = {
   next_to_play: number[];
   special_moves: { [key: string]: string };
   result: string;
-  /** Phase of the whole game, even when the state is from an earlier round. */
   phase: GamePhase;
   seat: number | null;
   timeControl?: ITimeControlBase;

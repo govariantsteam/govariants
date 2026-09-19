@@ -18,6 +18,7 @@ import {
 } from "@govariants/shared";
 import { ObjectId, WithId, Document, Filter, Collection } from "mongodb";
 import { getDb } from "./db";
+import { HttpError } from "./http-error";
 import { io } from "./socket_io";
 import { gameTopic, seatTopic } from "./socket_validation";
 import { getTimeoutService } from "./index";
@@ -183,8 +184,8 @@ export async function handleMoveAndTime(
     game_obj.playMove(player, move);
   });
 
-  if (game_obj.result !== "") {
-    throw Error("Game is already finished.");
+  if (isGameOver(game_obj)) {
+    throw new HttpError(409, "Game is already finished.");
   }
 
   const { player: playerNr, move: new_move } = getOnlyMove(moves);
@@ -260,6 +261,12 @@ export async function handleMoveAndTime(
   return game;
 }
 
+// A function rather than an inline check, so TypeScript doesn't narrow
+// `phase` to "play" for the rest of the caller after playMove() changes it.
+function isGameOver(game_obj: AbstractGame): boolean {
+  return game_obj.phase === "gameover";
+}
+
 function emitGame(
   game_id: string,
   num_players: number,
@@ -279,6 +286,7 @@ function emitGame(
       next_to_play: next_to_play,
       special_moves: specialMoves,
       result: game_obj.result,
+      phase,
       seat: null,
       timeControl: time_control,
     });
@@ -290,6 +298,7 @@ function emitGame(
       next_to_play: next_to_play,
       special_moves: specialMoves,
       result: game_obj.result,
+      phase,
       seat: seat,
       timeControl: time_control,
     };
@@ -390,6 +399,7 @@ export function getGameState(
     next_to_play: game_obj.nextToPlay(),
     special_moves: game_obj.specialMoves(),
     result: game_obj.result,
+    phase: finalPhase,
     seat: seat,
     timeControl: game.time_control,
   };

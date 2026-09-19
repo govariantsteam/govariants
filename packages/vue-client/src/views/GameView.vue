@@ -222,6 +222,11 @@ function makeMove(move_str: string, submitImmediately?: boolean) {
     return;
   }
 
+  if (game_state.value?.phase === "gameover") {
+    alert("The game is over.");
+    return;
+  }
+
   if (
     doesVariantSupportsMovePreview.value &&
     !userEnabledImmediateSubmit.value &&
@@ -371,7 +376,7 @@ const createTimeControlPreview = (
             />
           </div>
 
-          <div>
+          <div v-if="game_state?.phase !== 'gameover'">
             <button
               v-for="(value, key) in game_state?.special_moves"
               :key="key"

@@ -366,6 +366,43 @@ describe("API Endpoints", () => {
     });
   });
 
+  describe("POST /api/games/:gameId/move", () => {
+    it("rejects moves once the game is over", async () => {
+      const db = await getTestDb();
+      const user = await db
+        .collection("users")
+        .insertOne(makeTestUser({ username: "resigner" }));
+      const userId = user.insertedId.toString();
+
+      const game = await db.collection("games").insertOne(
+        makeTestGame({
+          players: [userId, userId],
+          moves: [{ 0: "resign" }],
+        }),
+      );
+      const gameId = game.insertedId.toString();
+
+      const authApp = createTestApp({
+        mockUser: {
+          id: userId,
+          username: "resigner",
+          login_type: "persistent",
+        },
+      });
+
+      await request(authApp)
+        .post(`/api/games/${gameId}/move`)
+        .set("CSRF-Token", "test-csrf-token")
+        .send({ 0: "resign" })
+        .expect(409);
+
+      const dbGame = await db
+        .collection("games")
+        .findOne({ _id: game.insertedId });
+      expect(dbGame.moves).toHaveLength(1);
+    });
+  });
+
   describe("GET /api/games (user filter)", () => {
     it("filters games by user ID in normalized players array", async () => {
       const db = await getTestDb();

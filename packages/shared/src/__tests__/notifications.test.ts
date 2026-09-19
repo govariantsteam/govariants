@@ -19,6 +19,16 @@ test.each([
   [
     {
       gameId: GAME_ID,
+      type: Notifications.gameEnd,
+      params: { result: "" },
+      read: false,
+    },
+    "Game over",
+    "Game has ended.",
+  ],
+  [
+    {
+      gameId: GAME_ID,
       type: Notifications.myMove,
       params: { round: 7 },
       read: false,

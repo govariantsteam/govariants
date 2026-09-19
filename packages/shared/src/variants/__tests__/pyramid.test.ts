@@ -45,3 +45,11 @@ test("inner group score", () => {
 
   expect(game.result).toBe("B+5"); // 80-85
 });
+
+test("resignation result", () => {
+  const game = new PyramidGo({ width: 9, height: 9, komi: 0 });
+  game.playMove(0, "resign");
+
+  expect(game.phase).toBe("gameover");
+  expect(game.result).toBe("W+R");
+});

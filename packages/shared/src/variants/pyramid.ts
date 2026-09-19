@@ -52,8 +52,9 @@ export class PyramidGo extends Baduk {
   }
 
   get result(): string {
+    // Resignation and timeout results come from the base class.
     if (this.score_board === undefined) {
-      return "";
+      return super.result;
     }
     const white_points = this.pointsForColor(Color.WHITE);
     const black_points = this.pointsForColor(Color.BLACK);
@@ -62,8 +63,8 @@ export class PyramidGo extends Baduk {
     if (diff === 0) return "Tie";
     return white_points > black_points ? `W+${diff}` : `B+${diff}`;
   }
-  set result(_: string) {
-    // do nothing, we don't want super class to set this
+  set result(res: string) {
+    super.result = res;
   }
 
   private pointsForColor(c: Color) {

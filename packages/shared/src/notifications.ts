@@ -32,7 +32,10 @@ export function renderNotificationTitle(
 export function renderNotification(notification: GameNotification): string {
   switch (notification.type) {
     case Notifications.gameEnd: {
-      return `Game has ended with result ${notification.params.result}.`;
+      const { result } = notification.params;
+      return result
+        ? `Game has ended with result ${result}.`
+        : "Game has ended.";
     }
     case Notifications.myMove: {
       return `It's your move in round ${notification.params.round}.`;

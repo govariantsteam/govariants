@@ -5,6 +5,7 @@
   "rules": "Regeln",
   "login": "Anmelden",
   "logout": "Abmelden",
+  "profile": "Profil",
   "admin": "Administration",
   "notifications": "Nachrichten",
   "pagination": {

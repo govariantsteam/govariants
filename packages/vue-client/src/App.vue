@@ -1,32 +1,20 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
+import { storeToRefs } from "pinia";
+import { useStore } from "@/stores/user";
+import NavItems from "./components/NavItems.vue";
+import NavMenu from "./components/NavMenu.vue";
 import UserNav from "./components/UserNav.vue";
 import NotificationsNav from "./components/NotificationsNav.vue";
-import { ref } from "vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faBars, faBook } from "@fortawesome/free-solid-svg-icons";
-import { faHouse } from "@fortawesome/free-solid-svg-icons";
-import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
+import { faRightToBracket } from "@fortawesome/free-solid-svg-icons";
 
-library.add(faBars, faHouse, faCircleInfo, faBook);
-const is_menu_closed = ref(true);
+library.add(faRightToBracket);
 
-const closeMenuFn = (event: MouseEvent) => {
-  event.stopPropagation();
-  is_menu_closed.value = true;
-  document.removeEventListener("click", closeMenuFn);
-};
-
-const toggleMenuFn = (event: MouseEvent) => {
-  if (is_menu_closed.value) {
-    event.stopPropagation();
-    is_menu_closed.value = false;
-    document.addEventListener("click", closeMenuFn);
-  } else {
-    closeMenuFn(event);
-  }
-};
+const store = useStore();
+const { user } = storeToRefs(store);
+store.update();
 </script>
 
 <template>
@@ -35,27 +23,18 @@ const toggleMenuFn = (event: MouseEvent) => {
       <img class="navLogoImg" src="/favicon.ico" />
     </RouterLink>
     <NotificationsNav class="navNotificationsMobile" />
-    <button class="navHamburgerContainer navElement" @click="toggleMenuFn">
-      <font-awesome-icon icon="fa-solid fa-bars" class="navHamburgerMenu" />
-    </button>
-    <div class="navContent" :class="{ closedMenu: is_menu_closed }">
-      <div>
-        <RouterLink class="navElement" to="/">
-          <font-awesome-icon icon="fa-solid fa-house" class="icon" />
-          {{ $t("home") }}
-        </RouterLink>
-        <RouterLink class="navElement" to="/about">
-          <font-awesome-icon icon="fa-solid fa-circle-info" class="icon" />
-          {{ $t("about") }}
-        </RouterLink>
-        <RouterLink class="navElement" to="/variants/rules-list">
-          <font-awesome-icon icon="fa-solid fa-book" class="icon" />
-          {{ $t("rules") }}
-        </RouterLink>
-        <NotificationsNav class="navNotificationsDesktop" />
+    <NavMenu class="navMobile" />
+    <div class="navDesktop">
+      <div class="navGroup">
+        <NavItems />
+        <NotificationsNav />
       </div>
-      <div>
-        <UserNav />
+      <div class="navGroup">
+        <UserNav v-if="user" :user="user" />
+        <RouterLink v-else class="navElement" to="/login">
+          <font-awesome-icon icon="fa-solid fa-right-to-bracket" class="icon" />
+          {{ $t("login") }}
+        </RouterLink>
       </div>
     </div>
   </nav>
@@ -83,26 +62,22 @@ nav {
     height: calc(var(--navbar-height) * 0.8);
   }
 
-  .navHamburgerContainer {
-    display: none;
-    .navHamburgerMenu {
-      height: calc(var(--navbar-height) * 0.8);
-      display: none;
-    }
-  }
-
   a.navNotificationsMobile {
     display: none;
   }
 
-  .navContent {
+  .navMobile {
+    display: none;
+  }
+
+  .navDesktop {
     display: flex;
     justify-content: space-between;
     flex-grow: 1;
+  }
 
-    div {
-      display: flex;
-    }
+  .navGroup {
+    display: flex;
   }
 }
 
@@ -127,38 +102,12 @@ nav {
       padding: 0.2em 0.4em 0.3em 0.4em;
     }
 
-    a.navNotificationsDesktop {
-      display: none;
-    }
-
-    .navHamburgerContainer {
+    .navMobile {
       display: flex;
-      .navHamburgerMenu {
-        display: flex;
-      }
     }
 
-    .navContent {
-      flex-direction: column;
-      z-index: 1000;
-      opacity: 1;
-      position: absolute;
-      top: var(--navbar-height);
-      left: 0;
-      background-color: var(--color-background-soft);
-      box-shadow: 0px 5px 5px -5px var(--color-shadow);
-      width: 100%;
-
-      div {
-        flex-direction: column;
-      }
-
-      &.closedMenu {
-        display: none;
-        * {
-          display: none;
-        }
-      }
+    .navDesktop {
+      display: none;
     }
   }
 }

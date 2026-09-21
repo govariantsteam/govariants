@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useCurrentUser } from "@/stores/user";
+import { isGuest, useCurrentUser } from "@/stores/user";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
@@ -26,7 +26,7 @@ const { isOpen, toggle } = useDismissableMenu();
     <div v-if="isOpen" class="navMenuDropdown">
       <NavItems />
       <template v-if="user">
-        <div class="userName">{{ user.username }}</div>
+        <div v-if="!isGuest(user)" class="userName">{{ user.username }}</div>
         <UserNavItems :user="user" />
       </template>
       <RouterLink v-else class="navElement" to="/login">

@@ -5,6 +5,7 @@
   "rules": "Regeln",
   "login": "Anmelden",
   "logout": "Abmelden",
+  "settings": "Einstellungen",
   "profile": "Profil",
   "admin": "Administration",
   "notifications": "Nachrichten",
@@ -24,5 +25,11 @@
     "title": "Spiele filtern",
     "all-variants": "Alle Varianten",
     "my-games": "Meine Spiele"
+  },
+  "settings-page": {
+    "language": "Sprache",
+    "gameplay": "Spielablauf",
+    "immediate-submit": "Sofort abschicken",
+    "immediate-submit-hint": "Züge direkt beim Setzen abschicken, statt sie erst zu bestätigen."
   }
 }

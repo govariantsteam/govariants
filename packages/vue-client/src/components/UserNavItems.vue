@@ -5,10 +5,11 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
+import { faGear } from "@fortawesome/free-solid-svg-icons";
 import { faUserShield } from "@fortawesome/free-solid-svg-icons";
 import type { UserResponse } from "@govariants/shared";
 
-library.add(faUser, faRightFromBracket, faUserShield);
+library.add(faUser, faRightFromBracket, faGear, faUserShield);
 
 defineProps<{ user: UserResponse }>();
 
@@ -22,14 +23,19 @@ async function logout(): Promise<void> {
 </script>
 
 <template>
-  <RouterLink
-    v-if="!isGuest(user)"
-    class="navElement"
-    :to="{ name: 'user', params: { userId: user.id } }"
-  >
-    <font-awesome-icon icon="fa-solid fa-user" class="icon" />
-    {{ $t("profile") }}
-  </RouterLink>
+  <template v-if="!isGuest(user)">
+    <RouterLink
+      class="navElement"
+      :to="{ name: 'user', params: { userId: user.id } }"
+    >
+      <font-awesome-icon icon="fa-solid fa-user" class="icon" />
+      {{ $t("profile") }}
+    </RouterLink>
+    <RouterLink class="navElement" to="/settings">
+      <font-awesome-icon icon="fa-solid fa-gear" class="icon" />
+      {{ $t("settings") }}
+    </RouterLink>
+  </template>
   <RouterLink v-if="user.role === 'admin'" class="navElement" to="/admin">
     <font-awesome-icon icon="fa-solid fa-user-shield" class="icon" />
     {{ $t("admin") }}

@@ -5,6 +5,7 @@
   "rules": "Rules",
   "login": "Log in",
   "logout": "Log out",
+  "settings": "Settings",
   "profile": "Profile",
   "admin": "Admin",
   "notifications": "Notifications",
@@ -24,5 +25,11 @@
     "title": "Filter games",
     "all-variants": "All variants",
     "my-games": "games that I play"
+  },
+  "settings-page": {
+    "language": "Language",
+    "gameplay": "Gameplay",
+    "immediate-submit": "Immediate submit",
+    "immediate-submit-hint": "Send each move as soon as you place it, instead of confirming it first."
   }
 }

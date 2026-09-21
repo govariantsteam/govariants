@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import type { UserResponse } from "@govariants/shared";
+import { isGuest } from "@/stores/user";
 import { useDismissableMenu } from "@/utils/dismissable_menu";
 import UserNavItems from "./UserNavItems.vue";
 
@@ -16,22 +17,25 @@ const { isOpen, toggle } = useDismissableMenu();
 
 <template>
   <div class="userNav">
-    <button
-      class="navElement userNavButton"
-      :aria-expanded="isOpen"
-      @click="toggle"
-    >
-      <font-awesome-icon icon="fa-solid fa-user" class="icon" />
-      {{ user.username }}
-      <font-awesome-icon
-        icon="fa-solid fa-chevron-down"
-        class="caret"
-        :class="{ caretOpen: isOpen }"
-      />
-    </button>
-    <div v-if="isOpen" class="userNavDropdown">
-      <UserNavItems :user="user" />
-    </div>
+    <UserNavItems v-if="isGuest(user)" :user="user" />
+    <template v-else>
+      <button
+        class="navElement userNavButton"
+        :aria-expanded="isOpen"
+        @click="toggle"
+      >
+        <font-awesome-icon icon="fa-solid fa-user" class="icon" />
+        {{ user.username }}
+        <font-awesome-icon
+          icon="fa-solid fa-chevron-down"
+          class="caret"
+          :class="{ caretOpen: isOpen }"
+        />
+      </button>
+      <div v-if="isOpen" class="userNavDropdown">
+        <UserNavItems :user="user" />
+      </div>
+    </template>
   </div>
 </template>
 

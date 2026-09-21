@@ -61,3 +61,7 @@ export function useCurrentUser(): Ref<UserResponse | null> {
   const store = useStore();
   return storeToRefs(store).user;
 }
+
+export function isGuest(user: UserResponse): boolean {
+  return user.login_type === "guest";
+}

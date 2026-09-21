@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
-import { useStore } from "@/stores/user";
+import { isGuest, useStore } from "@/stores/user";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
@@ -23,6 +23,7 @@ async function logout(): Promise<void> {
 
 <template>
   <RouterLink
+    v-if="!isGuest(user)"
     class="navElement"
     :to="{ name: 'user', params: { userId: user.id } }"
   >

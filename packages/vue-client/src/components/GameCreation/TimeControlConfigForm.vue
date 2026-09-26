@@ -77,7 +77,7 @@ function emitConfigChange() {
 
 <template>
   <form class="config-form-column" @change="emitConfigChange">
-    <h3>Time Control</h3>
+    <h3>{{ $t("time-control") }}</h3>
     <select v-model="typeRef">
       <option :value="null">Unlimited Time</option>
       <option :value="TimeControlType.Absolute">Absolute</option>

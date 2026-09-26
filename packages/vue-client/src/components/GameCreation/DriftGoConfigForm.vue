@@ -24,11 +24,11 @@ function emitConfigChange() {
 
 <template>
   <form class="config-form-column" @change="emitConfigChange">
-    <label>Width</label>
+    <label>{{ $t("width") }}</label>
     <input v-model="config.board.width" type="number" min="1" />
-    <label>Height</label>
+    <label>{{ $t("height") }}</label>
     <input v-model="config.board.height" type="number" min="1" />
-    <label>Komi</label>
+    <label>{{ $t("komi") }}</label>
     <input v-model="config.komi" type="number" step="0.5" />
     <label>X-Shift</label>
     <input v-model="config.xShift" type="number" step="1" />

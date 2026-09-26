@@ -8,6 +8,14 @@
   "profile": "Profil",
   "admin": "Administration",
   "notifications": "Nachrichten",
+  "komi": "Komi",
+  "height": "Höhe",
+  "width": "Breite",
+  "size": "Größe",
+  "time-control": "Zeitkontrolle",
+  "config-form": {
+    "board-preview": "Brett Vorschau"
+  },
   "pagination": {
     "size-label": "Anzahl:",
     "first": "Zum Anfang",

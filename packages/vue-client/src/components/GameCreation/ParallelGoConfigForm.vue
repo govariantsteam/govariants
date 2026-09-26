@@ -15,9 +15,9 @@ function emitConfigChange() {
 
 <template>
   <form class="config-form-column" @change="emitConfigChange">
-    <label>Width</label>
+    <label>{{ $t("width") }}</label>
     <input v-model="config.width" type="number" min="1" />
-    <label>Height</label>
+    <label>{{ $t("height") }}</label>
     <input v-model="config.height" type="number" min="1" />
     <label>Number of players</label>
     <input v-model="config.num_players" type="number" min="1" />

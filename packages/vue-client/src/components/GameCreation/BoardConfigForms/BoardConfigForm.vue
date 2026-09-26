@@ -79,7 +79,7 @@ function emitConfigChange(config: BoardConfig) {
       v-if="board_type === BoardPattern.Custom"
       @config-changed="emitConfigChange"
     />
-    <ExpandablePocket label="Board preview">
+    <ExpandablePocket :label="$t('config-form.board-preview')">
       <div class="event-blocker">
         <DefaultBoard v-if="boardConfig" :config="{ board: boardConfig }" />
       </div>

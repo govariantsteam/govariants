@@ -38,7 +38,7 @@ watch([faceSize, komi], emitConfigChange);
       <option :value="13">13x13</option>
     </select>
 
-    <label>Komi</label>
+    <label>{{ $t("komi") }}</label>
     <input v-model.number="komi" type="number" step="0.5" />
   </form>
 </template>

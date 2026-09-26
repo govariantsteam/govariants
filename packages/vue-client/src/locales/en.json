@@ -8,6 +8,14 @@
   "profile": "Profile",
   "admin": "Admin",
   "notifications": "Notifications",
+  "komi": "Komi",
+  "height": "Height",
+  "width": "Width",
+  "size": "Size",
+  "time-control": "Time control",
+  "config-form": {
+    "board-preview": "Board preview"
+  },
   "pagination": {
     "size-label": "show:",
     "first": "First",

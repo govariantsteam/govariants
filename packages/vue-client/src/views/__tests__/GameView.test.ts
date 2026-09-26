@@ -4,6 +4,7 @@ import { createPinia, setActivePinia } from "pinia";
 import GameView from "../GameView.vue";
 import * as requests from "../../requests";
 import type { User } from "@govariants/shared";
+import i18n from "@/i18n";
 
 // Mock the requests module
 vi.mock("../../requests", () => ({
@@ -86,6 +87,7 @@ describe("GameView - Auto-seating", () => {
           DownloadSGF: true,
           SubscriptionDialog: true,
         },
+        plugins: [i18n],
       },
     });
 

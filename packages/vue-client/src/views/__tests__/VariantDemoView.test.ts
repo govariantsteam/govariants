@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 import VariantDemoView from "../VariantDemoView.vue";
+import i18n from "@/i18n";
 
 // Mock the user store
 vi.mock("../../stores/user", () => ({
@@ -23,11 +24,15 @@ function mountDemo(variant = "baduk") {
         NavButtons: true,
         PlayersToMove: true,
       },
+      plugins: [i18n],
     },
   });
 }
 
-function emitConfigChange(wrapper: ReturnType<typeof mountDemo>, config: object) {
+function emitConfigChange(
+  wrapper: ReturnType<typeof mountDemo>,
+  config: object,
+) {
   const configForm = wrapper.findComponent({ name: "BadukConfigForm" });
   configForm.vm.$emit("config-changed", config);
 }

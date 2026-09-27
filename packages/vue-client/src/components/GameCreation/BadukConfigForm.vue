@@ -31,7 +31,7 @@ function setBoardConfig(boardConfig: BoardConfig): void {
       :grid-only="$props.gridOnly"
       @config-changed="setBoardConfig($event)"
     />
-    <label>Komi</label>
+    <label>{{ $t("komi") }}</label>
     <input v-model="config.komi" type="number" step="0.5" />
   </form>
 </template>

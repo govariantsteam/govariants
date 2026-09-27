@@ -43,7 +43,7 @@ function removeSecondaryColor(): void {
 <template>
   <form class="config-form-column" @change="emitConfigChange">
     <BoardConfigForm @config-changed="setBoardConfig($event)" />
-    <label>Komi</label>
+    <label>{{ $t("komi") }}</label>
     <input v-model="config.komi" type="number" step="0.5" />
 
     <div class="row">

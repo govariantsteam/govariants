@@ -59,11 +59,11 @@ function setNumBoards(n: number) {
     <div v-for="(board, i) in config.boards" :key="i" class="board-fields">
       <div class="board-title">Board {{ i + 1 }}</div>
       <div class="field-row">
-        <label>Width</label>
+        <label>{{ $t("width") }}</label>
         <input v-model.number="board.width" type="number" min="2" max="19" />
       </div>
       <div class="field-row">
-        <label>Height</label>
+        <label>{{ $t("height") }}</label>
         <input v-model.number="board.height" type="number" min="2" max="19" />
       </div>
       <div class="field-row">

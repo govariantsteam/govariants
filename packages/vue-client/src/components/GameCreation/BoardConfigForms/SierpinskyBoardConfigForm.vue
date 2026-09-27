@@ -26,7 +26,7 @@ if (!props.initialConfig) {
 
 <template>
   <form class="config-form-column" @change="emitConfigChange">
-    <label>Size</label>
+    <label>{{ $t("size") }}</label>
     <input v-model="config.size" type="number" min="1" max="6" />
   </form>
 </template>

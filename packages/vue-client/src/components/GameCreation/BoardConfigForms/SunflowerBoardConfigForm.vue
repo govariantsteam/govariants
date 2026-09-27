@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import {
-  BoardPattern,
-  SunflowerBoardConfig,
-} from "@govariants/shared";
+import { BoardPattern, SunflowerBoardConfig } from "@govariants/shared";
 import { ref } from "vue";
 
 const defaultConfig: SunflowerBoardConfig = {
@@ -29,7 +26,7 @@ if (!props.initialConfig) {
 
 <template>
   <form class="config-form-column" @change="emitConfigChange">
-    <label>Size</label>
+    <label>{{ $t("size") }}</label>
     <input v-model="config.size" type="number" min="1" />
   </form>
 </template>

@@ -31,7 +31,7 @@ function emitConfigChange() {
       <legend>Board</legend>
       <span class="board-hint">19 x 19 grid (fixed)</span>
     </fieldset>
-    <label>Komi</label>
+    <label>{{ $t("komi") }}</label>
     <input v-model.number="config.komi" type="number" step="0.5" />
     <label>Piece limit</label>
     <input v-model.number="config.pieceLimit" type="number" min="1" />

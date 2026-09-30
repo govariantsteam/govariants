@@ -4,11 +4,17 @@ import {
   AbstractBadukConfig,
 } from "../../lib/abstractBaduk/abstractBaduk";
 import { FractionalStone } from "./fractionalStone";
-import { BoardPattern } from "../../lib/abstractBoard/boardFactory";
+import {
+  BoardConfig,
+  BoardPattern,
+} from "../../lib/abstractBoard/boardFactory";
 import { Variant } from "../../variant";
 import { fractionalRulesDescription } from "../../templates/fractional_rules";
 import { getNullIndices } from "../../lib/utils";
 import { ExportContext } from "../../abstract_game";
+import { Dimensions } from "../../lib/dimensions";
+import { moveToIndex } from "../../lib/grid_compat";
+import { DefaultBoardState, MulticolorStone } from "../../lib/board_types";
 
 export type Color =
   | "black"
@@ -45,6 +51,31 @@ export interface FractionalState {
   stagedMove?: { intersectionID: number; colors: Color[] };
   // number representing index of intersection
   lastMoves: (number | null)[];
+}
+
+/** The index of the intersection a move names, or null if it names none.
+ *
+ * Grid boards address intersections by SGF coordinate, as the rest of the
+ * platform does. Graph boards address them by index, and so do fractional
+ * games recorded before grid boards moved to the shared board, so both
+ * encodings are read here.
+ */
+function intersectionIndex(
+  board: BoardConfig,
+  intersectionCount: number,
+  move: string,
+): number | null {
+  const index = moveToIndex(move);
+  if (typeof index === "number") {
+    return Number.isInteger(index) && index >= 0 && index < intersectionCount
+      ? index
+      : null;
+  }
+  if (board.type !== BoardPattern.Grid) {
+    return null;
+  }
+  const dimensions = Dimensions.from(board);
+  return dimensions.isInBounds(index) ? dimensions.toFlatIndex(index) : null;
 }
 
 export class Fractional extends AbstractBaduk<
@@ -150,7 +181,12 @@ export class Fractional extends AbstractBaduk<
   /** Asserts there is exactly one move of type FractionalMove and returns it */
   private decodeMove(p: number, m: string): FractionalMove | null {
     const player = this.config.players[p];
-    const intersection = this.intersections.at(Number.parseInt(m));
+    const index = intersectionIndex(
+      this.config.board,
+      this.intersections.length,
+      m,
+    );
+    const intersection = index === null ? null : this.intersections[index];
     return player && intersection
       ? { player: { ...player, index: p }, intersection }
       : null;
@@ -173,16 +209,56 @@ export class Fractional extends AbstractBaduk<
     return playerConfig ? Object.values(playerConfig) : [];
   }
 
+  static uiTransform(
+    config: FractionalConfig,
+    state: FractionalState,
+  ): { config: FractionalConfig; gamestate: DefaultBoardState } {
+    const stones = state.boardState.map(
+      (colors, index): MulticolorStone => ({
+        colors: colors ?? [],
+        // A stone captured in the round it was played leaves the marker behind
+        // on an empty intersection.
+        ...(state.lastMoves.includes(index) && { annotation: "CR" as const }),
+        // Playing on an occupied intersection is rejected by playMove.
+        ...(colors && { disable_move: true as const }),
+      }),
+    );
+
+    // The move this player has staged for the round looks like any other
+    // stone, and its intersection stays clickable so they can move it.
+    const staged = state.stagedMove;
+    if (staged && stones[staged.intersectionID]) {
+      stones[staged.intersectionID] = {
+        ...stones[staged.intersectionID],
+        colors: staged.colors,
+      };
+    }
+
+    const board = config.board;
+    if (board.type !== BoardPattern.Grid) {
+      return { config, gamestate: { board: stones } };
+    }
+    const { width, height } = Dimensions.from(board);
+    return {
+      config,
+      gamestate: {
+        board: Array.from({ length: height }, (_, y) =>
+          stones.slice(y * width, (y + 1) * width),
+        ),
+      },
+    };
+  }
+
   static movePreview(
     config: FractionalConfig,
     state: FractionalState,
     move: string,
     player: number,
   ): FractionalState {
-    const idx = Number.parseInt(move);
+    const idx = intersectionIndex(config.board, state.boardState.length, move);
     const colorConfig = config.players.at(player);
 
-    if (Number.isNaN(idx) || colorConfig === undefined) {
+    if (idx === null || colorConfig === undefined) {
       return state;
     }
 
@@ -226,5 +302,6 @@ export const fractionalVariant: Variant<FractionalConfig, FractionalState> = {
     };
   },
   getPlayerColors: Fractional.getPlayerColors,
+  uiTransform: Fractional.uiTransform,
   movePreview: Fractional.movePreview,
 };

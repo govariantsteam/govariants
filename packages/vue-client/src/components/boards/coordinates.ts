@@ -27,9 +27,14 @@ const coordinateStyleKey: InjectionKey<Ref<CoordinateStyle>> =
 
 /** Label the boards under this view. Views that show a board as an illustration
  * rather than as the thing being played — a game list, a config preview — leave
- * this alone and get unlabelled boards. */
-export function provideCoordinateStyle(): void {
-  provide(coordinateStyleKey, useCoordinateStyle());
+ * this alone and get unlabelled boards.
+ *
+ * Defaults to the reader's setting; pass a style to label boards with something
+ * else. */
+export function provideCoordinateStyle(
+  style: Ref<CoordinateStyle> = useCoordinateStyle(),
+): void {
+  provide(coordinateStyleKey, style);
 }
 
 export function injectCoordinateStyle(): Ref<CoordinateStyle> {

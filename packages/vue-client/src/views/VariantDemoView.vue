@@ -14,6 +14,9 @@ import NavButtons from "@/components/GameView/NavButtons.vue";
 import PlayersToMove from "@/components/GameView/PlayersToMove.vue";
 import { config_form_map } from "@/config_form_map";
 import { getPlayingTable } from "@/playing_table_map";
+import { provideCoordinateStyle } from "@/components/boards/coordinates";
+
+provideCoordinateStyle();
 
 const props = defineProps<{ variant: string }>();
 

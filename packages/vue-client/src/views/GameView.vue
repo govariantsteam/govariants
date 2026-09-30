@@ -32,6 +32,9 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { faBell } from "@fortawesome/free-solid-svg-icons";
 import { toUpperCaseFirstLetter } from "@/utils/format-utils";
 import { openSubscriptionDialog } from "@/components/GameView/SubscriptionDialog";
+import { provideCoordinateStyle } from "@/components/boards/coordinates";
+
+provideCoordinateStyle();
 
 library.add(faBell);
 

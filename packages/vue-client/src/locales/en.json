@@ -36,6 +36,9 @@
   },
   "settings-page": {
     "language": "Language",
+    "board": "Board",
+    "coordinates": "Coordinates",
+    "coordinates-off": "Off",
     "gameplay": "Gameplay",
     "immediate-submit": "Immediate submit",
     "immediate-submit-hint": "Send each move as soon as you place it, instead of confirming it first."

@@ -6,6 +6,7 @@ import { useCurrentUser, useStore } from "@/stores/user";
 import { useRouter } from "vue-router";
 import PushNotificationToggle from "@/components/PushNotificationToggle.vue";
 import { LOCAL_STORAGE_KEYS } from "@/local_storage_keys";
+import { useCoordinateStyle } from "@/components/boards/coordinates";
 import {
   LOCALE_NAMES,
   SUPPORTED_LOCALES,
@@ -36,6 +37,8 @@ watch(selectedLocale, (chosen) => {
   rememberLocale(chosen);
 });
 
+const coordinates = useCoordinateStyle();
+
 // Shares a key with the in-game checkbox, so flipping either moves both.
 const immediateSubmit = useLocalStorage(
   LOCAL_STORAGE_KEYS.immediateSubmit,
@@ -56,6 +59,22 @@ const immediateSubmit = useLocalStorage(
               {{ LOCALE_NAMES[code] }}
             </option>
           </select>
+        </section>
+
+        <section>
+          <h2>{{ $t("settings-page.board") }}</h2>
+          <div class="setting-row">
+            <label for="coordinates">
+              {{ $t("settings-page.coordinates") }}
+            </label>
+            <select id="coordinates" v-model="coordinates">
+              <option value="off">
+                {{ $t("settings-page.coordinates-off") }}
+              </option>
+              <option value="a1">A1</option>
+              <option value="1-1">1-1</option>
+            </select>
+          </div>
         </section>
 
         <PushNotificationToggle />

@@ -2,6 +2,7 @@
 // These are per-device by design: someone's answer on their phone may differ
 // from their answer on desktop.
 export const LOCAL_STORAGE_KEYS = {
+  coordinates: "govariants:coordinates",
   immediateSubmit: "govariants:immediate-submit",
   locale: "govariants:locale",
 } as const;

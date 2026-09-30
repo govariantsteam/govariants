@@ -1,7 +1,6 @@
 import RizomaBoard from "@/components/boards/RizomaBoard.vue";
 import ParallelGoBoard from "@/components/boards/ParallelGoBoard.vue";
 import ChessBoard from "@/components/boards/ChessBoard.vue";
-import FractionalBoard from "@/components/boards/FractionalBoard.vue";
 import KeimaBoard from "@/components/boards/KeimaBoard.vue";
 import type { Component } from "vue";
 import QuantumBoard from "@/components/boards/QuantumBoard.vue";
@@ -13,7 +12,6 @@ const board_map: {
 } = {
   parallel: ParallelGoBoard,
   chess: ChessBoard,
-  fractional: FractionalBoard,
   keima: KeimaBoard,
   quantum: QuantumBoard,
   rengo: PolymorphicBoard,

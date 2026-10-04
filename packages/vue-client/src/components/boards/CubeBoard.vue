@@ -100,13 +100,40 @@ onBeforeUnmount(() => {
   if (controls) {
     controls.dispose();
   }
-  if (ghostStone) {
-    scene.remove(ghostStone);
-    ghostStone.geometry.dispose();
-    (ghostStone.material as THREE.Material).dispose();
-    ghostStone = null;
+  if (scene) {
+    disposeObject(scene);
   }
+  ghostStone = null;
 });
+
+type Disposable = THREE.Object3D & {
+  geometry?: THREE.BufferGeometry;
+  material?: THREE.Material | THREE.Material[];
+};
+
+/**
+ * Release the GPU buffers an object owns, along with everything parented to it.
+ * renderer.dispose() does not do this, so anything we drop from the scene has to
+ * be disposed by hand or its geometry and material stay resident.
+ */
+function disposeObject(object: THREE.Object3D) {
+  object.removeFromParent();
+  object.traverse((child) => {
+    const { geometry, material } = child as Disposable;
+    geometry?.dispose();
+    const materials = material
+      ? Array.isArray(material)
+        ? material
+        : [material]
+      : [];
+    materials.forEach((entry) => {
+      if ("map" in entry) {
+        (entry.map as THREE.Texture | null)?.dispose();
+      }
+      entry.dispose();
+    });
+  });
+}
 
 // Watch for board_config to become available
 watch(
@@ -837,7 +864,7 @@ function updateStones() {
 
   // Remove old stones
   stoneMeshes.forEach((mesh) => {
-    if (mesh) scene.remove(mesh);
+    if (mesh) disposeObject(mesh);
   });
   stoneMeshes = [];
 

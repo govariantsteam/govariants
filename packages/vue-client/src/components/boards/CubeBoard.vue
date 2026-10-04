@@ -55,7 +55,7 @@ let renderer: THREE.WebGLRenderer;
 let controls: OrbitControls;
 let raycaster: THREE.Raycaster;
 let mouse: THREE.Vector2;
-let intersectionMeshes: THREE.Mesh[] = [];
+let intersectionPositions: THREE.Vector3[] = [];
 let stoneMeshes: (THREE.Mesh | null)[] = [];
 let squircleMesh: THREE.Mesh | null = null;
 let cubeMesh: THREE.Mesh | null = null;
@@ -352,13 +352,6 @@ function createCubeBoard() {
     }
   }
 
-  // Remove old intersection meshes
-  intersectionMeshes.forEach((mesh) => {
-    scene.remove(mesh);
-    mesh.geometry.dispose();
-    (mesh.material as THREE.Material).dispose();
-  });
-
   // Remove old connection lines
   connectionLines.forEach((line) => {
     scene.remove(line);
@@ -373,29 +366,14 @@ function createCubeBoard() {
     (star.material as THREE.Material).dispose();
   });
 
-  // Create intersection points on the cube faces
-  intersectionMeshes = [];
   connectionLines = [];
   starPoints = [];
 
-  for (let i = 0; i < intersections.value.length; i++) {
-    const position = getIntersectionPosition3D(i, size, faceOffset);
-
-    // Create a larger invisible sphere for each intersection (for clicking)
-    const geometry = new THREE.SphereGeometry(0.4, 16, 16);
-    const material = new THREE.MeshPhongMaterial({
-      color: 0x8b7355,
-      transparent: true,
-      opacity: 0,
-      visible: false,
-    });
-    const mesh = new THREE.Mesh(geometry, material);
-    mesh.position.copy(position);
-    mesh.userData = { index: i, type: "intersection" };
-
-    scene.add(mesh);
-    intersectionMeshes.push(mesh);
-  }
+  // Where every intersection sits on the current surface, so that hit testing
+  // does not have to re-project them on each pointer event.
+  intersectionPositions = intersections.value.map((_, i) =>
+    getIntersectionPosition3D(i, size, faceOffset),
+  );
 
   // Draw lines between connected intersections
   const graph = createGraph(intersections.value, null);
@@ -698,15 +676,9 @@ function getIntersectionPosition3D(
 function onMouseMove(event: MouseEvent) {
   if (!canvasRef.value || !props.config?.board) return;
 
-  const rect = canvasRef.value.getBoundingClientRect();
-  mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-  mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+  const index = pickIntersection(event);
 
-  raycaster.setFromCamera(mouse, camera);
-  const intersects = raycaster.intersectObjects(intersectionMeshes);
-
-  if (intersects.length > 0) {
-    const index = intersects[0].object.userData.index;
+  if (index >= 0) {
     hoveredIntersection.value = index;
     emit("hover", index);
 
@@ -797,17 +769,38 @@ function onClick(event: MouseEvent) {
 
   pointerDownPosition = null;
 
+  const index = pickIntersection(event);
+  if (index >= 0) {
+    emit("move", indexToMove(index));
+  }
+}
+
+/**
+ * Index of the intersection nearest to where the pointer meets the board, or -1
+ * if the pointer is off the board.
+ */
+function pickIntersection(event: MouseEvent): number {
+  const body = squircleMesh ?? cubeMesh;
+  if (!canvasRef.value || !body || !raycaster) return -1;
+
   const rect = canvasRef.value.getBoundingClientRect();
   mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
   mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-
   raycaster.setFromCamera(mouse, camera);
-  const intersects = raycaster.intersectObjects(intersectionMeshes);
 
-  if (intersects.length > 0) {
-    const index = intersects[0].object.userData.index;
-    emit("move", indexToMove(index));
-  }
+  const hit = raycaster.intersectObject(body)[0];
+  if (!hit) return -1;
+
+  let nearest = -1;
+  let nearestDistance = Infinity;
+  intersectionPositions.forEach((position, index) => {
+    const distance = position.distanceToSquared(hit.point);
+    if (distance < nearestDistance) {
+      nearestDistance = distance;
+      nearest = index;
+    }
+  });
+  return nearest;
 }
 
 function animate() {

@@ -64,7 +64,7 @@ let connectionLines: THREE.Mesh[] = [];
 let faceLabels: THREE.Sprite[] = [];
 let starPoints: THREE.Mesh[] = [];
 let ghostStone: THREE.Mesh | null = null;
-let animationId: number;
+let animationId = 0;
 
 // Track drag state to distinguish clicks from drags
 let pointerDownPosition: { x: number; y: number } | null = null;
@@ -81,7 +81,7 @@ onMounted(async () => {
   initThreeJS();
   createCubeBoard();
   updateStones(); // Render initial stones after board is created
-  animate();
+  requestRender();
 });
 
 onBeforeUnmount(() => {
@@ -144,7 +144,7 @@ watch(
       initThreeJS();
       createCubeBoard();
       updateStones(); // Render stones after board is created
-      animate();
+      requestRender();
     }
   },
   { immediate: true },
@@ -281,6 +281,7 @@ function initThreeJS() {
   controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.05;
+  controls.addEventListener("change", requestRender);
 
   // Raycaster for mouse interaction
   raycaster = new THREE.Raycaster();
@@ -540,6 +541,8 @@ function createCubeBoard() {
 
   // Add star points (hoshi)
   addStarPoints(size, faceOffset);
+
+  requestRender();
 }
 
 /**
@@ -796,6 +799,8 @@ function onMouseMove(event: MouseEvent) {
       ghostStone = null;
     }
   }
+
+  requestRender();
 }
 
 function onPointerDown(event: PointerEvent) {
@@ -837,12 +842,22 @@ function onClick(event: MouseEvent) {
   }
 }
 
-function animate() {
-  animationId = requestAnimationFrame(animate);
-  if (controls) controls.update();
+// Frames are drawn on request: the board only changes when the camera moves,
+// a stone lands, or the shape is rebuilt. An untouched board costs one frame.
+function requestRender() {
+  if (animationId) return;
+  animationId = requestAnimationFrame(renderFrame);
+}
+
+function renderFrame() {
+  animationId = 0;
+  // Damping keeps the camera moving after the pointer stops; update() reports
+  // whether it has settled.
+  const stillMoving = controls ? controls.update() : false;
   if (renderer && scene && camera) {
     renderer.render(scene, camera);
   }
+  if (stillMoving) requestRender();
 }
 
 function onWindowResize() {
@@ -854,6 +869,8 @@ function onWindowResize() {
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
   renderer.setSize(width, height);
+
+  requestRender();
 }
 
 function updateStones() {
@@ -939,6 +956,8 @@ function updateStones() {
     scene.add(mesh);
     stoneMeshes.push(mesh);
   });
+
+  requestRender();
 }
 
 // Watch for board updates to render stones

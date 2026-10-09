@@ -3,7 +3,7 @@ import {
   uiTransform,
   type GameInitialResponse,
 } from "@govariants/shared";
-import { computed } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { getBoard } from "@/board_map";
 
 const props = defineProps<{ game: GameInitialResponse }>();
@@ -13,15 +13,37 @@ const transformedGameData = computed(() =>
 );
 
 const variantGameView = computed(() => getBoard(props.game.variant));
+
+// Boards can be expensive to mount (e.g. CubeBoard creates a WebGL context,
+// and browsers cap how many can be live at once), so only mount while the
+// item is near the viewport, and unmount again once it scrolls away.
+const eventBlockerRef = ref<HTMLElement>();
+const isVisible = ref(false);
+let observer: IntersectionObserver | undefined;
+
+onMounted(() => {
+  if (!eventBlockerRef.value) return;
+  observer = new IntersectionObserver(
+    ([entry]) => {
+      isVisible.value = entry.isIntersecting;
+    },
+    { rootMargin: "150px 0px" },
+  );
+  observer.observe(eventBlockerRef.value);
+});
+
+onBeforeUnmount(() => {
+  observer?.disconnect();
+});
 </script>
 
 <template>
   <li class="game-list-item">
     <RouterLink :to="{ name: 'game', params: { gameId: props.game.id } }">
-      <div class="event-blocker">
+      <div ref="eventBlockerRef" class="event-blocker">
         <component
           :is="variantGameView"
-          v-if="variantGameView"
+          v-if="variantGameView && isVisible"
           :gamestate="transformedGameData.gamestate"
           :config="transformedGameData.config"
         />
@@ -38,6 +60,7 @@ li.game-list-item {
   list-style-type: none;
   display: inline-block;
   .event-blocker {
+    aspect-ratio: 1 / 1;
     pointer-events: none;
   }
 }

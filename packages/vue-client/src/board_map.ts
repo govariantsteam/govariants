@@ -6,6 +6,7 @@ import type { Component } from "vue";
 import QuantumBoard from "@/components/boards/QuantumBoard.vue";
 import DefaultBoard from "./components/boards/DefaultBoard.vue";
 import PolymorphicBoard from "./components/boards/PolymorphicBoard.vue";
+import CubeBoard from "@/components/boards/CubeBoard.vue";
 
 const board_map: {
   [variant: string]: Component<{ config: unknown; gamestate: unknown }>;
@@ -16,6 +17,7 @@ const board_map: {
   quantum: QuantumBoard,
   rengo: PolymorphicBoard,
   rizoma: RizomaBoard,
+  cube: CubeBoard,
 };
 
 export function getBoard(variant: string) {

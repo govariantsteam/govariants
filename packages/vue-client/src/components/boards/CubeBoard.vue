@@ -254,7 +254,14 @@ function initThreeJS() {
 
   // Camera
   camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 1000);
-  camera.position.set(20, 20, 30);
+  // Scale the camera distance to the board so it fills the frame
+  // regardless of faceSize, keeping the same viewing angle as before.
+  const faceOffset = (props.config.board.faceSize - 1) / 2;
+  const cameraDistanceScale = 3.75;
+  camera.position
+    .set(20, 20, 30)
+    .normalize()
+    .multiplyScalar(faceOffset * cameraDistanceScale);
   camera.lookAt(0, 0, 0);
 
   // Renderer
@@ -975,7 +982,8 @@ watch(
 <style scoped>
 .cube-board-container {
   width: 100%;
-  height: 600px;
+  aspect-ratio: 1 / 1;
+  height: unset;
   display: flex;
   justify-content: center;
   align-items: center;

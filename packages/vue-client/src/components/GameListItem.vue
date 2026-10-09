@@ -3,7 +3,8 @@ import {
   uiTransform,
   type GameInitialResponse,
 } from "@govariants/shared";
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, ref } from "vue";
+import { useIntersectionObserver } from "@vueuse/core";
 import { getBoard } from "@/board_map";
 
 const props = defineProps<{ game: GameInitialResponse }>();
@@ -14,27 +15,19 @@ const transformedGameData = computed(() =>
 
 const variantGameView = computed(() => getBoard(props.game.variant));
 
+const eventBlockerRef = ref<HTMLElement>();
+const isVisible = ref(false);
+
 // Boards can be expensive to mount (e.g. CubeBoard creates a WebGL context,
 // and browsers cap how many can be live at once), so only mount while the
 // item is near the viewport, and unmount again once it scrolls away.
-const eventBlockerRef = ref<HTMLElement>();
-const isVisible = ref(false);
-let observer: IntersectionObserver | undefined;
-
-onMounted(() => {
-  if (!eventBlockerRef.value) return;
-  observer = new IntersectionObserver(
-    ([entry]) => {
-      isVisible.value = entry.isIntersecting;
-    },
-    { rootMargin: "150px 0px" },
-  );
-  observer.observe(eventBlockerRef.value);
-});
-
-onBeforeUnmount(() => {
-  observer?.disconnect();
-});
+useIntersectionObserver(
+  eventBlockerRef,
+  ([entry]) => {
+    isVisible.value = entry?.isIntersecting ?? false;
+  },
+  { rootMargin: "150px 0px" },
+);
 </script>
 
 <template>

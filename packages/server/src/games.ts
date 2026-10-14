@@ -239,7 +239,7 @@ export async function handleMoveAndTime(
     await updateRatings(game, game_obj);
   }
 
-  if (isRoundTransition) {
+  if (isRoundTransition && game_obj.phase !== "gameover") {
     const userIdsOnThePlay = game_obj
       .nextToPlay()
       .map((index) => game.players[index]?.id)

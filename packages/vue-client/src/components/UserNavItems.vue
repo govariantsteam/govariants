@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useRouter } from "vue-router";
 import { isGuest, useStore } from "@/stores/user";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -14,12 +13,6 @@ library.add(faUser, faRightFromBracket, faGear, faUserShield);
 defineProps<{ user: UserResponse }>();
 
 const store = useStore();
-const router = useRouter();
-
-async function logout(): Promise<void> {
-  await store.logout();
-  router.push("/");
-}
 </script>
 
 <template>
@@ -40,7 +33,7 @@ async function logout(): Promise<void> {
     <font-awesome-icon icon="fa-solid fa-user-shield" class="icon" />
     {{ $t("admin") }}
   </RouterLink>
-  <button class="navElement logoutButton" @click="logout">
+  <button class="navElement logoutButton" @click="store.logout">
     <font-awesome-icon icon="fa-solid fa-right-from-bracket" class="icon" />
     {{ $t("logout") }}
   </button>

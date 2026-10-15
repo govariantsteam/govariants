@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { useRouter } from "vue-router";
 import { useStore } from "@/stores/user";
 import { isEmail } from "validator";
 
@@ -10,8 +9,6 @@ const email = ref("");
 const error = ref("");
 
 const store = useStore();
-
-const router = useRouter();
 
 // Email validation check
 const isEmailValid = computed(() => {
@@ -24,9 +21,6 @@ const isEmailValid = computed(() => {
 const submit = () =>
   store
     .registerUser(username.value, password.value, email.value)
-    .then(() => {
-      router.push("/");
-    })
     .catch((e) => (error.value = e));
 </script>
 

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { useRouter } from "vue-router";
 import { useStore } from "@/stores/user";
 
 const store = useStore();
@@ -9,14 +8,9 @@ const username = ref("");
 const password = ref("");
 const error = ref("");
 
-const router = useRouter();
-
 const submit = () =>
   store
     .userLogin(username.value, password.value)
-    .then(() => {
-      router.push("/");
-    })
     .catch((e) => (error.value = e));
 </script>
 

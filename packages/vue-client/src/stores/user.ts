@@ -22,7 +22,10 @@ export const useStore = defineStore("user", {
 
     async guestLogin() {
       this.user = await requests.get("/guestLogin");
-      this.update();
+      // Full reload, not router.push: a socket connected before login keeps
+      // its pre-login identity for its whole lifetime (#557), so logging in
+      // needs a brand new socket, not just a client-side navigation.
+      window.location.href = "/";
     },
 
     async registerUser(username: string, password: string, email?: string) {
@@ -31,7 +34,7 @@ export const useStore = defineStore("user", {
         password,
         ...(email && { email }),
       });
-      this.update();
+      window.location.href = "/";
     },
 
     async userLogin(username: string, password: string) {
@@ -39,7 +42,7 @@ export const useStore = defineStore("user", {
         username,
         password,
       });
-      this.update();
+      window.location.href = "/";
     },
 
     async logout() {
@@ -52,7 +55,7 @@ export const useStore = defineStore("user", {
       await requests.get("/logout");
       this.user = null;
       this.csrf_token = null;
-      this.update();
+      window.location.href = "/";
     },
   },
 });

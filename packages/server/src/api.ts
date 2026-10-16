@@ -34,8 +34,6 @@ import {
   GameResponse,
   GamesFilter,
   MovesType,
-  User,
-  UserResponse,
   GameInitialResponse,
   validateNotificationTypeArray,
   validatePushSubscription,
@@ -98,9 +96,7 @@ router.get("/games", async (req, res) => {
     Number(req.query.offset),
     filter,
   );
-  const gameStates = games.map((game) =>
-    tryComputeState(game, req.user as User | undefined),
-  );
+  const gameStates = games.map((game) => tryComputeState(game, req.user));
   res.send(gameStates || 0);
 });
 
@@ -113,7 +109,7 @@ router.post("/games", checkCSRFToken, async (req, res) => {
     return;
   }
 
-  const user = req.user as User;
+  const user = req.user;
   try {
     const game: GameResponse = await createGame(
       data.variant,
@@ -131,13 +127,12 @@ router.post("/games", checkCSRFToken, async (req, res) => {
 
 router.post("/games/:gameId/move", checkCSRFToken, async (req, res) => {
   const move: MovesType = req.body;
-  const user_id = (req.user as User)?.id;
 
-  res.send(await playMove(req.params.gameId, move, user_id));
+  res.send(await playMove(req.params.gameId, move, req.user!.id));
 });
 
 router.post("/games/:gameId/sit/:seat", checkCSRFToken, async (req, res) => {
-  const user = req.user as UserResponse | undefined;
+  const user = req.user;
   if (!user) {
     res.status(401).json("You must be logged in to take a seat.");
     return;
@@ -158,7 +153,7 @@ router.post("/games/:gameId/sit/:seat", checkCSRFToken, async (req, res) => {
 });
 
 router.post("/games/:gameId/leave/:seat", checkCSRFToken, async (req, res) => {
-  const user = req.user as UserResponse | undefined;
+  const user = req.user;
   if (!user) {
     res.status(401).json("You must be logged in to leave a seat.");
     return;
@@ -195,7 +190,7 @@ router.post("/register", authLimiter, async (req, res, next) => {
 router.put("/users/:userId/role", checkCSRFToken, async (req, res) => {
   const { role } = req.body;
 
-  if (!req.user || (req.user as UserResponse).role !== "admin") {
+  if (!req.user || req.user.role !== "admin") {
     res.status(401).json("Only Admins may set user roles.");
     return;
   }
@@ -228,7 +223,7 @@ router.get("/users/:userId/email", checkCSRFToken, async (req, res) => {
     return;
   }
 
-  const currentUser = req.user as UserResponse;
+  const currentUser = req.user;
 
   // Users can only view their own email (unless they're an admin)
   if (currentUser.id !== req.params.userId && currentUser.role !== "admin") {
@@ -248,7 +243,7 @@ router.put("/users/:userId/email", checkCSRFToken, async (req, res) => {
     return;
   }
 
-  const currentUser = req.user as UserResponse;
+  const currentUser = req.user;
 
   // Users can only update their own email (unless they're an admin)
   if (currentUser.id !== req.params.userId && currentUser.role !== "admin") {
@@ -283,7 +278,7 @@ router.get("/users/:userId", async (req, res) => {
 });
 
 router.delete("/users/:userId", checkCSRFToken, async (req, res) => {
-  if ((req.user as UserResponse).role !== "admin") {
+  if (req.user?.role !== "admin") {
     res.status(401).json("You are not authorized to delete users");
     return;
   }
@@ -337,8 +332,8 @@ router.get("/checkLogin", function (req: any, res) {
 });
 
 router.get("/logout", async function (req, res) {
-  const user = req.user as UserResponse;
-  if (user.login_type === "guest") {
+  const user = req.user;
+  if (user?.login_type === "guest") {
     deleteUser(user.id);
   }
   req.logout((err) => {
@@ -363,7 +358,7 @@ router.get("/games/:gameId/state/initial", async (req, res) => {
     ...stateResponse,
   };
   if (req.user && game.subscriptions) {
-    result.subscription = game.subscriptions[(req.user as User).id] ?? [];
+    result.subscription = game.subscriptions[req.user.id] ?? [];
   }
   res.send(result);
 });
@@ -375,7 +370,7 @@ router.get("/games/:gameId/state", async (req, res) => {
 
   // Seat-specific state contains hidden info — verify the user occupies the seat
   if (seat != null) {
-    const user = req.user as User | undefined;
+    const user = req.user;
     const occupant = game.players?.[seat];
     if (!user || !occupant || occupant.id !== user.id) {
       res.status(403).json("You do not occupy this seat.");
@@ -388,7 +383,7 @@ router.get("/games/:gameId/state", async (req, res) => {
 });
 
 router.post("/admin/test-email", checkCSRFToken, async (req, res) => {
-  if (!req.user || (req.user as UserResponse).role !== "admin") {
+  if (!req.user || req.user.role !== "admin") {
     res.status(401).json("Only admins may send test emails.");
     return;
   }
@@ -410,7 +405,7 @@ router.post("/admin/test-email", checkCSRFToken, async (req, res) => {
 });
 
 router.get("/admin/stats", checkCSRFToken, async (req, res) => {
-  if (!req.user || (req.user as UserResponse).role !== "admin") {
+  if (!req.user || req.user.role !== "admin") {
     res.status(401).json("Only admins may view site stats.");
     return;
   }
@@ -425,7 +420,7 @@ router.get("/notifications/count", checkCSRFToken, async (req, res) => {
   }
 
   res.send({
-    count: await getUserNotificationsCount((req.user as User).id),
+    count: await getUserNotificationsCount(req.user.id),
   });
 });
 
@@ -435,13 +430,13 @@ router.get("/notifications", checkCSRFToken, async (req, res) => {
     return;
   }
 
-  const userNotifications = await getUserNotifications((req.user as User).id);
+  const userNotifications = await getUserNotifications(req.user.id);
   const groups = groupBy(userNotifications, (n) => n.gameId);
   const gameIds = groups.map(([gameId, _]) => gameId);
   const gameStateMap = new Map(
     (await getGamesById([...gameIds])).map((game) => [
       game.id,
-      tryComputeState(game, req.user as User),
+      tryComputeState(game, req.user),
     ]),
   );
   const combined: NotificationsResponse[] = groups
@@ -457,7 +452,7 @@ router.get("/notifications", checkCSRFToken, async (req, res) => {
 router.post("/game/:gameId/subscribe", checkCSRFToken, async (req, res) => {
   const { notificationTypes } = req.body;
   validateNotificationTypeArray(notificationTypes);
-  const userId = (req.user as User).id;
+  const userId = req.user!.id;
 
   const success = await subscribeToGameNotifications(
     req.params.gameId,
@@ -477,7 +472,7 @@ router.post(
   "/notifications/:gameId/mark-as-read",
   checkCSRFToken,
   async (req, res) => {
-    const userId = (req.user as User).id;
+    const userId = req.user!.id;
 
     await markAsRead(userId, req.params.gameId);
     res.send({});
@@ -488,7 +483,7 @@ router.post(
   "/notifications/:gameId/clear",
   checkCSRFToken,
   async (req, res) => {
-    const userId = (req.user as User).id;
+    const userId = req.user!.id;
 
     await clearNotifications(userId, req.params.gameId);
     res.send({});
@@ -514,7 +509,7 @@ router.post(
     const { subscription } = req.body;
     validatePushSubscription(subscription);
 
-    await savePushSubscription((req.user as User).id, subscription);
+    await savePushSubscription(req.user.id, subscription);
     res.send({});
   },
 );
@@ -533,7 +528,7 @@ router.post(
       throw new HttpError(400, "endpoint is required");
     }
 
-    await deletePushSubscription((req.user as User).id, endpoint);
+    await deletePushSubscription(req.user.id, endpoint);
     res.send({});
   },
 );
@@ -555,6 +550,6 @@ router.get("/notifications/push/status", checkCSRFToken, async (req, res) => {
   }
 
   res.send({
-    subscribed: await hasPushSubscription((req.user as User).id, endpoint),
+    subscribed: await hasPushSubscription(req.user.id, endpoint),
   });
 });

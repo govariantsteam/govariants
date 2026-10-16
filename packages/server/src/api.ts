@@ -127,8 +127,12 @@ router.post("/games", checkCSRFToken, async (req, res) => {
 
 router.post("/games/:gameId/move", checkCSRFToken, async (req, res) => {
   const move: MovesType = req.body;
+  if (!req.user) {
+    res.status(401).json("You must be logged in to make a move.");
+    return;
+  }
 
-  res.send(await playMove(req.params.gameId, move, req.user?.id));
+  res.send(await playMove(req.params.gameId, move, req.user.id));
 });
 
 router.post("/games/:gameId/sit/:seat", checkCSRFToken, async (req, res) => {
@@ -450,9 +454,14 @@ router.get("/notifications", checkCSRFToken, async (req, res) => {
 });
 
 router.post("/game/:gameId/subscribe", checkCSRFToken, async (req, res) => {
+  if (!req.user) {
+    res.sendStatus(401);
+    return;
+  }
+
   const { notificationTypes } = req.body;
   validateNotificationTypeArray(notificationTypes);
-  const userId = req.user!.id;
+  const userId = req.user.id;
 
   const success = await subscribeToGameNotifications(
     req.params.gameId,
@@ -472,7 +481,11 @@ router.post(
   "/notifications/:gameId/mark-as-read",
   checkCSRFToken,
   async (req, res) => {
-    const userId = req.user!.id;
+    if (!req.user) {
+      res.sendStatus(401);
+      return;
+    }
+    const userId = req.user.id;
 
     await markAsRead(userId, req.params.gameId);
     res.send({});
@@ -483,7 +496,11 @@ router.post(
   "/notifications/:gameId/clear",
   checkCSRFToken,
   async (req, res) => {
-    const userId = req.user!.id;
+    if (!req.user) {
+      res.sendStatus(401);
+      return;
+    }
+    const userId = req.user.id;
 
     await clearNotifications(userId, req.params.gameId);
     res.send({});

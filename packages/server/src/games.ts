@@ -151,7 +151,7 @@ export async function createGame(
 export async function playMove(
   game_id: string,
   moves: MovesType,
-  user_id: string | undefined, // will throw if undefined
+  user_id: string,
 ): Promise<GameResponse> {
   const game = await getGame(game_id);
 

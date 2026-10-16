@@ -151,6 +151,9 @@ export async function createGame(
 export async function playMove(
   game_id: string,
   moves: MovesType,
+  // undefined for an unauthenticated caller. No seat can be occupied by a
+  // user with an undefined id, so this always fails the check below — the
+  // caller gets a generic 500 rather than a dedicated 401/403.
   user_id: string | undefined,
 ): Promise<GameResponse> {
   const game = await getGame(game_id);

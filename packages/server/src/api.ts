@@ -128,7 +128,7 @@ router.post("/games", checkCSRFToken, async (req, res) => {
 router.post("/games/:gameId/move", checkCSRFToken, async (req, res) => {
   const move: MovesType = req.body;
 
-  res.send(await playMove(req.params.gameId, move, req.user!.id));
+  res.send(await playMove(req.params.gameId, move, req.user?.id));
 });
 
 router.post("/games/:gameId/sit/:seat", checkCSRFToken, async (req, res) => {

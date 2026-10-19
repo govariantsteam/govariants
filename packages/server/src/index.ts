@@ -21,6 +21,7 @@ import {
   userNotificationsTopic,
   validateSubscription,
 } from "./socket_validation";
+import { safe } from "./socket_safe";
 import { ITimeoutService, TimeoutService } from "./time-control/timeout";
 import { HttpError } from "./http-error";
 import { staticLimiter } from "./rate_limit";
@@ -165,32 +166,41 @@ io.on("connection", (socket) => {
     void socket.join(userNotificationsTopic(user.id));
   }
 
-  socket.on("ping", function (data) {
-    io.emit("pong", data);
-    console.log("ping");
-  });
+  socket.on(
+    "ping",
+    safe(function (data) {
+      io.emit("pong", data);
+      console.log("ping");
+    }),
+  );
 
-  socket.on("subscribe", async (topics) => {
-    if (!Array.isArray(topics)) return;
+  socket.on(
+    "subscribe",
+    safe(async (topics) => {
+      if (!Array.isArray(topics)) return;
 
-    for (const topic of topics) {
-      const rejection = await validateSubscription(topic, user, getGame);
-      if (rejection) {
-        console.warn(`Rejected subscription to ${topic}: ${rejection}`);
-        continue;
+      for (const topic of topics) {
+        const rejection = await validateSubscription(topic, user, getGame);
+        if (rejection) {
+          console.warn(`Rejected subscription to ${topic}: ${rejection}`);
+          continue;
+        }
+
+        await socket.join(topic);
       }
+    }),
+  );
 
-      await socket.join(topic);
-    }
-  });
+  socket.on(
+    "unsubscribe",
+    safe(async (topics) => {
+      if (!Array.isArray(topics)) return;
 
-  socket.on("unsubscribe", async (topics) => {
-    if (!Array.isArray(topics)) return;
-
-    for (const topic of topics) {
-      await socket.leave(topic);
-    }
-  });
+      for (const topic of topics) {
+        await socket.leave(topic);
+      }
+    }),
+  );
 });
 
 // If production, serve the React repo!

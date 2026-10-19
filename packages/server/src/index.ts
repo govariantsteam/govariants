@@ -19,7 +19,8 @@ import { getGame } from "./games";
 import * as socket_io from "./socket_io";
 import {
   userNotificationsTopic,
-  validateSubscription,
+  handleSubscribe,
+  handleUnsubscribe,
 } from "./socket_validation";
 import { ITimeoutService, TimeoutService } from "./time-control/timeout";
 import { HttpError } from "./http-error";
@@ -171,21 +172,15 @@ io.on("connection", (socket) => {
   });
 
   socket.on("subscribe", async (topics) => {
-    for (const topic of topics) {
-      const rejection = await validateSubscription(topic, user, getGame);
-      if (rejection) {
-        console.warn(`Rejected subscription to ${topic}: ${rejection}`);
-        continue;
-      }
-
+    await handleSubscribe(topics, user, getGame, async (topic) => {
       await socket.join(topic);
-    }
+    });
   });
 
   socket.on("unsubscribe", async (topics) => {
-    for (const topic of topics) {
+    await handleUnsubscribe(topics, async (topic) => {
       await socket.leave(topic);
-    }
+    });
   });
 });
 

@@ -4,6 +4,8 @@ import {
   gameTopic,
   seatTopic,
   userNotificationsTopic,
+  handleSubscribe,
+  handleUnsubscribe,
 } from "../socket_validation";
 
 function makeUser(id: string): UserResponse {
@@ -102,5 +104,67 @@ describe("validateSubscription", () => {
       mockGetGame,
     );
     expect(result).toBeNull();
+  });
+});
+
+describe("handleSubscribe", () => {
+  const mockGetGame = vi.fn<(id: string) => Promise<GameResponse>>();
+  const join = vi.fn<(topic: string) => Promise<void>>();
+
+  beforeEach(() => {
+    mockGetGame.mockReset();
+    join.mockReset().mockResolvedValue(undefined);
+  });
+
+  test.each([null, undefined, 42, "topic", {}])(
+    "does nothing when topics is not an array (%j)",
+    async (topics) => {
+      await handleSubscribe(topics, undefined, mockGetGame, join);
+      expect(join).not.toHaveBeenCalled();
+      expect(mockGetGame).not.toHaveBeenCalled();
+    },
+  );
+
+  it("joins every allowed topic", async () => {
+    await handleSubscribe(
+      [gameTopic(GAME_ID), gameTopic("other")],
+      undefined,
+      mockGetGame,
+      join,
+    );
+    expect(join).toHaveBeenCalledWith(gameTopic(GAME_ID));
+    expect(join).toHaveBeenCalledWith(gameTopic("other"));
+  });
+
+  it("skips topics rejected by validateSubscription", async () => {
+    await handleSubscribe(
+      [userNotificationsTopic("someuser")],
+      makeUser("someuser"),
+      mockGetGame,
+      join,
+    );
+    expect(join).not.toHaveBeenCalled();
+  });
+});
+
+describe("handleUnsubscribe", () => {
+  const leave = vi.fn<(topic: string) => Promise<void>>();
+
+  beforeEach(() => {
+    leave.mockReset().mockResolvedValue(undefined);
+  });
+
+  test.each([null, undefined, 42, "topic", {}])(
+    "does nothing when topics is not an array (%j)",
+    async (topics) => {
+      await handleUnsubscribe(topics, leave);
+      expect(leave).not.toHaveBeenCalled();
+    },
+  );
+
+  it("leaves every topic", async () => {
+    await handleUnsubscribe([gameTopic(GAME_ID), gameTopic("other")], leave);
+    expect(leave).toHaveBeenCalledWith(gameTopic(GAME_ID));
+    expect(leave).toHaveBeenCalledWith(gameTopic("other"));
   });
 });

@@ -21,7 +21,7 @@ import {
   userNotificationsTopic,
   validateSubscription,
 } from "./socket_validation";
-import { safe } from "./socket_safe";
+import { safeSocketHandler } from "./socket_safe";
 import { ITimeoutService, TimeoutService } from "./time-control/timeout";
 import { HttpError } from "./http-error";
 import { staticLimiter } from "./rate_limit";
@@ -168,7 +168,7 @@ io.on("connection", (socket) => {
 
   socket.on(
     "ping",
-    safe(function (data) {
+    safeSocketHandler(function (data) {
       io.emit("pong", data);
       console.log("ping");
     }),
@@ -176,7 +176,7 @@ io.on("connection", (socket) => {
 
   socket.on(
     "subscribe",
-    safe(async (topics) => {
+    safeSocketHandler(async (topics) => {
       if (!Array.isArray(topics)) return;
 
       for (const topic of topics) {
@@ -193,7 +193,7 @@ io.on("connection", (socket) => {
 
   socket.on(
     "unsubscribe",
-    safe(async (topics) => {
+    safeSocketHandler(async (topics) => {
       if (!Array.isArray(topics)) return;
 
       for (const topic of topics) {

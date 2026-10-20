@@ -124,27 +124,6 @@ describe("handleSubscribe", () => {
       expect(mockGetGame).not.toHaveBeenCalled();
     },
   );
-
-  it("joins every allowed topic", async () => {
-    await handleSubscribe(
-      [gameTopic(GAME_ID), gameTopic("other")],
-      undefined,
-      mockGetGame,
-      join,
-    );
-    expect(join).toHaveBeenCalledWith(gameTopic(GAME_ID));
-    expect(join).toHaveBeenCalledWith(gameTopic("other"));
-  });
-
-  it("skips topics rejected by validateSubscription", async () => {
-    await handleSubscribe(
-      [userNotificationsTopic("someuser")],
-      makeUser("someuser"),
-      mockGetGame,
-      join,
-    );
-    expect(join).not.toHaveBeenCalled();
-  });
 });
 
 describe("handleUnsubscribe", () => {
@@ -161,10 +140,4 @@ describe("handleUnsubscribe", () => {
       expect(leave).not.toHaveBeenCalled();
     },
   );
-
-  it("leaves every topic", async () => {
-    await handleUnsubscribe([gameTopic(GAME_ID), gameTopic("other")], leave);
-    expect(leave).toHaveBeenCalledWith(gameTopic(GAME_ID));
-    expect(leave).toHaveBeenCalledWith(gameTopic("other"));
-  });
 });

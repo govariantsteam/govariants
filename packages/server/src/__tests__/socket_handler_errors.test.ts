@@ -1,6 +1,6 @@
-import { safeSocketHandler } from "../socket_safe";
+import { catchSocketHandlerErrors } from "../socket_handler_errors";
 
-describe("safeSocketHandler", () => {
+describe("catchSocketHandlerErrors", () => {
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
@@ -13,7 +13,7 @@ describe("safeSocketHandler", () => {
 
   it("calls through to the wrapped handler with its arguments", async () => {
     const handler = vi.fn();
-    safeSocketHandler(handler)("a", 1);
+    catchSocketHandlerErrors(handler)("a", 1);
     await vi.waitFor(() => expect(handler).toHaveBeenCalledWith("a", 1));
   });
 
@@ -21,21 +21,21 @@ describe("safeSocketHandler", () => {
     const handler = vi.fn(() => {
       throw new Error("boom");
     });
-    expect(() => safeSocketHandler(handler)()).not.toThrow();
+    expect(() => catchSocketHandlerErrors(handler)()).not.toThrow();
   });
 
   it("logs instead of rejecting when the wrapped handler rejects", async () => {
     const handler = vi.fn(async () => {
       throw new Error("boom");
     });
-    safeSocketHandler(handler)();
+    catchSocketHandlerErrors(handler)();
     await vi.waitFor(() => expect(consoleErrorSpy).toHaveBeenCalled());
     expect(consoleErrorSpy.mock.calls[0][1]).toEqual(new Error("boom"));
   });
 
   it("does not interfere with a handler that resolves normally", async () => {
     const handler = vi.fn(async () => {});
-    safeSocketHandler(handler)();
+    catchSocketHandlerErrors(handler)();
     await vi.waitFor(() => expect(handler).toHaveBeenCalled());
     expect(consoleErrorSpy).not.toHaveBeenCalled();
   });

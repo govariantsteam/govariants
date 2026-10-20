@@ -4,7 +4,7 @@
  * or try/catches the handlers it dispatches to, so an unguarded handler can
  * take down the whole process over one bad message from one client.
  */
-export function safeSocketHandler<Args extends unknown[]>(
+export function catchSocketHandlerErrors<Args extends unknown[]>(
   handler: (...args: Args) => void | Promise<void>,
 ): (...args: Args) => void {
   return (...args: Args) => {

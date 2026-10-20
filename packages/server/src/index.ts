@@ -171,6 +171,8 @@ io.on("connection", (socket) => {
   });
 
   socket.on("subscribe", async (topics) => {
+    if (!Array.isArray(topics)) return;
+
     for (const topic of topics) {
       const rejection = await validateSubscription(topic, user, getGame);
       if (rejection) {
@@ -183,6 +185,8 @@ io.on("connection", (socket) => {
   });
 
   socket.on("unsubscribe", async (topics) => {
+    if (!Array.isArray(topics)) return;
+
     for (const topic of topics) {
       await socket.leave(topic);
     }

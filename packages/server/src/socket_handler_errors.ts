@@ -1,8 +1,6 @@
 /**
  * Wraps a socket.io event handler so a thrown error or rejected promise is
- * logged instead of becoming an unhandled rejection. socket.io never awaits
- * or try/catches the handlers it dispatches to, so an unguarded handler can
- * take down the whole process over one bad message from one client.
+ * logged instead of becoming an unhandled rejection.
  */
 export function catchSocketHandlerErrors<Args extends unknown[]>(
   handler: (...args: Args) => void | Promise<void>,

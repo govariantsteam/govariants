@@ -35,9 +35,12 @@ export class TimeoutService implements ITimeoutService {
     // replay below is still needed to work out who is on the clock, and
     // doubles as a guard should a stored phase ever disagree with the moves.
     for (const game of await getUnfinishedGamesWithTimeControl()) {
-      const game_object = makeGameObject(game.variant, game.config);
-
       try {
+        // Inside the try: a config the current code rejects (a board size
+        // since capped, a variant since removed) throws here, and must not
+        // cost every later game in the list its timeout.
+        const game_object = makeGameObject(game.variant, game.config);
+
         // check if game is already finished
         game.moves.forEach((moves) => {
           const { player, move } = getOnlyMove(moves);

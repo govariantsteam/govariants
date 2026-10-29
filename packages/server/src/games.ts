@@ -15,6 +15,7 @@ import {
   GameSubscriptions,
   GameInitialResponse,
   GameErrorResponse,
+  GamePhase,
 } from "@govariants/shared";
 import { ObjectId, WithId, Document, Filter, Collection } from "mongodb";
 import { getDb } from "./db";
@@ -46,6 +47,12 @@ export type GameSchema = {
   creator?: User;
   subscriptions?: GameSubscriptions;
   createdAt: Date;
+  /**
+   * The game's phase as of its last move, denormalized from the move replay so
+   * that queries can filter on it. Always present: the add-game-phase
+   * migration backfills every game that predates it.
+   */
+  phase: GamePhase;
 };
 
 export function gamesCollection(): Collection<GameSchema> {
@@ -79,9 +86,17 @@ export async function getGames(
   return hydrateGames(db_games);
 }
 
-export async function getGamesWithTimeControl(): Promise<GameResponse[]> {
+/**
+ * Games that may still need a timeout scheduled: clocked and not yet finished.
+ *
+ * The stored `phase` is what keeps finished games out of the result, rather
+ * than making the caller replay every clocked game to find out.
+ */
+export async function getUnfinishedGamesWithTimeControl(): Promise<
+  GameResponse[]
+> {
   const db_games = await gamesCollection()
-    .find({ time_control: { $exists: true } })
+    .find({ time_control: { $exists: true }, phase: "play" })
     .toArray();
   return hydrateGames(db_games);
 }
@@ -122,7 +137,7 @@ export async function createGame(
   // Construct a game from the config to ensure the config is valid
   const gameObj = makeGameObject(variant, config);
 
-  const game: Omit<GameSchema, "createdAt"> = {
+  const game: Omit<GameSchema, "createdAt" | "phase"> = {
     variant: variant,
     moves: [] as MovesType[],
     config: config,
@@ -134,6 +149,7 @@ export async function createGame(
   const result = await gamesCollection().insertOne({
     ...game,
     createdAt: new Date(),
+    phase: "play",
   });
 
   if (!result) {
@@ -220,7 +236,10 @@ export async function handleMoveAndTime(
         _id: new ObjectId(game_id),
         moves: { $size: game.moves.length },
       },
-      { $push: { moves: moves }, $set: { time_control: timeControl } },
+      {
+        $push: { moves: moves },
+        $set: { time_control: timeControl, phase: game_obj.phase },
+      },
     )
     .catch(console.log);
   if (!moveUpdateResult || !moveUpdateResult.lastErrorObject?.updatedExisting) {

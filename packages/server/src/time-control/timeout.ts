@@ -1,4 +1,8 @@
-import { getGame, getGamesWithTimeControl, handleMoveAndTime } from "../games";
+import {
+  getGame,
+  getUnfinishedGamesWithTimeControl,
+  handleMoveAndTime,
+} from "../games";
 import {
   MovesType,
   getOnlyMove,
@@ -27,10 +31,10 @@ export class TimeoutService implements ITimeoutService {
    * initializes timeout schedules
    */
   public async initialize(): Promise<void> {
-    // I would like to improve this by only querying unfinished games from db
-    // but currently I think its not possible, because of the game result
-    // is not being stored in the db directly
-    for (const game of await getGamesWithTimeControl()) {
+    // The query returns only games whose stored phase is still "play". The
+    // replay below is still needed to work out who is on the clock, and
+    // doubles as a guard should a stored phase ever disagree with the moves.
+    for (const game of await getUnfinishedGamesWithTimeControl()) {
       const game_object = makeGameObject(game.variant, game.config);
 
       try {

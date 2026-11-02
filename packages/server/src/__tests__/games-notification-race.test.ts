@@ -59,6 +59,7 @@ describe("playMove ending the game on a round transition", () => {
       players: [ALICE, BOB],
       subscriptions,
       createdAt: new Date(),
+      phase: "play",
     });
     const gameId = insertResult.insertedId.toString();
 

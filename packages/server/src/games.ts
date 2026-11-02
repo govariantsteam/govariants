@@ -87,10 +87,10 @@ export async function getGames(
 }
 
 /**
- * Games that may still need a timeout scheduled: clocked and not yet finished.
+ * Games that may still need a timeout scheduled: timed and not yet finished.
  *
  * The stored `phase` is what keeps finished games out of the result, rather
- * than making the caller replay every clocked game to find out.
+ * than making the caller replay every timed game to find out.
  */
 export async function getUnfinishedGamesWithTimeControl(): Promise<
   GameResponse[]

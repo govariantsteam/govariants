@@ -61,7 +61,7 @@ describe("TimeoutService.initialize", () => {
       phase: "play",
     });
 
-    // A healthy clocked game, inserted after it, with both players having
+    // A healthy timed game, inserted after it, with both players having
     // moved so that whoever is on the play has a clock running.
     const created = await games.createGame("baduk", {
       width: 9,

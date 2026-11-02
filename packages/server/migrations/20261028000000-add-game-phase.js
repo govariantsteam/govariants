@@ -7,14 +7,7 @@ const {
 /** Games updated per bulkWrite. */
 const BATCH_SIZE = 500;
 
-/**
- * Replay a stored game and report the phase it ends in.
- *
- * Mirrors the server's own read path, which replays the sanitized config.
- *
- * @param game {{ variant: string, config: object, moves?: object[] }}
- * @returns {"play" | "gameover"}
- */
+/** Replay a stored game and report the phase it ends in. */
 function computePhase(game) {
   const game_obj = makeGameObject(
     game.variant,
@@ -29,21 +22,8 @@ function computePhase(game) {
 
 module.exports = {
   /**
-   * Store each game's `phase` ("play" or "gameover").
-   *
-   * Finding out whether a game was finished previously meant replaying its
-   * whole move list through the variant's game class, so no query could filter
-   * on it — the timeout service loaded every clocked game at startup just to
-   * throw the finished ones away.
-   *
-   * The backfilled value comes from doing that replay once, here. Games whose
-   * replay throws (variants since removed, configs the current code rejects,
-   * malformed move entries) are left without a `phase` and logged: they are
-   * the same games the timeout service already skipped, and re-running this
-   * migration will pick them up if their replay ever starts working again.
-   *
-   * `@govariants/shared` is required from its build output, so this has to run
-   * after `yarn build`. The release phase orders it that way (see Procfile).
+   * Store each game's `phase` ("play" or "gameover"), derived by replaying its
+   * moves; games whose replay throws are left unset and logged.
    *
    * No transaction: the replay makes this long-running, and filtering on
    * `phase: { $exists: false }` already makes it re-runnable after a partial

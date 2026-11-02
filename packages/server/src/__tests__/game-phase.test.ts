@@ -100,7 +100,7 @@ describe("the stored game phase", () => {
 });
 
 describe("getUnfinishedGamesWithTimeControl", () => {
-  it("returns clocked games still in play, and skips finished ones", async () => {
+  it("returns timed games still in play, and skips finished ones", async () => {
     const base = {
       variant: "baduk",
       moves: [],
@@ -116,7 +116,7 @@ describe("getUnfinishedGamesWithTimeControl", () => {
     await games
       .gamesCollection()
       .insertOne({ ...base, time_control, phase: "gameover" });
-    // Unclocked games never need a timeout scheduled.
+    // Untimed games never need a timeout scheduled.
     await games.gamesCollection().insertOne({ ...base, phase: "play" });
 
     const unfinished = await games.getUnfinishedGamesWithTimeControl();
